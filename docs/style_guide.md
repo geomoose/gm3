@@ -15,7 +15,9 @@ not lint will be rejected from merges.
 This is a summary of changes and is inspired by the [AirBnB Javascript Style Guide](https://github.com/airbnb/javascript).
 
 
-* GeoMoose 3 uses ES6/ES2015 styles. 
+* GeoMoose 3 uses ES6/ES2015 styles. Generally:
+   * Use Classes and Modules using Es6 style.
+   * import and export should be used.
 * No hard tabs. Please use "4 space" tabs.  In VIMspeak:
     ```
     autocmd BufRead,BufNewFile,BufEnter */GeoMOOSE/gm3/* :setlocal expandtab ts=4 sts=4 sw=4
