@@ -60,3 +60,10 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# node stuff
+node_modules/
+
+# buildy-stuff
+dist/
+
