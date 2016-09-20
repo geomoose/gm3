@@ -1,8 +1,3 @@
------
-layout: default
-title: GeoMoose 3 Style Guide
------
-
 # GeoMoose 3 Style Guide
 
 ## For GeoMoose application development
