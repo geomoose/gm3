@@ -1,10 +1,12 @@
 {
-  "name": "GeoMoose",
+  "name": "geomoose",
   "version": "3.0.0",
+  "repository": "https://github.com/geomoose/gm3/",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "./node_modules/.bin/webpack-dev-server"
   },
   "babel": {
     "presets": [
@@ -24,7 +26,9 @@
     "babel-preset-react": "~6.11.1",
     "eslint": "~3.5.0",
     "grunt": "~1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-less": "^1.4.0",
+    "grunt-webpack": "^1.0.14",
     "gruntify-eslint": "~3.1.0",
     "less": "^2.7.1",
     "react": "~15.3.1",
@@ -36,5 +40,8 @@
     "uuid": "~2.0.3",
     "webpack": "~1.13.2",
     "webpack-dev-server": "~1.16.1"
+  },
+  "dependencies": {
+    "openlayers": "^3.18.2"
   }
 }
