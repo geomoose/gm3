@@ -15,7 +15,7 @@ function addElement(tree, parentId, child) {
 		tree.children.push(child);
 	}
 
-	for(var element of tree) {
+	for(let element of tree) {
 		if(element.type == 'group') {
 			if(element.id == parentId) {
 				
@@ -34,7 +34,7 @@ function addElement(tree, parentId, child) {
  *  @returns Object representing the group.
  */
 function parseGroup(groupXml) {
-	var new_group = {
+	let new_group = {
 		id: groupXml.getAttribute('uuid'),
 		children: [],
 		label: groupXml.getAttribute('title'),
@@ -43,7 +43,7 @@ function parseGroup(groupXml) {
 		multiple: util.parseBoolean(groupXml.getAttribute('multiple'), true)
 	};
 
-	var p = groupXml.parentNode;
+	let p = groupXml.parentNode;
 	if(p && p.tagName == 'group') {
 		new_group.parent = p.getAttribute('uuid');
 	}
@@ -58,12 +58,33 @@ function parseGroup(groupXml) {
  * @returns Object representing the layer
  */
 function parseLayer(layerXml) {
-	var new_layer = {
+	let new_layer = {
 		id: layerXml.getAttribute('uuid'),
 		label: layerXml.getAttribute('title'),
+        src: [],
 	};
 
-	var p = layerXml.parentNode;
+    // parse out the souces
+    let src_str = layerXml.getAttribute('src');
+    if(src_str) {
+        for(let src of src_str.split(':')) {
+            let split = src.split('/');
+            // create a new src entry.
+            let s = {
+                mapSourceName: split[0],
+                layerName: null,
+            };
+            // set a layer name if there is one.
+            if(split.length > 1) {
+                s.layerName = split[1];
+            }
+
+            new_layer.src.push(s);
+        }
+    }
+
+
+	let p = layerXml.parentNode;
 	if(p && p.tagName == 'group') {
 		new_layer.parent = p.getAttribute('uuid');
 	}
@@ -73,22 +94,22 @@ function parseLayer(layerXml) {
 
 
 function subtreeActions(parent, subtreeXml) {
-	var actions = [];
+	let actions = [];
 
 	for(let childNode of subtreeXml.children) {
-		var child = null, parent_id = null;
+		let child = null, parent_id = null;
 		if(parent && parent.id) {
 			parent_id = parent.id;
 		}
 		if(childNode.tagName == 'group') {
-			var group = parseGroup(childNode);
+			let group = parseGroup(childNode);
 			actions.push({type: CATALOG.ADD_GROUP, child: group});
 			child = group;
 
 			// build the tree by recursion.
 			actions = actions.concat(subtreeActions(group, childNode));
 		} else if(childNode.tagName == 'layer') {
-			var layer = parseLayer(childNode);
+			let layer = parseLayer(childNode);
 			actions.push({type: CATALOG.ADD_LAYER, child: layer})
 			child = layer;
 		}
@@ -111,7 +132,8 @@ function subtreeActions(parent, subtreeXml) {
 export function parseCatalog(catalogXml) {
 	// first add a "uuid" attribute to each one
 	//  of the elements
-	for(var e of catalogXml.getElementsByTagName('*')) {
+    // The UUIDs are used to flatten the tree's data structure.
+	for(let e of catalogXml.getElementsByTagName('*')) {
 		e.setAttribute('uuid', uuid.v4());
 	}
 

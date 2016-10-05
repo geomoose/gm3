@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Application from './gm3/Application';
+import Application from './gm3/application';
 import Catalog from './gm3/components/catalog';
 
 
-var UI = {
-    'Catalog': Catalog
+var components = {
+    Catalog: Catalog
 };
 
 export {
     Application,
-    UI as ui, 
+    components
 };

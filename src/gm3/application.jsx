@@ -41,12 +41,14 @@ class Application {
 
 	populateMapbook(mapbookXml) {
 		// load the map-sources
-		var sources = mapbookXml.getElementsByTagName('map-source');
-		for(var ms of sources) {
-			this.store.dispatch(mapSourceActions.addFromXml(ms));
+		let sources = mapbookXml.getElementsByTagName('map-source');
+		for(let ms of sources) {
+            for(let action of mapSourceActions.addFromXml(ms)) {
+                this.store.dispatch(action);
+            }
 		}
 
-		for(var action of parseCatalog(mapbookXml.getElementsByTagName('catalog')[0])) {
+		for(let action of parseCatalog(mapbookXml.getElementsByTagName('catalog')[0])) {
 			this.store.dispatch(action);
 		}
 	}
