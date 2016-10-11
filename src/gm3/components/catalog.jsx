@@ -97,9 +97,9 @@ class Catalog extends Component {
         // bind hte
         let toggle = () => {
             this.toggleLayer(layer);
+            this.renderMapSources(layer);
         };
 
-        this.renderMapSources(layer);
 
         return (
             <div key={layer.id} className="layer">
