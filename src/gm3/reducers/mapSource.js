@@ -45,6 +45,8 @@ export default function mapSource(state = [], action) {
                 layers
             });
 
+            console.log('LAYER_VIS', action, layers);
+
             return Object.assign({}, state, ms);
 		case MAPSOURCE.ADD:
             let new_elem = {};

@@ -33,10 +33,12 @@ import ReactDOM from 'react-dom';
 
 import Application from './gm3/application';
 import Catalog from './gm3/components/catalog';
+import Map from './gm3/components/map';
 
 
 var components = {
-    Catalog: Catalog
+    Catalog: Catalog,
+    Map: Map
 };
 
 export {

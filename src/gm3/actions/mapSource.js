@@ -51,18 +51,84 @@ export function addLayer(mapSourceName, layer) {
     };
 }
 
+/** Convert all the <params> of a <map-source> into an object.
+ *
+ *  @param msXml The MapSource XML
+ *
+ *  @returns Object containing the params
+ */
+function parseParams(msXml) {
+    var params_obj = {};
+    for(let param of msXml.getElementsByTagName('param')) {
+        params_obj[param.getAttribute('name')] = param.getAttribute('value');
+    }
+    return params_obj;
+}
+
+
+
+/** Convert a type='mapserver' layer into type='wms'
+ *  style layer for internal storage.
+ *
+ *  @param msXml The MapSource XML
+ *
+ * @returns Object defining the WMS service.
+ */
+function mapServerToWMS(msXml) {
+    // XXX: These need to be parsed from the mapbook and
+    //      set in some sort of global or conf object.
+    let MS_URL = '/mapserver/cgi-bin/mapserv';
+    let MAPFILE_ROOT = '/usr/local/geomoose/maps/';
+
+    let urls = util.getTagContents(msXml, 'url', true);
+    let mapfile = util.getTagContents(msXml, 'file');
+
+    // if the url is null then default to the
+    //  mapserver url.
+    if(urls.length == 0) { urls = [MS_URL]; }
+
+    let map_source = {
+        type: 'wms',
+        serverType: 'mapserver',
+        urls: urls,
+        params: {
+            'MAP' : MAPFILE_ROOT + mapfile
+        }, 
+    };
+
+    return map_source;
+}
+
 /** Add a map-source from XML
  *
  */
 export function addFromXml(xml) {
-
+    // initialize the map source object.
 	let map_source = {
         name: xml.getAttribute('name'),
+        urls: util.getTagContents(xml, 'url', true),
         type: xml.getAttribute('type'),
         label: xml.getAttribute('title'),
         layers: [],
+        params: {}
     }
 
+    // allow server-type hinting for hidpi displays.
+    let server_type = xml.getAttribute('server-type');
+    if(server_type) {
+        map_source.serverType = server_type;
+    }
+
+    // set of 'correction' functions for mapsources that
+    //  are parsed/tweaked to help the configurator.
+    if(map_source.type == 'mapserver') {
+        Object.assign(map_source, mapServerToWMS(xml));
+    }
+
+    // mix in the params
+    Object.assign(map_source.params, parseParams(xml));
+
+    // add all of the layers.
     let map_layers = [];
     for(let layerXml of xml.getElementsByTagName('layer')) {
         let layer_title = layerXml.getAttribute('title');
@@ -128,4 +194,40 @@ export function getLayer(store, layer) {
 export function getVisibility(store, layer) {
     // the === normalizes everything when values are undefined.
     return (getLayer(store, layer).on === true);
+}
+
+/** Check whether a map-source is 'active',
+ *  'active' is defined as having any layers 
+ *  with status='on' or being a vector type map-source
+ *  with the status='on'.
+ *
+ *  @param mapSource MapSource object from the state.
+ *
+ * @returns Boolean, true when the mapsource is active.
+ */
+function isMapSourceActive(mapSource) {
+    if(mapSource.layers) {
+        for(let layer of mapSource.layers) {
+            if(layer.on) {
+                return true;
+            }
+        }
+    } else {
+        // TODO: handle layer-less map-sources
+    }
+    return false;
+}
+
+/** Get the list of all map-sources which have a 
+ *  layer that is on.
+ */
+export function getActiveMapSources(store) {
+    let map_sources = store.getState().mapSources;
+    let active = [];
+    for(let ms in map_sources) {
+        if(isMapSourceActive(map_sources[ms])) {
+            active.push(ms);
+        }
+    }
+    return active;
 }

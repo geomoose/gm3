@@ -88,7 +88,7 @@ class Catalog extends Component {
                 type: MAPSOURCE.LAYER_VIS,
                 layerName: src.layerName,
                 mapSourceName: src.mapSourceName,
-                on: layer.on
+                on: !layer.on
             })
         }
     }
