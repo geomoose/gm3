@@ -81,6 +81,7 @@ export function getTagContents(xml, tagName, multiple) {
  * 
  *  @param objA The first object
  *  @param objB The second object
+ *  @param deep Whether to go "deeper" into the object.
  *
  *  @returns boolean, true if they differ, false if they are the same.
  */
@@ -108,7 +109,7 @@ export function objectsDiffer(objA, objB) {
                         return true;
                     }
                 }
-                if(objectsDiffer(objA[key], objB[key])) {
+                if(deep === true && objectsDiffer(objA[key], objB[key], true)) {
                     return true;
                 }
         }
