@@ -90,26 +90,19 @@ class Map extends Component {
     /** Ensure that the WMS parameters all match.
      */
     updateWmsSource(mapSource) {
-        //console.log('updateWmsSource', mapSource.name, this.olSources[mapSource.name]);
+        // pull in the open layers source
         let src = this.olSources[mapSource.name].getSource();
-        let refresh = false;
-
+        // get the new definition
         let defn = this.defineWmsSource(mapSource);
 
-        let n_p = defn.params, o_p = src.getParams();
-
-        console.log('PARAMS', n_p, o_p, util.objectsDiffer(n_p, o_p));
-
+        // if the params objects differ update them
         if(util.objectsDiffer(defn.params, src.getParams())) {
             src.updateParams(defn.params);
         }
 
+        // if the url changed, update that as well.
         if(src.getUrl() != defn.url) {
             src.setUrl(defn.url);
-        }
-
-        if(refresh) {
-            src.refresh();
         }
     }
     
@@ -156,8 +149,6 @@ class Map extends Component {
                 this.olSources[ms_name] = this.createWmsSource(map_source);
                 this.map.addLayer(this.olSources[ms_name]);
             } else {
-                // TODO: compare conditions on layers with multiple 
-                //       layers per source.
                 this.updateSource(ms_name);
                 this.olSources[ms_name].setVisible(true);
             }
@@ -170,23 +161,17 @@ class Map extends Component {
      *  React, this will establish the map.
      */
     componentDidMount() {
-        /*
-        let map_div = document.getElementById(this.mapId);
-        map_div.style.backgroundColor = 'green';
-        map_div.style.width = '300px';
-        map_div.style.height = '300px';
-        map_div.style.display = 'inline-block';
-        */
-
+        // initialize the map.
         this.map = new ol.Map({
             target: this.mapId,
-            layers: [
+            layers: [],
+                /*
                 new ol.layer.Tile({
                     source: new ol.source.XYZ({
                         url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
                     })
                 })
-            ],
+                */
             view: new ol.View({
                 // -10384069.859924,5538318.529767,-10356632.423788,5563580.927174
                 //center: [-472202, 7530279],
@@ -195,6 +180,8 @@ class Map extends Component {
             })
         });
 
+        // once the map is created, kick off the initial startup.
+        this.refreshMapSources();
     }
 
     /** React should never update the component after
