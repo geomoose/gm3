@@ -129,6 +129,8 @@ class Catalog extends Component {
         let classes = 'group';
         if(group.expand) {
             classes += ' expand';
+        } else {
+            classes += ' collapse';
         }
 
         let toggle = () => {

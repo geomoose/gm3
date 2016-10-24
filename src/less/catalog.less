@@ -5,10 +5,6 @@
 
     }
 
-    .children {
-        display: none;
-    }
-
     .group-label {
         font-weight: bold;
         cursor: pointer;
@@ -19,6 +15,13 @@
     }
 
 }
+
+.group.collapse {
+    .children {
+        display: none !important;
+    }
+}
+
 
 .group.expand {
     .children {
