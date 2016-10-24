@@ -133,7 +133,6 @@ class Catalog extends Component {
     render() {
         return (
             <div className="catalog">
-                <h3>Catalog X</h3>
                 {
                     this.props.catalog.root.children.map(this.renderTreeNode)
                 }
