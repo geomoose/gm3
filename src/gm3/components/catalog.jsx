@@ -116,8 +116,10 @@ class Catalog extends Component {
 
         return (
             <div key={layer.id} className="layer">
-                <div className="layer-label">{layer.label}</div>
-                <button onClick={toggle}>{layer.on ? 'on' : 'off'}</button>
+                <div className="layer-label">
+                <input type="checkbox" onChange={toggle} checked={layer.on} />
+                {layer.label}
+                </div>
             </div>
         );
     }
