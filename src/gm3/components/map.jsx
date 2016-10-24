@@ -41,6 +41,7 @@ import * as mapSources from '../actions/mapSource';
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
 import * as xyzLayer from './layers/xyz';
+import * as agsLayer from './layers/ags';
 
 
 class Map extends Component {
@@ -71,6 +72,9 @@ class Map extends Component {
             case 'xyz' :
                 xyzLayer.updateLayer(this.olLayers[sourceName], map_source);
                 break;
+            case 'ags' :
+                agsLayer.updateLayer(this.olLayers[sourceName], map_source);
+                break;
             default:
                 console.info('Unhandled map-source type: '+map_source.type);
         }
@@ -89,6 +93,8 @@ class Map extends Component {
                 return wmsLayer.createLayer(mapSource);
             case 'xyz':
                 return xyzLayer.createLayer(mapSource);
+            case 'ags':
+                return agsLayer.createLayer(mapSource);
             default:
                 throw ('Unhandled creation of map-source type: '+map_source.type);
         }
