@@ -40,6 +40,7 @@ import * as mapSources from '../actions/mapSource';
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
+import * as xyzLayer from './layers/xyz';
 
 
 class Map extends Component {
@@ -65,10 +66,31 @@ class Map extends Component {
         var map_source = this.props.mapSources[sourceName];
         switch(map_source.type) {
             case 'wms' :
-                wmsLayer.updateSource(this.olLayers[sourceName], map_source);
+                wmsLayer.updateLayer(this.olLayers[sourceName], map_source);
+                break;
+            case 'xyz' :
+                xyzLayer.updateLayer(this.olLayers[sourceName], map_source);
                 break;
             default:
                 console.info('Unhandled map-source type: '+map_source.type);
+        }
+    }
+
+
+    /** Create an OL Layers based on a GM MapSource definition
+     *
+     *  @param mapSource
+     *
+     *  @returns OpenLayers Layer with its source set.
+     */
+    createLayer(mapSource) {
+        switch(mapSource.type) {
+            case 'wms':
+                return wmsLayer.createLayer(mapSource);
+            case 'xyz':
+                return xyzLayer.createLayer(mapSource);
+            default:
+                throw ('Unhandled creation of map-source type: '+map_source.type);
         }
     }
 
@@ -95,7 +117,7 @@ class Map extends Component {
             if(!this.olLayers[ms_name]) {
                 // a map-source needs to be created.
                 let map_source = this.props.mapSources[ms_name];
-                this.olLayers[ms_name] = wmsLayer.createSource(map_source);
+                this.olLayers[ms_name] = this.createLayer(map_source);
                 this.map.addLayer(this.olLayers[ms_name]);
             } else {
                 this.updateSource(ms_name);
@@ -114,13 +136,6 @@ class Map extends Component {
         this.map = new ol.Map({
             target: this.mapId,
             layers: [],
-                /*
-                new ol.layer.Tile({
-                    source: new ol.source.XYZ({
-                        url: 'http://{a-c}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png'
-                    })
-                })
-                */
             view: new ol.View({
                 // -10384069.859924,5538318.529767,-10356632.423788,5563580.927174
                 //center: [-472202, 7530279],

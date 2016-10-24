@@ -27,9 +27,9 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    devtool: 'eval',
+    devtool: 'eval-source-map',
     entry: [
-        'webpack-dev-server/client?http://localhost:8080',
+        'webpack-dev-server/client?http://localhost:4000',
         'webpack/hot/only-dev-server',
         './src/' //index.jsx'
     ],
@@ -53,8 +53,15 @@ module.exports = {
         libraryTarget: 'umd'
     },
     devServer: {
-        contentBase: './dist',
-        hot: true
+        contentBase: './',
+        hot: true,
+        port: 4000,
+        proxy: {
+            '/mapserver' : {
+                target: 'http://localhost:8080/',
+                secure: false
+            }
+        }
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin()

@@ -41,13 +41,16 @@ export default function mapSource(state = [], action) {
                 }
             }
 
-            let ms = Object.assign({}, state[action.mapSourceName], {
+            let ms = Object.assign(state[action.mapSourceName], {
                 layers
             });
 
-            console.log('LAYER_VIS', action, layers);
+            let mix = {};
+            mix[action.mapSourceName] = ms;
 
-            return Object.assign({}, state, ms);
+            console.log('LAYER VIS.MS', ms);
+
+            return Object.assign({}, state, mix);
 		case MAPSOURCE.ADD:
             let new_elem = {};
             new_elem[action.mapSource.name] = action.mapSource;

@@ -23,15 +23,66 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+var webpackConfig = require('./webpack.config');
+
 module.exports = function(grunt) {
     grunt.loadNpmTasks('gruntify-eslint');
-    grunt.initConfig({
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-webpack');
 
+    grunt.initConfig({
+        // linting task. Used to ensure code is clean
+        //  before trying to build.
         eslint: {
             options: {
                 configFile: 'eslint.config.js',
             },
-            target: ['src/**/*.jsx']
+            target: ['src/**/*.jsx', 'src/**/*.js']
+        },
+
+        // copies useful files places.
+        copy: {
+            // this will copy the "test" files into dist,
+            //  used for 'rapid' development work.
+            test: {
+                files: [
+                    {expand: true, flatten: true, src: ['src/test.*'], dest: 'dist/'},
+                ]
+            }
+        },
+
+        less: {
+            build: {
+                options: {
+                    paths: ['src/less'],
+                },
+                files: {
+                    'dist/geomoose.css' : 'src/less/geomoose.less'
+                }
+            }
+        },
+
+        webpack: {
+            optons: webpackConfig,
+        },
+
+        'webpack-dev-server': {
+            options: {
+                webpack: webpackConfig,
+                publicPath: "./"
+            },
+            start: {
+                webpack: webpackConfig,
+                keepAlive: true,
+                hot: true,
+            }
         }
     });
+
+    grunt.task.registerTask('lint', ['eslint']);
+
+    grunt.task.registerTask('serve', ['copy:test', 'webpack-dev-server:start']);
 };
+

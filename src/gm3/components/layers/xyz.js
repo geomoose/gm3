@@ -22,48 +22,34 @@
  * SOFTWARE.
  */
 
-/** Collection of functions for defining a WMS layers in a GeoMoose map.
+/** Collection of functions for defining a XYZ layers in a GeoMoose map.
  * 
  */
 
 import * as util from '../../util';
 
-/** Create the parameters for a WMS layer.
+/** Create the parameters for a XYZ layer.
  *
  */
 function defineSource(mapSource) {
-    let layers = [];
-    // this creates a layer list
-    for(let layer of mapSource.layers) {
-        if(layer.on) {
-            layers.push(layer.name);
-        }
-    }
-
     return {
-        url: mapSource.urls[0],
-        ratio: 1.0, // This is a carry over from previous generations behaviour.
-        // TODO: Make the default extent 'world wide'
-        extent: [-13884991, 2870341, -7455066, 6338219],
-        params: Object.assign({'LAYERS' : layers.join(',')}, mapSource.params),
-        serverType: mapSource.serverType
+        urls: mapSource.urls
     }
 }
 
-
-/** Return an OpenLayers Layer for the WMS source.
+/** Return an OpenLayers Layer for the XYZ source.
  *
  *  @param mapSource The MapSource definition from the store.
  *
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    return new ol.layer.Image({
-        source: new ol.source.ImageWMS(defineSource(mapSource))
+    return new ol.layer.Tile({
+        source: new ol.source.XYZ(defineSource(mapSource))
     });
 }
 
-/** Ensure that the WMS parameters all match.
+/** Ensure that the XYZ parameters all match.
  */
 export function updateLayer(layer, mapSource) {
     // pull in the open layers source
@@ -71,14 +57,20 @@ export function updateLayer(layer, mapSource) {
     // get the new definition
     let defn = defineSource(mapSource);
 
-    // if the params objects differ update them
-    if(util.objectsDiffer(defn.params, src.getParams())) {
-        src.updateParams(defn.params);
+    // check to see if the list of URLs has changed.
+    let urls = src.getUrls();
+    let update_urls = false
+    if(urls.length != defn.urls.length) {
+        update_urls = true;
+    } else {
+        for(let url of urls) {
+            if(defn.urls.indexOf(url) < 0) {
+                update_urls = true;
+            }
+        }
     }
-
-    // if the url changed, update that as well.
-    if(src.getUrl() != defn.url) {
-        src.setUrl(defn.url);
+    if(update_urls) {
+        src.setUrls(defn.urls);
     }
 }
     
