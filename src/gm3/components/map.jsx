@@ -38,7 +38,8 @@ import uuid from 'uuid';
 
 import * as mapSources from '../actions/mapSource';
 
-import * as util from '../util';
+/* Import the various layer types */
+import * as wmsLayer from './layers/wms';
 
 
 class Map extends Component {
@@ -50,63 +51,10 @@ class Map extends Component {
         this.mapId = uuid.v4();
 
         // hash of mapsources
-        this.olSources = { };
+        this.olLayers = { };
 
     }
 
-    /** Create the parameters for a WMS layer.
-     *
-     */
-    defineWmsSource(mapSource) {
-        let layers = [];
-        // this creates a layer list
-        for(let layer of mapSource.layers) {
-            if(layer.on) {
-                layers.push(layer.name);
-            }
-        }
-
-        return {
-            url: mapSource.urls[0],
-            ratio: 1.0, // This is a carry over from previous generations behaviour.
-            extent: [-13884991, 2870341, -7455066, 6338219],
-            params: Object.assign({'LAYERS' : layers.join(',')}, mapSource.params),
-            serverType: mapSource.serverType
-        }
-    }
-
-
-    /** Return an OpenLayers Layer for the WMS source.
-     *
-     *  @param mapSource The MapSource definition from the store.
-     *
-     *  @returns OpenLayers Layer instance.
-     */
-    createWmsSource(mapSource) {
-        return new ol.layer.Image({
-            source: new ol.source.ImageWMS(this.defineWmsSource(mapSource))
-        });
-    }
-
-    /** Ensure that the WMS parameters all match.
-     */
-    updateWmsSource(mapSource) {
-        // pull in the open layers source
-        let src = this.olSources[mapSource.name].getSource();
-        // get the new definition
-        let defn = this.defineWmsSource(mapSource);
-
-        // if the params objects differ update them
-        if(util.objectsDiffer(defn.params, src.getParams())) {
-            src.updateParams(defn.params);
-        }
-
-        // if the url changed, update that as well.
-        if(src.getUrl() != defn.url) {
-            src.setUrl(defn.url);
-        }
-    }
-    
 
     /** Update a source's important bits.
      *
@@ -117,7 +65,7 @@ class Map extends Component {
         var map_source = this.props.mapSources[sourceName];
         switch(map_source.type) {
             case 'wms' :
-                this.updateWmsSource(map_source);
+                wmsLayer.updateSource(this.olLayers[sourceName], map_source);
                 break;
             default:
                 console.info('Unhandled map-source type: '+map_source.type);
@@ -133,10 +81,10 @@ class Map extends Component {
 
         // annoying O(n^2) iteration to see if the mapsource needs
         //  to be turned off.
-        for(let ms_name in this.olSources) {
+        for(let ms_name in this.olLayers) {
             // if the ms_name is not active, turn the entire source off. 
             if(active_map_sources.indexOf(ms_name) < 0) {
-                this.olSources[ms_name].setVisible(false);
+                this.olLayers[ms_name].setVisible(false);
             }
         }
 
@@ -144,14 +92,14 @@ class Map extends Component {
         //  determine if the olSource already exists, if not
         //   create it, if it does, turn it back on.
         for(let ms_name of active_map_sources) {
-            if(!this.olSources[ms_name]) {
+            if(!this.olLayers[ms_name]) {
                 // a map-source needs to be created.
                 let map_source = this.props.mapSources[ms_name];
-                this.olSources[ms_name] = this.createWmsSource(map_source);
-                this.map.addLayer(this.olSources[ms_name]);
+                this.olLayers[ms_name] = wmsLayer.createSource(map_source);
+                this.map.addLayer(this.olLayers[ms_name]);
             } else {
                 this.updateSource(ms_name);
-                this.olSources[ms_name].setVisible(true);
+                this.olLayers[ms_name].setVisible(true);
             }
         }
 
@@ -189,10 +137,11 @@ class Map extends Component {
      *  the initial render.
      */
     shouldComponentUpdate(nextProps, nextState) {
+        // Debugging code for turning layers on and off.
         let active_map_sources = mapSources.getActiveMapSources(this.props.store);
+        console.log('ACTIVE MAP SOURCES', active_map_sources);
 
-        console.log('ACTIVE MS', active_map_sources);
-
+        // refresh all the map sources, as approriate.
         this.refreshMapSources();
 
         // prevent any DOM changes that the class
