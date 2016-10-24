@@ -68,6 +68,7 @@ class Map extends Component {
 
         return {
             url: mapSource.urls[0],
+            ratio: 1.0, // This is a carry over from previous generations behaviour.
             extent: [-13884991, 2870341, -7455066, 6338219],
             params: Object.assign({'LAYERS' : layers.join(',')}, mapSource.params),
             serverType: mapSource.serverType
