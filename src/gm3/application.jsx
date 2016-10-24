@@ -38,8 +38,8 @@ import * as mapSourceActions from './actions/mapSource';
 import { parseCatalog } from './actions/catalog';
 
 import catalogReducer from './reducers/catalog';
-
 import msReducer from './reducers/mapSource';
+import mapReducer from './reducers/map';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -54,7 +54,8 @@ class Application {
 		// TODO: Combine Reducers here
 		this.store = createStore(combineReducers({
 			'mapSources' : msReducer,
-			'catalog' : catalogReducer
+			'catalog' : catalogReducer,
+            'map' : mapReducer
 		}));
 	}
 
@@ -63,7 +64,6 @@ class Application {
 	}
 
     remove() {
-        console.log('abcdef');
     }
 
 

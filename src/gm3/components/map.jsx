@@ -36,7 +36,8 @@ import { connect } from 'react-redux';
 
 import uuid from 'uuid';
 
-import * as mapSources from '../actions/mapSource';
+import * as mapSourceActions from '../actions/mapSource';
+import * as mapActions from '../actions/map';
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
@@ -105,7 +106,7 @@ class Map extends Component {
      */
     refreshMapSources() {
         // get the list of current active map-sources
-        let active_map_sources = mapSources.getActiveMapSources(this.props.store);
+        let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
 
         // annoying O(n^2) iteration to see if the mapsource needs
         //  to be turned off.
@@ -150,6 +151,21 @@ class Map extends Component {
             })
         });
 
+        // when the map moves, dispatch an action
+        this.map.on('moveend', () => {
+            // get the view of the map
+            let view = this.map.getView();
+            // create a "mapAction" and dispatch it.
+            this.props.store.dispatch(mapActions.move(view.getCenter(), view.getResolution()));
+        });
+
+        // and when the cursor moves, dispatch an action
+        //  there as well.
+        this.map.on('pointermove', (event) => {
+            var action = mapActions.cursor(event.coordinate);
+            this.props.store.dispatch(action);
+        });
+
         // once the map is created, kick off the initial startup.
         this.refreshMapSources();
     }
@@ -159,8 +175,8 @@ class Map extends Component {
      */
     shouldComponentUpdate(nextProps, nextState) {
         // Debugging code for turning layers on and off.
-        let active_map_sources = mapSources.getActiveMapSources(this.props.store);
-        console.log('ACTIVE MAP SOURCES', active_map_sources);
+        // let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
+        // console.log('ACTIVE MAP SOURCES', active_map_sources);
 
         // refresh all the map sources, as approriate.
         this.refreshMapSources();
@@ -181,7 +197,8 @@ class Map extends Component {
 
 const mapToProps = function(store) {
     return {
-        mapSources: store.mapSources
+        mapSources: store.mapSources,
+        mapView: store.map
     }
 }
 

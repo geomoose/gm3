@@ -59,7 +59,6 @@ class Catalog extends Component {
     }
 
     onClick() {
-        console.log('button clicked', this);
     }
 
     /** Change the layer's visibility state

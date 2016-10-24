@@ -22,32 +22,23 @@
  * SOFTWARE.
  */
 
-/** Dictionary of GeoMoose Actions.
- *
- *  Every action for GeoMoose needs to be mapped to 
- *  one of the 'action' dictionaries below.
+/** Actions for the Map.
  *
  */
 
-export const MAPSOURCE = {
-	ADD: 'MAPSOURCE_ADD',
-	REMOVE: 'MAPSOURCE_RM',
-	MOVE: 'MAPSOURCE_MV',
-    ADD_LAYER: 'MAPSOURCE_ADD_LAYER',
-	LAYER_VIS: 'MAPSOURCE_LAYER_VIS'
-};
+import { MAP } from '../actionTypes';
 
+export function move(center, resolution) {
+    return {
+        type: MAP.MOVE,
+        center, resolution
+    }
+}
 
-export const CATALOG = {
-	ADD_LAYER: 'CATALOG_ADD_LAYER',
-	ADD_GROUP: 'CATALOG_ADD_GROUP',
-	ADD_CHILD: 'CATALOG_ADD_CHILD',
-	REMOVE_LAYER: 'CATALOG_RM_LAYER',
-	REMOVE_GROUP: 'CATALOG_RM_GROUP',
-    LAYER_VIS: 'CATALOG_LAYER_VIS'
-};
+export function cursor(coords) {
+    return {
+        type: MAP.CURSOR,
+        coords
+    }
+}
 
-export const MAP = {
-    MOVE: 'MAP_MOVE',
-    CURSOR: 'MAP_CURSOR'
-};

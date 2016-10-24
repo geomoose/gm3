@@ -22,32 +22,36 @@
  * SOFTWARE.
  */
 
-/** Dictionary of GeoMoose Actions.
- *
- *  Every action for GeoMoose needs to be mapped to 
- *  one of the 'action' dictionaries below.
+/** Tracks the state of the map.
  *
  */
 
-export const MAPSOURCE = {
-	ADD: 'MAPSOURCE_ADD',
-	REMOVE: 'MAPSOURCE_RM',
-	MOVE: 'MAPSOURCE_MV',
-    ADD_LAYER: 'MAPSOURCE_ADD_LAYER',
-	LAYER_VIS: 'MAPSOURCE_LAYER_VIS'
+import uuid from 'uuid';
+
+import { MAP } from '../actionTypes';
+
+import * as util from '../util';
+
+const default_view = {
+    center: [0,0],
+    resolution: 1000,
+    coords: [0,0]
 };
 
-
-export const CATALOG = {
-	ADD_LAYER: 'CATALOG_ADD_LAYER',
-	ADD_GROUP: 'CATALOG_ADD_GROUP',
-	ADD_CHILD: 'CATALOG_ADD_CHILD',
-	REMOVE_LAYER: 'CATALOG_RM_LAYER',
-	REMOVE_GROUP: 'CATALOG_RM_GROUP',
-    LAYER_VIS: 'CATALOG_LAYER_VIS'
+export default function mapReducer(state = default_view, action) {
+	switch(action.type) {
+        case MAP.MOVE:
+            let new_view = {};
+            for(let key of ['center', 'zoom', 'resolution']) {
+                if(action[key]) {
+                    new_view[key] = action[key];
+                }
+            }
+            return Object.assign({}, state, new_view);
+        case MAP.CURSOR:
+            return Object.assign({}, state, {coords: action.coords});
+        default:
+            return state;
+    }
 };
-
-export const MAP = {
-    MOVE: 'MAP_MOVE',
-    CURSOR: 'MAP_CURSOR'
-};
+	
