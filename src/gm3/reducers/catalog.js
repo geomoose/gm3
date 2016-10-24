@@ -69,6 +69,12 @@ export default function catalogReducer(state = {'root' : {id: uuid.v4(), childre
                 on: action.on
             });
             return Object.assign({}, state, new_layer);
+        case CATALOG.GROUP_VIS:
+            let new_group = {};
+            new_group[action.id] = Object.assign({}, state[action.id], {
+                expand: action.expand
+            });
+            return Object.assign({}, state, new_group);
 		default:
 			return state;
 	}

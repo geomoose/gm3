@@ -75,6 +75,20 @@ class Catalog extends Component {
         });
     }
 
+    /** Change the group's "expansion" state.
+     *
+     *  @param gorup Catalog group definition.
+     *
+     */
+    toggleGroup(group) {
+        this.props.store.dispatch({
+            type: CATALOG.GROUP_VIS,
+            id: group.id,
+            expand: !group.expand
+        });
+    }
+
+
     /** Render the 'map sources' of a layer.
      *
      *  @param layer Catalog layer definition.
@@ -110,9 +124,18 @@ class Catalog extends Component {
 
 
     renderGroup(group) {
+        let classes = 'group';
+        if(group.expand) {
+            classes += ' expand';
+        }
+
+        let toggle = () => {
+            this.toggleGroup(group);
+        }
+
         return (
-            <div key={group.id} className="group">
-                <div className="group-label">{group.label}</div>
+            <div key={group.id} className={classes}>
+                <div onClick={toggle} className="group-label">{group.label}</div>
                 <div className="children">
                 {group.children.map(this.renderTreeNode)}
                 </div>

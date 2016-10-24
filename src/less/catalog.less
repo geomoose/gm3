@@ -1,14 +1,27 @@
 .group {
+
     .group {
         padding-left: 20px;
+
+    }
+
+    .children {
+        display: none;
     }
 
     .group-label {
         font-weight: bold;
+        cursor: pointer;
     }
 
     .layer {
         padding-left: 20px;
     }
 
+}
+
+.group.expand {
+    .children {
+        display: block;
+    }
 }
