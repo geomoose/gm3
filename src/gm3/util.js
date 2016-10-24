@@ -85,7 +85,7 @@ export function getTagContents(xml, tagName, multiple) {
  *
  *  @returns boolean, true if they differ, false if they are the same.
  */
-export function objectsDiffer(objA, objB) {
+export function objectsDiffer(objA, objB, deep) {
     let a_keys = Object.keys(objA), b_keys = Object.keys(objB);
 
     for(let key of a_keys) {
