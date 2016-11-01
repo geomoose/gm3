@@ -126,3 +126,15 @@ export function objectsDiffer(objA, objB, deep) {
         
     return false;
 }
+
+
+/** Get the map-sources name.  Paths are "/" split
+ *  and so the first component should be the map-source name.
+ *
+ *  @param path
+ *
+ *  @returns a string with the map-source's name.
+ */
+export function getMapSourceName(path) {
+    return path.split('/')[0];
+}
