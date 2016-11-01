@@ -43,6 +43,7 @@ import * as mapActions from '../actions/map';
 import * as wmsLayer from './layers/wms';
 import * as xyzLayer from './layers/xyz';
 import * as agsLayer from './layers/ags';
+import * as vectorLayer from './layers/vector';
 
 
 class Map extends Component {
@@ -56,6 +57,8 @@ class Map extends Component {
         // hash of mapsources
         this.olLayers = { };
 
+        // the current 'active' interaction
+        this.currentInteraction = null;
     }
 
 
@@ -66,15 +69,19 @@ class Map extends Component {
      */
     updateSource(sourceName) {
         var map_source = this.props.mapSources[sourceName];
+        var ol_layer = this.olLayers[sourceName];
         switch(map_source.type) {
             case 'wms' :
-                wmsLayer.updateLayer(this.olLayers[sourceName], map_source);
+                wmsLayer.updateLayer(ol_layer, map_source);
                 break;
             case 'xyz' :
-                xyzLayer.updateLayer(this.olLayers[sourceName], map_source);
+                xyzLayer.updateLayer(ol_layer, map_source);
                 break;
             case 'ags' :
-                agsLayer.updateLayer(this.olLayers[sourceName], map_source);
+                agsLayer.updateLayer(ol_layer, map_source);
+                break;
+            case 'vector' :
+                vectorLayer.updateLayer(ol_layer, map_source);
                 break;
             default:
                 console.info('Unhandled map-source type: '+map_source.type);
@@ -96,10 +103,40 @@ class Map extends Component {
                 return xyzLayer.createLayer(mapSource);
             case 'ags':
                 return agsLayer.createLayer(mapSource);
+            case 'vector':
+                return vectorLayer.createLayer(mapSource);
             default:
                 throw ('Unhandled creation of map-source type: '+map_source.type);
         }
     }
+
+    /** Execute a query
+     *
+     *  @param query
+     *
+     */
+    runQuery(queries, query_id) {
+        let query = queries[query_id];
+
+        setTimeout(() => {
+            console.log('send finished signal...', query_id);
+            this.props.dispatch(mapActions.finishQuery(query_id));
+        }, 2500);
+    }
+
+    checkQueries(queries) {
+        for(let query_id in queries) {
+            let query = queries[query_id];
+            if(query && query.progress == 'new') {
+                // issue a 'started' modification so the query is
+                //  not run twice.
+                this.props.dispatch(mapActions.startQuery(query_id));
+                // run the query.
+                this.runQuery(queries, query_id);
+            }
+        }
+    }
+
 
     /** Refresh the map-sources in the map
      *
@@ -132,6 +169,8 @@ class Map extends Component {
             }
         }
 
+        // TODO: The layers should get ordered here!
+        // this.sortOlLayers();
     }
 
     /** This is called after the first render.
@@ -177,9 +216,15 @@ class Map extends Component {
         // Debugging code for turning layers on and off.
         // let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
         // console.log('ACTIVE MAP SOURCES', active_map_sources);
+        if(this.nextProps && this.nextProps.interaction != this.currentInteraction) {
+            console.log('Change to ', nextState.mapView.interaction, ' interaction.');
+        }
 
         // refresh all the map sources, as approriate.
         this.refreshMapSources();
+
+        // see if any queries need their results populated.
+        this.checkQueries(nextProps.queries);
 
         // prevent any DOM changes that the class
         //  didn't cause.
@@ -198,7 +243,8 @@ class Map extends Component {
 const mapToProps = function(store) {
     return {
         mapSources: store.mapSources,
-        mapView: store.map
+        mapView: store.map,
+        queries: store.query
     }
 }
 

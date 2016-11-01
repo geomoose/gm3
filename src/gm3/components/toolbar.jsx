@@ -22,52 +22,46 @@
  * SOFTWARE.
  */
 
-/** Actions for the Map.
+/** Component for rendering a toolbar!
  *
  */
 
-import { MAP } from '../actionTypes';
+import React, {Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
-export function move(center, resolution) {
+import { startTool } from '../actions/toolbar';
+
+class Toolbar extends Component {
+
+    renderTool(tool) {
+        let tool_click = () => {
+            console.log('Tool click', tool);
+        };
+
+        return (
+            <button onClick={tool_click} key={tool.name}>
+                <span className="icon"></span>{tool.label}
+            </button>
+        );
+    }
+
+    render() {
+        return (
+            <div className="toolbar">
+                {
+                    this.props.toolbar.map(this.renderTool)
+                }
+            </div>
+        );
+    }
+
+};
+
+
+const mapToolbarToProps = function(store) {
     return {
-        type: MAP.MOVE,
-        center, resolution
+        toolbar: store.toolbar
     }
 }
 
-export function cursor(coords) {
-    return {
-        type: MAP.CURSOR,
-        coords
-    }
-}
-
-export function changeTool(tool) {
-    return {
-        type: MAP.CHANGE_TOOL,
-        tool
-    }
-}
-
-export function createQuery(selection, fields, layers) {
-    return {
-        type: MAP.QUERY_NEW,
-        query: {
-            selection, fields, layers
-        }
-    };
-}
-
-export function startQuery(queryId) {
-    return {
-        type: MAP.QUERY_START,
-        id: queryId
-    }
-}
-
-export function finishQuery(queryId) {
-    return {
-        type: MAP.QUERY_FINISHED,
-        id: queryId
-    }
-}
+export default connect(mapToolbarToProps)(Toolbar);

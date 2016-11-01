@@ -22,52 +22,52 @@
  * SOFTWARE.
  */
 
-/** Actions for the Map.
+/** Reducer for the toolbar
  *
  */
 
-import { MAP } from '../actionTypes';
+import uuid from 'uuid';
 
-export function move(center, resolution) {
-    return {
-        type: MAP.MOVE,
-        center, resolution
+import { TOOLBAR } from '../actionTypes';
+
+import * as util from '../util';
+
+/*
+ * TOOLBAR tool definition
+ * action.order
+ * action.type
+ * action.tool
+ * * name
+ * * label
+ * * className
+ * * actionType (tool, service)
+ * * actionInfo
+ * * order (first/last)
+ *
+ */
+
+export default function mapReducer(state = [], action) {
+	switch(action.type) {
+        case TOOLBAR.ADD:
+            // get the 'order' placement, should be first or last
+            var order = action.order ? action.order : 'last';
+
+            if(order == 'first') {
+                return [].concat([action.tool]).concat(state);
+            } else {
+                return [].concat(state).concat([action.tool]);
+            }
+        case TOOLBAR.REMOVE:
+            // make a copy of the tools list but do not include
+            //  the tool to be removed.
+            var st = [];
+            for(let tool in state) {
+                if(tool.name != action.tool.name) {
+                    st.push(tool);
+                }
+            }
+            return st;
+        default:
+            return state;
     }
-}
-
-export function cursor(coords) {
-    return {
-        type: MAP.CURSOR,
-        coords
-    }
-}
-
-export function changeTool(tool) {
-    return {
-        type: MAP.CHANGE_TOOL,
-        tool
-    }
-}
-
-export function createQuery(selection, fields, layers) {
-    return {
-        type: MAP.QUERY_NEW,
-        query: {
-            selection, fields, layers
-        }
-    };
-}
-
-export function startQuery(queryId) {
-    return {
-        type: MAP.QUERY_START,
-        id: queryId
-    }
-}
-
-export function finishQuery(queryId) {
-    return {
-        type: MAP.QUERY_FINISHED,
-        id: queryId
-    }
-}
+};

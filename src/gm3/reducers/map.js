@@ -26,8 +26,6 @@
  *
  */
 
-import uuid from 'uuid';
-
 import { MAP } from '../actionTypes';
 
 import * as util from '../util';
@@ -35,7 +33,10 @@ import * as util from '../util';
 const default_view = {
     center: [0,0],
     resolution: 1000,
-    coords: [0,0]
+    coords: [0,0],
+    activeSource: null,
+    interactionType: null,
+    temporaryFeatures: []
 };
 
 export default function mapReducer(state = default_view, action) {
@@ -50,8 +51,12 @@ export default function mapReducer(state = default_view, action) {
             return Object.assign({}, state, new_view);
         case MAP.CURSOR:
             return Object.assign({}, state, {coords: action.coords});
+        case MAP.CHANGE_TOOL:
+            return Object.assign({}, state, {
+                activeSource: action.src, 
+                interactionType: action.tool
+            })
         default:
             return state;
     }
 };
-	

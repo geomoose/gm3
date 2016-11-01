@@ -36,10 +36,13 @@ import { createStore, combineReducers } from 'redux';
 import * as mapSourceActions from './actions/mapSource';
 
 import { parseCatalog } from './actions/catalog';
+import { parseToolbar } from './actions/toolbar';
 
 import catalogReducer from './reducers/catalog';
 import msReducer from './reducers/mapSource';
 import mapReducer from './reducers/map';
+import toolbarReducer from './reducers/toolbar';
+import queryReducer from './reducers/query';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -55,7 +58,9 @@ class Application {
 		this.store = createStore(combineReducers({
 			'mapSources' : msReducer,
 			'catalog' : catalogReducer,
-            'map' : mapReducer
+            'map' : mapReducer,
+            'toolbar' : toolbarReducer,
+            'query' : queryReducer
 		}));
 	}
 
@@ -79,6 +84,10 @@ class Application {
 		for(let action of parseCatalog(this.store, mapbookXml.getElementsByTagName('catalog')[0])) {
 			this.store.dispatch(action);
 		}
+
+        for(let action of parseToolbar(mapbookXml.getElementsByTagName('toolbar')[0])) {
+            this.store.dispatch(action);
+        }
 	}
 
 	loadMapbook(options) {

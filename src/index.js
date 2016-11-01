@@ -34,11 +34,15 @@ import ReactDOM from 'react-dom';
 import Application from './gm3/application';
 import Catalog from './gm3/components/catalog';
 import Map from './gm3/components/map';
+import Toolbar from './gm3/components/toolbar';
+import ServiceManager from './gm3/components/serviceManager';
 
 
 var components = {
     Catalog: Catalog,
-    Map: Map
+    Map: Map,
+    Toolbar: Toolbar,
+    ServiceManager: ServiceManager
 };
 
 export {

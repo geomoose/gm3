@@ -22,52 +22,36 @@
  * SOFTWARE.
  */
 
-/** Actions for the Map.
- *
+/** This is used to define a *vector* layer source,
+ *  it does *not* link this to a data source. 
+ * 
  */
 
-import { MAP } from '../actionTypes';
+import * as util from '../../util';
 
-export function move(center, resolution) {
-    return {
-        type: MAP.MOVE,
-        center, resolution
-    }
+/** Create the parameters for a Vector layer.
+ *
+ */
+function defineSource(mapSource) {
+    // empty object
+    return {}
 }
 
-export function cursor(coords) {
-    return {
-        type: MAP.CURSOR,
-        coords
-    }
+/** Return an OpenLayers Layer for the Vector source.
+ *
+ *  @param mapSource The MapSource definition from the store.
+ *
+ *  @returns OpenLayers Layer instance.
+ */
+export function createLayer(mapSource) {
+    return new ol.layer.Vector({
+        source: new ol.source.Vector(defineSource(mapSource))
+    });
 }
 
-export function changeTool(tool) {
-    return {
-        type: MAP.CHANGE_TOOL,
-        tool
-    }
+/** Ensure that the Vector parameters all match.
+ */
+export function updateLayer(layer, mapSource) {
+    // nothing to do here.
 }
-
-export function createQuery(selection, fields, layers) {
-    return {
-        type: MAP.QUERY_NEW,
-        query: {
-            selection, fields, layers
-        }
-    };
-}
-
-export function startQuery(queryId) {
-    return {
-        type: MAP.QUERY_START,
-        id: queryId
-    }
-}
-
-export function finishQuery(queryId) {
-    return {
-        type: MAP.QUERY_FINISHED,
-        id: queryId
-    }
-}
+    

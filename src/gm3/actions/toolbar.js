@@ -22,52 +22,43 @@
  * SOFTWARE.
  */
 
-/** Actions for the Map.
+/** Toolbar actions and parsing 
  *
  */
 
-import { MAP } from '../actionTypes';
+import { TOOLBAR } from '../actionTypes';
 
-export function move(center, resolution) {
+export function addTool(tool) {
     return {
-        type: MAP.MOVE,
-        center, resolution
-    }
-}
-
-export function cursor(coords) {
-    return {
-        type: MAP.CURSOR,
-        coords
-    }
-}
-
-export function changeTool(tool) {
-    return {
-        type: MAP.CHANGE_TOOL,
+        type: TOOLBAR.ADD,
         tool
     }
 }
 
-export function createQuery(selection, fields, layers) {
+export function removeTool(tool) {
     return {
-        type: MAP.QUERY_NEW,
-        query: {
-            selection, fields, layers
-        }
-    };
-}
-
-export function startQuery(queryId) {
-    return {
-        type: MAP.QUERY_START,
-        id: queryId
+        type: TOOLBAR.REMOVE,
+        tool
     }
 }
 
-export function finishQuery(queryId) {
+function parseTool(toolXml) {
     return {
-        type: MAP.QUERY_FINISHED,
-        id: queryId
+        name: toolXml.getAttribute('name'),
+        label: toolXml.getAttribute('title'),
+        actionType: toolXml.getAttribute('type'),
+        actionDetail: toolXml.getAttribute('action')
     }
+}
+
+export function parseToolbar(toolbarXml) {
+    if(!toolbarXml) { return []; }
+
+    var tool_actions = [];
+
+    for(let tool of toolbarXml.getElementsByTagName('tool')) {
+        tool_actions.push(addTool(parseTool(tool)));
+    }
+
+    return tool_actions;
 }
