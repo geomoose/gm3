@@ -28,7 +28,7 @@ import React, {Component, PropTypes } from 'react';
 
 import { connect } from 'react-redux';
 
-import { createQuery } from '../actions/map';
+import { createQuery, changeTool } from '../actions/map';
 
 import * as util from '../util';
 
@@ -45,6 +45,7 @@ class ServiceManager extends Component {
         this.services = {};
 
         this.startQuery = this.startQuery.bind(this); 
+        this.drawTool = this.drawTool.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
         this.renderFeaturesWithTemplate = this.renderFeaturesWithTemplate.bind(this); 
     }
@@ -55,10 +56,10 @@ class ServiceManager extends Component {
     }
 
     startQuery() {
-        let selection = {
-            // geojson shape.
-            geometry: {'type': 'Point', 'coordinates': [ -10370351.141856, 5550949.728470501 ]} 
-        };
+        let selection = 
+            this.props.map.selectionFeatures[0];
+
+            //{'type': 'Point', 'coordinates': [ -10370351.141856, 5550949.728470501 ]} 
 
         let fields = [
             //{name: '', operator: '', value: }
@@ -96,8 +97,6 @@ class ServiceManager extends Component {
         let template_contents = template;
         let html_contents = '';
 
-        console.log('renderFeaturesWithTemplate', query, path, template);
-
         if(query.results[path]) {
             if(template.substring(0,1) == '@') {
                 let template_name = template.substring(1);
@@ -120,11 +119,17 @@ class ServiceManager extends Component {
 
     }
 
+    drawTool(type) {
+        this.props.store.dispatch(changeTool(type));
+        console.log('issued drawtool', type);
+    }
+
     render() {
         return (
             <div className="service-manager">
                 <h3>Service Manager.</h3>
                 <br/>
+                <button onClick={ () => { this.drawTool('Point') } }>Draw Point</button>
                 <button onClick={this.startQuery}>Start Query</button>
                 <br/>
                 { this.props.queries.order.map(this.renderQuery) }
@@ -137,6 +142,7 @@ class ServiceManager extends Component {
 
 const mapToProps = function(store) {
     return {
+        map: store.map,
         queries: store.query
     }
 }

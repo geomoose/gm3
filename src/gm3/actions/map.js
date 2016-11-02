@@ -80,3 +80,10 @@ export function resultsForQuery(queryId, layerName, features) {
         features
     }
 }
+
+export function addSelectionFeature(feature) {
+    return {
+        type: MAP.ADD_SELECTION_FEATURE,
+        feature
+    }
+}

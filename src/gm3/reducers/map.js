@@ -36,7 +36,7 @@ const default_view = {
     coords: [0,0],
     activeSource: null,
     interactionType: null,
-    temporaryFeatures: []
+    selectionFeatures: []
 };
 
 export default function mapReducer(state = default_view, action) {
@@ -56,6 +56,10 @@ export default function mapReducer(state = default_view, action) {
                 activeSource: action.src, 
                 interactionType: action.tool
             })
+        case MAP.ADD_SELECTION_FEATURE:
+            return Object.assign({}, state, {
+                selectionFeatures: [action.feature].concat(state.selectionFeatures)
+            });
         default:
             return state;
     }

@@ -192,6 +192,11 @@ class Map extends Component {
         }
     }
 
+    /** iterates through the queries and executes
+     *  any query with a 'progress=new' state.
+     *
+     *  @param Queries Array of query ids.
+     */
     checkQueries(queries) {
         for(let query_id in queries) {
             let query = queries[query_id];
@@ -241,15 +246,35 @@ class Map extends Component {
         // this.sortOlLayers();
     }
 
+
+    configureSelectionLayer() {
+
+        let src_selection = new ol.source.Vector();
+
+        this.selectionLayer = new ol.layer.Vector({
+            source: src_selection
+        });
+
+        // geojson -- the one true Javascript object representation.
+        src_selection.on('addfeature', (evt) => {
+            let geojson = new ol.format.GeoJSON();
+            let json_feature = geojson.writeFeatureObject(evt.feature);
+            this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+        });
+    }
+
     /** This is called after the first render.
      *  As state changes will not actually change the DOM according to
      *  React, this will establish the map.
      */
     componentDidMount() {
+        // create the selection layer.
+        this.configureSelectionLayer();
+
         // initialize the map.
         this.map = new ol.Map({
             target: this.mapId,
-            layers: [],
+            layers: [this.selectionLayer],
             view: new ol.View({
                 // -10384069.859924,5538318.529767,-10356632.423788,5563580.927174
                 //center: [-472202, 7530279],
@@ -277,6 +302,47 @@ class Map extends Component {
         this.refreshMapSources();
     }
 
+
+    /** Switch the drawing tool.
+     *
+     *  @param type The type of drawing tool (Point,LineString,Polygon)
+     *  @param path The layer on which to mark.  null = "selection", the ephemeral layer.
+     *
+     */
+    activateDrawTool(type, path) {
+        // TODO : path is current ignored.
+
+        // stop the 'last' drawing tool.
+        this.stopDrawing();
+
+        // make sure the type is set.
+        this.currentInteraction = type;
+
+        // "null" interaction mean no more drawing.
+        if(type != null) {
+            // switch to the new drawing tool.
+            this.drawTool = new ol.interaction.Draw({
+                source: this.selectionLayer.getSource(),
+                type
+            });
+            this.map.addInteraction(this.drawTool);
+        }
+
+    }
+
+    /** Clear out any current draw tools.
+     *
+     */
+    stopDrawing() {
+        // only remove the draw tool if it exists.
+        if(this.drawTool) {
+            // off the map
+            this.map.removeInteraction(this.drawTool);
+            // and null'd.
+            this.drawTool = null;
+        }
+    }
+
     /** React should never update the component after
      *  the initial render.
      */
@@ -284,8 +350,9 @@ class Map extends Component {
         // Debugging code for turning layers on and off.
         // let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
         // console.log('ACTIVE MAP SOURCES', active_map_sources);
-        if(this.nextProps && this.nextProps.interaction != this.currentInteraction) {
-            console.log('Change to ', nextState.mapView.interaction, ' interaction.');
+        if(nextProps && nextProps.mapView.interactionType != this.currentInteraction) {
+            //console.log('Change to ', nextState.mapView.interaction, ' interaction.');
+            this.activateDrawTool(nextProps.mapView.interactionType);
         }
 
         // refresh all the map sources, as approriate.
