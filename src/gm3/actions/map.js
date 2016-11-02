@@ -71,3 +71,12 @@ export function finishQuery(queryId) {
         id: queryId
     }
 }
+
+export function resultsForQuery(queryId, layerName, features) {
+    return {
+        type: MAP.QUERY_RESULTS,
+        id: queryId,
+        layer: layerName,
+        features
+    }
+}

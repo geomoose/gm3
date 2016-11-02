@@ -31,6 +31,7 @@
 
 import React, {Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import Request from 'reqwest';
 
 import { connect } from 'react-redux';
 
@@ -38,6 +39,8 @@ import uuid from 'uuid';
 
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
+
+import * as util from '../util';
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
@@ -110,6 +113,64 @@ class Map extends Component {
         }
     }
 
+    /** Make a WMS GetFeatureInfo query
+     *
+     *  @param queryId    The query id.
+     *  @param selection  The selection section of the query.
+     *  @param queryLayer The name of the layer being queried.
+     *
+     */
+    wmsGetFeatureInfoQuery(queryId, selection, queryLayer) {
+        // TODO: This should come from the store or the map.
+        //       ol3 makes a lot of web-mercator assumptions.
+        let projection = 'EPSG:3857';
+
+        let geojson = new ol.format.GeoJSON();
+        let view = this.props.mapView;
+
+        // get the map source
+        let ms_name = util.getMapSourceName(queryLayer);
+
+        // GetFeatureInfo only supports point queries,
+        // so if the shape isn't a point, skip it.
+        let feature_type = selection.geometry.type;
+
+        if(feature_type == 'Point') {
+            let coords = selection.geometry.coordinates;
+            let src = this.olLayers[ms_name].getSource();
+
+            // TODO: Allow the configuration to specify GML vs GeoJSON,
+            //       but GeoMoose needs a real feature returned.
+            let params = {
+                'QUERY_LAYERS' : util.getLayerName(queryLayer),
+                'INFO_FORMAT' : 'application/vnd.ogc.gml'
+            };
+
+            let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, projection, params);
+
+            Request({
+                url: info_url,
+                success: (response) => {
+                    // not all WMS services play nice and will return the
+                    //  error message as a 200, so this still needs checked.
+                    if(response) {
+                        let gml_format = new ol.format.WMSGetFeatureInfo();
+                        let features = gml_format.readFeatures(response.responseText);
+                        let js_features = geojson.writeFeaturesObject(features).features;
+
+                        console.log('RESULTS', queryLayer, js_features);
+
+                        this.props.store.dispatch(
+                            mapActions.resultsForQuery(queryId, queryLayer, js_features)
+                        );
+                    }
+                },
+                failure: () => {
+                },
+            });
+        }
+    }
+
     /** Execute a query
      *
      *  @param query
@@ -118,10 +179,17 @@ class Map extends Component {
     runQuery(queries, query_id) {
         let query = queries[query_id];
 
-        setTimeout(() => {
-            console.log('send finished signal...', query_id);
-            this.props.dispatch(mapActions.finishQuery(query_id));
-        }, 2500);
+        for(let query_layer of query.layers) {
+            // get the map source
+            let ms_name = util.getMapSourceName(query_layer);
+            let map_source = this.props.mapSources[ms_name];
+
+            if(map_source.type == 'wms') {
+                this.wmsGetFeatureInfoQuery(query_id, query.selection, query_layer);
+            } else if(map_source.type == 'wfs') {
+                // Query the WFS layer.
+            }
+        }
     }
 
     checkQueries(queries) {

@@ -136,8 +136,15 @@ export function addFromXml(xml) {
         let layer = {
             name: layerXml.getAttribute('name'),
             on: util.parseBoolean(layerXml.getAttribute('status')),
-            label: layer_title ? layer_title : map_source.label
+            label: layer_title ? layer_title : map_source.label,
+            templates: {}
         };
+
+        for(let template_xml of layerXml.getElementsByTagName('template')) {
+            let template_name = template_xml.getAttribute('name');
+            let template_contents = util.getXmlTextContents(template_xml);
+            layer.templates[template_name] = template_contents;
+        }
 
         map_layers.push(addLayer(map_source.name, layer));
     }
@@ -231,3 +238,11 @@ export function getActiveMapSources(store) {
     }
     return active;
 }
+
+export function getLayerFromPath(store, path) {
+    let ms_name = util.getMapSourceName(path);
+    let layer_name = util.getLayerName(path);
+
+    return getLayer(store, {mapSourceName: ms_name, layerName: layer_name});
+}
+

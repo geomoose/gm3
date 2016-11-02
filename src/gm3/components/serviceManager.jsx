@@ -24,9 +24,19 @@
 
 import React, {Component, PropTypes } from 'react';
 
+//import handlebars from 'handlebars';
+
 import { connect } from 'react-redux';
 
 import { createQuery } from '../actions/map';
+
+import * as util from '../util';
+
+import * as uuid from 'uuid';
+
+import { getLayerFromPath } from '../actions/mapSource';
+
+import Mark from 'markup-js';
 
 class ServiceManager extends Component {
 
@@ -36,6 +46,7 @@ class ServiceManager extends Component {
 
         this.startQuery = this.startQuery.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
+        this.renderFeaturesWithTemplate = this.renderFeaturesWithTemplate.bind(this); 
     }
 
     registerService(name, service) {
@@ -46,14 +57,14 @@ class ServiceManager extends Component {
     startQuery() {
         let selection = {
             // geojson shape.
-            geometry: {'type': 'Point', 'coordinates': (0.0, 0.0)}
+            geometry: {'type': 'Point', 'coordinates': [ -10370351.141856, 5550949.728470501 ]} 
         };
 
         let fields = [
             //{name: '', operator: '', value: }
         ];
 
-        let layers = ['parcels/parcels'];
+        let layers = ['parcels/parcels']; //, 'pipelines/pipelines'];
 
         this.props.store.dispatch(createQuery(selection, fields, layers));
     }
@@ -63,8 +74,50 @@ class ServiceManager extends Component {
         return (
             <div key={queryId}>
                 <b>{queryId}:</b> {query.progress}
+                {
+                    query.layers.map((path) => { 
+                        return <div key={uuid.v4()} dangerouslySetInnerHTML={this.renderFeaturesWithTemplate(query, path, '@identify')} /> 
+                    })
+                }
             </div>
         );
+    }
+
+    /** Render feeatures from a query using a specified template.
+     *
+     *  @param query The query.
+     *  @param template "Template like", "@..." will refer to a layer predefined
+     *                                   template but a raw template string can
+     *                                   be passed in that will be used for all layers.
+     *
+     * @returns HTML String.
+     */
+    renderFeaturesWithTemplate(query, path, template) {
+        let template_contents = template;
+        let html_contents = '';
+
+        console.log('renderFeaturesWithTemplate', query, path, template);
+
+        if(query.results[path]) {
+            if(template.substring(0,1) == '@') {
+                let template_name = template.substring(1);
+                let layer = getLayerFromPath(this.props.store, path);
+                if(layer.templates[template_name]) {
+                    template_contents = layer.templates[template_name];
+                } else {
+                    template_contents = null;
+                    console.info('Failed to find template.', path, template_name);
+                }
+
+                for(let feature of query.results[path]) {
+                    html_contents += Mark.up(template_contents, feature);
+                }
+
+            }
+        }
+
+        return {__html: html_contents};
+
     }
 
     render() {
@@ -75,7 +128,6 @@ class ServiceManager extends Component {
                 <button onClick={this.startQuery}>Start Query</button>
                 <br/>
                 { this.props.queries.order.map(this.renderQuery) }
-
             </div>
         );
     }

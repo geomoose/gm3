@@ -35,6 +35,27 @@ export function parseBoolean(bool, def=false) {
 }
 
 
+/** Take in an XML node and return all the text
+ *  contained within that node.
+ *
+ *  @param node  The XML node.
+ *
+ *  @returns Text in the node.
+ */
+export function getXmlTextContents(node) {
+    let node_value = null;
+    if(node.text) {
+        return node.text;
+    } else if(node.textContent) {
+        return node.textContent;
+    } else if(node.firstChild) {
+        return node.firstChild.nodeValue;
+    }
+
+    return null; //node.textContent;
+}
+
+
 /** Parse a node from XML and return the text value.
  *
  *  Handy in this situation...
@@ -55,17 +76,7 @@ export function getTagContents(xml, tagName, multiple) {
 
     var tags = xml.getElementsByTagName(tagName);
     for(let tag of tags) {
-        var node_value = null;
-        for(let child of tag.childNodes) {
-            // text type node is nodeType == 3
-            if(child.nodeType == 3) {
-                if(node_value == null) {
-                    node_value = '';
-                }
-                node_value += child.nodeValue;
-            }
-        }
-
+        var node_value = getXmlTextContents(tag);
         // when multiple is not true, return the first value.
         if(multiple === true) {
             contents.push(node_value);
@@ -137,4 +148,18 @@ export function objectsDiffer(objA, objB, deep) {
  */
 export function getMapSourceName(path) {
     return path.split('/')[0];
+}
+
+/** Get the later name, path's last "/" should be the layer name.
+ *
+ * @param path
+ *
+ * @returns a layer name
+ */
+export function getLayerName(path) {
+    let c = path.split('/');
+    c.shift();
+    // layers can have "/" in the name, so they need
+    //  rejoined after removing the map-source name.
+    return c.join('/');
 }
