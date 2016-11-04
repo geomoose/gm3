@@ -29,14 +29,18 @@
  */
 
 
-var app = new gm3.Application();
+var app = new gm3.Application({
+    mapserver_url: '/mapserver/cgi-bin/mapserv',
+    mapfile_root: '/usr/local/geomoose/maps/'
+});
 
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('identify', IdentifyService);
     
     app.add(gm3.components.Catalog, 'catalog');
-    app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
+    app.add(gm3.components.Catalog, 'service-tab');
+//    app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
     app.add(gm3.components.Toolbar, 'toolbar');
     app.add(gm3.components.Map, 'map');
 

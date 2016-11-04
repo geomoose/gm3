@@ -71,10 +71,11 @@ function parseParams(msXml) {
  *  style layer for internal storage.
  *
  *  @param msXml The MapSource XML
+ *  @param conf  Application configuration object.
  *
  * @returns Object defining the WMS service.
  */
-function mapServerToWMS(msXml) {
+function mapServerToWMS(msXml, conf) {
     let urls = util.getTagContents(msXml, 'url', true);
     let mapfile = util.getTagContents(msXml, 'file');
 
