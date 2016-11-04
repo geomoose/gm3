@@ -148,6 +148,7 @@ export function addFromXml(xml) {
         let layer = {
             name: layerXml.getAttribute('name'),
             on: util.parseBoolean(layerXml.getAttribute('status')),
+            favorite: util.parseBoolean(layerXml.getAttribute('favorite')),
             label: layer_title ? layer_title : map_source.label,
             templates: {}
         };
