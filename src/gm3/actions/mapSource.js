@@ -99,6 +99,8 @@ function mapServerToWMS(msXml) {
     return map_source;
 }
 
+var MS_Z_INDEX = 100000;
+
 /** Add a map-source from XML
  *
  */
@@ -109,9 +111,19 @@ export function addFromXml(xml) {
         urls: util.getTagContents(xml, 'url', true),
         type: xml.getAttribute('type'),
         label: xml.getAttribute('title'),
+        zIndex: xml.getAttribute('z-index'),
         layers: [],
         params: {}
     }
+
+    // handle setting up the zIndex
+    if(map_source.zIndex) {
+        map_source.zIndex = parseInt(map_source.zIndex);
+    } else {
+        map_source.zIndex = MS_Z_INDEX;
+        MS_Z_INDEX--;
+    }
+
 
     // allow server-type hinting for hidpi displays.
     let server_type = xml.getAttribute('server-type');

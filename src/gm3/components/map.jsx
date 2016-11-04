@@ -243,6 +243,25 @@ class Map extends Component {
         }
     }
 
+    sortOlLayers() {
+        let layers = [];
+        for(let ms_name in this.olLayers) {
+            layers.push(this.olLayers[ms_name]); 
+        }
+
+        layers.sort((a, b) => {
+            return (a.zIndex < b.zIndex) ? -1 : 1;
+        });
+
+        layers.push(this.selectionLayer);
+
+        let map_layers = this.map.getLayers();
+
+        for(let i = 0, ii = layers.length; i < ii; i++) {
+            map_layers.setAt(i, layers[i]);
+        }
+    }
+
 
     /** Refresh the map-sources in the map
      *
@@ -268,6 +287,7 @@ class Map extends Component {
                 // a map-source needs to be created.
                 let map_source = this.props.mapSources[ms_name];
                 this.olLayers[ms_name] = this.createLayer(map_source);
+                this.olLayers[ms_name].setZIndex(map_source.zIndex);
                 this.map.addLayer(this.olLayers[ms_name]);
             } else {
                 this.updateSource(ms_name);
@@ -275,8 +295,7 @@ class Map extends Component {
             }
         }
 
-        // TODO: The layers should get ordered here!
-        // this.sortOlLayers();
+        //this.sortOlLayers();
     }
 
 
@@ -309,8 +328,6 @@ class Map extends Component {
             target: this.mapId,
             layers: [this.selectionLayer],
             view: new ol.View({
-                // -10384069.859924,5538318.529767,-10356632.423788,5563580.927174
-                //center: [-472202, 7530279],
                 center: [ -10370351.141856, 5550949.728470501 ],
                 zoom: 12
             })
