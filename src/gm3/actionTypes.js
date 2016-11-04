@@ -78,7 +78,7 @@ export const QUERY = {
 };
 
 export const SERVICE = {
-    START: 'SERVICE_START'
-    FINISHED: 'SERVICE_FINISHED'
+    START: 'SERVICE_START',
+    FINISH: 'SERVICE_FINISH'
 }
 

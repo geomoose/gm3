@@ -31,16 +31,32 @@ import { connect } from 'react-redux';
 
 import { startTool } from '../actions/toolbar';
 
+import { startService } from '../actions/service';
+
 class Toolbar extends Component {
+
+    constructor() {
+        super();
+        this.handleToolAction = this.handleToolAction.bind(this);
+        this.renderTool = this.renderTool.bind(this);
+    }
+
+    handleToolAction(tool) {
+        console.log('handleToolAction', tool);
+        if(tool.actionType == 'service') {
+            console.log('dispatching startService...');
+            this.props.store.dispatch(startService(tool.name));
+        }
+    }
 
     renderTool(tool) {
         let tool_click = () => {
-            console.log('Tool click', tool);
+            this.handleToolAction(tool);
         };
 
         return (
             <button onClick={tool_click} key={tool.name}>
-                <span className="icon"></span>{tool.label}
+                <span className="icon"></span><span className="label">{tool.label}</span>
             </button>
         );
     }

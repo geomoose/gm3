@@ -28,7 +28,7 @@
 
 import uuid from 'uuid';
 
-import { MAP } from '../actionTypes';
+import { MAP, SERVICE } from '../actionTypes';
 
 import * as util from '../util';
 
@@ -57,7 +57,7 @@ export default function queryReducer(state = default_query, action) {
 	switch(action.type) {
         case SERVICE.START:
             return Object.assign({}, state, {service: action.service});
-        case SERVICE.FINISHED:
+        case SERVICE.FINISH:
             return Object.assign({}, state, {service: null});
         case MAP.QUERY_NEW:
             let query_id = uuid.v4();

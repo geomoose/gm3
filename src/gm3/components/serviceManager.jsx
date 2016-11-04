@@ -28,6 +28,8 @@ import { connect } from 'react-redux';
 
 import { createQuery, changeTool, renderedResultsForQuery} from '../actions/map';
 
+import { startService, finishService } from '../actions/service';
+
 import * as util from '../util';
 
 import * as uuid from 'uuid';
@@ -63,6 +65,8 @@ class ServiceManager extends Component {
             let fields = [];
 
             this.props.services[service].query(selection, fields);
+
+            this.closeForm();
         } else {
             console.info('Failed to start query, service: '+service+' not found.');
         }
@@ -115,20 +119,34 @@ class ServiceManager extends Component {
      */
     drawTool(type) {
         this.props.store.dispatch(changeTool(type));
-        console.log('issued drawtool', type);
+    }
+
+    closeForm() {
+        this.props.store.dispatch(finishService());
     }
 
     render() {
-        return (
-            <div className="service-manager">
-                <h3>Service Manager.</h3>
-                <br/>
-                <button onClick={ () => { this.drawTool('Point') } }>Draw Point</button>
-                <button onClick={() => { this.startQuery('identify') }}>Go</button>
-                <br/>
-                { this.props.queries.order.map(this.renderQuery) }
-            </div>
-        );
+        if(this.props.queries.service != null) {
+            let service_name = this.props.queries.service;
+            return (
+                <div className="service-manager">
+                    <h3>{this.props.services[service_name].title}</h3>
+                    <button onClick={ () => { this.drawTool('Point') } }>Draw Point</button><br/>
+                    <button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button><br/>
+                    <button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button><br/>
+                    <br/>
+                    <br/>
+                    <button onClick={() => { this.closeForm() }}>Close</button>
+                    <button onClick={() => { this.startQuery(service_name) }}>Go</button>
+                </div>
+            );
+        } else {
+            return (
+                <div className="service-manager">
+                    { this.props.queries.order.map(this.renderQuery) }
+                </div>
+            );
+        }
     }
 
 }
