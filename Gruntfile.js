@@ -84,5 +84,7 @@ module.exports = function(grunt) {
     grunt.task.registerTask('lint', ['eslint']);
 
     grunt.task.registerTask('serve', ['copy:test', 'webpack-dev-server:start']);
+
+    grunt.task.registerTask('build', ['webpack']);
 };
 
