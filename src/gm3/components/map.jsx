@@ -161,13 +161,46 @@ class Map extends Component {
                         console.log('RESULTS', queryLayer, js_features);
 
                         this.props.store.dispatch(
-                            mapActions.resultsForQuery(queryId, queryLayer, js_features)
+                            mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                         );
                     }
                 },
-                failure: () => {
+                error: () => {
+                    // dispatch a message that the query has failed.
+                    this.props.store.dispatch(
+                        // true for 'failed', empty array to prevent looping side-effects.
+                        mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                    );
                 },
+                complete: () => {
+                    this.checkQueryForCompleteness(queryId, queryLayer);
+                }
             });
+        }
+    }
+
+    /** Iterate through the layers and ensure that they have all
+     *  been completed.  The state may not have been updated yet,
+     *  so if a layer has been recently completed then 'completedLayer'
+     *  is passed in to assume it has been populated despite what the state
+     *  says.
+     *
+     *  @param queryId  The id of the query to check for completeness.
+     *  @param completedLayer The path of a layer which has been recently completed.
+     *
+     *  @returns Nothing, dispatches a finishQuery action if all layers have been completed.
+     */
+    checkQueryForCompleteness(queryId, completedLayer) {
+        let query = this.props.queries[queryId];
+        let all_completed = true;
+
+        // check to see if there are results for all the layers.
+        for(let layer of query.layers) {
+            all_completed = all_completed && (query.results[layer] || (layer == completedLayer));
+        }
+
+        if(all_completed) {
+            this.props.store.dispatch(mapActions.finishQuery(queryId));
         }
     }
 

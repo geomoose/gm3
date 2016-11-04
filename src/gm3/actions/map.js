@@ -49,11 +49,11 @@ export function changeTool(tool) {
     }
 }
 
-export function createQuery(selection, fields, layers) {
+export function createQuery(service, selection, fields, layers) {
     return {
         type: MAP.QUERY_NEW,
         query: {
-            selection, fields, layers
+            service, selection, fields, layers
         }
     };
 }
@@ -72,12 +72,20 @@ export function finishQuery(queryId) {
     }
 }
 
-export function resultsForQuery(queryId, layerName, features) {
+export function resultsForQuery(queryId, layerName, failed, features) {
     return {
         type: MAP.QUERY_RESULTS,
         id: queryId,
         layer: layerName,
+        failed,
         features
+    }
+}
+
+export function renderedResultsForQuery(queryId, target, data) {
+    return {
+        type: MAP.QUERY_RENDERED_RESULTS,
+        id: queryId, target, data
     }
 }
 

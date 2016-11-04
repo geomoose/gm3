@@ -24,11 +24,9 @@
 
 import React, {Component, PropTypes } from 'react';
 
-//import handlebars from 'handlebars';
-
 import { connect } from 'react-redux';
 
-import { createQuery, changeTool } from '../actions/map';
+import { createQuery, changeTool, renderedResultsForQuery} from '../actions/map';
 
 import * as util from '../util';
 
@@ -47,7 +45,7 @@ class ServiceManager extends Component {
         this.startQuery = this.startQuery.bind(this); 
         this.drawTool = this.drawTool.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
-        this.renderFeaturesWithTemplate = this.renderFeaturesWithTemplate.bind(this); 
+        this.renderQueryResults = this.renderQueryResults.bind(this); 
     }
 
     registerService(name, service) {
@@ -55,70 +53,66 @@ class ServiceManager extends Component {
         this.services[name] = service;
     }
 
-    startQuery() {
-        let selection = 
-            this.props.map.selectionFeatures[0];
-
-            //{'type': 'Point', 'coordinates': [ -10370351.141856, 5550949.728470501 ]} 
-
-        let fields = [
-            //{name: '', operator: '', value: }
-        ];
-
-        let layers = ['parcels/parcels']; //, 'pipelines/pipelines'];
-
-        this.props.store.dispatch(createQuery(selection, fields, layers));
-    }
-
-    renderQuery(queryId) {
-        let query = this.props.queries[queryId];
-        return (
-            <div key={queryId}>
-                <b>{queryId}:</b> {query.progress}
-                {
-                    query.layers.map((path) => { 
-                        return <div key={uuid.v4()} dangerouslySetInnerHTML={this.renderFeaturesWithTemplate(query, path, '@identify')} /> 
-                    })
-                }
-            </div>
-        );
-    }
-
-    /** Render feeatures from a query using a specified template.
+    /** Call the service with the relevant information
+     *  and have it start a query.
      *
-     *  @param query The query.
-     *  @param template "Template like", "@..." will refer to a layer predefined
-     *                                   template but a raw template string can
-     *                                   be passed in that will be used for all layers.
-     *
-     * @returns HTML String.
      */
-    renderFeaturesWithTemplate(query, path, template) {
-        let template_contents = template;
-        let html_contents = '';
+    startQuery(service) {
+        if(this.props.services[service]) {
+            let selection = this.props.store.getState().map.selectionFeatures[0];
+            let fields = [];
 
-        if(query.results[path]) {
-            if(template.substring(0,1) == '@') {
-                let template_name = template.substring(1);
-                let layer = getLayerFromPath(this.props.store, path);
-                if(layer.templates[template_name]) {
-                    template_contents = layer.templates[template_name];
-                } else {
-                    template_contents = null;
-                    console.info('Failed to find template.', path, template_name);
-                }
+            this.props.services[service].query(selection, fields);
+        } else {
+            console.info('Failed to start query, service: '+service+' not found.');
+        }
 
-                for(let feature of query.results[path]) {
-                    html_contents += Mark.up(template_contents, feature);
-                }
+    }
 
+
+    /** Renders the results for an individual query.
+     *
+     *  @param queryId the query's ID.
+     *  @param query   The details of the query.
+     *
+     *  @returns a Hash appropriate for dnagerouslySetInnerHTML
+     */
+    renderQueryResults(queryId, query) {
+        var html_contents = ''; 
+
+        if(query.progress == 'finished' && this.props.services[query.service]) {
+            let service = this.props.services[query.service];
+            if(service.resultsAsHtml) {
+                html_contents = service.resultsAsHtml(queryId, query);
             }
         }
 
         return {__html: html_contents};
-
     }
 
+
+    /** Render queries as they are coming in.
+     *
+     *  @param queryId
+     *
+     */
+    renderQuery(queryId) {
+        let query = this.props.queries[queryId];
+
+        return (
+            <div key={queryId}>
+                <b>{queryId}:</b> {query.progress}
+                <div dangerouslySetInnerHTML={this.renderQueryResults(queryId, query)}/>
+            </div>
+        );
+    }
+
+
+    /** Activate a drawing tool for selection,
+     *  
+     *  @param type Point, LineString, Polygon
+     *
+     */
     drawTool(type) {
         this.props.store.dispatch(changeTool(type));
         console.log('issued drawtool', type);
@@ -130,7 +124,7 @@ class ServiceManager extends Component {
                 <h3>Service Manager.</h3>
                 <br/>
                 <button onClick={ () => { this.drawTool('Point') } }>Draw Point</button>
-                <button onClick={this.startQuery}>Start Query</button>
+                <button onClick={() => { this.startQuery('identify') }}>Go</button>
                 <br/>
                 { this.props.queries.order.map(this.renderQuery) }
             </div>
@@ -142,7 +136,6 @@ class ServiceManager extends Component {
 
 const mapToProps = function(store) {
     return {
-        map: store.map,
         queries: store.query
     }
 }

@@ -33,6 +33,7 @@ import { MAP } from '../actionTypes';
 import * as util from '../util';
 
 const default_query = {
+    service: null,
     order: []
 };
 
@@ -54,11 +55,16 @@ function queryProgress(queryId, state, progress) {
 export default function queryReducer(state = default_query, action) {
     let new_query = {};
 	switch(action.type) {
+        case SERVICE.START:
+            return Object.assign({}, state, {service: action.service});
+        case SERVICE.FINISHED:
+            return Object.assign({}, state, {service: null});
         case MAP.QUERY_NEW:
             let query_id = uuid.v4();
             new_query[query_id] = Object.assign({}, action.query, {
                 progress: 'new',
-                results: {}
+                results: {},
+                rendered: {}
             });
 
             let query_order = [query_id].concat(state.order);
@@ -77,13 +83,16 @@ export default function queryReducer(state = default_query, action) {
             new_query[action.id] = Object.assign({}, state[action.id], {results: all_results});
             return Object.assign({}, state, new_query);
         case MAP.QUERY_START:
-            console.log('QUERY_START', action);
             return Object.assign({}, state, queryProgress(action.id, state, 'started'));
         case MAP.QUERY_PROGRESS:
             return Object.assign({}, state, queryProgress(action.id, state, 'progress'));
         case MAP.QUERY_FINISHED:
-            console.log('QUERY_FINISHED', action);
             return Object.assign({}, state, queryProgress(action.id, state, 'finished'));
+        case MAP.QUERY_RENDERED_RESULTS:
+            let rendered_results = [{data: action.data, target: action.target}].concat(state[action.id].rendered);
+            let rendered_query = {};
+            rendered_query[action.id] = Object({}, state[action.id], {rendered: rendered_results});
+            return Object.assign({}, state, rendered_query); 
         default:
             return state;
     }

@@ -32,11 +32,11 @@ import Request from 'reqwest';
 
 import { createStore, combineReducers } from 'redux';
 
-
 import * as mapSourceActions from './actions/mapSource';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
+import { createQuery } from './actions/map';
 
 import catalogReducer from './reducers/catalog';
 import msReducer from './reducers/mapSource';
@@ -47,12 +47,18 @@ import queryReducer from './reducers/query';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { getLayerFromPath, getVisibleLayers, getActiveMapSources } from './actions/mapSource';
+
+import Mark from 'markup-js';
+
 //import Catalog from './components/catalog';
 
 class Application {
 
 	constructor() {
 		this.elements = [];
+
+        this.services = {};
 
 		// TODO: Combine Reducers here
 		this.store = createStore(combineReducers({
@@ -64,13 +70,14 @@ class Application {
 		}));
 	}
 
-	add(element)  {
-		this.elements.push(element);
-	}
-
-    remove() {
+    registerService(serviceName, serviceClass) {
+        // "serviceClass" should be a class that can be created,
+        //  the only parameter to the constructor should be the application,
+        //  which it uses to tie back to the 'react' environment.
+        this.services[serviceName] = new serviceClass(this);
+        // set the service name to whatever it was registered as.
+        this.services[serviceName].name = serviceName;
     }
-
 
 	populateMapbook(mapbookXml) {
 		// load the map-sources
@@ -113,16 +120,86 @@ class Application {
 		}
 	}
 
-	render(component, domId) {
-		var e = React.createElement(component, {store: this.store});
+	add(component, domId, hasServices) {
+        let props = {
+            store: this.store
+        }
+        if(hasServices) {
+            props.services = this.services;
+        }
+		var e = React.createElement(component, props);
 		ReactDOM.render(e, document.getElementById(domId));
 		return e;
 	}
-/*
-	addComponent(component, domId) {
-		ReactDOM.render(<Catalog store={this.store} />, document.getElementById('catalog'));
-	}
-*/
+
+
+    /** Run a query against the listed map-sources.
+     *
+     *  @param service   The registered service handling the query.
+     *  @param selection A GeoMoose selection description
+     *  @param fields    Array of {name:, value:, operation: } of fields to query.
+     *  @param layers    Array of layer paths to query against.
+     *
+     */
+    dispatchQuery(service, selection, fields, layers) {
+        this.store.dispatch(createQuery(service, selection, fields, layers));
+    }
+
+    /** Render feeatures from a query using a specified template.
+     *
+     *  @param query The query.
+     *  @param template "Template like", "@..." will refer to a layer predefined
+     *                                   template but a raw template string can
+     *                                   be passed in that will be used for all layers.
+     *
+     * @returns HTML String.
+     */
+    renderFeaturesWithTemplate(query, path, template) {
+        let template_contents = template;
+        let html_contents = '';
+
+        if(query.results[path]) {
+            if(template.substring(0,1) == '@') {
+                let template_name = template.substring(1);
+                let layer = getLayerFromPath(this.store, path);
+                if(layer.templates[template_name]) {
+                    template_contents = layer.templates[template_name];
+                } else {
+                    template_contents = null;
+                    console.info('Failed to find template.', path, template_name);
+                }
+
+                for(let feature of query.results[path]) {
+                    // TODO: Make this plugable, check by template "type"?!?
+                    html_contents += Mark.up(template_contents, feature);
+                }
+
+            }
+        }
+
+        return html_contents;
+    }
+
+
+    /** Map the active map-source function to the application.
+     *
+     *  @returns an array of active map-sources.
+     */
+
+    getActiveMapSources() {
+        return getActiveMapSources(this.store);
+    }
+
+    /** Get a list of all visible paths.
+     *
+     *  @returns an array of layer paths.
+     */
+    getVisibleLayers() {
+        return getVisibleLayers(this.store);
+    }
+
+
+
 };
 
 

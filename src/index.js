@@ -37,6 +37,8 @@ import Map from './gm3/components/map';
 import Toolbar from './gm3/components/toolbar';
 import ServiceManager from './gm3/components/serviceManager';
 
+import * as util from './gm3/util';
+
 
 var components = {
     Catalog: Catalog,
@@ -47,5 +49,6 @@ var components = {
 
 export {
     Application,
-    components
+    components,
+    util
 };

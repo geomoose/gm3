@@ -246,3 +246,17 @@ export function getLayerFromPath(store, path) {
     return getLayer(store, {mapSourceName: ms_name, layerName: layer_name});
 }
 
+export function getVisibleLayers(store) {
+    let map_sources = store.getState().mapSources;
+    let active = [];
+    for(let ms in map_sources) {
+        if(isMapSourceActive(map_sources[ms])) {
+            for(let layer of map_sources[ms].layers) {
+                if(layer.on) {
+                    active.push(ms+'/'+layer.name);
+                }
+            }
+        }
+    }
+    return active;
+}
