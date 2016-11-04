@@ -75,24 +75,19 @@ function parseParams(msXml) {
  * @returns Object defining the WMS service.
  */
 function mapServerToWMS(msXml) {
-    // XXX: These need to be parsed from the mapbook and
-    //      set in some sort of global or conf object.
-    let MS_URL = '/mapserver/cgi-bin/mapserv';
-    let MAPFILE_ROOT = '/usr/local/geomoose/maps/';
-
     let urls = util.getTagContents(msXml, 'url', true);
     let mapfile = util.getTagContents(msXml, 'file');
 
     // if the url is null then default to the
     //  mapserver url.
-    if(urls.length == 0) { urls = [MS_URL]; }
+    if(urls.length == 0) { urls = [conf.mapserver_url]; }
 
     let map_source = {
         type: 'wms',
         serverType: 'mapserver',
         urls: urls,
         params: {
-            'MAP' : MAPFILE_ROOT + mapfile
+            'MAP' : conf.mapfile_root + mapfile
         }, 
     };
 
@@ -104,7 +99,7 @@ var MS_Z_INDEX = 100000;
 /** Add a map-source from XML
  *
  */
-export function addFromXml(xml) {
+export function addFromXml(xml, config) {
     // initialize the map source object.
 	let map_source = {
         name: xml.getAttribute('name'),
@@ -134,7 +129,7 @@ export function addFromXml(xml) {
     // set of 'correction' functions for mapsources that
     //  are parsed/tweaked to help the configurator.
     if(map_source.type == 'mapserver') {
-        Object.assign(map_source, mapServerToWMS(xml));
+        Object.assign(map_source, mapServerToWMS(xml, config));
     }
 
     // mix in the params

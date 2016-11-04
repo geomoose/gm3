@@ -55,10 +55,12 @@ import Mark from 'markup-js';
 
 class Application {
 
-	constructor() {
+	constructor(config) {
 		this.elements = [];
 
         this.services = {};
+
+        this.config = config;
 
 		// TODO: Combine Reducers here
 		this.store = createStore(combineReducers({
@@ -83,7 +85,7 @@ class Application {
 		// load the map-sources
 		let sources = mapbookXml.getElementsByTagName('map-source');
 		for(let ms of sources) {
-            for(let action of mapSourceActions.addFromXml(ms)) {
+            for(let action of mapSourceActions.addFromXml(ms, this.config)) {
                 this.store.dispatch(action);
             }
 		}
