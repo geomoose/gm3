@@ -73,17 +73,20 @@ module.exports = function(grunt) {
                 webpack: webpackConfig,
                 publicPath: "./"
             },
-            start: {
+            start: Object.assign({keepAlive: true}, webpackConfig.devServer)
+            /*{
                 webpack: webpackConfig,
                 keepAlive: true,
                 hot: true,
-            }
+            }*/
         }
     });
 
     grunt.task.registerTask('lint', ['eslint']);
 
-    grunt.task.registerTask('serve', ['copy:test', 'webpack-dev-server:start']);
+    //grunt.task.registerTask('serve', ['copy:test', 'webpack-dev-server:start']);
+
+    grunt.task.registerTask('serve', ['webpack-dev-server:start']);
 
     grunt.task.registerTask('build', ['webpack']);
 };
