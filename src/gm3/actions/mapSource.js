@@ -77,7 +77,9 @@ function parseParams(msXml) {
  */
 function mapServerToWMS(msXml, conf) {
     let urls = util.getTagContents(msXml, 'url', true);
-    let mapfile = util.getTagContents(msXml, 'file');
+    let mapfile = util.getTagContents(msXml, 'file', true)[0];
+
+    console.log('mapServereToWMS', msXml, urls, mapfile);
 
     // if the url is null then default to the
     //  mapserver url.
@@ -108,6 +110,7 @@ export function addFromXml(xml, config) {
         type: xml.getAttribute('type'),
         label: xml.getAttribute('title'),
         zIndex: xml.getAttribute('z-index'),
+        style: null,
         layers: [],
         params: {}
     }
@@ -132,6 +135,19 @@ export function addFromXml(xml, config) {
     if(map_source.type == 'mapserver') {
         Object.assign(map_source, mapServerToWMS(xml, config));
     }
+
+    // check to see if there are any style definitions
+    let style = util.getTagContents(xml, 'style', false);
+    if(style) {
+        // convert to JSON
+        try {
+            map_source.style = JSON.parse(style);
+        } catch(err) {
+            console.error('There was an error parsing the style for: ', map_source.name);
+            console.error('Error details', err);
+        }
+    }
+
 
     // mix in the params
     Object.assign(map_source.params, parseParams(xml));

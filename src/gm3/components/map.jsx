@@ -37,6 +37,8 @@ import { connect } from 'react-redux';
 
 import uuid from 'uuid';
 
+import * as olMapboxStyle from 'ol-mapbox-style';
+
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
 
@@ -84,6 +86,7 @@ class Map extends Component {
                 agsLayer.updateLayer(ol_layer, map_source);
                 break;
             case 'vector' :
+            case 'wfs' : 
                 vectorLayer.updateLayer(ol_layer, map_source);
                 break;
             default:
@@ -107,6 +110,7 @@ class Map extends Component {
             case 'ags':
                 return agsLayer.createLayer(mapSource);
             case 'vector':
+            case 'wfs':
                 return vectorLayer.createLayer(mapSource);
             default:
                 throw ('Unhandled creation of map-source type: '+map_source.type);
@@ -304,6 +308,27 @@ class Map extends Component {
         let src_selection = new ol.source.Vector();
 
         this.selectionLayer = new ol.layer.Vector({
+            style: olMapboxStyle.getStyleFunction({
+                'version' : 8,
+                'layers' : [
+                    {
+                        'id' : 'dummy',
+                        'source' : 'dummy-source',
+                        'paint' : {
+                            'fill-color' : '#ff0000',
+                            'line-color': '#00ff00',
+                            'circle-radius' : 4,
+                            'circle-color' : '#ff00ff',
+                            'circle-stroke-color' : '#ff0000'
+                        }
+                    }
+                ],
+                'dummy-source' : [
+                    {
+                        'type' : 'vector'
+                    }
+                ]
+            }, 'dummy-source'),
             source: src_selection
         });
 

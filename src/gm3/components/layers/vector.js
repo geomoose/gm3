@@ -29,10 +29,38 @@
 
 import * as util from '../../util';
 
+import * as olMapboxStyle from 'ol-mapbox-style';
+
 /** Create the parameters for a Vector layer.
  *
  */
 function defineSource(mapSource) {
+    if(mapSource.type == 'wfs') {
+        // add a wfs type source
+        return {
+            format: new ol.format.GML2({
+                //featureNS: 'http://geomoose.org'
+            }),
+            projection: 'EPSG:4326',
+            url: function(extent) {
+                // http://localhost:8080/mapserver/cgi-bin/tinyows?
+                // service=WFS&version=1.1.0&request=GetFeature&typename=gm:minnesota_places
+
+                let url_params = {
+                    'srsname' : 'EPSG:3857',
+                    'outputFormat' : 'text/xml; subtype=gml/2.1.2',
+                    'service' : 'WFS',
+                    'version' : '1.1.0',
+                    'request' : 'GetFeature',
+                    'typename' : mapSource.params['typename'],
+                    'bbox' : extent.concat('EPSG:3857').join(',')
+                };
+
+                return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
+            },
+            strategy: ol.loadingstrategy.bbox
+        };
+    }
     // empty object
     return {}
 }
@@ -44,9 +72,28 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    return new ol.layer.Vector({
+    var opts = {
         source: new ol.source.Vector(defineSource(mapSource))
-    });
+    };
+
+    if(mapSource.style) {
+        opts.style = olMapboxStyle.getStyleFunction({
+                'version' : 8,
+                'layers' : [
+                    {
+                        'id' : 'dummy',
+                        'source' : 'dummy-source',
+                        'paint' : mapSource.style
+                    }
+                ],
+                'dummy-source' : [
+                    {
+                        'type' : 'vector'
+                    }
+                ]
+        }, 'dummy-source');
+    }
+    return new ol.layer.Vector(opts);
 }
 
 /** Ensure that the Vector parameters all match.
