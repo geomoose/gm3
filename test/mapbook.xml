@@ -89,14 +89,14 @@
 	</map-source>
 
 	<map-source name="census_cities" type="wfs" active="true" srs="EPSG:4269"> 
-		<style type="stylemap"><![CDATA[
+		<style><![CDATA[
 		{
 			"strokeColor" : "#00ff00",
 			"label" : "${namelsad10}"
 		}
 		]]></style>
 
-		<url>/cgi-bin/tinyows</url>
+		<url>/mapserver/cgi-bin/tinyows</url>
 
 		<attribute name="geoid10" type="user" label="ID:" default-value="27999"/>
 		<attribute name="namelsad10" type="user" label="Name:"/>
@@ -117,14 +117,18 @@
 	</map-source>
 
 	<map-source name="minnesota_places" type="wfs" active="true" srs="EPSG:4326">
+        <param name="typename" value="gm:minnesota_places"/>
+        <layer name="default"/>
+
 		<style type="stylemap"><![CDATA[
 		{
-			"strokeColor" : "#00ff00",
+			"fill-outline-color" : "#f00",
+            "fill-color" : "#000077",
 			"label" : "${name}"
 		}
 		]]></style>
 
-		<url>/cgi-bin/tinyows</url>
+		<url>/mapserver/cgi-bin/tinyows</url>
 
 		<attribute name="geoid" type="user" label="ID:" default-value="27999"/>
 		<attribute name="name" type="user" label="Name:"/>
@@ -503,7 +507,7 @@
 		-->
 		<layer title="Drawing and Markup" activate="true" src="sketch" fade="false" unfade="false" metadata="false" legend="false" draw-point="true" draw-line="true" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		
-		<layer title="Minnesota Places"  activate="true" src="minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
+		<layer title="Minnesota Places"  activate="true" src="minnesota_places/default" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<!--
 		<layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		-->
