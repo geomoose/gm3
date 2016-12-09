@@ -43,14 +43,13 @@ export function parseBoolean(bool, def=false) {
  *  @returns Text in the node.
  */
 export function getXmlTextContents(node) {
-    let node_value = null;
-    if(node.text) {
+    if(node.firstChild) {
+        return node.firstChild.nodeValue;
+    } else if(node.text) {
         return node.text;
     } else if(node.textContent) {
         return node.textContent;
-    } else if(node.firstChild) {
-        return node.firstChild.nodeValue;
-    }
+    } 
 
     return null; //node.textContent;
 }
@@ -84,7 +83,7 @@ export function getTagContents(xml, tagName, multiple) {
             return node_value;
         }
     }
-
+    
     return contents;
 }
 
@@ -162,4 +161,19 @@ export function getLayerName(path) {
     // layers can have "/" in the name, so they need
     //  rejoined after removing the map-source name.
     return c.join('/');
+}
+
+/** Properly escape and join parameters for a URL
+ *
+ *  @params {Object} params an object of parameters.
+ *
+ *  @returns {String}
+ */
+export function formatUrlParameters(params) {
+    let formatted_params = [];
+    for(let key in params) {
+        let formatted_value = encodeURIComponent(params[key]);
+        formatted_params.push(key+'='+formatted_value);
+    }
+    return formatted_params.join('&');
 }
