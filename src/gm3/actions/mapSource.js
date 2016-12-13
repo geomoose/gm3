@@ -79,8 +79,6 @@ function mapServerToWMS(msXml, conf) {
     let urls = util.getTagContents(msXml, 'url', true);
     let mapfile = util.getTagContents(msXml, 'file', true)[0];
 
-    console.log('mapServereToWMS', msXml, urls, mapfile);
-
     // if the url is null then default to the
     //  mapserver url.
     if(urls.length == 0) { urls = [conf.mapserver_url]; }
@@ -138,7 +136,7 @@ export function addFromXml(xml, config) {
 
     // check to see if there are any style definitions
     let style = util.getTagContents(xml, 'style', false);
-    if(style) {
+    if(style && style.length > 0) {
         // convert to JSON
         try {
             map_source.style = JSON.parse(style);
