@@ -56,8 +56,6 @@ function SearchService(Application, options) {
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        console.log('fields', fields);
-
         // reformat the fields for the query engine,
         //  "*stuff*" will do a case-ignored "contains" query.
         var fields = [
@@ -87,6 +85,8 @@ function SearchService(Application, options) {
 
             // check to see that the layer has results and features were returned.
             if(query.results[path] && !query.results[path].failed) {
+                //console.log('RESULTS', query.results[path]);
+
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
                 //  and the specified template and render it. This example uses an inline
                 //  template from the mapbook. 
