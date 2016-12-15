@@ -46,7 +46,7 @@ function defineSource(mapSource) {
                 // http://localhost:8080/mapserver/cgi-bin/tinyows?
                 // service=WFS&version=1.1.0&request=GetFeature&typename=gm:minnesota_places
 
-                let url_params = {
+                let url_params = Object.assign({}, mapSource.params, {
                     'srsname' : 'EPSG:3857',
                     'outputFormat' : 'text/xml; subtype=gml/2.1.2',
                     'service' : 'WFS',
@@ -54,7 +54,7 @@ function defineSource(mapSource) {
                     'request' : 'GetFeature',
                     'typename' : mapSource.params['typename'],
                     'bbox' : extent.concat('EPSG:3857').join(',')
-                };
+                });
 
                 return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
             },
@@ -93,6 +93,7 @@ export function createLayer(mapSource) {
                 ]
         }, 'dummy-source');
     }
+
     return new ol.layer.Vector(opts);
 }
 

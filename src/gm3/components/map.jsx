@@ -208,6 +208,87 @@ class Map extends Component {
         }
     }
 
+    /** Create a WFS formatted query and send it
+     *
+     *  @param queryId
+     *  @param query
+     *
+     */
+    wfsGetFeatureQuery(query_id, query, queryLayer) {
+        // TODO: This should come from the store or the map.
+        //       ol3 makes a lot of web-mercator assumptions.
+        let projection = 'EPSG:3857';
+        let geom_field = 'geom';
+
+        let geojson = new ol.format.GeoJSON();
+        let view = this.props.mapView;
+
+        // get the map source
+        let ms_name = util.getMapSourceName(queryLayer);
+
+        let map_source = this.props.mapSources[ms_name];
+        let ol_layer = this.olLayers[ms_name];
+        if(!ol_layer) {
+            ol_layer = this.createLayer(map_source);
+        }
+
+        // get the src
+        let src = ol_layer.getSource();
+
+        // map the functions from OpenLayers to the internal
+        //  types
+        let filter_mapping = {
+            'like' : ol.format.filter.isLike, 
+            'eq' : ol.format.filter.equalTo,
+            'ge' : ol.format.filter.greaterThanOrEqualTo,
+            'gt' : ol.format.filter.greaterThan,
+            'le' : ol.format.filter.lessThanOrEqualTo,
+            'lt' : ol.format.filter.lessThan
+        };
+
+        let filters = [];
+        if(query.selection.geometry) {
+            // convert the geojson geometry into a ol geometry.
+            let ol_geom = (new ol.format.GeoJSON()).readGeometry(query.selection.geometry);
+            // add the intersection filter to the filter stack.
+            filters.push(ol.format.filter.intersects(geom_field, ol_geom)); //query.selection.geometry)); 
+        }
+        
+        for(let filter of query.fields) {
+            // TODO: Catch "filter.type" and use internal conversion
+            //       functions for specialty filters.
+            filters.push(filter_mapping[filter.comparitor](filter.name, filter.value));
+        }
+
+        // when multiple filters are set then they need to be 
+        //  chained together to create the compound filter.
+        let chained_filters = null;
+        if(filters.length > 1) {
+            chained_filters = ol.format.filter.and(filters[0], filters[1]);
+            for(let i = 2, ii = filters.length; i < ii; i++) {
+                chained_filters = ol.format.filter.and(chained_filters, filters[i]);
+            }
+        } else {
+            chained_filters = filters[0];
+        }
+
+        // the OL formatter requires that the typename and the schema be
+        //  broken apart in order to properly format the request.
+        // TODO: If this gets used elsewhere, push to a util function.
+        let type_parts = map_source.params.typename.split(':');
+
+        let feature_request = new ol.format.WFS().writeGetFeature({
+            srsName: projection,
+            featurePrefix: type_parts[0],
+            featureTypes: [type_parts[1]],
+            outputFormat: 'application/json',
+            filter: chained_filters 
+            //filters[0]
+        });
+
+        console.info('WFS Feature request', new XMLSerializer().serializeToString(feature_request));
+    }
+
     /** Execute a query
      *
      *  @param query
@@ -225,6 +306,7 @@ class Map extends Component {
                 this.wmsGetFeatureInfoQuery(query_id, query.selection, query_layer);
             } else if(map_source.type == 'wfs') {
                 // Query the WFS layer.
+                this.wfsGetFeatureQuery(query_id, query, query_layer);
             }
         }
     }

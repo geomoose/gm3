@@ -66,6 +66,34 @@ function parseParams(msXml) {
 }
 
 
+/** Convert a mapserver layer to something more normal.
+ *
+ *  @param msXML the MapSource XML
+ *  @param conf  The application configuration.
+ *  @param destType The destination type for the layer.
+ *
+ *  @returns Object defining the map source
+ */
+function mapServerToDestType(msXml, conf, destType) {
+    let urls = util.getTagContents(msXml, 'url', true);
+    let mapfile = util.getTagContents(msXml, 'file', true)[0];
+
+    // if the url is null then default to the
+    //  mapserver url.
+    if(urls.length == 0) { urls = [conf.mapserver_url]; }
+
+    let map_source = {
+        type: destType,
+        serverType: 'mapserver',
+        urls: urls,
+        params: {
+            'MAP' : conf.mapfile_root + mapfile
+        }, 
+    };
+
+    return map_source;
+
+}
 
 /** Convert a type='mapserver' layer into type='wms'
  *  style layer for internal storage.
@@ -76,23 +104,19 @@ function parseParams(msXml) {
  * @returns Object defining the WMS service.
  */
 function mapServerToWMS(msXml, conf) {
-    let urls = util.getTagContents(msXml, 'url', true);
-    let mapfile = util.getTagContents(msXml, 'file', true)[0];
+    return mapServerToDestType(msXml, conf, 'wms');
+}
 
-    // if the url is null then default to the
-    //  mapserver url.
-    if(urls.length == 0) { urls = [conf.mapserver_url]; }
-
-    let map_source = {
-        type: 'wms',
-        serverType: 'mapserver',
-        urls: urls,
-        params: {
-            'MAP' : conf.mapfile_root + mapfile
-        }, 
-    };
-
-    return map_source;
+/** Convert a type='mapserver-wfs' layer into type='wfs'
+ *  style layer.
+ *
+ *  @param mxXml The MapSource XML
+ *  @param conf  Application configuration object.
+ *
+ * @returns Object defining the WFS service.
+ */
+function mapServerToWFS(msXml, conf) {
+    return mapServerToDestType(msXml, conf, 'wfs');
 }
 
 var MS_Z_INDEX = 100000;
@@ -132,6 +156,8 @@ export function addFromXml(xml, config) {
     //  are parsed/tweaked to help the configurator.
     if(map_source.type == 'mapserver') {
         Object.assign(map_source, mapServerToWMS(xml, config));
+    } else if(map_source.type == 'mapserver-wfs') {
+        Object.assign(map_source, mapServerToWFS(xml, config));
     }
 
     // check to see if there are any style definitions
