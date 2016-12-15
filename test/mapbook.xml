@@ -158,7 +158,17 @@
             ]]></template>
             <template name="search"><![CDATA[
                 <div class="search-result">
-                    <b>{{ properties.OWNER_NAME }}</b> <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoom-link">{{ properties.PIN }}</a>
+                    <div class="search-label">
+                        {{ properties.OWNER_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                                <i class="fa fa-search"></i> 
+                                {{ properties.PIN }}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             ]]></template>
         </layer>
