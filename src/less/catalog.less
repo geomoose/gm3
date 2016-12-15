@@ -38,17 +38,37 @@
         padding-left: 20px;
     }
 
+    .group-icon {
+        .fa;
+        padding-left: 2px;
+        padding-right: 5px;
+        color: #FFE665;
+    }
+
 }
 
 .group.collapse {
     .children {
-        display: none !important;
+        max-height: 0 !important;
+        overflow: hidden;
+        /*display: none !important;*/
+        transition: max-height 0.5s ease-in;
+    }
+
+    .group-icon:before {
+        content: @fa-var-folder !important;
     }
 }
 
 
 .group.expand {
     .children {
-        display: block;
+        /*display: block;*/
+        max-height: 1000px;
+        transition: max-height 0.5s ease-in;
+    }
+
+    .group-icon:before {
+        content: @fa-var-folder-open;
     }
 }
