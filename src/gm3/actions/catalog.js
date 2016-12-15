@@ -94,7 +94,9 @@ function parseLayer(store, layerXml) {
     // parse out the souces
     let src_str = layerXml.getAttribute('src');
     if(src_str) {
-        for(let src of src_str.split(':')) {
+        // migrated to ";" as the split key because the old ":"
+        //  was problematic for WFS layers which specified a schema.
+        for(let src of src_str.split(';')) {
             let split = src.split('/');
             // create a new src entry.
             let s = {
