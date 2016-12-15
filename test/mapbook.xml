@@ -117,8 +117,7 @@
 	</map-source>
 
 	<map-source name="minnesota_places" type="wfs" active="true" srs="EPSG:4326">
-        <param name="typename" value="gm:minnesota_places"/>
-        <layer name="default"/>
+        <layer name="gm:minnesota_places"/>
 
 		<style type="stylemap"><![CDATA[
 		{
@@ -143,6 +142,35 @@
 
 		<filter type="cql"><![CDATA[geoid = 2746924]]></filter>
 	</map-source>
+
+    <map-source name="vector-parcels" type="mapserver-wfs">
+        <layer name="ms:parcels">
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Vector Parcel</div>
+                    <div class="item"><label>PIN:</label> {{ properties.PIN }}</div>
+                    <div class="item"><label>Owner Name:</label> {{ properties.OWNER_NAME }}</div>
+                    <div class="item">
+                        <label>Est. Market Value:</label> {{ properties.EMV_TOTAL }}
+                    </div>
+                    <div class="item"><label>Acres:</label> {{ properties.ACRES_POLY }}</div>
+                </div>
+            ]]></template>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <b>{{ properties.OWNER_NAME }}</b> <a href="">{{ properties.PIN }}</a>
+                </div>
+            ]]></template>
+        </layer>
+		<file>./demo/parcels/parcels.map</file>
+        <style><![CDATA[
+		{
+			"line-color" : "#00A138",
+            "line-width" : 2
+		}
+        ]]></style>
+
+    </map-source>
 
 
 	<map-source name="highlight" type="mapserver">
@@ -210,6 +238,7 @@
 		<layer name="all"/>
 	</map-source>
 
+    
 
 	
 	<!-- 
@@ -507,7 +536,8 @@
 		-->
 		<layer title="Drawing and Markup" activate="true" src="sketch" fade="false" unfade="false" metadata="false" legend="false" draw-point="true" draw-line="true" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		
-		<layer title="Minnesota Places"  activate="true" src="minnesota_places/default" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
+		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
+		<layer title="Vector Parces"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<!--
 		<layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		-->
@@ -524,7 +554,7 @@
 				</layer>
 				<layer title="Parcel Points" src="parcels/parcel_points" popups="true" minscale="6000" maxscale="20000" status="off">
 				</layer>
-				<layer title="City and County Boundaries" src="borders/city_labels:borders/county_labels:borders/county_borders:borders/city_poly"/>
+				<layer title="City and County Boundaries" src="borders/city_labels;borders/county_labels;borders/county_borders;borders/city_poly"/>
 			</group>
 
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
@@ -582,6 +612,6 @@
 		<tool name="geocode" title="Geocode Address" type="service" service="geocode_address" selectable="true"/> 	
 
 		<tool name="buffered_select" title="Select Features" type="service" service="buffered_select" show-label="true"/>
-		<tool name="search_parcels" title="Search Parcels" type="service" service="search_parcels" selectable="false" show-label="true"/>
+		<tool name="search" title="Search Parcels" type="service" service="search_parcels"/>
 	</toolbar>
 </mapbook>

@@ -37,13 +37,50 @@ var app = new gm3.Application({
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('identify', IdentifyService);
+    app.registerService('search', SearchService);
     
     app.add(gm3.components.Catalog, 'catalog');
-    app.add(gm3.components.Catalog, 'service-tab');
-//    app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
+    app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
     app.add(gm3.components.Toolbar, 'toolbar');
     app.add(gm3.components.Map, 'map');
 
     showTab('catalog');
+
+    /** Run a query against the listed map-sources.
+     *
+     *  @param service   The registered service handling the query.
+     *  @param selection A GeoMoose selection description
+     *  @param fields    Array of {name:, value:, operation: } of fields to query.
+     *  @param layers    Array of layer paths to query against.
+     *
+    dispatchQuery(service, selection, fields, layers) {
+        this.store.dispatch(createQuery(service, selection, fields, layers));
+     */
+    
+    var feature = {
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[ 
+                [-10389434,5577792],
+                [-10366527,5577656],
+                [-10369441,5561594],
+                [-10391264,5558748],
+                [-10389434,5577792]
+                /*
+                [-93.3240,44.7230], // top left
+                [-93.1358,44.7260], 
+                [-93.1764,44.6105], // bottom right
+                [-93.3400,44.5261],
+                [-93.3240,44.7230]
+                */
+            ]]
+        }
+    };
+
+    app.dispatchQuery('identify', null,
+        [
+            {comparitor: 'ilike', name: 'OWNER_NAME', value: '*Pete*'}
+        ],
+        ['vector-parcels/ms:parcels']);
 
 });

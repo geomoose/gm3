@@ -22,37 +22,47 @@
  * SOFTWARE.
  */
 
-/** Identify Service.
+/** Search Service.
  *
  *  Used to do a drill-down single-point query of all visible layers.
  *
  *  The application will be passed into the service upon registration.
  *
  */
-function IdentifyService(Application, options) {
+function SearchService(Application, options) {
     /** Define the title of the service. */
-    this.title = options.title ? options.title : 'Identify';
+    this.title = options.title ? options.title : 'Search';
 
     /** Template to use for rendering returned features. */
-    this.template = options.template ? options.template : '@identify';
+    this.template = options.template ? options.template : '@search';
 
     /** Name will be set by the application when the service is registered. */
     this.name = '';
 
     /** Limit the number of selection tools available */
-    this.tools = {'Point' : true};
+    this.tools = {}; // no geo seleciton tools for search
 
-    /** This function is called everytime there is an identify query.
+    /** User input fields */
+    this.fields = options.fields ? options.fields : [
+        {type: 'text', label: 'Name', name: 'keyword'}
+    ];
+
+    /** This function is called everytime a search is executed.
      *
-     *  @param selection contains a GeoJSON feature describing the 
-     *                   geography to be used for the query.
+     *  @param selection Always null in this instance as search does not require.
+     *                   a spatial component.
      *
      *  @param fields    is an array containing any user-input
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        // get the list of visible layers
-        var visible_layers = Application.getVisibleLayers();
+        console.log('fields', fields);
+
+        // reformat the fields for the query engine,
+        //  "*stuff*" will do a case-ignored "contains" query.
+        var fields = [
+            {comparitor: 'ilike', name: 'OWNER_NAME', value: '*'+fields[0].value+'*'}
+        ];
 
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
@@ -60,7 +70,7 @@ function IdentifyService(Application, options) {
         //  it would be necessary to put that code here and then manually tell
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
-        Application.dispatchQuery(this.name, selection, fields, visible_layers);
+        Application.dispatchQuery(this.name, selection, fields, ['vector-parcels/ms:parcels']);
     }
 
 
