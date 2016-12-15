@@ -52,7 +52,6 @@ function defineSource(mapSource) {
                     'service' : 'WFS',
                     'version' : '1.1.0',
                     'request' : 'GetFeature',
-                    'typename' : mapSource.params['typename'],
                     'bbox' : extent.concat('EPSG:3857').join(',')
                 });
 
