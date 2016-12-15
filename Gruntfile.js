@@ -59,7 +59,7 @@ module.exports = function(grunt) {
                     paths: ['src/less'],
                 },
                 files: {
-                    'dist/geomoose.css' : 'src/less/geomoose.less'
+                    'dist/geomoose.css' : 'src/less/gm3.less'
                 }
             }
         },
