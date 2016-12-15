@@ -22,6 +22,29 @@
  * SOFTWARE.
  */
 
-@import 'catalog.less';
-@import 'results.less';
+.search-result {
+    margin: 0;
+    clear: both;
+    position: relative;
+    padding: 5px;
 
+    .search-label, .search-action {
+        width: 50%;
+        margin: 0;
+        float: left;
+        overflow: hidden;
+    }
+    .search-action {
+        text-align: right;
+    }
+
+    .zoomto-link {
+        left-padding: 16px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .zoomto-link:hover {
+        color: #0FDC56;
+    }
+}
