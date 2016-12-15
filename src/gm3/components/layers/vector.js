@@ -46,7 +46,7 @@ function defineSource(mapSource) {
                 // http://localhost:8080/mapserver/cgi-bin/tinyows?
                 // service=WFS&version=1.1.0&request=GetFeature&typename=gm:minnesota_places
 
-                let url_params = Object.assign({}, mapSource.params, {
+                let url_params = Object.assign({}, {typename: mapSource.layers[0].name}, {
                     'srsname' : 'EPSG:3857',
                     'outputFormat' : 'text/xml; subtype=gml/2.1.2',
                     'service' : 'WFS',

@@ -214,7 +214,7 @@ class Map extends Component {
      *  @param query
      *
      */
-    wfsGetFeatureQuery(query_id, query, queryLayer) {
+    wfsGetFeatureQuery(queryId, query, queryLayer) {
         // TODO: This should come from the store or the map.
         //       ol3 makes a lot of web-mercator assumptions.
         let projection = 'EPSG:3857';
@@ -225,6 +225,7 @@ class Map extends Component {
 
         // get the map source
         let ms_name = util.getMapSourceName(queryLayer);
+        let layer_name = util.getLayerName(queryLayer);
 
         let map_source = this.props.mapSources[ms_name];
         let ol_layer = this.olLayers[ms_name];
@@ -238,7 +239,10 @@ class Map extends Component {
         // map the functions from OpenLayers to the internal
         //  types
         let filter_mapping = {
-            'like' : ol.format.filter.isLike, 
+            'like' : ol.format.filter.like, 
+            'ilike' : function(name, value) {
+                return ol.format.filter.like(name, value, '*', '.', '!', false);
+            },
             'eq' : ol.format.filter.equalTo,
             'ge' : ol.format.filter.greaterThanOrEqualTo,
             'gt' : ol.format.filter.greaterThan,
@@ -247,7 +251,7 @@ class Map extends Component {
         };
 
         let filters = [];
-        if(query.selection.geometry) {
+        if(query.selection && query.selection.geometry) {
             // convert the geojson geometry into a ol geometry.
             let ol_geom = (new ol.format.GeoJSON()).readGeometry(query.selection.geometry);
             // add the intersection filter to the filter stack.
@@ -275,18 +279,57 @@ class Map extends Component {
         // the OL formatter requires that the typename and the schema be
         //  broken apart in order to properly format the request.
         // TODO: If this gets used elsewhere, push to a util function.
-        let type_parts = map_source.params.typename.split(':');
+        let type_parts = layer_name.split(':');
+
+        // TinyOWS and GeoServer support GeoJSON, but MapServer
+        //  only supports GML.
+        let output_format = 'text/xml; subtype=gml/2.1.2';
 
         let feature_request = new ol.format.WFS().writeGetFeature({
             srsName: projection,
             featurePrefix: type_parts[0],
             featureTypes: [type_parts[1]],
-            outputFormat: 'application/json',
+            outputFormat: output_format,
             filter: chained_filters 
             //filters[0]
         });
 
-        console.info('WFS Feature request', new XMLSerializer().serializeToString(feature_request));
+        let wfs_query_xml = new XMLSerializer().serializeToString(feature_request);
+
+        // Ensure all the extra URL params are attached to the 
+        //  layer.
+        let wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
+
+        Request({
+            url: wfs_url,
+            method: 'post',
+            contentType: 'text/xml',
+            data: wfs_query_xml, 
+            success: (response) => {
+                // not all WMS services play nice and will return the
+                //  error message as a 200, so this still needs checked.
+                if(response) {
+                    let gml_format = new ol.format.GML2();
+                    let features = gml_format.readFeatures(response); 
+                    let js_features = geojson.writeFeaturesObject(features).features;
+
+                    this.props.store.dispatch(
+                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
+                    );
+                }
+            },
+            error: () => {
+                // dispatch a message that the query has failed.
+                this.props.store.dispatch(
+                    // true for 'failed', empty array to prevent looping side-effects.
+                    mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                );
+            },
+            complete: () => {
+                this.checkQueryForCompleteness(queryId, queryLayer);
+            }
+        });
+
     }
 
     /** Execute a query
@@ -294,8 +337,8 @@ class Map extends Component {
      *  @param query
      *
      */
-    runQuery(queries, query_id) {
-        let query = queries[query_id];
+    runQuery(queries, queryId) {
+        let query = queries[queryId];
 
         for(let query_layer of query.layers) {
             // get the map source
@@ -303,10 +346,10 @@ class Map extends Component {
             let map_source = this.props.mapSources[ms_name];
 
             if(map_source.type == 'wms') {
-                this.wmsGetFeatureInfoQuery(query_id, query.selection, query_layer);
+                this.wmsGetFeatureInfoQuery(queryId, query.selection, query_layer);
             } else if(map_source.type == 'wfs') {
                 // Query the WFS layer.
-                this.wfsGetFeatureQuery(query_id, query, query_layer);
+                this.wfsGetFeatureQuery(queryId, query, query_layer);
             }
         }
     }
@@ -510,6 +553,11 @@ class Map extends Component {
         if(nextProps && nextProps.mapView.interactionType != this.currentInteraction) {
             //console.log('Change to ', nextState.mapView.interaction, ' interaction.');
             this.activateDrawTool(nextProps.mapView.interactionType);
+        }
+
+        if(nextProps && nextProps.mapView.extent) {
+            // move the map to the new extent.
+            this.map.getView().fit(nextProps.mapView.extent, this.map.getSize()); 
         }
 
         // refresh all the map sources, as approriate.

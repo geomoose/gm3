@@ -48,6 +48,8 @@ class ServiceManager extends Component {
         this.drawTool = this.drawTool.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
         this.renderQueryResults = this.renderQueryResults.bind(this); 
+        this.renderServiceField = this.renderServiceField.bind(this); 
+        this.setFieldValue = this.setFieldValue.bind(this); 
     }
 
     registerService(name, service) {
@@ -62,7 +64,7 @@ class ServiceManager extends Component {
     startQuery(service) {
         if(this.props.services[service]) {
             let selection = this.props.store.getState().map.selectionFeatures[0];
-            let fields = [];
+            let fields = this.props.services[service].fields;
 
             this.props.services[service].query(selection, fields);
 
@@ -125,17 +127,41 @@ class ServiceManager extends Component {
         this.props.store.dispatch(finishService());
     }
 
+    /** Handle changing the event name
+     */
+    setFieldValue(fieldDefn, event) {
+        fieldDefn.value = event.target.value;
+    }
+
+    /** Render a user input field
+     *
+     *  @param {Object} fieldDefn Definition of the field to be rendered.
+     *
+     * @returns JSX
+     */
+    renderServiceField(fieldDefn) {
+        // TODO: Make bootstrappy? 
+        return (
+            <div key="{ fieldDefn.name }" className="field-input">
+                <label>{ fieldDefn.label }</label> <input onChange={ (event) => { this.setFieldValue(fieldDefn, event) } }/>
+            </div>
+        );
+    }
+
     render() {
         if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
+            let service_def = this.props.services[service_name];
+
             return (
                 <div className="service-manager">
-                    <h3>{this.props.services[service_name].title}</h3>
-                    <button onClick={ () => { this.drawTool('Point') } }>Draw Point</button><br/>
-                    <button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button><br/>
-                    <button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button><br/>
+                    <h3>{service_def.title}</h3>
+                    {service_def.tools['Point'] && <div><button onClick={ () => { this.drawTool('Point') } }>Draw Point</button></div>}
+                    {service_def.tools['LineString'] && <div><button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button></div>}
+                    {service_def.tools['Polygon'] && <div><button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button></div>}
                     <br/>
                     <br/>
+                    { service_def.fields.map(this.renderServiceField) }
                     <button onClick={() => { this.closeForm() }}>Close</button>
                     <button onClick={() => { this.startQuery(service_name) }}>Go</button>
                 </div>

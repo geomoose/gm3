@@ -36,7 +36,7 @@ import * as mapSourceActions from './actions/mapSource';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
-import { createQuery } from './actions/map';
+import { createQuery, zoomToExtent } from './actions/map';
 
 import catalogReducer from './reducers/catalog';
 import msReducer from './reducers/mapSource';
@@ -72,11 +72,14 @@ class Application {
 		}));
 	}
 
-    registerService(serviceName, serviceClass) {
+    registerService(serviceName, serviceClass, options) {
+        // when options are not an object, then default it to be
+        //  an object.
+        if(typeof(options) != Object) { options = {}; }
         // "serviceClass" should be a class that can be created,
         //  the only parameter to the constructor should be the application,
         //  which it uses to tie back to the 'react' environment.
-        this.services[serviceName] = new serviceClass(this);
+        this.services[serviceName] = new serviceClass(this, options);
         // set the service name to whatever it was registered as.
         this.services[serviceName].name = serviceName;
     }
@@ -171,11 +174,14 @@ class Application {
                     console.info('Failed to find template.', path, template_name);
                 }
 
-                for(let feature of query.results[path]) {
-                    // TODO: Make this plugable, check by template "type"?!?
-                    html_contents += Mark.up(template_contents, feature);
+                // do not try to iterate through the features if
+                //  the template does not exist.
+                if(template_contents) {
+                    for(let feature of query.results[path]) {
+                        // TODO: Make this plugable, check by template "type"?!?
+                        html_contents += Mark.up(template_contents, feature);
+                    }
                 }
-
             }
         }
 
@@ -200,7 +206,14 @@ class Application {
         return getVisibleLayers(this.store);
     }
 
-
+    /** zoom to an extent
+     *
+     * @param {Array} extent An array of [minx, miny, maxx, maxy]
+     *
+     */
+    zoomToExtent(extent) {
+        this.store.dispatch(zoomToExtent(extent));
+    }
 
 };
 
