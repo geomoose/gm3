@@ -42,8 +42,9 @@ function defineSource(mapSource) {
 
     return {
         url: mapSource.urls[0],
-        ratio: 1.0, // This is a carry over from previous generations behaviour.
-        params: Object.assign({'LAYERS' : layers.join(',')}, mapSource.params),
+        // This is a carry over from previous generations behaviour.
+        ratio: 1.0, 
+        params: Object.assign({'LAYERS': layers.join(',')}, mapSource.params),
         serverType: mapSource.serverType
     }
 }
@@ -75,7 +76,7 @@ export function updateLayer(layer, mapSource) {
     }
 
     // if the url changed, update that as well.
-    if(src.getUrl() != defn.url) {
+    if(src.getUrl() !== defn.url) {
         src.setUrl(defn.url);
     }
 }

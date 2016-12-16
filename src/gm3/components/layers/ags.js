@@ -56,7 +56,7 @@ export function updateLayer(layer, mapSource) {
     let defn = defineSource(mapSource);
 
     // if the url changed, update that as well.
-    if(src.getUrl() != defn.url) {
+    if(src.getUrl() !== defn.url) {
         src.setUrl(defn.url);
     }
 }

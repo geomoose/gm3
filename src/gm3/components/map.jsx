@@ -90,7 +90,7 @@ class Map extends Component {
                 vectorLayer.updateLayer(ol_layer, map_source);
                 break;
             default:
-                console.info('Unhandled map-source type: '+map_source.type);
+                console.info('Unhandled map-source type: ' + map_source.type);
         }
     }
 
@@ -113,7 +113,7 @@ class Map extends Component {
             case 'wfs':
                 return vectorLayer.createLayer(mapSource);
             default:
-                throw ('Unhandled creation of map-source type: '+map_source.type);
+                throw ('Unhandled creation of map-source type: ' + map_source.type);
         }
     }
 
@@ -139,15 +139,15 @@ class Map extends Component {
         // so if the shape isn't a point, skip it.
         let feature_type = selection.geometry.type;
 
-        if(feature_type == 'Point') {
+        if(feature_type === 'Point') {
             let coords = selection.geometry.coordinates;
             let src = this.olLayers[ms_name].getSource();
 
             // TODO: Allow the configuration to specify GML vs GeoJSON,
             //       but GeoMoose needs a real feature returned.
             let params = {
-                'QUERY_LAYERS' : util.getLayerName(queryLayer),
-                'INFO_FORMAT' : 'application/vnd.ogc.gml'
+                'QUERY_LAYERS': util.getLayerName(queryLayer),
+                'INFO_FORMAT': 'application/vnd.ogc.gml'
             };
 
             let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, projection, params);
@@ -200,7 +200,7 @@ class Map extends Component {
 
         // check to see if there are results for all the layers.
         for(let layer of query.layers) {
-            all_completed = all_completed && (query.results[layer] || (layer == completedLayer));
+            all_completed = all_completed && (query.results[layer] || (layer === completedLayer));
         }
 
         if(all_completed) {
@@ -239,15 +239,15 @@ class Map extends Component {
         // map the functions from OpenLayers to the internal
         //  types
         let filter_mapping = {
-            'like' : ol.format.filter.like, 
-            'ilike' : function(name, value) {
+            'like': ol.format.filter.like, 
+            'ilike': function(name, value) {
                 return ol.format.filter.like(name, value, '*', '.', '!', false);
             },
-            'eq' : ol.format.filter.equalTo,
-            'ge' : ol.format.filter.greaterThanOrEqualTo,
-            'gt' : ol.format.filter.greaterThan,
-            'le' : ol.format.filter.lessThanOrEqualTo,
-            'lt' : ol.format.filter.lessThan
+            'eq': ol.format.filter.equalTo,
+            'ge': ol.format.filter.greaterThanOrEqualTo,
+            'gt': ol.format.filter.greaterThan,
+            'le': ol.format.filter.lessThanOrEqualTo,
+            'lt': ol.format.filter.lessThan
         };
 
         let filters = [];
@@ -255,7 +255,7 @@ class Map extends Component {
             // convert the geojson geometry into a ol geometry.
             let ol_geom = (new ol.format.GeoJSON()).readGeometry(query.selection.geometry);
             // add the intersection filter to the filter stack.
-            filters.push(ol.format.filter.intersects(geom_field, ol_geom)); //query.selection.geometry)); 
+            filters.push(ol.format.filter.intersects(geom_field, ol_geom)); 
         }
         
         for(let filter of query.fields) {
@@ -291,7 +291,6 @@ class Map extends Component {
             featureTypes: [type_parts[1]],
             outputFormat: output_format,
             filter: chained_filters 
-            //filters[0]
         });
 
         let wfs_query_xml = new XMLSerializer().serializeToString(feature_request);
@@ -345,9 +344,9 @@ class Map extends Component {
             let ms_name = util.getMapSourceName(query_layer);
             let map_source = this.props.mapSources[ms_name];
 
-            if(map_source.type == 'wms') {
+            if(map_source.type === 'wms') {
                 this.wmsGetFeatureInfoQuery(queryId, query.selection, query_layer);
-            } else if(map_source.type == 'wfs') {
+            } else if(map_source.type === 'wfs') {
                 // Query the WFS layer.
                 this.wfsGetFeatureQuery(queryId, query, query_layer);
             }
@@ -362,7 +361,7 @@ class Map extends Component {
     checkQueries(queries) {
         for(let query_id in queries) {
             let query = queries[query_id];
-            if(query && query.progress == 'new') {
+            if(query && query.progress === 'new') {
                 // issue a 'started' modification so the query is
                 //  not run twice.
                 this.props.dispatch(mapActions.startQuery(query_id));
@@ -424,7 +423,7 @@ class Map extends Component {
             }
         }
 
-        //this.sortOlLayers();
+        // this.sortOlLayers();
     }
 
 
@@ -434,23 +433,23 @@ class Map extends Component {
 
         this.selectionLayer = new ol.layer.Vector({
             style: olMapboxStyle.getStyleFunction({
-                'version' : 8,
-                'layers' : [
+                'version': 8,
+                'layers': [
                     {
-                        'id' : 'dummy',
-                        'source' : 'dummy-source',
-                        'paint' : {
-                            'fill-color' : '#ff0000',
+                        'id': 'dummy',
+                        'source': 'dummy-source',
+                        'paint': {
+                            'fill-color': '#ff0000',
                             'line-color': '#00ff00',
-                            'circle-radius' : 4,
-                            'circle-color' : '#ff00ff',
-                            'circle-stroke-color' : '#ff0000'
+                            'circle-radius': 4,
+                            'circle-color': '#ff00ff',
+                            'circle-stroke-color': '#ff0000'
                         }
                     }
                 ],
-                'dummy-source' : [
+                'dummy-source': [
                     {
-                        'type' : 'vector'
+                        'type': 'vector'
                     }
                 ]
             }, 'dummy-source'),
@@ -519,7 +518,7 @@ class Map extends Component {
         this.currentInteraction = type;
 
         // "null" interaction mean no more drawing.
-        if(type != null) {
+        if(type !== null) {
             // switch to the new drawing tool.
             this.drawTool = new ol.interaction.Draw({
                 source: this.selectionLayer.getSource(),
@@ -550,8 +549,8 @@ class Map extends Component {
         // Debugging code for turning layers on and off.
         // let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
         // console.log('ACTIVE MAP SOURCES', active_map_sources);
-        if(nextProps && nextProps.mapView.interactionType != this.currentInteraction) {
-            //console.log('Change to ', nextState.mapView.interaction, ' interaction.');
+        if(nextProps && nextProps.mapView.interactionType !== this.currentInteraction) {
+            // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
             this.activateDrawTool(nextProps.mapView.interactionType);
         }
 

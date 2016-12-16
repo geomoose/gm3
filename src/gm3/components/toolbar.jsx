@@ -43,7 +43,7 @@ class Toolbar extends Component {
 
     handleToolAction(tool) {
         console.log('handleToolAction', tool);
-        if(tool.actionType == 'service') {
+        if(tool.actionType === 'service') {
             console.log('dispatching startService...');
             this.props.store.dispatch(startService(tool.name));
         }

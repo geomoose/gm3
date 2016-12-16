@@ -60,7 +60,7 @@ export function updateLayer(layer, mapSource) {
     // check to see if the list of URLs has changed.
     let urls = src.getUrls();
     let update_urls = false
-    if(urls.length != defn.urls.length) {
+    if(urls.length !== defn.urls.length) {
         update_urls = true;
     } else {
         for(let url of urls) {

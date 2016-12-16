@@ -51,8 +51,6 @@ import { getLayerFromPath, getVisibleLayers, getActiveMapSources } from './actio
 
 import Mark from 'markup-js';
 
-//import Catalog from './components/catalog';
-
 class Application {
 
     constructor(config) {
@@ -64,11 +62,11 @@ class Application {
 
         // TODO: Combine Reducers here
         this.store = createStore(combineReducers({
-            'mapSources' : msReducer,
-            'catalog' : catalogReducer,
-            'map' : mapReducer,
-            'toolbar' : toolbarReducer,
-            'query' : queryReducer
+            'mapSources': msReducer,
+            'catalog': catalogReducer,
+            'map': mapReducer,
+            'toolbar': toolbarReducer,
+            'query': queryReducer
         }));
     }
 
@@ -164,7 +162,7 @@ class Application {
         let html_contents = '';
 
         if(query.results[path]) {
-            if(template.substring(0,1) == '@') {
+            if(template.substring(0, 1) === '@') {
                 let template_name = template.substring(1);
                 let layer = getLayerFromPath(this.store, path);
                 if(layer.templates[template_name]) {

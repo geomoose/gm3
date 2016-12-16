@@ -35,24 +35,22 @@ import * as olMapboxStyle from 'ol-mapbox-style';
  *
  */
 function defineSource(mapSource) {
-    if(mapSource.type == 'wfs') {
+    if(mapSource.type === 'wfs') {
         // add a wfs type source
         return {
-            format: new ol.format.GML2({
-                //featureNS: 'http://geomoose.org'
-            }),
+            format: new ol.format.GML2({}),
             projection: 'EPSG:4326',
             url: function(extent) {
                 // http://localhost:8080/mapserver/cgi-bin/tinyows?
                 // service=WFS&version=1.1.0&request=GetFeature&typename=gm:minnesota_places
 
                 let url_params = Object.assign({}, {typename: mapSource.layers[0].name}, {
-                    'srsname' : 'EPSG:3857',
-                    'outputFormat' : 'text/xml; subtype=gml/2.1.2',
-                    'service' : 'WFS',
-                    'version' : '1.1.0',
-                    'request' : 'GetFeature',
-                    'bbox' : extent.concat('EPSG:3857').join(',')
+                    'srsname': 'EPSG:3857',
+                    'outputFormat': 'text/xml; subtype=gml/2.1.2',
+                    'service': 'WFS',
+                    'version': '1.1.0',
+                    'request': 'GetFeature',
+                    'bbox': extent.concat('EPSG:3857').join(',')
                 });
 
                 return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
@@ -77,19 +75,19 @@ export function createLayer(mapSource) {
 
     if(mapSource.style) {
         opts.style = olMapboxStyle.getStyleFunction({
-                'version' : 8,
-                'layers' : [
-                    {
-                        'id' : 'dummy',
-                        'source' : 'dummy-source',
-                        'paint' : mapSource.style
-                    }
-                ],
-                'dummy-source' : [
-                    {
-                        'type' : 'vector'
-                    }
-                ]
+            'version': 8,
+            'layers': [
+                {
+                    'id': 'dummy',
+                    'source': 'dummy-source',
+                    'paint': mapSource.style
+                }
+            ],
+            'dummy-source': [
+                {
+                    'type': 'vector'
+                }
+            ]
         }, 'dummy-source');
     }
 

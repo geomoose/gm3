@@ -80,14 +80,14 @@ function mapServerToDestType(msXml, conf, destType) {
 
     // if the url is null then default to the
     //  mapserver url.
-    if(urls.length == 0) { urls = [conf.mapserver_url]; }
+    if(urls.length === 0) { urls = [conf.mapserver_url]; }
 
     let map_source = {
         type: destType,
         serverType: 'mapserver',
         urls: urls,
         params: {
-            'MAP' : conf.mapfile_root + mapfile
+            'MAP': conf.mapfile_root + mapfile
         }, 
     };
 
@@ -154,9 +154,9 @@ export function addFromXml(xml, config) {
 
     // set of 'correction' functions for mapsources that
     //  are parsed/tweaked to help the configurator.
-    if(map_source.type == 'mapserver') {
+    if(map_source.type === 'mapserver') {
         Object.assign(map_source, mapServerToWMS(xml, config));
-    } else if(map_source.type == 'mapserver-wfs') {
+    } else if(map_source.type === 'mapserver-wfs') {
         Object.assign(map_source, mapServerToWFS(xml, config));
     }
 
@@ -234,7 +234,7 @@ export function get(store, mapSourceName) {
 export function getLayer(store, layer) {
     let map_source = get(store, layer.mapSourceName);
     for(let l of map_source.layers) {
-        if(l.name == layer.layerName) { return l; }
+        if(l.name === layer.layerName) { return l; }
     }
     if(layer.layerName == null) {
         return map_source;
@@ -313,7 +313,7 @@ export function getVisibleLayers(store) {
         if(isMapSourceActive(map_sources[ms])) {
             for(let layer of map_sources[ms].layers) {
                 if(layer.on) {
-                    active.push(ms+'/'+layer.name);
+                    active.push(ms + '/' + layer.name);
                 }
             }
         }

@@ -34,13 +34,13 @@ import * as util from '../util';
 import * as mapSources from './mapSource';
 
 function addElement(tree, parentId, child) {
-    if(parentId == null) {
+    if(parentId === null) {
         tree.children.push(child);
     }
 
     for(let element of tree) {
-        if(element.type == 'group') {
-            if(element.id == parentId) {
+        if(element.type === 'group') {
+            if(element.id === parentId) {
                 
             }
         }
@@ -67,7 +67,7 @@ function parseGroup(groupXml) {
     };
 
     let p = groupXml.parentNode;
-    if(p && p.tagName == 'group') {
+    if(p && p.tagName === 'group') {
         new_group.parent = p.getAttribute('uuid');
     }
 
@@ -135,7 +135,7 @@ function parseLayer(store, layerXml) {
     new_layer.favorite = src_favorite;
 
     let p = layerXml.parentNode;
-    if(p && p.tagName == 'group') {
+    if(p && p.tagName === 'group') {
         new_layer.parent = p.getAttribute('uuid');
     }
 
@@ -151,14 +151,14 @@ function subtreeActions(store, parent, subtreeXml) {
         if(parent && parent.id) {
             parent_id = parent.id;
         }
-        if(childNode.tagName == 'group') {
+        if(childNode.tagName === 'group') {
             let group = parseGroup(childNode);
             actions.push({type: CATALOG.ADD_GROUP, child: group});
             child = group;
 
             // build the tree by recursion.
             actions = actions.concat(subtreeActions(store, group, childNode));
-        } else if(childNode.tagName == 'layer') {
+        } else if(childNode.tagName === 'layer') {
             let layer = parseLayer(store, childNode);
             actions.push({type: CATALOG.ADD_LAYER, child: layer})
             child = layer;

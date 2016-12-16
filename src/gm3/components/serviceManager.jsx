@@ -70,7 +70,7 @@ class ServiceManager extends Component {
 
             this.closeForm();
         } else {
-            console.info('Failed to start query, service: '+service+' not found.');
+            console.info('Failed to start query, service: ' + service + ' not found.');
         }
 
     }
@@ -86,7 +86,7 @@ class ServiceManager extends Component {
     renderQueryResults(queryId, query) {
         var html_contents = ''; 
 
-        if(query.progress == 'finished' && this.props.services[query.service]) {
+        if(query.progress === 'finished' && this.props.services[query.service]) {
             let service = this.props.services[query.service];
             if(service.resultsAsHtml) {
                 html_contents = service.resultsAsHtml(queryId, query);
@@ -156,9 +156,9 @@ class ServiceManager extends Component {
             return (
                 <div className="service-manager">
                     <h3>{service_def.title}</h3>
-                    {service_def.tools['Point'] && <div><button onClick={ () => { this.drawTool('Point') } }>Draw Point</button></div>}
-                    {service_def.tools['LineString'] && <div><button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button></div>}
-                    {service_def.tools['Polygon'] && <div><button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button></div>}
+                    {service_def.tools.Point && <div><button onClick={ () => { this.drawTool('Point') } }>Draw Point</button></div>}
+                    {service_def.tools.LineString && <div><button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button></div>}
+                    {service_def.tools.Polygon && <div><button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button></div>}
                     <br/>
                     <br/>
                     { service_def.fields.map(this.renderServiceField) }
