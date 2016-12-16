@@ -85,13 +85,17 @@
         .fa;
 
         color: @favorite-star-color;
+        margin-right: 0.25em;
 
         &:before {
             content: @fa-var-star-o;
         }
     }
 
-    .favorite-icon.active {
+}
+
+.layer.favorite {
+    .favorite-icon {
         &:before {
             content: @fa-var-star;
         }

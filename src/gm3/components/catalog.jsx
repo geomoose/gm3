@@ -50,16 +50,12 @@ class Catalog extends Component {
     constructor() {
         super();
 
-        this.onClick = this.onClick.bind(this);
         this.renderLayer = this.renderLayer.bind(this);
         this.renderGroup = this.renderGroup.bind(this);
         this.renderTreeNode = this.renderTreeNode.bind(this);
 
         this.toggleLayer = this.toggleLayer.bind(this);
         this.toggleFavoriteLayer = this.toggleFavoriteLayer.bind(this);
-    }
-
-    onClick() {
     }
 
     /** Change the layer's visibility state
@@ -85,13 +81,23 @@ class Catalog extends Component {
     toggleFavoriteLayer(layer) {
         this.props.store.dispatch({
             type: CATALOG.FAVORITE,
-            layer
+            id: layer.id,
+            favorite: !layer.favorite
         });
+
+        for(let src of layer.src) {
+            this.props.store.dispatch({
+                type: MAPSOURCE.LAYER_FAVORITE,
+                layerName: src.layerName,
+                mapSourceName: src.mapSourceName,
+                favorite: !layer.favorite
+            });
+        }
     }
 
     /** Change the group's "expansion" state.
      *
-     *  @param gorup Catalog group definition.
+     *  @param group Catalog group definition.
      *
      */
     toggleGroup(group) {
@@ -121,7 +127,6 @@ class Catalog extends Component {
     }
 
     renderLayer(layer) {
-        // bind hte
         let toggle = () => {
             this.toggleLayer(layer);
             this.renderMapSources(layer);
@@ -131,16 +136,22 @@ class Catalog extends Component {
             this.toggleFavoriteLayer(layer);
         };
 
-        let favorite_icon_class = 'favorite-icon';
+        let layer_classes = ['layer'];
         if(layer.favorite) {
-            favoriate_icon_class += ' active';
+            layer_classes.push('favorite');
+        }
+        if(layer.on) {
+            layer_classes.push('on');
         }
 
+        // TODO: Check layer for minscale/maxscale against
+        //       the mapView.
+
         return (
-            <div key={layer.id} className="layer">
+            <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label"> 
                     <input type="checkbox" onClick={toggle} checked={layer.on} />
-                    <i className={favorite_icon_class} onClick={toggleFavorite}/> 
+                    <i className="favorite-icon" onClick={toggleFavorite}/> 
                     <span onClick={toggle}>
                         {layer.label}
                     </span>

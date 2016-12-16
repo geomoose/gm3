@@ -259,7 +259,7 @@ export function getVisibility(store, layer) {
  *
  * @returns {Boolean} true if a favorite, false otherwise.
  */
-export function isFavoriateLayer(store, layer) {
+export function isFavoriteLayer(store, layer) {
     return (getLayer(store, layer).favorite === true);
 }
 

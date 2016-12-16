@@ -86,10 +86,12 @@ function parseLayer(store, layerXml) {
 		label: layerXml.getAttribute('title'),
         src: [],
         on: false,
+        favorite: false,
 	};
 
     // collect the src states
     let src_state = true;
+    let src_favorite = false;
 
     // parse out the souces
     let src_str = layerXml.getAttribute('src');
@@ -114,6 +116,8 @@ function parseLayer(store, layerXml) {
             //  are false, then turn all of them off. 
             src_state = src_state && mapSources.getVisibility(store, s);
 
+            src_favorite = src_favorite || mapSources.isFavoriteLayer(store, s);
+
             // check to see if a 'default' name is needed
             // for the catalog entry.
             if(!new_layer.label) {
@@ -128,6 +132,7 @@ function parseLayer(store, layerXml) {
 
     // set the new layer state based on the src.
     new_layer.on = src_state;
+    new_layer.favorite = src_favorite;
 
 	let p = layerXml.parentNode;
 	if(p && p.tagName == 'group') {

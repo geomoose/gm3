@@ -28,29 +28,44 @@
 
 import { MAPSOURCE } from '../actionTypes';
 
+/** Use this to toggle boolean values on a layer.
+ *
+ *  @param state The current state.
+ *  @param action The action definition from the user.
+ *  @param attr   An attribute that should be found in both
+ *                   the action and the layer.
+ *
+ * @returns a new state.
+ */
+function setLayerAttribute(state, action, attr) {
+    // make a copy of the layers list
+    let layers = [].concat(state[action.mapSourceName].layers);
+    // iterate through the layers and update the "on"
+    //   setting based on the layerName
+    for(let layer of layers) {
+        if(layer.name == action.layerName) {
+            layer[attr] = action[attr];
+        }
+    }
+
+    let ms = Object.assign(state[action.mapSourceName], {
+        layers
+    });
+
+    let mix = {};
+    mix[action.mapSourceName] = ms;
+
+    console.log('LAYER', attr, ms);
+
+    return Object.assign({}, state, mix);
+}
+
 export default function mapSource(state = [], action) {
 	switch(action.type) {
         case MAPSOURCE.LAYER_VIS:
-            // make a copy of the layers list
-            let layers = [].concat(state[action.mapSourceName].layers);
-            // iterate through the layers and update the "on"
-            //   setting based on the layerName
-            for(let layer of layers) {
-                if(layer.name == action.layerName) {
-                    layer.on = action.on;
-                }
-            }
-
-            let ms = Object.assign(state[action.mapSourceName], {
-                layers
-            });
-
-            let mix = {};
-            mix[action.mapSourceName] = ms;
-
-            console.log('LAYER VIS.MS', ms);
-
-            return Object.assign({}, state, mix);
+            return setLayerAttribute(state, action, 'on');
+        case MAPSOURCE.LAYER_FAVORITE:
+            return setLayerAttribute(state, action, 'favorite'); 
 		case MAPSOURCE.ADD:
             let new_elem = {};
             new_elem[action.mapSource.name] = action.mapSource;
