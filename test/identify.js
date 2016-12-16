@@ -42,6 +42,9 @@ function IdentifyService(Application, options) {
     /** Limit the number of selection tools available */
     this.tools = {'Point' : true};
 
+    /** User input fields, there are none for identify */
+    this.fields = [];
+
     /** This function is called everytime there is an identify query.
      *
      *  @param selection contains a GeoJSON feature describing the 
