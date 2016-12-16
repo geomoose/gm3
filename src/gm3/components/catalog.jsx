@@ -56,6 +56,7 @@ class Catalog extends Component {
         this.renderTreeNode = this.renderTreeNode.bind(this);
 
         this.toggleLayer = this.toggleLayer.bind(this);
+        this.toggleFavoriteLayer = this.toggleFavoriteLayer.bind(this);
     }
 
     onClick() {
@@ -72,6 +73,19 @@ class Catalog extends Component {
             type: CATALOG.LAYER_VIS,
             id: layer.id,
             on: !layer.on
+        });
+    }
+
+    /** Toggle whether a layer is considered a "favorite" 
+     *  or not.
+     * 
+     *  @param {Layer} layer Catalog layer definition
+     *
+     */
+    toggleFavoriteLayer(layer) {
+        this.props.store.dispatch({
+            type: CATALOG.FAVORITE,
+            layer
         });
     }
 
@@ -113,12 +127,23 @@ class Catalog extends Component {
             this.renderMapSources(layer);
         };
 
+        let toggleFavorite = () => {
+            this.toggleFavoriteLayer(layer);
+        };
+
+        let favorite_icon_class = 'favorite-icon';
+        if(layer.favorite) {
+            favoriate_icon_class += ' active';
+        }
 
         return (
             <div key={layer.id} className="layer">
-                <div className="layer-label" onClick={toggle}>
-                <input type="checkbox" checked={layer.on} />
-                {layer.label}
+                <div className="layer-label"> 
+                    <input type="checkbox" onClick={toggle} checked={layer.on} />
+                    <i className={favorite_icon_class} onClick={toggleFavorite}/> 
+                    <span onClick={toggle}>
+                        {layer.label}
+                    </span>
                 </div>
             </div>
         );

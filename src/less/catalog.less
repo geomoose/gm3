@@ -22,6 +22,9 @@
  * SOFTWARE.
  */
 
+@folder-color: #FFDC29;
+@favorite-star-color: #29B2FF; 
+
 .group {
 
     .group {
@@ -42,7 +45,7 @@
         .fa;
         padding-left: 2px;
         padding-right: 5px;
-        color: #FFE665;
+        color: @folder-color;
     }
 
 }
@@ -76,5 +79,21 @@
 .layer {
     .layer-label {
         cursor: pointer;
+    }
+
+    .favorite-icon {
+        .fa;
+
+        color: @favorite-star-color;
+
+        &:before {
+            content: @fa-var-star-o;
+        }
+    }
+
+    .favorite-icon.active {
+        &:before {
+            content: @fa-var-star;
+        }
     }
 }

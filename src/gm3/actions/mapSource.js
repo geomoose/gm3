@@ -252,6 +252,17 @@ export function getVisibility(store, layer) {
     return (getLayer(store, layer).on === true);
 }
 
+/** Check to see if a layer is a 'favorite'
+ *
+ *  @param store The store object.
+ *  @param layer The layer definition
+ *
+ * @returns {Boolean} true if a favorite, false otherwise.
+ */
+export function isFavoriateLayer(store, layer) {
+    return (getLayer(store, layer).favorite === true);
+}
+
 /** Check whether a map-source is 'active',
  *  'active' is defined as having any layers 
  *  with status='on' or being a vector type map-source
