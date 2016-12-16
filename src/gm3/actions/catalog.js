@@ -34,17 +34,17 @@ import * as util from '../util';
 import * as mapSources from './mapSource';
 
 function addElement(tree, parentId, child) {
-	if(parentId == null) {
-		tree.children.push(child);
-	}
+    if(parentId == null) {
+        tree.children.push(child);
+    }
 
-	for(let element of tree) {
-		if(element.type == 'group') {
-			if(element.id == parentId) {
-				
-			}
-		}
-	}
+    for(let element of tree) {
+        if(element.type == 'group') {
+            if(element.id == parentId) {
+                
+            }
+        }
+    }
 }
 
 
@@ -57,21 +57,21 @@ function addElement(tree, parentId, child) {
  *  @returns Object representing the group.
  */
 function parseGroup(groupXml) {
-	let new_group = {
-		id: groupXml.getAttribute('uuid'),
-		children: [],
-		label: groupXml.getAttribute('title'),
-		expand: util.parseBoolean(groupXml.getAttribute('expand')),
-		// multiple=true is checkboxes, false is radio buttons
-		multiple: util.parseBoolean(groupXml.getAttribute('multiple'), true)
-	};
+    let new_group = {
+        id: groupXml.getAttribute('uuid'),
+        children: [],
+        label: groupXml.getAttribute('title'),
+        expand: util.parseBoolean(groupXml.getAttribute('expand')),
+        // multiple=true is checkboxes, false is radio buttons
+        multiple: util.parseBoolean(groupXml.getAttribute('multiple'), true)
+    };
 
-	let p = groupXml.parentNode;
-	if(p && p.tagName == 'group') {
-		new_group.parent = p.getAttribute('uuid');
-	}
+    let p = groupXml.parentNode;
+    if(p && p.tagName == 'group') {
+        new_group.parent = p.getAttribute('uuid');
+    }
 
-	return new_group;
+    return new_group;
 }
 
 /** Convert a Catalog layer XML definition to a Javascript object.
@@ -81,13 +81,13 @@ function parseGroup(groupXml) {
  * @returns Object representing the layer
  */
 function parseLayer(store, layerXml) {
-	let new_layer = {
-		id: layerXml.getAttribute('uuid'),
-		label: layerXml.getAttribute('title'),
+    let new_layer = {
+        id: layerXml.getAttribute('uuid'),
+        label: layerXml.getAttribute('title'),
         src: [],
         on: false,
         favorite: false,
-	};
+    };
 
     // collect the src states
     let src_state = true;
@@ -134,44 +134,44 @@ function parseLayer(store, layerXml) {
     new_layer.on = src_state;
     new_layer.favorite = src_favorite;
 
-	let p = layerXml.parentNode;
-	if(p && p.tagName == 'group') {
-		new_layer.parent = p.getAttribute('uuid');
-	}
+    let p = layerXml.parentNode;
+    if(p && p.tagName == 'group') {
+        new_layer.parent = p.getAttribute('uuid');
+    }
 
-	return new_layer;
+    return new_layer;
 }
 
 
 function subtreeActions(store, parent, subtreeXml) {
-	let actions = [];
+    let actions = [];
 
-	for(let childNode of subtreeXml.children) {
-		let child = null, parent_id = null;
-		if(parent && parent.id) {
-			parent_id = parent.id;
-		}
-		if(childNode.tagName == 'group') {
-			let group = parseGroup(childNode);
-			actions.push({type: CATALOG.ADD_GROUP, child: group});
-			child = group;
+    for(let childNode of subtreeXml.children) {
+        let child = null, parent_id = null;
+        if(parent && parent.id) {
+            parent_id = parent.id;
+        }
+        if(childNode.tagName == 'group') {
+            let group = parseGroup(childNode);
+            actions.push({type: CATALOG.ADD_GROUP, child: group});
+            child = group;
 
-			// build the tree by recursion.
-			actions = actions.concat(subtreeActions(store, group, childNode));
-		} else if(childNode.tagName == 'layer') {
-			let layer = parseLayer(store, childNode);
-			actions.push({type: CATALOG.ADD_LAYER, child: layer})
-			child = layer;
-		}
+            // build the tree by recursion.
+            actions = actions.concat(subtreeActions(store, group, childNode));
+        } else if(childNode.tagName == 'layer') {
+            let layer = parseLayer(store, childNode);
+            actions.push({type: CATALOG.ADD_LAYER, child: layer})
+            child = layer;
+        }
 
 
-		if(child && child.id) {
-			actions.push({type: CATALOG.ADD_CHILD, parentId: parent_id, childId: child.id});
-		}
-			
-	}
+        if(child && child.id) {
+            actions.push({type: CATALOG.ADD_CHILD, parentId: parent_id, childId: child.id});
+        }
+            
+    }
 
-	return actions;
+    return actions;
 }
 
 
@@ -180,12 +180,12 @@ function subtreeActions(store, parent, subtreeXml) {
  *
  */
 export function parseCatalog(store, catalogXml) {
-	// first add a "uuid" attribute to each one
-	//  of the elements
+    // first add a "uuid" attribute to each one
+    //  of the elements
     // The UUIDs are used to flatten the tree's data structure.
-	for(let e of catalogXml.getElementsByTagName('*')) {
-		e.setAttribute('uuid', uuid.v4());
-	}
+    for(let e of catalogXml.getElementsByTagName('*')) {
+        e.setAttribute('uuid', uuid.v4());
+    }
 
-	return subtreeActions(store, null, catalogXml);
+    return subtreeActions(store, null, catalogXml);
 }

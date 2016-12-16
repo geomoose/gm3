@@ -46,39 +46,39 @@ const default_query = {
  * @returns a mixin for the state object.
  */
 function queryProgress(queryId, state, progress) {
-    let query = state[queryId];
-    let new_state = {};
+    const query = state[queryId];
+    const new_state = {};
     new_state[queryId] = Object.assign({}, query, {progress});
     return new_state;
 }
 
 export default function queryReducer(state = default_query, action) {
-    let new_query = {};
-	switch(action.type) {
+    const new_query = {};
+    switch(action.type) {
         case SERVICE.START:
             return Object.assign({}, state, {service: action.service});
         case SERVICE.FINISH:
             return Object.assign({}, state, {service: null});
         case MAP.QUERY_NEW:
-            let query_id = uuid.v4();
+            const query_id = uuid.v4();
             new_query[query_id] = Object.assign({}, action.query, {
                 progress: 'new',
                 results: {},
                 rendered: {}
             });
 
-            let query_order = [query_id].concat(state.order);
+            const query_order = [query_id].concat(state.order);
             // TODO: Maybe add a 'culling' bit here to remove old processed 
             //       queries
             return Object.assign({}, state, {order: query_order}, new_query);
         case MAP.QUERY_RESULTS:
             // issued when a specific layer returns a result
-            let query_detail = state[action.id];
+            const query_detail = state[action.id];
 
             // results are stored as results.layer = [features,]
-            let new_results = {};
+            const new_results = {};
             new_results[action.layer] = action.features;
-            let all_results = Object.assign({}, state[action.id].results, new_results);
+            const all_results = Object.assign({}, state[action.id].results, new_results);
             // create the new query object
             new_query[action.id] = Object.assign({}, state[action.id], {results: all_results});
             return Object.assign({}, state, new_query);
@@ -89,8 +89,8 @@ export default function queryReducer(state = default_query, action) {
         case MAP.QUERY_FINISHED:
             return Object.assign({}, state, queryProgress(action.id, state, 'finished'));
         case MAP.QUERY_RENDERED_RESULTS:
-            let rendered_results = [{data: action.data, target: action.target}].concat(state[action.id].rendered);
-            let rendered_query = {};
+            const rendered_results = [{data: action.data, target: action.target}].concat(state[action.id].rendered);
+            const rendered_query = {};
             rendered_query[action.id] = Object({}, state[action.id], {rendered: rendered_results});
             return Object.assign({}, state, rendered_query); 
         default:

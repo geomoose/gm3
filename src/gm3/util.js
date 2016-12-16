@@ -25,11 +25,11 @@
 /** Collection of handy functions
  */
 
-export function parseBoolean(bool, def=false) {
+export function parseBoolean(bool, def = false) {
     if(typeof(bool) == "undefined") { return def; }
     var boolString = new String(bool);
     if(boolString.match(/true/i)) { return true; }
-    else if(boolString == '1') { return true; }
+    else if(boolString === '1') { return true; }
     else if(boolString.match(/on/i)) { return true; }
     return false;
 }
@@ -51,7 +51,7 @@ export function getXmlTextContents(node) {
         return node.textContent;
     } 
 
-    return null; //node.textContent;
+    return null; 
 }
 
 
@@ -71,11 +71,11 @@ export function getXmlTextContents(node) {
  */
 export function getTagContents(xml, tagName, multiple) {
     // setup the array to handle multiple
-    var contents = [];
+    const contents = [];
 
-    var tags = xml.getElementsByTagName(tagName);
-    for(let tag of tags) {
-        var node_value = getXmlTextContents(tag);
+    const tags = xml.getElementsByTagName(tagName);
+    for(const tag of tags) {
+        const node_value = getXmlTextContents(tag);
         // when multiple is not true, return the first value.
         if(multiple === true) {
             contents.push(node_value);
@@ -96,10 +96,10 @@ export function getTagContents(xml, tagName, multiple) {
  *  @returns boolean, true if they differ, false if they are the same.
  */
 export function objectsDiffer(objA, objB, deep) {
-    let a_keys = Object.keys(objA), b_keys = Object.keys(objB);
+    const a_keys = Object.keys(objA), b_keys = Object.keys(objB);
 
-    for(let key of a_keys) {
-        let b_type = typeof(objB[key]);
+    for(const key of a_keys) {
+        const b_type = typeof(objB[key]);
         switch(b_type) {
             // if the key from a does not exist in b, then they differ.
             case 'undefined':
@@ -107,7 +107,7 @@ export function objectsDiffer(objA, objB, deep) {
             // standard comparisons
             case 'string':
             case 'number':
-                if(objA[key] != objB[key]) {
+                if(objA[key] !== objB[key]) {
                     return true;
                 }
             // GO DEEP!
@@ -122,13 +122,17 @@ export function objectsDiffer(objA, objB, deep) {
                 if(deep === true && objectsDiffer(objA[key], objB[key], true)) {
                     return true;
                 }
+            default:
+                // assume the objects differ if they cannot
+                //  be typed.
+                return true;
         }
     }
 
     // The above loop ensures that all the keys
     //  in "A" match a key in "B", if "B" has any 
     //  extra keys then the objects differ.
-    for(let key of b_keys) {
+    for(const key of b_keys) {
         if(a_keys.indexOf(key) < 0) {
             return true;
         }
@@ -156,7 +160,7 @@ export function getMapSourceName(path) {
  * @returns a layer name
  */
 export function getLayerName(path) {
-    let c = path.split('/');
+    const c = path.split('/');
     c.shift();
     // layers can have "/" in the name, so they need
     //  rejoined after removing the map-source name.
@@ -170,10 +174,10 @@ export function getLayerName(path) {
  *  @returns {String}
  */
 export function formatUrlParameters(params) {
-    let formatted_params = [];
-    for(let key in params) {
-        let formatted_value = encodeURIComponent(params[key]);
-        formatted_params.push(key+'='+formatted_value);
+    const formatted_params = [];
+    for(const key in params) {
+        const formatted_value = encodeURIComponent(params[key]);
+        formatted_params.push(key + '=' + formatted_value);
     }
     return formatted_params.join('&');
 }

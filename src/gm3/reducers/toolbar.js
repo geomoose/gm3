@@ -47,12 +47,12 @@ import * as util from '../util';
  */
 
 export default function mapReducer(state = [], action) {
-	switch(action.type) {
+    switch(action.type) {
         case TOOLBAR.ADD:
             // get the 'order' placement, should be first or last
             var order = action.order ? action.order : 'last';
 
-            if(order == 'first') {
+            if(order === 'first') {
                 return [].concat([action.tool]).concat(state);
             } else {
                 return [].concat(state).concat([action.tool]);
@@ -60,9 +60,9 @@ export default function mapReducer(state = [], action) {
         case TOOLBAR.REMOVE:
             // make a copy of the tools list but do not include
             //  the tool to be removed.
-            var st = [];
-            for(let tool in state) {
-                if(tool.name != action.tool.name) {
+            const st = [];
+            for(const tool in state) {
+                if(tool.name !== action.tool.name) {
                     st.push(tool);
                 }
             }

@@ -31,9 +31,9 @@ import { MAP } from '../actionTypes';
 import * as util from '../util';
 
 const default_view = {
-    center: [0,0],
+    center: [0, 0],
     resolution: 1000,
-    coords: [0,0],
+    coords: [0, 0],
     extent: null,
     activeSource: null,
     interactionType: null,
@@ -41,15 +41,15 @@ const default_view = {
 };
 
 export default function mapReducer(state = default_view, action) {
-	switch(action.type) {
+    switch(action.type) {
         case MAP.MOVE:
             // 'extent' should be null except for the case when it is being
             //  set in order to zoom there.  After the 'zoom' action happens
             //  it is reset to null.
-            let new_view = {
+            const new_view = {
                 extent: null
             };
-            for(let key of ['center', 'zoom', 'resolution']) {
+            for(const key of ['center', 'zoom', 'resolution']) {
                 if(action[key]) {
                     new_view[key] = action[key];
                 }

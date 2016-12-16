@@ -34,10 +34,10 @@ import * as util from '../util';
  *  object.
  */
 export function add(mapSource) {
-	return {
-		type: MAPSOURCE.ADD,
-		mapSource
-	};
+    return {
+        type: MAPSOURCE.ADD,
+        mapSource
+    };
 }
 
 /** Add a layer to a mapsource.
@@ -126,7 +126,7 @@ var MS_Z_INDEX = 100000;
  */
 export function addFromXml(xml, config) {
     // initialize the map source object.
-	let map_source = {
+    let map_source = {
         name: xml.getAttribute('name'),
         urls: util.getTagContents(xml, 'url', true),
         type: xml.getAttribute('type'),
@@ -198,7 +198,7 @@ export function addFromXml(xml, config) {
         map_layers.push(addLayer(map_source.name, layer));
     }
 
-	return [add(map_source)].concat(map_layers);
+    return [add(map_source)].concat(map_layers);
 }
 
 /** Remove a map-source from the application.
@@ -207,10 +207,10 @@ export function addFromXml(xml, config) {
  *
  */
 export function remove(path) {
-	return {
-		type: MAPSOURCE.REMOVE,
-		path
-	}
+    return {
+        type: MAPSOURCE.REMOVE,
+        path
+    }
 }
 
 /** Get the map-source definition from a store

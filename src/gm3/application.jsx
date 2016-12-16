@@ -55,22 +55,22 @@ import Mark from 'markup-js';
 
 class Application {
 
-	constructor(config) {
-		this.elements = [];
+    constructor(config) {
+        this.elements = [];
 
         this.services = {};
 
         this.config = config;
 
-		// TODO: Combine Reducers here
-		this.store = createStore(combineReducers({
-			'mapSources' : msReducer,
-			'catalog' : catalogReducer,
+        // TODO: Combine Reducers here
+        this.store = createStore(combineReducers({
+            'mapSources' : msReducer,
+            'catalog' : catalogReducer,
             'map' : mapReducer,
             'toolbar' : toolbarReducer,
             'query' : queryReducer
-		}));
-	}
+        }));
+    }
 
     registerService(serviceName, serviceClass, options) {
         // when options are not an object, then default it to be
@@ -84,58 +84,58 @@ class Application {
         this.services[serviceName].name = serviceName;
     }
 
-	populateMapbook(mapbookXml) {
-		// load the map-sources
-		let sources = mapbookXml.getElementsByTagName('map-source');
-		for(let ms of sources) {
+    populateMapbook(mapbookXml) {
+        // load the map-sources
+        let sources = mapbookXml.getElementsByTagName('map-source');
+        for(let ms of sources) {
             for(let action of mapSourceActions.addFromXml(ms, this.config)) {
                 this.store.dispatch(action);
             }
-		}
+        }
 
-		for(let action of parseCatalog(this.store, mapbookXml.getElementsByTagName('catalog')[0])) {
-			this.store.dispatch(action);
-		}
+        for(let action of parseCatalog(this.store, mapbookXml.getElementsByTagName('catalog')[0])) {
+            this.store.dispatch(action);
+        }
 
         for(let action of parseToolbar(mapbookXml.getElementsByTagName('toolbar')[0])) {
             this.store.dispatch(action);
         }
-	}
+    }
 
-	loadMapbook(options) {
-		var self = this;
+    loadMapbook(options) {
+        var self = this;
 
-		if(options.url) {
-			// load mapbook content from a URL,
-			//  return the promise in case the user
-			//  wants to do something after the mapbook has loaded.
-			return Request({
-				url: options.url,
-				success: (response) => {
-					this.populateMapbook(response);
-				}
-			});
+        if(options.url) {
+            // load mapbook content from a URL,
+            //  return the promise in case the user
+            //  wants to do something after the mapbook has loaded.
+            return Request({
+                url: options.url,
+                success: (response) => {
+                    this.populateMapbook(response);
+                }
+            });
 
-		} else if(options.content) {
-			// this is just straight mapbook xml
-			//  TODO: Maybe it needs parsed?!?
+        } else if(options.content) {
+            // this is just straight mapbook xml
+            //  TODO: Maybe it needs parsed?!?
 
-			this.populateMapbook(options.content);
+            this.populateMapbook(options.content);
 
-		}
-	}
+        }
+    }
 
-	add(component, domId, hasServices) {
+    add(component, domId, hasServices) {
         let props = {
             store: this.store
         }
         if(hasServices) {
             props.services = this.services;
         }
-		var e = React.createElement(component, props);
-		ReactDOM.render(e, document.getElementById(domId));
-		return e;
-	}
+        var e = React.createElement(component, props);
+        ReactDOM.render(e, document.getElementById(domId));
+        return e;
+    }
 
 
     /** Run a query against the listed map-sources.

@@ -39,20 +39,20 @@ import { MAPSOURCE } from '../actionTypes';
  */
 function setLayerAttribute(state, action, attr) {
     // make a copy of the layers list
-    let layers = [].concat(state[action.mapSourceName].layers);
+    const layers = [].concat(state[action.mapSourceName].layers);
     // iterate through the layers and update the "on"
     //   setting based on the layerName
-    for(let layer of layers) {
-        if(layer.name == action.layerName) {
+    for(const layer of layers) {
+        if(layer.name === action.layerName) {
             layer[attr] = action[attr];
         }
     }
 
-    let ms = Object.assign(state[action.mapSourceName], {
+    const ms = Object.assign(state[action.mapSourceName], {
         layers
     });
 
-    let mix = {};
+    const mix = {};
     mix[action.mapSourceName] = ms;
 
     console.log('LAYER', attr, ms);
@@ -61,18 +61,18 @@ function setLayerAttribute(state, action, attr) {
 }
 
 export default function mapSource(state = [], action) {
-	switch(action.type) {
+    switch(action.type) {
         case MAPSOURCE.LAYER_VIS:
             return setLayerAttribute(state, action, 'on');
         case MAPSOURCE.LAYER_FAVORITE:
             return setLayerAttribute(state, action, 'favorite'); 
-		case MAPSOURCE.ADD:
-            let new_elem = {};
+        case MAPSOURCE.ADD:
+            const new_elem = {};
             new_elem[action.mapSource.name] = action.mapSource;
-			return Object.assign({}, state, new_elem);
+            return Object.assign({}, state, new_elem);
         case MAPSOURCE.ADD_LAYER:
             if(state[action.mapSourceName]) {
-                let ms = {};
+                const ms = {};
                 ms[action.mapSourceName] = Object.assign({}, state[action.mapSourceName], {
                     layers: [
                         ...state[action.mapSourceName].layers,
@@ -84,7 +84,7 @@ export default function mapSource(state = [], action) {
             }
 
             return state;
-		default:
-			return state;
-	}
+        default:
+            return state;
+    }
 }
