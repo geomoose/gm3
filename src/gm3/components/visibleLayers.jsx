@@ -25,30 +25,18 @@
 import { connect } from 'react-redux';
 import React, {Component, PropTypes } from 'react';
 
-import { Catalog } from './catalog';
+import { FavoriteLayers } from './favorites';
 
 
-export class FavoriteLayers extends Catalog {
-
-    constructor() {
-        super();
-    }
+class VisibleLayers extends FavoriteLayers {
 
     shouldRenderNode(node) {
-        return (!node.children && node.favorite);
-    }
-
-    renderTreeNode(childId) {
-        let node = this.props.catalog[childId];
-        if(this.shouldRenderNode(node)) {
-            return this.renderLayer(node);
-        }
-        return '';
+        return (!node.children && node.on);
     }
 
     render() {
         return (
-            <div className="catalog favorites flat">
+            <div className="catalog visble-layers flat">
                 {
                     Object.keys(this.props.catalog).map(this.renderTreeNode)
                 }
@@ -64,4 +52,4 @@ const mapFavoritesToProps = function(store) {
     }
 }
 
-export default connect(mapFavoritesToProps)(FavoriteLayers);
+export default connect(mapFavoritesToProps)(VisibleLayers);

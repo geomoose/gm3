@@ -37,6 +37,7 @@ import Map from './gm3/components/map';
 import Toolbar from './gm3/components/toolbar';
 import ServiceManager from './gm3/components/serviceManager';
 import Favorites from './gm3/components/favorites';
+import VisibleLayers from './gm3/components/visibleLayers';
 
 import * as util from './gm3/util';
 
@@ -46,7 +47,8 @@ var components = {
     Map: Map,
     Toolbar: Toolbar,
     ServiceManager: ServiceManager,
-    Favorites: Favorites
+    Favorites: Favorites,
+    VisibleLayers: VisibleLayers,
 };
 
 export {
