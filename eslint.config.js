@@ -32,10 +32,12 @@ module.exports = {
     	}
     },
     rules: {
-        'prefer-const' : ['error', {
-		destructuring: 'any',
-		ignoreReadBeforeAssign: true
-	}],
+    /*
+    'prefer-const' : ['error', {
+        destructuring: 'any',
+        ignoreReadBeforeAssign: true
+    }],
+    */
 
 	'prefer-spread' : 'error',
 
