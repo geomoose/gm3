@@ -64,17 +64,17 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
             mixin[p] = new_elem;
             return Object.assign({}, state, mixin);
         case CATALOG.LAYER_VIS:
-            const new_layer = {};
+            let new_layer = {};
             new_layer[action.id] = Object.assign({}, state[action.id], {
                 on: action.on
             });
             return Object.assign({}, state, new_layer);
         case CATALOG.FAVORITE:
-            const new_layer = {};
-            new_layer[action.id] = Object.assign({}, state[action.id], {
+            let new_fav_layer = {};
+            new_fav_layer[action.id] = Object.assign({}, state[action.id], {
                 favorite: action.favorite
             });
-            return Object.assign({}, state, new_layer);
+            return Object.assign({}, state, new_fav_layer);
         case CATALOG.GROUP_VIS:
             const new_group = {};
             new_group[action.id] = Object.assign({}, state[action.id], {
