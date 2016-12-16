@@ -67,7 +67,7 @@
 .group.expand {
     .children {
         /*display: block;*/
-        max-height: 1000px;
+        max-height: 2000px;
         transition: max-height 0.5s ease-in;
     }
 
@@ -100,4 +100,27 @@
             content: @fa-var-star;
         }
     }
+}
+
+/*** 
+ ***  Flat Catalog
+ ***/
+
+.catalog.flat {
+    .group {
+        padding-left: 0px;
+
+        .group-label {
+            display: none;
+        }
+
+        .children {
+            max-height: 2000px !important;
+        }
+
+        .layer {
+            padding-left: 0px;
+        }
+    }
+
 }
