@@ -44,7 +44,7 @@ const mapCatalogToProps = function(store) {
 
 
 
-class Catalog extends Component {
+export class Catalog extends Component {
 
 
     constructor() {
