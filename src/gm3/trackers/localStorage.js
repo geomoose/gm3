@@ -64,13 +64,10 @@ export default class LocalStorageTracker {
     restoreFavorites() {
         // get the favorites list
         let faves = localStorage.getItem('favorites');
-        console.log('RESTORE FAVORITES', 'faves=', faves);
 
         if(faves) {
             // convert the 'faves' into a list of objects.
             faves = faves.split(';');
-
-            console.log('favorites', faves);
 
             // if there were favorites saved, for each one,
             //  issue a 'FAVORITES' command for the mapsource.
@@ -78,7 +75,6 @@ export default class LocalStorageTracker {
                 for(const fave of faves) {
                     let ms_name = util.getMapSourceName(fave);
                     let layer_name = util.getLayerName(fave);
-                    console.log('dispatched', ms_name, layer_name);
                     this.store.dispatch(favoriteLayer(ms_name, layer_name, true));
                 }
             }
