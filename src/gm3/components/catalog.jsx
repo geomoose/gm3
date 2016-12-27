@@ -136,6 +136,26 @@ export class Catalog extends Component {
         return is_favorite;
     }
 
+    toggleRefreshLayer(layer) {
+        layer.refreshEnabled = !layer.refreshEnabled;
+        let refresh_seconds = null;
+        if(layer.refreshEnabled) {
+            refresh_seconds = layer.refresh;
+        }
+
+        this.props.store.dispatch({
+            type: CATALOG.REFRESH,
+            id: layer.id,
+            refreshEnabled: layer.refreshEnabled
+        });
+
+
+        // with each layer, turn of the 
+        for(let src of layer.src) {
+            this.props.store.dispatch(mapSourceActions.setRefresh(src.mapSourceName, refresh_seconds));
+        }
+    }
+
     renderLayer(layer) {
         let toggle = () => {
             this.toggleLayer(layer);
@@ -146,7 +166,17 @@ export class Catalog extends Component {
             this.toggleFavoriteLayer(layer);
         };
 
+        let toggleRefresh = () => {
+            this.toggleRefreshLayer(layer);
+        }
+
         let layer_classes = ['layer'];
+
+        // only show the refresh icon when a layer has been configured
+        //  with the ability to do auto-refresh.
+        if(layer.refresh !== null && layer.refresh > 0) {
+            layer_classes.push('has-refresh');
+        }
 
         if(this.isFavoriteLayer(layer)) {
             layer_classes.push('favorite');
@@ -154,6 +184,10 @@ export class Catalog extends Component {
         if(layer.on) {
             layer_classes.push('on');
         }
+        if(layer.refreshEnabled) {
+            layer_classes.push('refresh');
+        }
+
 
         // TODO: Check layer for minscale/maxscale against
         //       the mapView.
@@ -166,6 +200,7 @@ export class Catalog extends Component {
                     <span onClick={toggle}>
                         {layer.label}
                     </span>
+                    <i className="refresh-icon" onClick={toggleRefresh}/>
                 </div>
             </div>
         );

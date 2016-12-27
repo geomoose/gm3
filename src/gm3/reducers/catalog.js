@@ -34,6 +34,8 @@ import * as util from '../util';
 
 
 export default function catalogReducer(state = {'root': {id: uuid.v4(), children: []}}, action) {
+    let new_layer = {};
+
     switch(action.type) {
         case CATALOG.ADD_LAYER:
         case CATALOG.ADD_GROUP:
@@ -64,7 +66,6 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
             mixin[p] = new_elem;
             return Object.assign({}, state, mixin);
         case CATALOG.LAYER_VIS:
-            let new_layer = {};
             new_layer[action.id] = Object.assign({}, state[action.id], {
                 on: action.on
             });
@@ -81,6 +82,11 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
                 expand: action.expand
             });
             return Object.assign({}, state, new_group);
+        case CATALOG.REFRESH:
+            new_layer[action.id] = Object.assign({}, state[action.id], {
+                refreshEnabled: action.refreshEnabled
+            });
+            return Object.assign({}, state, new_layer);
         default:
             return state;
     }

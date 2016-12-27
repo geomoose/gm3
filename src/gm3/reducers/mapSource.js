@@ -83,6 +83,15 @@ export default function mapSource(state = [], action) {
             }
 
             return state;
+        case MAPSOURCE.REFRESH:
+            if(state[action.mapSourceName]) {
+                const ms = {};
+                ms[action.mapSourceName] = Object.assign({}, state[action.mapSourceName], {
+                    refresh: action.refresh
+                });
+                return Object.assign({}, state, ms);
+            }
+            return state;
         default:
             return state;
     }

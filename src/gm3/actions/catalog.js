@@ -87,7 +87,14 @@ function parseLayer(store, layerXml) {
         src: [],
         on: false,
         favorite: false,
+        refreshEnabled: false,
+        refresh: null
     };
+
+    // parse a refresh time if it exists
+    if(layerXml.getAttribute('refresh')) {
+        new_layer.refresh = parseFloat(layerXml.getAttribute('refresh'));
+    }
 
     // collect the src states
     let src_state = true;

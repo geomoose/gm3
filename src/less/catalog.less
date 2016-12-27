@@ -25,6 +25,9 @@
 @folder-color: #FFDC29;
 @favorite-star-color: #29B2FF; 
 
+@refresh-icon-disabled-color: #82A984;
+@refresh-icon-enabled-color: #5DF265; 
+
 .group {
 
     .group {
@@ -92,6 +95,19 @@
         }
     }
 
+    .refresh-icon {
+        .fa;
+
+        display: none;
+
+        color: @refresh-icon-disabled-color;
+        margin-left: 0.25em;
+
+        &:before {
+            content: @fa-var-refresh;
+        }
+    }
+
 }
 
 .layer.favorite {
@@ -99,6 +115,18 @@
         &:before {
             content: @fa-var-star;
         }
+    }
+}
+
+.layer.refresh {
+    .refresh-icon {
+        color: @refresh-icon-enabled-color;
+    }
+}
+
+.layer.has-refresh {
+    .refresh-icon {
+        display: inline-block;
     }
 }
 

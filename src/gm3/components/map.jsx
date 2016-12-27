@@ -64,6 +64,10 @@ class Map extends Component {
 
         // the current 'active' interaction
         this.currentInteraction = null;
+
+        // a hash of interval timers for layers that
+        //  are set to auto-refresh
+        this.intervals = {};
     }
 
 
@@ -390,6 +394,55 @@ class Map extends Component {
         }
     }
 
+    /** Remove an interval to prevent a layer from being repeatedly
+     *  refreshed.
+     *
+     *  @param {String} msName The name of the map-source with refresh enabled.
+     *
+     */
+    removeRefreshInterval(msName) {
+        if(this.intervals[msName]) {
+            clearInterval(this.intervals[msName]);
+            delete this.intervals[msName];
+        }
+    }
+
+    /** Forces a layer to refresh.
+     *
+     */
+    refreshLayer(mapSource) {
+        switch(mapSource.type) {
+            case 'wms':
+                let wms_src = this.olLayers[mapSource.name].getSource();
+                let params = wms_src.getParams();
+                // ".ck" = "cache killer"
+                params['.ck'] = (new Date()).getMilliseconds(); 
+                wms_src.updateParams(params);
+                console.log('refreshed wms layer', mapSource.name);
+                // this.olLayers[mapSource.name].getSource().refresh();
+                break;
+            default:
+                // do nothing
+        }
+    }
+
+
+    /** Create an interval that will refresh the layer's contents.
+     *
+     */
+    createRefreshInterval(mapSource) {
+        // prevent the creation of a pile of intervals
+        if(!this.intervals.hasOwnProperty(mapSource.name)) {
+            console.log('CREATED REFRESH INTERVAL', mapSource.name, mapSource.refresh * 1000);
+            // refresh is stored in seconds, multiplying by 1000
+            //  converts ito the milliseconds expected by setInterval.
+            this.intervals[mapSource.name] = setInterval(() => {
+                console.log('REFRESH', mapSource.name);
+                this.refreshLayer(mapSource);
+            }, mapSource.refresh * 1000);
+        }
+    }
+
 
     /** Refresh the map-sources in the map
      *
@@ -404,6 +457,7 @@ class Map extends Component {
             // if the ms_name is not active, turn the entire source off. 
             if(active_map_sources.indexOf(ms_name) < 0) {
                 this.olLayers[ms_name].setVisible(false);
+                this.removeRefreshInterval(ms_name);
             }
         }
 
@@ -411,9 +465,9 @@ class Map extends Component {
         //  determine if the olSource already exists, if not
         //   create it, if it does, turn it back on.
         for(let ms_name of active_map_sources) {
+            let map_source = this.props.mapSources[ms_name];
             if(!this.olLayers[ms_name]) {
-                // a map-source needs to be created.
-                let map_source = this.props.mapSources[ms_name];
+                // create the OL layer
                 this.olLayers[ms_name] = this.createLayer(map_source);
                 this.olLayers[ms_name].setZIndex(map_source.zIndex);
                 this.map.addLayer(this.olLayers[ms_name]);
@@ -421,6 +475,18 @@ class Map extends Component {
                 this.updateSource(ms_name);
                 this.olLayers[ms_name].setVisible(true);
             }
+
+            // if there is a refresh interval set then
+            //  create an interval which refreshes the 
+            //  layer.
+            if(map_source.refresh !== null) {
+                // here's hoping this is an integer,
+                //  thanks Javascript!
+                this.createRefreshInterval(map_source);
+            } else if(map_source.refresh === null && this.intervals[ms_name]) {
+                this.removeRefreshInterval(ms_name);
+            }
+
         }
 
         // this.sortOlLayers();

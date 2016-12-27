@@ -148,6 +148,7 @@ export function addFromXml(xml, config) {
         type: xml.getAttribute('type'),
         label: xml.getAttribute('title'),
         zIndex: xml.getAttribute('z-index'),
+        refresh: null,
         style: null,
         layers: [],
         params: {}
@@ -174,6 +175,17 @@ export function addFromXml(xml, config) {
         Object.assign(map_source, mapServerToWMS(xml, config));
     } else if(map_source.type === 'mapserver-wfs') {
         Object.assign(map_source, mapServerToWFS(xml, config));
+    }
+
+    // check to see if there is a refresh interval.
+    if(xml.getAttribute('refresh')) {
+        // parse the refresh number
+        let refresh_seconds = parseFloat(xml.getAttribute('refresh'));
+        // this will be truthy when a number has been returned,
+        //  NaN or Infinitity should return as falsy.
+        if(refresh_seconds) {
+            map_source.refresh = refresh_seconds;
+        }
     }
 
     // check to see if there are any style definitions
@@ -335,4 +347,16 @@ export function getVisibleLayers(store) {
         }
     }
     return active;
+}
+
+/** Set the refresh rate for a map-source,
+ *  null is the default state and will prevent the layer
+ *  from refreshing.  Time is specified in seconds.
+ */
+export function setRefresh(mapSourceName, refreshSeconds) {
+    return {
+        type: MAPSOURCE.REFRESH,
+        mapSourceName,
+        refresh: refreshSeconds
+    }
 }
