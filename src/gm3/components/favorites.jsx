@@ -35,7 +35,7 @@ export class FavoriteLayers extends Catalog {
     }
 
     shouldRenderNode(node) {
-        return (!node.children && node.favorite);
+        return (!node.children && this.isFavoriteLayer(node));
     }
 
     renderTreeNode(childId) {

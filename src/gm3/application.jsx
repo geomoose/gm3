@@ -213,6 +213,10 @@ class Application {
         this.store.dispatch(zoomToExtent(extent));
     }
 
+    dispatch(action) {
+        this.store.dispatch(action);
+    }
+
 };
 
 

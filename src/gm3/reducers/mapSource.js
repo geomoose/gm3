@@ -39,23 +39,22 @@ import { MAPSOURCE } from '../actionTypes';
  */
 function setLayerAttribute(state, action, attr) {
     // make a copy of the layers list
-    const layers = [].concat(state[action.mapSourceName].layers);
-    // iterate through the layers and update the "on"
-    //   setting based on the layerName
-    for(const layer of layers) {
+    let layers = [];
+    for(var i = 0, ii = state[action.mapSourceName].layers.length; i < ii; i++) {
+        // copy each layer and update the matching one.
+        let layer = Object.assign({}, state[action.mapSourceName].layers[i]);
         if(layer.name === action.layerName) {
             layer[attr] = action[attr];
         }
+        layers.push(layer);
     }
 
-    const ms = Object.assign(state[action.mapSourceName], {
+    const ms = Object.assign({}, state[action.mapSourceName], {
         layers
     });
 
     const mix = {};
     mix[action.mapSourceName] = ms;
-
-    console.log('LAYER', attr, ms);
 
     return Object.assign({}, state, mix);
 }

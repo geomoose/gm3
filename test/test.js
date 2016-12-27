@@ -35,16 +35,22 @@ var app = new gm3.Application({
 });
 
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
+    var tracker = new gm3.trackers.LocalStorageTracker(app.store);
+
+    tracker.restore();
 
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
-    
+
     app.add(gm3.components.Catalog, 'catalog');
     app.add(gm3.components.Favorites, 'favorites');
     app.add(gm3.components.VisibleLayers, 'visible-layers');
     app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
     app.add(gm3.components.Toolbar, 'toolbar');
     app.add(gm3.components.Map, 'map');
+
+    tracker.startTracking();
+
 
     showTab('catalog');
     

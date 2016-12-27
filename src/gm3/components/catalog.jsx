@@ -35,9 +35,11 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 
 import { CATALOG, MAPSOURCE } from '../actionTypes';
+import * as mapSourceActions from '../actions/mapSource'; 
 
 const mapCatalogToProps = function(store) {
     return {
+        mapSources: store.mapSources,
         catalog: store.catalog
     }
 }
@@ -86,12 +88,9 @@ export class Catalog extends Component {
         });
 
         for(let src of layer.src) {
-            this.props.store.dispatch({
-                type: MAPSOURCE.LAYER_FAVORITE,
-                layerName: src.layerName,
-                mapSourceName: src.mapSourceName,
-                favorite: !layer.favorite
-            });
+            this.props.store.dispatch(
+                mapSourceActions.favoriteLayer(src.mapSourceName, src.layerName, !layer.favorite)
+            );
         }
     }
 
@@ -126,6 +125,17 @@ export class Catalog extends Component {
         }
     }
 
+    isFavoriteLayer(layer) {
+        // check to see if this catalog item is a favorite layer or not.
+        let is_favorite = true;
+        for(let i = 0, ii = layer.src.length; i < ii; i++) {
+            let src = layer.src[i];
+            is_favorite = (is_favorite && mapSourceActions.isFavoriteLayer(this.props.store, src));
+        }
+
+        return is_favorite;
+    }
+
     renderLayer(layer) {
         let toggle = () => {
             this.toggleLayer(layer);
@@ -137,7 +147,8 @@ export class Catalog extends Component {
         };
 
         let layer_classes = ['layer'];
-        if(layer.favorite) {
+
+        if(this.isFavoriteLayer(layer)) {
             layer_classes.push('favorite');
         }
         if(layer.on) {

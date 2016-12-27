@@ -65,6 +65,22 @@ function parseParams(msXml) {
     return params_obj;
 }
 
+/** Set a map-source's layer as a favorite.
+ *
+ *  @param mapSourceName  The name of the map source
+ *  @param layerName      The name of the layer in the map source
+ *  @param favorite       Whether the layer should be favorited or not.
+ *
+ *  @returns The action object.
+ */
+export function favoriteLayer(mapSourceName, layerName, favorite) {
+    return { 
+        type: MAPSOURCE.LAYER_FAVORITE,
+        mapSourceName, layerName,
+        favorite
+    }
+}
+
 
 /** Convert a mapserver layer to something more normal.
  *
@@ -260,6 +276,7 @@ export function getVisibility(store, layer) {
  * @returns {Boolean} true if a favorite, false otherwise.
  */
 export function isFavoriteLayer(store, layer) {
+    console.log('isFavoriteLyaer', getLayer(store, layer));
     return (getLayer(store, layer).favorite === true);
 }
 

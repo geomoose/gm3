@@ -39,6 +39,8 @@ import ServiceManager from './gm3/components/serviceManager';
 import Favorites from './gm3/components/favorites';
 import VisibleLayers from './gm3/components/visibleLayers';
 
+import LocalStorageTracker from './gm3/trackers/localStorage';
+
 import * as util from './gm3/util';
 
 
@@ -48,11 +50,16 @@ var components = {
     Toolbar: Toolbar,
     ServiceManager: ServiceManager,
     Favorites: Favorites,
-    VisibleLayers: VisibleLayers,
+    VisibleLayers: VisibleLayers
+};
+
+var trackers = {
+    LocalStorageTracker
 };
 
 export {
     Application,
     components,
+    trackers,
     util
 };
