@@ -30,7 +30,7 @@ module.exports = {
     devtool: 'eval-source-map',
     entry: [
         'webpack-dev-server/client?http://localhost:4000',
-        'webpack/hot/only-dev-server',
+        //'webpack/hot/only-dev-server',
         './src/' //index.jsx'
     ],
 
@@ -64,6 +64,6 @@ module.exports = {
         }
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        //new webpack.HotModuleReplacementPlugin()
     ]
 };

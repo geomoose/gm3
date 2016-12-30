@@ -30,6 +30,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('gruntify-eslint');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-webpack');
 
     grunt.initConfig({
@@ -64,6 +65,16 @@ module.exports = function(grunt) {
             }
         },
 
+        watch: {
+            gm3: {
+                files: ['src/gm3/**/*'],
+                tasks: ['webpack'],
+                options: {
+                    spawn: false,
+                }
+            }
+        },
+
         webpack: {
             optons: webpackConfig,
         },
@@ -73,12 +84,7 @@ module.exports = function(grunt) {
                 webpack: webpackConfig,
                 publicPath: "./"
             },
-            start: Object.assign({keepAlive: true}, webpackConfig.devServer)
-            /*{
-                webpack: webpackConfig,
-                keepAlive: true,
-                hot: true,
-            }*/
+            start: Object.assign({}, webpackConfig.devServer)
         }
     });
 
@@ -86,7 +92,7 @@ module.exports = function(grunt) {
 
     //grunt.task.registerTask('serve', ['copy:test', 'webpack-dev-server:start']);
 
-    grunt.task.registerTask('serve', ['webpack-dev-server:start']);
+    grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3']);
 
     grunt.task.registerTask('build', ['eslint', 'webpack']);
 };

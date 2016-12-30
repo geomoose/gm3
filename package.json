@@ -29,6 +29,7 @@
     "grunt": "~1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-less": "^1.4.0",
+    "grunt-contrib-watch": "^1.0.0",
     "grunt-webpack": "^1.0.14",
     "gruntify-eslint": "~3.1.0",
     "less": "^2.7.1",
