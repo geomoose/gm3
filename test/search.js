@@ -47,6 +47,9 @@ function SearchService(Application, options) {
         {type: 'text', label: 'Name', name: 'keyword'}
     ];
 
+    /** Define the highlight layer */
+    this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
+
     /** This function is called everytime a search is executed.
      *
      *  @param selection Always null in this instance as search does not require.
@@ -99,4 +102,46 @@ function SearchService(Application, options) {
         // return the html for rendering.
         return html;
     }
+
+    /** hasRendered is an object which tells renderQueryResults to ignore
+     *              queries which have already been rendered.
+     */
+    this.hasRendered = {};
+
+    /** renderQueryResults is the function called to let the service
+     *                     run basically any code it needs to execute after
+     *                     the query has been set to finish.  
+     *
+     *  WARNING! This will be called multiple times. It is best to ensure
+     *           there is some sort of flag to prevent multiple renderings.
+     */
+    this.renderQueryResults = function(queryId, query) {
+        // This is an ugly short circuit.
+        if(this.hasRendered[queryId]) {
+            // do nothing.
+            return;
+        }
+        // flag the query as rendered even though code below
+        //  this line has not finished, this prevents an accidental
+        //  double-rendering.
+        this.hasRendered[queryId] = true;
+
+        // render a set of features on a layer.
+        var all_features = [];
+        for(var i = 0, ii = query.layers.length; i < ii; i++) {
+            var path = query.layers[i];
+            if(query.results[path] && !query.results[path].failed) {
+                all_features = all_features.concat(query.results[path]);
+            }
+        }
+
+        // when features have been returned, clear out the old features
+        //  and put the new features on the highlight layer.
+        if(all_features.length > 0) {
+            Application.clearFeatures(this.highlightPath);
+            Application.addFeatures(this.highlightPath, all_features);
+        }
+    }
+
+                        
 }

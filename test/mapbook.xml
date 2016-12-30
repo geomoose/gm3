@@ -76,16 +76,16 @@
 		<attribute name="label_only" type="checkbox" default-value="false" label="Only show label in print?"/>
 	</map-source>
 
-	<map-source name="vector_highlight" type="geojson" status="off">
-		<style type="stylemap"><![CDATA[
-		{
-			"strokeColor" : "#ffff00",
-			"strokeOpacity" : 1.0,
-			"fillColor" : "#ffff00",
-			"fillOpacity" : 0.25
-		}
-		]]></style>
-		<url></url>
+	<map-source name="highlight" type="vector">
+        <layer name="highlight" status="on">
+            <style><![CDATA[
+            {
+                "line-color" : "#ffff00",
+                "fill-color" : "#ffff00",
+                "fill-opacity" : 0.25
+            }
+            ]]></style>
+        </layer>
 	</map-source>
 
 	<map-source name="census_cities" type="wfs" active="true" srs="EPSG:4269"> 
@@ -181,13 +181,6 @@
         ]]></style>
 
     </map-source>
-
-
-	<map-source name="highlight" type="mapserver">
-		<file/>
-		<layer name="highlight" status="off"/>
-		<param name="TRANSPARENT" value="TRUE"/>
-	</map-source>
 
 	<map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
 		<file>./demo/scalebars/scalebar_miles.map</file>
