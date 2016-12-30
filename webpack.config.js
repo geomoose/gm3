@@ -63,6 +63,9 @@ module.exports = {
             }
         }
     },
+    externals: {
+        openlayers: true
+    },
     plugins: [
         //new webpack.HotModuleReplacementPlugin()
     ]
