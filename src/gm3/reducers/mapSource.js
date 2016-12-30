@@ -90,7 +90,7 @@ function changeLayerFeatures(state, action) {
             // add features.
             if(action.type === MAPSOURCE.ADD_FEATURES) {
                 // add an ID to the features
-                for(var x = 0, xx = actions.features.length; x < xx; x++) {
+                for(var x = 0, xx = action.features.length; x < xx; x++) {
                     action.features[x][id_prop] = uuid();
                 }
                 layer.features = layer.features.concat(action.features);
