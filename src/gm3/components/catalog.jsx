@@ -170,6 +170,10 @@ export class Catalog extends Component {
             this.toggleRefreshLayer(layer);
         }
 
+        // this prevents a React warning about the 
+        //  checkboxes not having an onChange event.
+        let doNothing = () => {};
+
         let layer_classes = ['layer'];
 
         // only show the refresh icon when a layer has been configured
@@ -188,14 +192,13 @@ export class Catalog extends Component {
             layer_classes.push('refresh');
         }
 
-
         // TODO: Check layer for minscale/maxscale against
         //       the mapView.
 
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label"> 
-                    <input type="checkbox" onClick={toggle} checked={layer.on} />
+                    <input type="checkbox" onChange={doNothing} onClick={toggle} checked={layer.on} />
                     <i className="favorite-icon" onClick={toggleFavorite}/> 
                     <span onClick={toggle}>
                         {layer.label}
