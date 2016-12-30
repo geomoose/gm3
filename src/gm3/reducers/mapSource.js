@@ -26,6 +26,7 @@
  *
  */
 
+import uuid from 'uuid';
 import { MAPSOURCE } from '../actionTypes';
 
 /** Use this to toggle boolean values on a layer.
@@ -59,6 +60,76 @@ function setLayerAttribute(state, action, attr) {
     return Object.assign({}, state, mix);
 }
 
+
+/** Change the features in a layer.
+ *
+ *  This handles removing and adding features to a layer. There is
+ *  no bespoke 'update' process at this point.  New features are tagged
+ *  with a "_uuid" property in order to identify them.
+ *
+ *  All features passed in should be *GeoJson* feature not OpenLayers
+ *  features.  The map handles that.
+ */
+function changeLayerFeatures(state, action) {
+    const map_source = state[action.mapSourceName];
+    const layers = [];
+    let changed = false;
+
+    const id_prop = '_uuid';
+
+    for(let i = 0, ii = map_source.layers.length; i < ii; i++) {
+        if(map_source.layers[i].name === action.layerName) {
+            let layer = Object.assign({}, map_source.layers[i]);
+
+            // ensure there is a features array in the layer.
+            //  this is not gauranteed on initialization.
+            if(!layer.features) {
+                layer.features = [];
+                layer.featuresVersion = 0;
+            }
+            // add features.
+            if(action.type === MAPSOURCE.ADD_FEATURES) {
+                // add an ID to the features
+                for(var x = 0, xx = actions.features.length; x < xx; x++) {
+                    action.features[x][id_prop] = uuid();
+                }
+                layer.features = layer.features.concat(action.features);
+                layer.featuresVersion += 1;
+            // clear features
+            } else if(action.type === MAPSOURCE.CLEAR_FEATURES) {
+                layer.features = [];
+                layer.featuresVersion += 1;
+            // delete a specific feature
+            } else if(action.type === MAPSOURCE.REMOVE_FEATURE) {
+                let features = [];
+                for(let f of layers.features) {
+                    if(f.properties[id_prop] !== action.id) {
+                        features.push(f);
+                    }
+                }
+                layer.features = features;
+                layer.featuresVersion += 1;
+            }
+            layers.push(layer);
+
+            changed = true;
+        } else {
+            layers.push(map_source.layers[i]);
+        }
+    }
+
+    // if there was a miss in the tree, then do not return a change
+    if(changed) {
+        const ms = {};
+        ms[action.mapSourceName] = Object.assign({}, state[action.mapSourceName], {
+            layers: layers
+        });
+        return Object.assign({}, state, ms);
+    }
+
+    return state;
+}
+
 export default function mapSource(state = [], action) {
     switch(action.type) {
         case MAPSOURCE.LAYER_VIS:
@@ -90,6 +161,13 @@ export default function mapSource(state = [], action) {
                     refresh: action.refresh
                 });
                 return Object.assign({}, state, ms);
+            }
+            return state;
+        case MAPSOURCE.ADD_FEATURES:
+        case MAPSOURCE.CLEAR_FEATURES:
+        case MAPSOURCE.REMOVE_FEATURE:
+            if(state[action.mapSourceName]) {
+                return changeLayerFeatures(state, action);
             }
             return state;
         default:

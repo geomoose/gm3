@@ -44,6 +44,8 @@ class ServiceManager extends Component {
         super();
         this.services = {};
 
+        this.finishedQueries = {};
+
         this.startQuery = this.startQuery.bind(this); 
         this.drawTool = this.drawTool.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
@@ -88,6 +90,9 @@ class ServiceManager extends Component {
 
         if(query.progress === 'finished' && this.props.services[query.service]) {
             let service = this.props.services[query.service];
+            if(service.renderQueryResults) {
+                service.renderQueryResults(queryId, query);
+            }
             if(service.resultsAsHtml) {
                 html_contents = service.resultsAsHtml(queryId, query);
             }
@@ -148,6 +153,63 @@ class ServiceManager extends Component {
         );
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        for(let query_id of nextProps.queries.order) {
+            if(!this.finishedQueries[query_id]) {
+                let query = nextProps.queries[query_id];
+                if(query && query.progress === 'finished') {
+                    this.finishedQueries[query_id] = true;
+                    let service = this.props.services[query.service];
+                    if(service.renderQueryResults) {
+                        service.renderQueryResults(query_id, query);
+                    }
+                }
+            }
+        }
+
+        if(this.props.queries.service !== nextProps.queries.service) {
+            return true;
+        }
+
+        // compare to the two sets of queries.
+        const old_queries = this.props.queries;
+        const new_queries = nextProps.queries;
+        const old_keys = Object.keys(old_queries);
+        const new_keys = Object.keys(new_queries);
+        // quicky check
+        if(old_keys.length !== new_keys.length) {
+            return true;
+        }
+
+        // each array is the same length (see the test above)
+        const len = old_keys.length;
+        // the arrays are un-sorted so go through each and 
+        //   if there is any missing keys, then kick back a true 
+        for(let i = 0; i < len; i++) {
+            let found = false;
+            for(let j = 0; j < len && !found; j++) {
+                if(new_keys[i] === old_keys[j]) {
+                    let old_q = old_queries[old_keys[j]];
+                    let new_q = new_queries[new_keys[j]];
+                    // these are the same
+                    if(old_q === null && new_q === null) {
+                        found = true;
+                    } else if(old_q === null || new_q === null) {
+                        // these differ, this check prevents the
+                        //  next check from happening and this should
+                        //  actually keep found set to false.
+                        found = false;
+                    } else if(old_q.progress === new_q.progress) {
+                        found = true;
+                    }
+                }
+            }
+            if(!found) { return true; }
+        }
+
+        return false;
+    }
+
     render() {
         if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
@@ -159,8 +221,6 @@ class ServiceManager extends Component {
                     {service_def.tools.Point && <div><button onClick={ () => { this.drawTool('Point') } }>Draw Point</button></div>}
                     {service_def.tools.LineString && <div><button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button></div>}
                     {service_def.tools.Polygon && <div><button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button></div>}
-                    <br/>
-                    <br/>
                     { service_def.fields.map(this.renderServiceField) }
                     <button onClick={() => { this.closeForm() }}>Close</button>
                     <button onClick={() => { this.startQuery(service_name) }}>Go</button>

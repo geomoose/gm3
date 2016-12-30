@@ -360,3 +360,17 @@ export function setRefresh(mapSourceName, refreshSeconds) {
         refresh: refreshSeconds
     }
 }
+
+export function addFeatures(mapSourceName, layerName, features) {
+    return {
+        type: MAPSOURCE.ADD_FEATURES,
+        mapSourceName, layerName, features
+    };
+}
+
+export function clearFeatures(mapSourceName, layerName) {
+    return {
+        type: MAPSOURCE.CLEAR_FEATURES,
+        mapSourceName, layerName
+    };
+}

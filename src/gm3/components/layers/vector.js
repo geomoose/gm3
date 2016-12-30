@@ -98,6 +98,24 @@ export function createLayer(mapSource) {
 /** Ensure that the Vector parameters all match.
  */
 export function updateLayer(layer, mapSource) {
-    // nothing to do here.
+    if(mapSource.type === 'vector') {
+        // vector layer features are defined by what
+        // is stored in mapSource.features
+        const layer_version = layer.get('featuresVersion');
+        // check to see if there was an update to the features
+        if(layer_version !== mapSource.layers[0].featuresVersion) {
+            // this is a bit heavy-handed strategy.
+            const source = layer.getSource();
+            // clear the layer without setting off events.
+            source.clear(true);
+            // bring in the new features.
+            const features = (new ol.format.GeoJSON()).readFeatures({
+                type: 'FeatureCollection', features: mapSource.layers[0].features
+            });
+            source.addFeatures(features);
+
+            // update the version number
+            layer.set('featuresVersion', mapSource.layers[0].featuresVersion);
+        }
+    }
 }
-    

@@ -51,6 +51,8 @@ import { getLayerFromPath, getVisibleLayers, getActiveMapSources } from './actio
 
 import Mark from 'markup-js';
 
+import * as util from './util';
+
 class Application {
 
     constructor(config) {
@@ -213,10 +215,28 @@ class Application {
         this.store.dispatch(zoomToExtent(extent));
     }
 
+    /** Generic bridge to the application's store's dispatch function.
+     *
+     */
     dispatch(action) {
         this.store.dispatch(action);
     }
 
+    /** Remove all the features from a vector layer.
+     */
+    clearFeatures(path) {
+        const ms_name = util.getMapSourceName(path);
+        const layer_name = util.getLayerName(path);
+        this.store.dispatch(mapSourceActions.clearFeatures(ms_name, layer_name));
+    }
+
+    /** Add features to a vector layer.
+     */
+    addFeatures(path, features) {
+        const ms_name = util.getMapSourceName(path);
+        const layer_name = util.getLayerName(path);
+        this.store.dispatch(mapSourceActions.addFeatures(ms_name, layer_name, features));
+    }
 };
 
 
