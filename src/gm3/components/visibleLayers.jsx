@@ -30,16 +30,31 @@ import { FavoriteLayers } from './favorites';
 
 class VisibleLayers extends FavoriteLayers {
 
+    constructor() {
+        super();
+        this.nVisible = 0;
+    }
+
     shouldRenderNode(node) {
-        return (!node.children && node.on);
+        let vis = (!node.children && node.on);
+        if(vis) {
+            this.nVisible+=1;
+        }
+        return vis;
     }
 
     render() {
+        this.nVisible = 0;
+
+        let layers = Object.keys(this.props.catalog).map(this.renderTreeNode)
+
+        if(this.nVisible === 0) {
+            layers = (<i>No layers are visible</i>);
+        }
+        
         return (
             <div className="catalog visble-layers flat">
-                {
-                    Object.keys(this.props.catalog).map(this.renderTreeNode)
-                }
+                { layers }
             </div>
         );
     }

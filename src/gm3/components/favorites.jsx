@@ -32,6 +32,8 @@ export class FavoriteLayers extends Catalog {
 
     constructor() {
         super();
+
+        this.nFavorites = 0;
     }
 
     shouldRenderNode(node) {
@@ -41,17 +43,25 @@ export class FavoriteLayers extends Catalog {
     renderTreeNode(childId) {
         let node = this.props.catalog[childId];
         if(this.shouldRenderNode(node)) {
+            this.nFavorites += 1;
             return this.renderLayer(node);
         }
         return '';
     }
 
     render() {
+        // reset the favorites counter.
+        this.nFavorites = 0;
+
+        let favorites = Object.keys(this.props.catalog).map(this.renderTreeNode)
+
+        if(this.nFavorites === 0) {
+           favorites = (<i>No layers marked as favorite</i>);
+        }
+
         return (
             <div className="catalog favorites flat">
-                {
-                    Object.keys(this.props.catalog).map(this.renderTreeNode)
-                }
+                { favorites }
             </div>
         );
     }
