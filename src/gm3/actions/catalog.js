@@ -88,8 +88,30 @@ function parseLayer(store, layerXml) {
         on: false,
         favorite: false,
         refreshEnabled: false,
-        refresh: null
+        refresh: null,
+        tools: []
     };
+
+    // This is the first attempt at a new model
+    //  for parsing the tool availabiltiy from the XML,
+    //  somehwere this should be more configurable but 
+    //  for now it'll "work."
+    const tools = {
+        upload: false, 
+        clear: false,
+        fade: false, unfade: false,
+        up: false, down: false
+    };
+
+    // iterate through the available tools, if it's set in the XML
+    //  then honour that setting, otherwise, use the default.
+    for(let tool_name in tools) {
+        if(util.parseBoolean(layerXml.getAttribute(tool_name), false)) {
+            new_layer.tools.push(tool_name);
+        } else if(tools[tool_name]) {
+            new_layer.tools.push(tool_name);
+        }
+    }
 
     // parse a refresh time if it exists
     if(layerXml.getAttribute('refresh')) {

@@ -97,7 +97,7 @@ export function createLayer(mapSource) {
 
 /** Ensure that the Vector parameters all match.
  */
-export function updateLayer(layer, mapSource) {
+export function updateLayer(map, layer, mapSource) {
     if(mapSource.type === 'vector') {
         // vector layer features are defined by what
         // is stored in mapSource.features
@@ -108,8 +108,13 @@ export function updateLayer(layer, mapSource) {
             const source = layer.getSource();
             // clear the layer without setting off events.
             source.clear(true);
+            // setup the JSON parser
+            const output_format = new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326',
+                featureProjection: map.getView().getProjection()
+            });
             // bring in the new features.
-            const features = (new ol.format.GeoJSON()).readFeatures({
+            const features = output_format.readFeatures({
                 type: 'FeatureCollection', features: mapSource.layers[0].features
             });
             source.addFeatures(features);

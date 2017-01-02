@@ -51,7 +51,7 @@ export function createLayer(mapSource) {
 
 /** Ensure that the XYZ parameters all match.
  */
-export function updateLayer(layer, mapSource) {
+export function updateLayer(map, layer, mapSource) {
     // pull in the open layers source
     let src = layer.getSource();
     // get the new definition

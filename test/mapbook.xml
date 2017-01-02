@@ -50,14 +50,17 @@
 		The mapping services define the source of the mapping data.
 	-->
 
-	<map-source name="sketch" type="vector" active="true" status="off" activate="true" up="true" down="true" fade="false" unfade="false" metadata="false" legend="false" draw-point="true" draw-line="true" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true" title="Drawing and Markup">
-		<style type="stylemap"><![CDATA[
-		{
-			"label" : "${title}",
-			"strokeColor" : "${line_color}",
-			"fillColor" : "${fill_color}"
-		}
-		]]></style>
+	<map-source name="sketch" type="vector">
+        <layer name="default" status="on">
+            <style><![CDATA[
+            {
+                "line-color" : "#E9967A",
+                "fill-color" : "#E9967A",
+                "fill-opacity" : 0.5
+            }
+            ]]></style>
+        </layer>
+
 		<attribute name="title" type="user" default-value="" label="Feature Label:"/>
 		<attribute name="line_color" type="color" default-value="#ff0000" label="Stroke Color:"/>
 		<attribute name="fill_color" type="color" default-value="#ff0000" label="Fill Color:"/>
@@ -538,7 +541,7 @@
 		<!-- Layer for testing international character support. 
 		<layer title="Test International Characters" src="international/testing"/>
 		-->
-		<layer title="Drawing and Markup" activate="true" src="sketch" fade="false" unfade="false" metadata="false" legend="false" draw-point="true" draw-line="true" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
+		<layer title="Drawing and Markup" src="sketch/default" upload="true" clear="true"/>
 		
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>

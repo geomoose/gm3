@@ -81,17 +81,17 @@ class Map extends Component {
         var ol_layer = this.olLayers[sourceName];
         switch(map_source.type) {
             case 'wms' :
-                wmsLayer.updateLayer(ol_layer, map_source);
+                wmsLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'xyz' :
-                xyzLayer.updateLayer(ol_layer, map_source);
+                xyzLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'ags' :
-                agsLayer.updateLayer(ol_layer, map_source);
+                agsLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'vector' :
             case 'wfs' : 
-                vectorLayer.updateLayer(ol_layer, map_source);
+                vectorLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             default:
                 console.info('Unhandled map-source type: ' + map_source.type);
@@ -221,10 +221,17 @@ class Map extends Component {
     wfsGetFeatureQuery(queryId, query, queryLayer) {
         // TODO: This should come from the store or the map.
         //       ol3 makes a lot of web-mercator assumptions.
-        let projection = 'EPSG:3857';
+        let projection = this.map.getView().getProjection();
         let geom_field = 'geom';
 
-        let geojson = new ol.format.GeoJSON();
+        // the internal storage mechanism requires features
+        //  returned from the query be stored in 4326 and then
+        //  reprojected on render.
+        const geojson = new ol.format.GeoJSON({
+            dataProjection: 'EPSG:4326',
+            featureProjection: this.map.getView().getProjection()
+        });
+
         let view = this.props.mapView;
 
         // get the map source
@@ -290,7 +297,7 @@ class Map extends Component {
         let output_format = 'text/xml; subtype=gml/2.1.2';
 
         let feature_request = new ol.format.WFS().writeGetFeature({
-            srsName: projection,
+            srsName: projection.getCode(),
             featurePrefix: type_parts[0],
             featureTypes: [type_parts[1]],
             outputFormat: output_format,
@@ -303,6 +310,8 @@ class Map extends Component {
         //  layer.
         let wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
 
+        const map = this.map;
+
         Request({
             url: wfs_url,
             method: 'post',
@@ -313,8 +322,10 @@ class Map extends Component {
                 //  error message as a 200, so this still needs checked.
                 if(response) {
                     let gml_format = new ol.format.GML2();
+
                     let features = gml_format.readFeatures(response); 
                     let js_features = geojson.writeFeaturesObject(features).features;
+                    console.log('GOT FEATURES', js_features);
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)

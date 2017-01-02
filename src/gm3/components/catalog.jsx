@@ -37,6 +37,8 @@ import { connect } from 'react-redux';
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
+import { UploadTool, ClearTool } from './catalog/tools';
+
 const mapCatalogToProps = function(store) {
     return {
         mapSources: store.mapSources,
@@ -194,6 +196,18 @@ export class Catalog extends Component {
 
         // TODO: Check layer for minscale/maxscale against
         //       the mapView.
+        // if(isOutOfScale(layer)) {
+        //  layer_classes.push('out-of-scale');
+        // }
+
+        let tools = [];
+
+        if(layer.tools.indexOf('upload') >= 0) {
+            tools.push(<UploadTool store={this.props.store} key={layer.id + '_upload'} layer={layer} />);
+        }
+        if(layer.tools.indexOf('clear') >= 0) {
+            tools.push(<ClearTool store={this.props.store} key={layer.id + '_clear'} layer={layer} />);
+        }
 
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
@@ -204,6 +218,9 @@ export class Catalog extends Component {
                         {layer.label}
                     </span>
                     <i className="refresh-icon" onClick={toggleRefresh}/>
+                </div>
+                <div className="layer-tools">
+                    {tools}
                 </div>
             </div>
         );
