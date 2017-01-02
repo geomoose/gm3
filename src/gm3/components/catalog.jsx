@@ -158,6 +158,27 @@ export class Catalog extends Component {
         }
     }
 
+
+    /** Parcel out the rendering of the tools.
+     */
+    getTools(layer) {
+        let tools = [];
+        for(let tool_name of layer.tools) {
+            switch(tool_name) {
+                case 'upload':
+                    tools.push(<UploadTool store={this.props.store} key={layer.id + '_upload'} layer={layer} />);
+                    break;
+                case 'clear':
+                    tools.push(<ClearTool store={this.props.store} key={layer.id + '_clear'} layer={layer} />);
+                    break;
+                default:
+                    // pass
+            }
+        }
+        return tools;
+    }
+
+
     renderLayer(layer) {
         let toggle = () => {
             this.toggleLayer(layer);
@@ -178,12 +199,6 @@ export class Catalog extends Component {
 
         let layer_classes = ['layer'];
 
-        // only show the refresh icon when a layer has been configured
-        //  with the ability to do auto-refresh.
-        if(layer.refresh !== null && layer.refresh > 0) {
-            layer_classes.push('has-refresh');
-        }
-
         if(this.isFavoriteLayer(layer)) {
             layer_classes.push('favorite');
         }
@@ -200,24 +215,24 @@ export class Catalog extends Component {
         //  layer_classes.push('out-of-scale');
         // }
 
-        let tools = [];
+        // only show the refresh icon when a layer has been configured
+        //  with the ability to do auto-refresh.
+        let refresh_tool = '';
+        if(layer.refresh !== null && layer.refresh > 0) {
+            refresh_tool = (<i className="refresh-icon" onClick={toggleRefresh}/>);
+        }
 
-        if(layer.tools.indexOf('upload') >= 0) {
-            tools.push(<UploadTool store={this.props.store} key={layer.id + '_upload'} layer={layer} />);
-        }
-        if(layer.tools.indexOf('clear') >= 0) {
-            tools.push(<ClearTool store={this.props.store} key={layer.id + '_clear'} layer={layer} />);
-        }
+        let tools = this.getTools(layer);
 
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label"> 
-                    <input type="checkbox" onChange={doNothing} onClick={toggle} checked={layer.on} />
+                    <input className="checkbox" type="checkbox" onChange={doNothing} onClick={toggle} checked={layer.on} />
                     <i className="favorite-icon" onClick={toggleFavorite}/> 
                     <span onClick={toggle}>
                         {layer.label}
                     </span>
-                    <i className="refresh-icon" onClick={toggleRefresh}/>
+                    {refresh_tool}
                 </div>
                 <div className="layer-tools">
                     {tools}
