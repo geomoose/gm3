@@ -54,7 +54,6 @@ module.exports = {
     },
     devServer: {
         contentBase: './',
-        hot: true,
         port: 4000,
         proxy: {
             '/mapserver' : {
