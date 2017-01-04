@@ -21,6 +21,8 @@
 
 .tab-content {
     display: none;
+    position: relative;
+
 }
 
 .tab-content.show {

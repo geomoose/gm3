@@ -60,6 +60,13 @@ export class Catalog extends Component {
 
         this.toggleLayer = this.toggleLayer.bind(this);
         this.toggleFavoriteLayer = this.toggleFavoriteLayer.bind(this);
+
+        this.filterCatalog = this.filterCatalog.bind(this);
+
+        this.state = {
+            searchFilter: ''
+        };
+        this.searchable = true;
     }
 
     /** Change the layer's visibility state
@@ -270,13 +277,49 @@ export class Catalog extends Component {
         if(node.children) {
             return this.renderGroup(node);
         } else {
-            return this.renderLayer(node);
+
+            if(this.searchable && this.shouldLayerRender(node)) {
+                return this.renderLayer(node);
+            } else {
+                return null;
+            }
         }
+    }
+
+    shouldLayerRender(layer) {
+        if(this.state.searchFilter !== '') {
+            // searchFilter is always lower case!
+            // If the search filter is in the title then return true.
+            return (layer.label.toLowerCase().indexOf(this.state.searchFilter) >= 0);
+        }
+        return true;
+    }
+
+    filterCatalog(evt) {
+        let search_term = evt.target.value;
+        this.setState({searchFilter: search_term.toLowerCase()});
     }
     
     render() {
+        let searchbox = '';
+        let catalog_classes = 'catalog'
+
+        // if the catalog is searchable add a searchbox!
+        if(this.searchable) {
+            searchbox = (<div className='searchbox'>
+                <input onChange={this.filterCatalog} placeholder='Search catalog'/>
+            </div>); 
+
+            catalog_classes += ' searchable';
+        }
+
+        if(this.state.searchFilter !== '') {
+            catalog_classes += ' flat';
+        }
+
         return (
-            <div className="catalog">
+            <div className={ catalog_classes }>
+                { searchbox }
                 {
                     this.props.catalog.root.children.map(this.renderTreeNode)
                 }
