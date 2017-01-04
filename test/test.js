@@ -47,6 +47,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.VisibleLayers, 'visible-layers');
     app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
     app.add(gm3.components.Toolbar, 'toolbar');
+    app.add(gm3.components.Grid, 'results-grid');
     app.add(gm3.components.Map, 'map');
 
     tracker.startTracking();

@@ -175,6 +175,34 @@
                     </div>
                 </div>
             ]]></template>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "PIN"
+                },
+                {
+                    "title" : "Owner Name",
+                    "property" : "OWNER_NAME",
+                    "sortAs" : "string"
+                },
+                {
+                    "title" : "Est. Value",
+                    "property" : "EMV_TOTAL",
+                    "sortAs" : "number"
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr>
+                <td><a onClick="app.removeFeature('highlight', 'highlight', '{{ properties._uuid }}')"><i class="fa fa-trash"></i></a></td>
+                <td>{{ properties.PIN }}</td>
+                <td>{{ properties.OWNER_NAME }}</td>
+                <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
+            </td>
+            ]]></template>
         </layer>
 		<file>./demo/parcels/parcels.map</file>
         <style><![CDATA[
