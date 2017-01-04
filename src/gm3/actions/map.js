@@ -102,3 +102,18 @@ export function zoomToExtent(extent) {
         extent
     }
 }
+
+export function removeQuery(queryId) {
+    return {
+        type: MAP.QUERY_REMOVE,
+        id: queryId
+    };
+}
+
+export function removeQueryResults(queryId, filter) {
+    return {
+        type: MAP.QUERY_RESULTS_REMOVE,
+        id: queryId,
+        filter
+    };
+}

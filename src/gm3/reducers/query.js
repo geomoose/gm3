@@ -52,6 +52,62 @@ function queryProgress(queryId, state, progress) {
     return new_state;
 }
 
+/** Remove specific results from a query.
+ *
+ *  @param state The state 
+ *  @param queryId A query ID
+ *  @param filter An object describing matching feature properties.
+ *
+ * @returns A new state.
+ */
+function filterQueryResults(state, queryId, filter) {
+    let new_results = {};
+    // iterate through the paths
+    for(let path in state[queryId].results) {
+        let new_features = [];
+        for(let feature of state[queryId].results[path]) {
+            // only remove a feature from the list
+            //  if ALL the filters match
+            var exclude = true;
+            for(let filter_key in filter) {
+                exclude = exclude && (filter[filter_key] === feature.properties[filter_key]);
+            }
+
+            if(!exclude) {
+                new_features.push(feature);
+            }
+        }
+
+        new_results[path] = new_features;
+    }
+
+    let new_query = Object.assign({}, state[queryId], {results: new_results});
+
+    let new_state = Object.assign({}, state);
+    new_state[queryId] = new_query;
+    return new_state;
+}
+
+/** Remove a query from the state.
+ *
+ *  @param state The state
+ *  @param queryId The query ID to remove.
+ *
+ * @returns updated state.
+ */
+function removeQuery(state, queryId) {
+    let new_order = [];
+    for(let id of state.order) {
+        if(id != queryId) {
+            new_order.push(id);
+        }
+    }
+
+    let new_state = Object.assign({}, state, {order: new_order});
+    delete new_state[queryId];
+    return new_state;
+}
+
 export default function queryReducer(state = default_query, action) {
     const new_query = {};
     switch(action.type) {
@@ -93,6 +149,10 @@ export default function queryReducer(state = default_query, action) {
             const rendered_query = {};
             rendered_query[action.id] = Object({}, state[action.id], {rendered: rendered_results});
             return Object.assign({}, state, rendered_query); 
+        case MAP.QUERY_RESULTS_REMOVE:
+            return filterQueryResults(state, action.id, action.filter);
+        case MAP.QUERY_REMOVE:
+            return removeQuery(state, action.id);
         default:
             return state;
     }

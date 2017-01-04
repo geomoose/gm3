@@ -26,7 +26,7 @@ import React, {Component, PropTypes } from 'react';
 
 import { connect } from 'react-redux';
 
-import { createQuery, changeTool, renderedResultsForQuery} from '../actions/map';
+import { removeQuery, createQuery, changeTool, renderedResultsForQuery} from '../actions/map';
 
 import { startService, finishService } from '../actions/service';
 
@@ -101,6 +101,10 @@ class ServiceManager extends Component {
         return {__html: html_contents};
     }
 
+    removeQuery(queryId) {
+        this.props.store.dispatch(removeQuery(queryId));
+    }
+
 
     /** Render queries as they are coming in.
      *
@@ -109,10 +113,23 @@ class ServiceManager extends Component {
      */
     renderQuery(queryId) {
         let query = this.props.queries[queryId];
+        let service_title = this.props.services[query.service].resultsTitle;
+
+        // this is a little ungangly but it will help those who
+        //  forget to specify a results title.
+        if(!service_title) {
+            service_title = this.props.services[query.service].title + ' Results';
+        }
 
         return (
             <div key={queryId}>
-                <b>{queryId}:</b> {query.progress}
+                <div className='results-header'>
+                    { service_title }
+                    <div className='results-tools'>
+                        <i className='results-remove-icon' onClick={() => { this.removeQuery(queryId); }}></i>
+                    </div>
+                </div>
+                <div className='results-query-id'>{ queryId }</div>
                 <div dangerouslySetInnerHTML={this.renderQueryResults(queryId, query)}/>
             </div>
         );

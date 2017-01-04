@@ -33,6 +33,9 @@ function IdentifyService(Application, options) {
     /** Define the title of the service. */
     this.title = options.title ? options.title : 'Identify';
 
+    /** Title to show at the top of the results. */
+    this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Identify Results';
+
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@identify';
 

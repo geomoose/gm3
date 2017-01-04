@@ -33,6 +33,9 @@ function SearchService(Application, options) {
     /** Define the title of the service. */
     this.title = options.title ? options.title : 'Search';
 
+    /** Title to show at the top of the results. */
+    this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Search Results';
+
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@search';
 
