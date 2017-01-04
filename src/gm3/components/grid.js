@@ -37,15 +37,6 @@ import * as uuid from 'uuid';
 import { getLayerFromPath } from '../actions/mapSource';
 
 import Mark from 'markup-js';
-
-const FORMAT_OPTIONS = {
-    pipes: {
-        localize: function(n) {
-            return n.toLocaleString();
-        }
-    }
-}
-
 class Grid extends Component {
 
     constructor() {
@@ -67,7 +58,7 @@ class Grid extends Component {
 
         let html = '';
         for(let feature of results) {
-            html += Mark.up(rowTemplate, feature, FORMAT_OPTIONS);
+            html += Mark.up(rowTemplate, feature, util.FORMAT_OPTIONS);
         }
 
         return {__html: html};

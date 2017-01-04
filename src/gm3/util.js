@@ -181,3 +181,20 @@ export function formatUrlParameters(params) {
     }
     return formatted_params.join('&');
 }
+
+
+/** Formatting options for markup-js
+ *
+ *  These options are centralized here so they can
+ *  be included anywhere markup is used.
+ *
+ */
+export const FORMAT_OPTIONS = {
+    pipes: {
+        localize: function(n) {
+            return n.toLocaleString();
+        }
+    }
+}
+
+

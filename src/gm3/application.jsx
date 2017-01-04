@@ -179,7 +179,7 @@ class Application {
                 if(template_contents) {
                     for(let feature of query.results[path]) {
                         // TODO: Make this plugable, check by template "type"?!?
-                        html_contents += Mark.up(template_contents, feature);
+                        html_contents += Mark.up(template_contents, feature, util.FORMAT_OPTIONS);
                     }
                 }
             }
