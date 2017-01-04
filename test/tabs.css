@@ -8,6 +8,7 @@
     display: inline-block;
     background-color: #efefef;
     cursor: pointer;
+    height: 20px;
 }
 
 .tab.show {
@@ -17,6 +18,8 @@
     
 
 .tabs {
+    height: 34px; /* 20px height + 2 * 5px padding - 1px */
+    border-bottom: solid 1px black;
 }
 
 .tab-content {
