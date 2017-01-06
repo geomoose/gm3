@@ -374,3 +374,11 @@ export function clearFeatures(mapSourceName, layerName) {
         mapSourceName, layerName
     };
 }
+
+
+export function removeFeatures(mapSourceName, layerName, filter) {
+    return {
+        type: MAPSOURCE.REMOVE_FEATURES,
+        mapSourceName, layerName, filter
+    };
+}

@@ -33,6 +33,7 @@ import Request from 'reqwest';
 import { createStore, combineReducers } from 'redux';
 
 import * as mapSourceActions from './actions/mapSource';
+import * as mapActions from './actions/map';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
@@ -236,6 +237,22 @@ class Application {
         const ms_name = util.getMapSourceName(path);
         const layer_name = util.getLayerName(path);
         this.store.dispatch(mapSourceActions.addFeatures(ms_name, layer_name, features));
+    }
+
+    /** Removes features from a query.
+     */
+    removeQueryResults(queryId, filter) {
+        this.store.dispatch(mapActions.queryProgress(queryId));
+        this.store.dispatch(mapActions.removeQueryResults(queryId, filter));
+        this.store.dispatch(mapActions.finishQuery(queryId));
+    }
+
+    /** Remove features from a vector layer (with a filter)
+     */
+    removeFeatures(path, filter) {
+        const ms_name = util.getMapSourceName(path);
+        const layer_name = util.getLayerName(path);
+        this.store.dispatch(mapSourceActions.removeFeatures(ms_name, layer_name, filter));
     }
 };
 

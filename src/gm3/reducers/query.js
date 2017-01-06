@@ -64,21 +64,7 @@ function filterQueryResults(state, queryId, filter) {
     let new_results = {};
     // iterate through the paths
     for(let path in state[queryId].results) {
-        let new_features = [];
-        for(let feature of state[queryId].results[path]) {
-            // only remove a feature from the list
-            //  if ALL the filters match
-            var exclude = true;
-            for(let filter_key in filter) {
-                exclude = exclude && (filter[filter_key] === feature.properties[filter_key]);
-            }
-
-            if(!exclude) {
-                new_features.push(feature);
-            }
-        }
-
-        new_results[path] = new_features;
+        new_results[path] = util.filterFeatures(state[queryId].results[path], filter);
     }
 
     let new_query = Object.assign({}, state[queryId], {results: new_results});
@@ -134,6 +120,9 @@ export default function queryReducer(state = default_query, action) {
             // results are stored as results.layer = [features,]
             const new_results = {};
             new_results[action.layer] = action.features;
+            for(let i = 0, ii = action.features.length; i < ii; i++) {
+                new_results[action.layer][i].query = action.id;
+            }
             const all_results = Object.assign({}, state[action.id].results, new_results);
             // create the new query object
             new_query[action.id] = Object.assign({}, state[action.id], {results: all_results});

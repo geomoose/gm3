@@ -197,4 +197,30 @@ export const FORMAT_OPTIONS = {
     }
 }
 
+/** Filter features from a list of features
+ *
+ *  @param {Array} features The list of features
+ *  @param {Object} filter key-value pairs of filter for the features.
+ *
+ * @returns New list of features.
+ */
+export function filterFeatures(features, filter) {
+    let new_features = [];
+
+    for(let feature of features) {
+        // only remove a feature from the list
+        //  if ALL the filters match
+        var exclude = true;
+        for(let filter_key in filter) {
+            exclude = exclude && (filter[filter_key] === feature.properties[filter_key]);
+        }
+
+        if(!exclude) {
+            new_features.push(feature);
+        }
+    }
+
+    return new_features;
+}
+
 

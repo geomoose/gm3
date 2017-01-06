@@ -28,6 +28,7 @@
 
 import uuid from 'uuid';
 import { MAPSOURCE } from '../actionTypes';
+import { filterFeatures } from '../util';
 
 /** Use this to toggle boolean values on a layer.
  *
@@ -102,12 +103,15 @@ function changeLayerFeatures(state, action) {
             // delete a specific feature
             } else if(action.type === MAPSOURCE.REMOVE_FEATURE) {
                 let features = [];
-                for(let f of layers.features) {
+                for(let f of layer.features) {
                     if(f.properties[id_prop] !== action.id) {
                         features.push(f);
                     }
                 }
                 layer.features = features;
+                layer.featuresVersion += 1;
+            } else if(action.type === MAPSOURCE.REMOVE_FEATURES) {
+                layer.features = filterFeatures(layer.features, action.filter);
                 layer.featuresVersion += 1;
             }
             layers.push(layer);
@@ -166,6 +170,7 @@ export default function mapSource(state = [], action) {
         case MAPSOURCE.ADD_FEATURES:
         case MAPSOURCE.CLEAR_FEATURES:
         case MAPSOURCE.REMOVE_FEATURE:
+        case MAPSOURCE.REMOVE_FEATURES:
             if(state[action.mapSourceName]) {
                 return changeLayerFeatures(state, action);
             }

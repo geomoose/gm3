@@ -72,6 +72,13 @@ export function finishQuery(queryId) {
     }
 }
 
+export function queryProgress(queryId) {
+    return {
+        type: MAP.QUERY_PROGRESS,
+        id: queryId
+    };
+}
+
 export function resultsForQuery(queryId, layerName, failed, features) {
     return {
         type: MAP.QUERY_RESULTS,
