@@ -41,23 +41,91 @@ class Grid extends Component {
 
     constructor() {
         super();
+
+        // configure the default state of hte sort,
+        //  null means in results-order.
+        this.state = {
+            sortBy: null,
+            sortAs: 'string',
+            sortAsc: true
+        };
+
+        this.nextSort = this.nextSort.bind(this);
+    }
+
+    nextSort(column) {
+        // rotate to the next sort type
+        if(this.state.sortBy === column.property) {
+            // when sorted ascending, go to descending
+            if(this.state.sortAsc) {
+                this.setState({sortAsc: false});
+            // if the sort is descending already, go
+            //  back to a neutral state
+            } else {
+                this.setState({sortBy: null, sortAsc: true});
+            }
+        } else {
+            let sort_as = column.sortAs ? column.sortAs : 'string';
+            this.setState({sortBy: column.property, sortAsc: true, sortAs: sort_as} );
+        }
     }
 
     getHeaderRow(results, headerConf) {
         let header_cells = [];
         let col_id = 0;
         for(let column_def of headerConf) {
-            header_cells.push((<th key={'col' + col_id} >{ column_def.title }</th>));
+            let sort_tool = null; //'no sort';
+            let sort_classes = 'results-sort-icon';
+            let sort_title = 'Click to sort';
+
+            if(column_def.sortAs) {
+                if(this.state.sortBy === column_def.property) {
+                    if(this.state.sortAsc) {
+                        sort_classes += ' asc';
+                    } else {
+                        sort_classes += ' desc';
+                    }
+                }
+                sort_tool = (<i title={ sort_title } onClick={ () => { this.nextSort(column_def); } } className={ sort_classes }></i>);
+            }
+
+            header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool}</th>));
             col_id++;
         }
         return header_cells;
     }
 
+    sortResults(results) {
+        let sorted_results = [].concat(results);
+
+        let sort_col = this.state.sortBy;
+        let sort_asc = this.state.sortAsc; 
+        let sort_as = this.state.sortAs;
+
+        sorted_results.sort(function(a, b) {
+            let value_a = a.properties[sort_col];
+            let value_b = b.properties[sort_col];
+            if(sort_as === 'number') {
+                value_a = parseFloat(value_a);
+                value_b = parseFloat(value_b);
+            }
+            if(sort_asc) {
+                return (value_a > value_b) ? 1 : -1;
+            }
+            return (value_a > value_b) ? -1 : 1;
+        });
+        return sorted_results;
+    }
+
     getRows(results, rowTemplate) {
-        let rows = [];
+        let sorted_rows = results;
+        // check to see if there is a sort function
+        if(this.state.sortBy !== null ) {
+            sorted_rows = this.sortResults(results);
+        }
 
         let html = '';
-        for(let feature of results) {
+        for(let feature of sorted_rows) {
             html += Mark.up(rowTemplate, feature, util.FORMAT_OPTIONS);
         }
 
@@ -73,8 +141,9 @@ class Grid extends Component {
         let grid_cols = null, grid_row = null;
 
         // only render the first query.
-        //const query_id = this.props.queries.order[0];
-        for(let query_id of this.props.queries.order) {
+        const query_id = this.props.queries.order[0];
+        //for(let query_id of this.props.queries.order) {
+        if(query_id) {
             let query = this.props.queries[query_id];
             if(query.progress == 'finished') {
                 let layer_path = Object.keys(query.results)[0];

@@ -81,11 +81,36 @@
 
     .results-remove-icon {
         .fa;
-
         cursor: pointer;
+    }
 
+    .results-remove-icon {
         &:before {
             content: @fa-var-trash;
         }
     }
 }
+
+
+.results-sort-icon {
+    .fa;
+    cursor: pointer;
+
+    &:before {
+        content: @fa-var-sort;
+    }
+}
+
+.results-sort-icon.asc {
+    &:before {
+        content: @fa-var-sort-amount-asc;
+    }
+}
+
+
+.results-sort-icon.desc {
+    &:before {
+        content: @fa-var-sort-amount-desc;
+    }
+}
+
