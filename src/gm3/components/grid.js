@@ -36,7 +36,10 @@ import * as uuid from 'uuid';
 
 import { getLayerFromPath } from '../actions/mapSource';
 
+import * as Papa from 'papaparse';
+
 import Mark from 'markup-js';
+
 class Grid extends Component {
 
     constructor() {
@@ -132,6 +135,46 @@ class Grid extends Component {
         return {__html: html};
     }
 
+    resultsAsCSV(gridCols, features) {
+        let attributes = [];
+        let feature_data = [];
+
+        // get the export columns
+        for(let column of gridCols) {
+            if(column.property) {
+                attributes.push(column.property);
+            }
+        }
+
+        // add the 'header' row with the attribute names
+        feature_data.push(attributes);
+
+        // for each feature, create a row.
+        for(let feature of features) {
+            let row = [];
+            for(let attr of attributes) {
+                row.push(feature.properties[attr]);
+            }
+            feature_data.push(row);
+        }
+
+        // create the data
+        let csv_string = 'data:text/csv;charset=utf-8,' + Papa.unparse(feature_data);
+
+        // create a unique string
+        let uniq = '' + (new Date()).getTime();
+
+        // make a temprary link with a filename and data
+        let temp_a = document.createElement('a');
+        temp_a.setAttribute('download', 'download_'+uniq+'.csv');
+        temp_a.setAttribute('href', encodeURI(csv_string));
+
+        // add the link to the body, click it, and remove it.
+        document.body.appendChild(temp_a);
+        temp_a.click();
+        document.body.removeChild(temp_a);
+    }
+
     render() {
         // contains the cells for the header row
         const header_row = [];
@@ -177,7 +220,7 @@ class Grid extends Component {
         return (
             <div className="gm-grid">
                 <div className="toolbar">
-                    
+                    <i onClick={ () => { this.resultsAsCSV(grid_cols, features) } }className="results-download-icon" title="Download results as CSV"></i>
                 </div>
                 <div className="grid-display">
                     <table>

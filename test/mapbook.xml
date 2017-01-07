@@ -181,7 +181,8 @@
                     "title": ""
                 },
                 {
-                    "title": "PIN"
+                    "title": "PIN",
+                    "property" : "PIN"
                 },
                 {
                     "title" : "Owner Name",

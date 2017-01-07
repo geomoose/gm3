@@ -92,7 +92,7 @@
 }
 
 
-.results-sort-icon {
+.results-sort-icon, .results-download-icon{
     .fa;
     cursor: pointer;
 
@@ -114,3 +114,8 @@
     }
 }
 
+.results-download-icon {
+    &:before {
+        content: @fa-var-download;
+    }
+}
