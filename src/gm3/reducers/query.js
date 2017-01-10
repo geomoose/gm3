@@ -84,7 +84,7 @@ function filterQueryResults(state, queryId, filter) {
 function removeQuery(state, queryId) {
     let new_order = [];
     for(let id of state.order) {
-        if(id != queryId) {
+        if(id !== queryId) {
             new_order.push(id);
         }
     }

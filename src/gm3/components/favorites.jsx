@@ -56,7 +56,7 @@ export class FavoriteLayers extends Catalog {
         let favorites = Object.keys(this.props.catalog).map(this.renderTreeNode)
 
         if(this.nFavorites === 0) {
-           favorites = (<i>No layers marked as favorite</i>);
+            favorites = (<i>No layers marked as favorite</i>);
         }
 
         return (

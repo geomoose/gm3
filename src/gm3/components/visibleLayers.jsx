@@ -38,7 +38,7 @@ class VisibleLayers extends FavoriteLayers {
     shouldRenderNode(node) {
         let vis = (!node.children && node.on);
         if(vis) {
-            this.nVisible+=1;
+            this.nVisible += 1;
         }
         return vis;
     }

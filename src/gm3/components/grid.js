@@ -77,7 +77,7 @@ class Grid extends Component {
         let header_cells = [];
         let col_id = 0;
         for(let column_def of headerConf) {
-            let sort_tool = null; //'no sort';
+            let sort_tool = null; 
             let sort_classes = 'results-sort-icon';
             let sort_title = 'Click to sort';
 
@@ -166,7 +166,7 @@ class Grid extends Component {
 
         // make a temprary link with a filename and data
         let temp_a = document.createElement('a');
-        temp_a.setAttribute('download', 'download_'+uniq+'.csv');
+        temp_a.setAttribute('download', 'download_' + uniq + '.csv');
         temp_a.setAttribute('href', encodeURI(csv_string));
 
         // add the link to the body, click it, and remove it.
@@ -185,10 +185,9 @@ class Grid extends Component {
 
         // only render the first query.
         const query_id = this.props.queries.order[0];
-        //for(let query_id of this.props.queries.order) {
         if(query_id) {
             let query = this.props.queries[query_id];
-            if(query.progress == 'finished') {
+            if(query.progress === 'finished') {
                 let layer_path = Object.keys(query.results)[0];
                 let layer = getLayerFromPath(this.props.store, layer_path);
 
@@ -213,7 +212,7 @@ class Grid extends Component {
         }
         
         // render the empty string if there is nothing to show.
-        if(features === null || features.length == 0) {
+        if(features === null || features.length === 0) {
             return null;
         }
 
