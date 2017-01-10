@@ -68,6 +68,8 @@ class Map extends Component {
         // a hash of interval timers for layers that
         //  are set to auto-refresh
         this.intervals = {};
+
+        this.updateMapSize = this.updateMapSize.bind(this);
     }
 
 
@@ -642,13 +644,45 @@ class Map extends Component {
         // see if any queries need their results populated.
         this.checkQueries(nextProps.queries);
 
+        // update the map size when data changes
+        setTimeout(this.updateMapSize, 250);
+
         // prevent any DOM changes that the class
         //  didn't cause.
         return false;
     }
-    
+
+    /** This is a hack for OpenLayers. It makes sure the map is
+     *   properly sized under various conditions.
+     *
+     * @returns Boolean. True when the map sucessfully sized, false otherwise.
+     */
+    updateMapSize() {
+        if(this.map) {
+            this.map.updateSize();
+
+            let map_div = document.getElementById(this.mapId);
+            let canvas = map_div.getElementsByTagName('canvas');
+            if(canvas[0] && canvas[0].style.display !== 'none') {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     render() {
+        let update_map_size = this.updateMapSize;
+
+        // IE has some DOM sizing/display issues on startup
+        //  when we're using react. This ensures the map is
+        //  drawn correctly on startup.
+        let startup_interval = setInterval(function() {
+            if(update_map_size()) {
+                clearInterval(startup_interval);
+            }
+        }, 250);
+
         return (
             <div className="map" id={this.mapId}>
             </div>
