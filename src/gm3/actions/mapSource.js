@@ -59,7 +59,9 @@ export function addLayer(mapSourceName, layer) {
  */
 function parseParams(msXml) {
     var params_obj = {};
-    for(let param of msXml.getElementsByTagName('param')) {
+    var params = msXml.getElementsByTagName('param');
+    for(let i = 0, ii = params.length; i < ii; i++) {
+        let param = params[i];
         params_obj[param.getAttribute('name')] = param.getAttribute('value');
     }
     return params_obj;
@@ -206,7 +208,9 @@ export function addFromXml(xml, config) {
 
     // add all of the layers.
     let map_layers = [];
-    for(let layerXml of xml.getElementsByTagName('layer')) {
+    let xml_layers = xml.getElementsByTagName('layer');
+    for(let i = 0, ii = xml_layers.length; i < ii; i++) {
+        let layerXml = xml_layers[i];
         let layer_title = layerXml.getAttribute('title');
 
         let layer = {
@@ -217,7 +221,9 @@ export function addFromXml(xml, config) {
             templates: {}
         };
 
-        for(let template_xml of layerXml.getElementsByTagName('template')) {
+        let templates = layerXml.getElementsByTagName('template');
+        for(let x = 0, xx = templates.length; x < xx; x++) {
+            let template_xml = templates[x];
             let template_name = template_xml.getAttribute('name');
             let template_contents = util.getXmlTextContents(template_xml);
             layer.templates[template_name] = template_contents;

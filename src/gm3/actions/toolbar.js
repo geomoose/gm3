@@ -56,7 +56,9 @@ export function parseToolbar(toolbarXml) {
 
     var tool_actions = [];
 
-    for(let tool of toolbarXml.getElementsByTagName('tool')) {
+    let tools = toolbarXml.getElementsByTagName('tool');
+    for(let i = 0, ii = tools.length; i < ii; i++) {
+        let tool = tools[i];
         tool_actions.push(addTool(parseTool(tool)));
     }
 

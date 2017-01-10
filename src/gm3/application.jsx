@@ -88,17 +88,21 @@ class Application {
     populateMapbook(mapbookXml) {
         // load the map-sources
         let sources = mapbookXml.getElementsByTagName('map-source');
-        for(let ms of sources) {
-            for(let action of mapSourceActions.addFromXml(ms, this.config)) {
+        for(let i = 0, ii = sources.length; i < ii; i++) {
+            let ms = sources[i];
+            let map_source_actions = mapSourceActions.addFromXml(ms, this.config);
+            for(let action of map_source_actions) {
                 this.store.dispatch(action);
             }
         }
 
-        for(let action of parseCatalog(this.store, mapbookXml.getElementsByTagName('catalog')[0])) {
+        let catalog_actions = parseCatalog(this.store, mapbookXml.getElementsByTagName('catalog')[0]);
+        for(let action of catalog_actions) {
             this.store.dispatch(action);
         }
 
-        for(let action of parseToolbar(mapbookXml.getElementsByTagName('toolbar')[0])) {
+        let toolbar_actions = parseToolbar(mapbookXml.getElementsByTagName('toolbar')[0]);
+        for(let action of toolbar_actions) {
             this.store.dispatch(action);
         }
     }

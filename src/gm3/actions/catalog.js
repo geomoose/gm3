@@ -38,7 +38,8 @@ function addElement(tree, parentId, child) {
         tree.children.push(child);
     }
 
-    for(let element of tree) {
+    for(let i = 0, ii = tree.length; i < ii; i++) {
+        let element = tree[i];
         if(element.type === 'group') {
             if(element.id === parentId) {
                 
@@ -175,7 +176,8 @@ function parseLayer(store, layerXml) {
 function subtreeActions(store, parent, subtreeXml) {
     let actions = [];
 
-    for(let childNode of subtreeXml.children) {
+    for(let i = 0, ii = subtreeXml.childNodes.length; i < ii; i++) {
+        let childNode = subtreeXml.childNodes[i];
         let child = null, parent_id = null;
         if(parent && parent.id) {
             parent_id = parent.id;
@@ -197,7 +199,6 @@ function subtreeActions(store, parent, subtreeXml) {
         if(child && child.id) {
             actions.push({type: CATALOG.ADD_CHILD, parentId: parent_id, childId: child.id});
         }
-            
     }
 
     return actions;
@@ -212,7 +213,9 @@ export function parseCatalog(store, catalogXml) {
     // first add a "uuid" attribute to each one
     //  of the elements
     // The UUIDs are used to flatten the tree's data structure.
-    for(let e of catalogXml.getElementsByTagName('*')) {
+    let elements = catalogXml.getElementsByTagName('*');
+    for(let i = 0, ii = elements.length; i < ii; i++) {
+        let e = elements[i];
         e.setAttribute('uuid', uuid.v4());
     }
 

@@ -74,7 +74,8 @@ export function getTagContents(xml, tagName, multiple) {
     const contents = [];
 
     const tags = xml.getElementsByTagName(tagName);
-    for(const tag of tags) {
+    for(let i = 0, ii = tags.length; i < ii; i++) {
+        const tag = tags[i];
         const node_value = getXmlTextContents(tag);
         // when multiple is not true, return the first value.
         if(multiple === true) {
