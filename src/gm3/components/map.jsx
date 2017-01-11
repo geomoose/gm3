@@ -72,7 +72,6 @@ class Map extends Component {
         this.updateMapSize = this.updateMapSize.bind(this);
     }
 
-
     /** Update a source's important bits.
      *
      *  @param sourceName The name of the mapsource to update.
@@ -99,7 +98,6 @@ class Map extends Component {
                 console.info('Unhandled map-source type: ' + map_source.type);
         }
     }
-
 
     /** Create an OL Layers based on a GM MapSource definition
      *
@@ -439,7 +437,6 @@ class Map extends Component {
         }
     }
 
-
     /** Create an interval that will refresh the layer's contents.
      *
      */
@@ -455,7 +452,6 @@ class Map extends Component {
             }, mapSource.refresh * 1000);
         }
     }
-
 
     /** Refresh the map-sources in the map
      *
@@ -505,9 +501,10 @@ class Map extends Component {
         // this.sortOlLayers();
     }
 
-
+    /** Create a selection layer for temporary selection features.
+     *
+     */
     configureSelectionLayer() {
-
         let src_selection = new ol.source.Vector();
 
         this.selectionLayer = new ol.layer.Vector({
@@ -580,7 +577,6 @@ class Map extends Component {
         this.refreshMapSources();
     }
 
-
     /** Switch the drawing tool.
      *
      *  @param type The type of drawing tool (Point,LineString,Polygon)
@@ -621,37 +617,6 @@ class Map extends Component {
         }
     }
 
-    /** React should never update the component after
-     *  the initial render.
-     */
-    shouldComponentUpdate(nextProps, nextState) {
-        // Debugging code for turning layers on and off.
-        // let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
-        // console.log('ACTIVE MAP SOURCES', active_map_sources);
-        if(nextProps && nextProps.mapView.interactionType !== this.currentInteraction) {
-            // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
-            this.activateDrawTool(nextProps.mapView.interactionType);
-        }
-
-        if(nextProps && nextProps.mapView.extent) {
-            // move the map to the new extent.
-            this.map.getView().fit(nextProps.mapView.extent, this.map.getSize()); 
-        }
-
-        // refresh all the map sources, as approriate.
-        this.refreshMapSources();
-
-        // see if any queries need their results populated.
-        this.checkQueries(nextProps.queries);
-
-        // update the map size when data changes
-        setTimeout(this.updateMapSize, 250);
-
-        // prevent any DOM changes that the class
-        //  didn't cause.
-        return false;
-    }
-
     /** This is a hack for OpenLayers. It makes sure the map is
      *   properly sized under various conditions.
      *
@@ -670,18 +635,50 @@ class Map extends Component {
         return false;
     }
 
+    /** Intercept extent changes during a part of the render
+     *  cycle where the state can get modified.
+     */
+    componentWillUpdate(nextProps, nextState) {
+        if(nextProps && nextProps.mapView.extent) {
+            // move the map to the new extent.
+            this.map.getView().fit(nextProps.mapView.extent, this.map.getSize()); 
+        }
+    }
 
     render() {
-        let update_map_size = this.updateMapSize;
+        // ensure the map is defined and ready.
+        if(this.map) {
+            // refresh all the map sources, as approriate.
+            this.refreshMapSources();
+
+            if(this.props.mapView.interactionType !== this.currentInteraction) {
+                // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
+                this.activateDrawTool(this.props.mapView.interactionType);
+            }
+
+            if(this.props.mapView.extent) {
+                // move the map to the new extent.
+                this.map.getView().fit(this.props.mapView.extent, this.map.getSize()); 
+            }
+
+            // see if any queries need their results populated.
+            this.checkQueries(this.props.queries);
+
+            // update the map size when data changes
+            setTimeout(this.updateMapSize, 250);
+        }
 
         // IE has some DOM sizing/display issues on startup
         //  when we're using react. This ensures the map is
         //  drawn correctly on startup.
-        let startup_interval = setInterval(function() {
-            if(update_map_size()) {
-                clearInterval(startup_interval);
-            }
-        }, 250);
+        let update_map_size = this.updateMapSize;
+        if(!update_map_size()) {
+            let startup_interval = setInterval(function() {
+                if(update_map_size()) {
+                    clearInterval(startup_interval);
+                }
+            }, 250);
+        }
 
         return (
             <div className="map" id={this.mapId}>
