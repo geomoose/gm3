@@ -29,3 +29,9 @@ export function setUiHint(hintName) {
         type: UI.HINT, hint: hintName
     };
 }
+
+export function clearUiHint() {
+    return {
+        type: UI.CLEAR_HINT
+    };
+}

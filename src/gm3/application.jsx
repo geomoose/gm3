@@ -34,6 +34,7 @@ import { createStore, combineReducers } from 'redux';
 
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
+import * as uiActions from './actions/ui';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
@@ -71,7 +72,7 @@ class Application {
             'map': mapReducer,
             'toolbar': toolbarReducer,
             'query': queryReducer,
-            'ui' : uiReducer
+            'ui': uiReducer
         }));
 
         this.state = {};
@@ -265,6 +266,13 @@ class Application {
         this.store.dispatch(mapSourceActions.removeFeatures(ms_name, layer_name, filter));
     }
 
+    /** Clears the UI hint.  Used by applications to indicate
+     *  that the previous "hint" has been handled.
+     */
+    clearHint() {
+        this.store.dispatch(uiActions.clearUiHint());
+    }
+
     /** Check for UI updates and trigger a "uiUpdate" call.
      *
      */
@@ -272,7 +280,6 @@ class Application {
         let ui = this.store.getState().ui;
         if(ui.stateId !== this.state.stateId) {
             this.state.stateId = ui.stateId;
-            //this.setState({stateId: ui.stateId});
             this.uiUpdate(ui);
         }
     }

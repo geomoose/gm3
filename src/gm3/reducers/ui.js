@@ -44,6 +44,11 @@ export default function uiReducer(state = defaultState, action) {
                 stateId: uuid(),
                 hint: action.hint
             });
+        case UI.CLEAR_HINT:
+            return Object.assign({}, state, {
+                stateId: uuid(),
+                hint: null
+            });
         default:
             return state;
     }

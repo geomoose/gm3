@@ -39,6 +39,7 @@ app.uiUpdate = function(ui) {
     //  show the service manager tab.
     if(ui.hint == 'service-manager') {
         showTabByName('service-tab');
+        app.clearHint();
     }
 }
 

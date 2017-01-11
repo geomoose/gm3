@@ -98,4 +98,5 @@ export const SERVICE = {
 
 export const UI = {
     HINT: 'UI_HINT',
+    CLEAR_HINT: 'UI_CLEAR_HINT'
 };
