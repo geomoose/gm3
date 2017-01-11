@@ -34,6 +34,14 @@ var app = new gm3.Application({
     mapfile_root: '/usr/local/geomoose/maps/'
 });
 
+app.uiUpdate = function(ui) {
+    // when the UI hint is set for the service manager
+    //  show the service manager tab.
+    if(ui.hint == 'service-manager') {
+        showTabByName('service-tab');
+    }
+}
+
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     var tracker = new gm3.trackers.LocalStorageTracker(app.store);
 
@@ -51,7 +59,6 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.Map, 'map');
 
     tracker.startTracking();
-
 
     showTab('catalog');
     

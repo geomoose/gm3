@@ -36,6 +36,8 @@ import * as uuid from 'uuid';
 
 import { getLayerFromPath } from '../actions/mapSource';
 
+import { setUiHint } from '../actions/ui';
+
 import Mark from 'markup-js';
 
 class ServiceManager extends Component {
@@ -225,6 +227,12 @@ class ServiceManager extends Component {
         }
 
         return false;
+    }
+
+    componentWillUpdate() {
+        // anytime this updates, the user should really be seeing the service 
+        //  tab.
+        this.props.store.dispatch(setUiHint('service-manager'));
     }
 
     render() {

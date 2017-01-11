@@ -44,6 +44,7 @@ import msReducer from './reducers/mapSource';
 import mapReducer from './reducers/map';
 import toolbarReducer from './reducers/toolbar';
 import queryReducer from './reducers/query';
+import uiReducer from './reducers/ui';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -69,8 +70,13 @@ class Application {
             'catalog': catalogReducer,
             'map': mapReducer,
             'toolbar': toolbarReducer,
-            'query': queryReducer
+            'query': queryReducer,
+            'ui' : uiReducer
         }));
+
+        this.state = {};
+
+        this.store.subscribe(() => { this.shouldUiUpdate(); });
     }
 
     registerService(serviceName, serviceClass, options) {
@@ -257,6 +263,24 @@ class Application {
         const ms_name = util.getMapSourceName(path);
         const layer_name = util.getLayerName(path);
         this.store.dispatch(mapSourceActions.removeFeatures(ms_name, layer_name, filter));
+    }
+
+    /** Check for UI updates and trigger a "uiUpdate" call.
+     *
+     */
+    shouldUiUpdate() {
+        let ui = this.store.getState().ui;
+        if(ui.stateId !== this.state.stateId) {
+            this.state.stateId = ui.stateId;
+            //this.setState({stateId: ui.stateId});
+            this.uiUpdate(ui);
+        }
+    }
+
+    /** Handle updating the UI, does nothing in vanilla form.
+     */
+    uiUpdate() {
+        // pass
     }
 };
 

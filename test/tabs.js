@@ -19,7 +19,7 @@ function showTab(showId, event) {
     }
 
 
-    if(event) {
+    if(event && event.currentTarget) {
         var tabs = document.getElementsByClassName("tab");
         for(var i = 0; i < tabs.length; i++) {
             rm_class_fn(tabs[i], active);
@@ -28,4 +28,9 @@ function showTab(showId, event) {
         add_class_fn(event.currentTarget, active);
     }
     add_class_fn(document.getElementById(showId), active);
+}
+
+function showTabByName(tabName) {
+    var target = document.getElementById(tabName+'-tab');
+    showTab(tabName, {currentTarget: target});
 }
