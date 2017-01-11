@@ -643,6 +643,9 @@ class Map extends Component {
             // move the map to the new extent.
             this.map.getView().fit(nextProps.mapView.extent, this.map.getSize()); 
         }
+
+        // see if any queries need their results populated.
+        this.checkQueries(nextProps.queries);
     }
 
     render() {
@@ -655,14 +658,6 @@ class Map extends Component {
                 // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
                 this.activateDrawTool(this.props.mapView.interactionType);
             }
-
-            if(this.props.mapView.extent) {
-                // move the map to the new extent.
-                this.map.getView().fit(this.props.mapView.extent, this.map.getSize()); 
-            }
-
-            // see if any queries need their results populated.
-            this.checkQueries(this.props.queries);
 
             // update the map size when data changes
             setTimeout(this.updateMapSize, 250);
