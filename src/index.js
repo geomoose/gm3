@@ -41,6 +41,7 @@ import ServiceManager from './gm3/components/serviceManager';
 import Favorites from './gm3/components/favorites';
 import VisibleLayers from './gm3/components/visibleLayers';
 import Grid from './gm3/components/grid';
+import Version from './gm3/components/version';
 
 import LocalStorageTracker from './gm3/trackers/localStorage';
 
@@ -54,7 +55,8 @@ var components = {
     ServiceManager: ServiceManager,
     Favorites: Favorites,
     VisibleLayers: VisibleLayers,
-    Grid: Grid
+    Grid: Grid,
+    Version: Version
 };
 
 var trackers = {

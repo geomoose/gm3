@@ -224,4 +224,11 @@ export function filterFeatures(features, filter) {
     return new_features;
 }
 
-
+/** Easy to stomach 'return me the version' fuction, the version
+ *  is set using webpack and parses the package.json file to get it.
+ *
+ */
+export function getVersion() {
+    let v = GM_VERSION;
+    return v;
+}

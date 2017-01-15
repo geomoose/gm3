@@ -1,5 +1,4 @@
-/** Webpack Configuration.
- *
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2016 GeoMoose
@@ -21,46 +20,21 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
-var path = require('path');
-var webpack = require('webpack');
-var package = require('./package.json');
 
-module.exports = {
-    entry: [
-        'babel-polyfill',
-        './src/' 
-    ],
+/** Small component that renders the application version.
+ */
 
-    module: {
-        loaders: [{
-            test: /\.(jsx|js)$/,
-            loaders: ['babel'],
-            include: path.join(__dirname, 'src'),
-            exclude: /node_modules/,
-        }]
-    },
-    resolve: {
-        extensions: ['', '.js', '.jsx']
-    },
-    output: {
-        path: __dirname + '/dist',
-        publicPath: '/',
-        filename: 'geomoose.js',
-        library: ['gm3'],
-        libraryTarget: 'umd'
-    },
-    externals: {
-        openlayers: 'ol',
-    },
-    plugins: [
-        new webpack.DefinePlugin({
-            GM_VERSION: JSON.stringify(package.version),
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new webpack.optimize.UglifyJsPlugin()
-    ]
+import React, {Component, PropTypes } from 'react';
+
+import * as util from '../util';
+
+export default class Toolbar extends Component {
+
+    render() {
+        return (
+            <span className="version">{ util.getVersion() }</span>
+        );
+    }
+
 };

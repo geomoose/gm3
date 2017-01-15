@@ -26,6 +26,8 @@
 var path = require('path');
 var webpack = require('webpack');
 
+var package = require('./package.json');
+
 module.exports = {
     devtool: 'eval-source-map',
     entry: [
@@ -67,6 +69,8 @@ module.exports = {
         openlayers: 'ol',
     },
     plugins: [
-        //new webpack.HotModuleReplacementPlugin()
+        new webpack.DefinePlugin({
+            GM_VERSION: JSON.stringify(package.version)
+        })
     ]
 };

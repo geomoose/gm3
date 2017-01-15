@@ -37,7 +37,7 @@ body {
 }
 
 #map {
-    bottom: 0;
+    bottom: 20px;
     border-left: solid black 1px;
 }
 
@@ -70,7 +70,7 @@ body {
 
 
 #tabs {
-    bottom: 0;
+    bottom: 20px;
     border-top: solid 1px black;
 }
 
@@ -88,6 +88,14 @@ body {
 
 #results-grid {
     z-index: 100;
-    bottom: 0; top: auto;
+    bottom: 20px; top: auto;
     background-color: #eee;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0; 
+    height: 20px;
+    left: 0; width: 100%;
+    border-top: solid 1px black;
 }
