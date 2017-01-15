@@ -25,6 +25,7 @@
  */
 
 var webpackConfig = require('./webpack.config');
+var webpackDeployConfig = require('./webpack-deploy.config');
 
 module.exports = function(grunt) {
     grunt.loadNpmTasks('gruntify-eslint');
@@ -51,6 +52,15 @@ module.exports = function(grunt) {
                 files: [
                     {expand: true, flatten: true, src: ['src/test.*'], dest: 'dist/'},
                 ]
+            },
+            fonts: {
+                files: [
+                    {
+                        expand: true, flatten: true,
+                        src: ['node_modules/font-awesome/fonts/*'],
+                        dest: 'dist/fonts/'
+                    }
+                ]
             }
         },
 
@@ -60,7 +70,7 @@ module.exports = function(grunt) {
                     paths: ['src/less'],
                 },
                 files: {
-                    'dist/geomoose.css' : 'src/less/gm3.less'
+                    'dist/css/geomoose.css' : 'src/less/gm3.less'
                 }
             }
         },
@@ -76,7 +86,8 @@ module.exports = function(grunt) {
         },
 
         webpack: {
-            optons: webpackConfig,
+            'build-dev': webpackConfig,
+            'build-deploy': webpackDeployConfig
         },
 
         'webpack-dev-server': {
@@ -90,10 +101,13 @@ module.exports = function(grunt) {
 
     grunt.task.registerTask('lint', ['eslint']);
 
-    //grunt.task.registerTask('serve', ['copy:test', 'webpack-dev-server:start']);
-
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3']);
 
-    grunt.task.registerTask('build', ['eslint', 'webpack']);
+    grunt.task.registerTask('build-dev', ['eslint', 'webpack:build-dev']);
+
+    grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
+
+    grunt.task.registerTask('build', ['eslint', 'webpack:build-deploy', 'build-css']);
+
 };
 
