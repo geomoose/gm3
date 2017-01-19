@@ -50,6 +50,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
+    app.registerAction('findme', FindMeAction);
 
     app.add(gm3.components.Catalog, 'catalog');
     app.add(gm3.components.Favorites, 'favorites');

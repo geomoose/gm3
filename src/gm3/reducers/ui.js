@@ -34,7 +34,8 @@ import * as util from '../util';
 
 const defaultState = {
     stateId: 0,
-    hint: null
+    hint: null,
+    action: null
 };
 
 export default function uiReducer(state = defaultState, action) {
@@ -49,6 +50,10 @@ export default function uiReducer(state = defaultState, action) {
                 stateId: uuid(),
                 hint: null
             });
+        case UI.RUN_ACTION:
+            return Object.assign({}, state, {stateId: uuid(), action: action.action});
+        case UI.CLEAR_ACTION:
+            return Object.assign({}, state, {stateId: uuid(), action: null});
         default:
             return state;
     }

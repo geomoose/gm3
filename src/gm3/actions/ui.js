@@ -35,3 +35,15 @@ export function clearUiHint() {
         type: UI.CLEAR_HINT
     };
 }
+
+export function runAction(actionName) {
+    return {
+        type: UI.RUN_ACTION, action: actionName
+    }
+}
+
+export function clearAction() {
+    return {
+        type: UI.CLEAR_ACTION
+    };
+}

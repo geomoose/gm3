@@ -99,5 +99,7 @@ export const SERVICE = {
 
 export const UI = {
     HINT: 'UI_HINT',
-    CLEAR_HINT: 'UI_CLEAR_HINT'
+    CLEAR_HINT: 'UI_CLEAR_HINT',
+    RUN_ACTION: 'UI_RUN_ACTION',
+    CLEAR_ACTION: 'UI_CLEAR_ACTION'
 };

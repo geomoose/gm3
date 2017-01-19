@@ -38,7 +38,6 @@ import * as uiActions from './actions/ui';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
-import { createQuery, zoomToExtent } from './actions/map';
 
 import catalogReducer from './reducers/catalog';
 import msReducer from './reducers/mapSource';
@@ -62,6 +61,8 @@ class Application {
         this.elements = [];
 
         this.services = {};
+
+        this.actions = {};
 
         this.config = config;
 
@@ -90,6 +91,14 @@ class Application {
         this.services[serviceName] = new serviceClass(this, options);
         // set the service name to whatever it was registered as.
         this.services[serviceName].name = serviceName;
+    }
+
+    /** Actions are classes with a "run" method which the application
+     *  will run when they are a clicked.
+     */
+    registerAction(actionName, actionClass, options) {
+        if(typeof(options) != Object) { options = {}; }
+        this.actions[actionName] = new actionClass(this, options);
     }
 
     populateMapbook(mapbookXml) {
@@ -159,7 +168,7 @@ class Application {
      *
      */
     dispatchQuery(service, selection, fields, layers) {
-        this.store.dispatch(createQuery(service, selection, fields, layers));
+        this.store.dispatch(mapActions.createQuery(service, selection, fields, layers));
     }
 
     /** Render feeatures from a query using a specified template.
@@ -224,7 +233,14 @@ class Application {
      *
      */
     zoomToExtent(extent) {
-        this.store.dispatch(zoomToExtent(extent));
+        this.store.dispatch(mapActions.zoomToExtent(extent));
+    }
+
+    /** Move the map to a center point and a resolution.
+     *
+     */
+    zoomTo(lon, lat, resolution) {
+        this.store.dispatch(mapActions.move({lon, lat}, resolution));
     }
 
     /** Generic bridge to the application's store's dispatch function.
@@ -289,9 +305,23 @@ class Application {
         let ui = this.store.getState().ui;
         if(ui.stateId !== this.state.stateId) {
             this.state.stateId = ui.stateId;
+            this.runAction();
             this.uiUpdate(ui);
         }
     }
+
+    /** Check to see if the state has an 'action' 
+     *  to be executed.  Run it and then clear the state.
+     */
+    runAction() {
+        let ui = this.store.getState().ui;
+        if(ui.action) {
+            this.actions[ui.action].run();
+            this.store.dispatch(uiActions.clearAction());
+        }
+    }
+        
+
 
     /** Handle updating the UI, does nothing in vanilla form.
      */

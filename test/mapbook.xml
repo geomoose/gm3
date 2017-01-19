@@ -83,6 +83,9 @@
         <layer name="highlight" status="on">
             <style><![CDATA[
             {
+                "circle-radius": 4,
+                "circle-color": "#ffff00",
+                "circle-stroke-color": "#ffff00",
                 "line-color" : "#ffff00",
                 "line-width" : 4,
                 "fill-color" : "#ffff00",
@@ -655,6 +658,8 @@
 		<tool name="geocode" title="Geocode Address" type="service" service="geocode_address" selectable="true"/> 	
 
 		<tool name="buffered_select" title="Select Features" type="service" service="buffered_select" show-label="true"/>
-		<tool name="search" title="Search Parcels" type="service" service="search_parcels"/>
+		<tool name="search" title="Search Parcels" type="service"/>
+
+        <tool name="findme" title="Find Me" type="action"/>
 	</toolbar>
 </mapbook>
