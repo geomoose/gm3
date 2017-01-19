@@ -388,3 +388,10 @@ export function removeFeatures(mapSourceName, layerName, filter) {
         mapSourceName, layerName, filter
     };
 }
+
+export function changeFeatures(mapSourceName, layerName, filter, properties) {
+    return {
+        type: MAPSOURCE.CHANGE_FEATURES,
+        mapSourceName, layerName, filter, properties
+    };
+}

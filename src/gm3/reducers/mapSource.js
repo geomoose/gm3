@@ -28,7 +28,7 @@
 
 import uuid from 'uuid';
 import { MAPSOURCE } from '../actionTypes';
-import { filterFeatures } from '../util';
+import { changeFeatures, filterFeatures } from '../util';
 
 /** Use this to toggle boolean values on a layer.
  *
@@ -113,6 +113,9 @@ function changeLayerFeatures(state, action) {
             } else if(action.type === MAPSOURCE.REMOVE_FEATURES) {
                 layer.features = filterFeatures(layer.features, action.filter);
                 layer.featuresVersion += 1;
+            } else if(action.type === MAPSOURCE.CHANGE_FEATURES) {
+                layer.features = changeFeatures(layer.features, action.filter, action.properties);
+                layer.featuresVersion += 1;
             }
             layers.push(layer);
 
@@ -171,6 +174,7 @@ export default function mapSource(state = [], action) {
         case MAPSOURCE.CLEAR_FEATURES:
         case MAPSOURCE.REMOVE_FEATURE:
         case MAPSOURCE.REMOVE_FEATURES:
+        case MAPSOURCE.CHANGE_FEATURES:
             if(state[action.mapSourceName]) {
                 return changeLayerFeatures(state, action);
             }

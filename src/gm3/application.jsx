@@ -266,6 +266,15 @@ class Application {
         this.store.dispatch(mapSourceActions.removeFeatures(ms_name, layer_name, filter));
     }
 
+    /** Change the features on a vectory layer with a filter.
+     */
+    changeFeatures(path, filter, properties) {
+        console.log('changeFeatures', filter, properties);
+        const ms_name = util.getMapSourceName(path);
+        const layer_name = util.getLayerName(path);
+        this.store.dispatch(mapSourceActions.changeFeatures(ms_name, layer_name, filter, properties));
+    }
+
     /** Clears the UI hint.  Used by applications to indicate
      *  that the previous "hint" has been handled.
      */

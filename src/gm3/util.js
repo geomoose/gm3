@@ -198,6 +198,37 @@ export const FORMAT_OPTIONS = {
     }
 }
 
+/** Check to see if a feature matches the given filter.
+ *
+ *  @param {Array} features The list of features
+ *  @param {Object} filter key-value pairs of filter for the features.
+ *
+ *  @returns {Boolean} whether the feature matches.
+ */
+export function featureMatch(feature, filter) {
+    let match_all = (filter.match === 'any') ? false : true;
+    for(let filter_key in filter) {
+        // check to see if the values match
+        let v = filter[filter_key] === feature.properties[filter_key];
+        // if they match, and this is an 'any' search then short-circuit
+        //  and return true;
+        if(v && !match_all) { return true; }
+        // if this value doesn't match, and require matching all
+        //  then this can short-circuit and return false;
+        if(!v && match_all) { return false; }
+    }
+
+    // no false values could have been set 
+    //  and reach this point with match_all
+    if(match_all) {
+        return true;
+    }
+
+    // no true values + match-any search could
+    //  reach this point
+    return false;
+}
+
 /** Filter features from a list of features
  *
  *  @param {Array} features The list of features
@@ -209,14 +240,30 @@ export function filterFeatures(features, filter) {
     let new_features = [];
 
     for(let feature of features) {
-        // only remove a feature from the list
-        //  if ALL the filters match
-        var exclude = true;
-        for(let filter_key in filter) {
-            exclude = exclude && (filter[filter_key] === feature.properties[filter_key]);
+        if(!featureMatch(feature, filter)) {
+            new_features.push(feature);
         }
+    }
 
-        if(!exclude) {
+    return new_features;
+}
+
+/** Update feature properties.
+ *
+ *  @param {Array} features The list of features
+ *  @param {Object} filter key-value pairs of filter for the features.
+ *  @param {Object} properties The new values for the features.
+ *
+ * @returns New list of features.
+ */
+export function changeFeatures(features, filter, properties) {
+    let new_features = [];
+
+    for(let feature of features) {
+        if(featureMatch(feature, filter)) {
+            let new_props = Object.assign({}, feature.properties, properties);
+            new_features.push(Object.assign({}, feature, {properties: new_props}));
+        } else {
             new_features.push(feature);
         }
     }

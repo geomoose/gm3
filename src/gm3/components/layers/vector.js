@@ -79,6 +79,17 @@ export function createLayer(mapSource) {
             'version': 8,
             'layers': [
                 {
+                    'id': 'red',
+                    'source': 'dummy-source',
+                    'filter': ['==', 'displayClass', 'red'],
+                    'paint': {
+                        'line-color': '#ff0000',
+                        'line-width': 2,
+                        'fill-color': '#ff0000',
+                        'fill-opacity': 0.5
+                    }
+                },
+                {
                     'id': 'dummy',
                     'source': 'dummy-source',
                     'paint': mapSource.style
