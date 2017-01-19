@@ -197,7 +197,10 @@
             ]
             ]]></template>
             <template name="gridRow"><![CDATA[
-            <tr>
+            <tr 
+              onmouseenter="app.changeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}, {'displayClass' : 'red'})"
+              onmouseleave="app.changeFeatures('highlight/highlight', {'displayClass' : 'red'}, {'displayClass' : 'blue'})"
+            >
                 <td>
                   <a onClick="app.removeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}) ; app.removeQueryResults('{{ query }}', {'PIN' : '{{ properties.PIN }}'})">
                     <i title="Remove from results" class="fa fa-trash"></i>
