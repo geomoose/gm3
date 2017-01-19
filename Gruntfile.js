@@ -78,7 +78,7 @@ module.exports = function(grunt) {
         watch: {
             gm3: {
                 files: ['src/gm3/**/*'],
-                tasks: ['webpack'],
+                tasks: ['webpack:build-dev'],
                 options: {
                     spawn: false,
                 }
