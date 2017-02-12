@@ -31,7 +31,7 @@
 
 var app = new gm3.Application({
     mapserver_url: '/mapserver/cgi-bin/mapserv',
-    mapfile_root: '/usr/local/geomoose/maps/'
+    mapfile_root: '/data/'
 });
 
 app.uiUpdate = function(ui) {
