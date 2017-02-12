@@ -285,7 +285,6 @@ class Application {
     /** Change the features on a vectory layer with a filter.
      */
     changeFeatures(path, filter, properties) {
-        console.log('changeFeatures', filter, properties);
         const ms_name = util.getMapSourceName(path);
         const layer_name = util.getLayerName(path);
         this.store.dispatch(mapSourceActions.changeFeatures(ms_name, layer_name, filter, properties));

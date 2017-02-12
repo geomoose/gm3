@@ -47,7 +47,7 @@ class Toolbar extends Component {
         if(tool.actionType === 'service') {
             console.log('dispatching startService...');
             this.props.store.dispatch(startService(tool.name));
-        } else if(tool.actionType == 'action') {
+        } else if(tool.actionType === 'action') {
             this.props.store.dispatch(runAction(tool.name));
         }
     }

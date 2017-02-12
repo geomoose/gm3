@@ -117,6 +117,7 @@ function parseLayer(store, layerXml) {
     // parse a refresh time if it exists
     if(layerXml.getAttribute('refresh')) {
         new_layer.refresh = parseFloat(layerXml.getAttribute('refresh'));
+        new_layer.refreshEnabled = true;
     }
 
     // collect the src states
