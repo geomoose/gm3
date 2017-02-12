@@ -103,11 +103,12 @@ module.exports = function(grunt) {
 
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3']);
 
+    // only build the non-minified version.
     grunt.task.registerTask('build-dev', ['eslint', 'webpack:build-dev']);
 
+    // update the css and fonts.
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
-    grunt.task.registerTask('build', ['eslint', 'webpack:build-deploy', 'build-css']);
-
+    // build everything
+    grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css']);
 };
-
