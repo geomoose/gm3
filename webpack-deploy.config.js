@@ -27,6 +27,9 @@ var path = require('path');
 var webpack = require('webpack');
 var package = require('./package.json');
 
+var fs = require('fs');
+var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
+
 module.exports = {
     entry: [
         'babel-polyfill',
@@ -47,7 +50,7 @@ module.exports = {
     output: {
         path: __dirname + '/dist',
         publicPath: '/',
-        filename: 'geomoose.js',
+        filename: 'geomoose.min.js',
         library: ['gm3'],
         libraryTarget: 'umd'
     },
@@ -61,6 +64,7 @@ module.exports = {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
-        new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.BannerPlugin(license_text, {raw: true})
     ]
 };

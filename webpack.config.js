@@ -25,8 +25,11 @@
  */
 var path = require('path');
 var webpack = require('webpack');
-
+    
 var package = require('./package.json');
+
+var fs = require('fs');
+var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
 
 module.exports = {
     devtool: 'eval-source-map',
@@ -60,7 +63,7 @@ module.exports = {
         port: 4000,
         proxy: {
             '/mapserver' : {
-                target: 'http://localhost:8080/',
+                target: 'http://localhost:8000/',
                 secure: false
             }
         }
@@ -69,6 +72,7 @@ module.exports = {
         openlayers: 'ol',
     },
     plugins: [
+        new webpack.BannerPlugin(license_text, {raw: true}),
         new webpack.DefinePlugin({
             GM_VERSION: JSON.stringify(package.version)
         })
