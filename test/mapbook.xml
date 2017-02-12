@@ -209,7 +209,12 @@
                     <i title="Remove from results" class="fa fa-trash"></i>
                   </a>
                 </td>
-                <td>{{ properties.PIN }}</td>
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                    <i class="fa fa-search"></i> 
+                    {{ properties.PIN }}
+                  </a>
+                </td>
                 <td>{{ properties.OWNER_NAME }}</td>
                 <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
             </td>
@@ -275,7 +280,7 @@
                 </div>
             ]]></template>
         </layer>
-		<layer name="parcel_points"/>
+		<layer name="parcels_points"/>
 		<param name="FORMAT" value="image/png"/>
 		<!-- this is used only for testing the group-functionality -->
 		<!--
@@ -298,8 +303,6 @@
 
 	<map-source name="borders" type="mapserver" reference="true" up="true" down="true" title="City and County Borders" fido-search="true">
 		<file>./demo/statedata/basemap.map</file>
-        <layer name="city_labels" status="off"/>
-		<layer name="county_labels" status="off"/>
 		<layer name="city_poly" status="off"/>
 		<layer name="county_borders" status="off"/>
 	</map-source>
@@ -497,7 +500,7 @@
 			<input type="select" name="layer0" title="Select features from:">
 				<option value="parcels/parcels">Parcels</option>
 				<option value="pipelines/pipelines">Pipelines</option>
-				<option value="parcel_points/parcel_points">Parcel Points</option>
+				<option value="parcel_points/parcels_points">Parcel Points</option>
 			</input>
 			
 			<input type="length" name="shape0_buffer" title="Buffer Selection Shape by">0</input>
@@ -592,15 +595,15 @@
 
 			<group title="County Layers" expand="false">
 
-				<layer src="parcels/parcels" metadata="true" legend="true" tip="this a parcel layer, y'all" popups="true" refresh="10">
+				<layer src="parcels/parcels" metadata="true" legend="true" tip="this a parcel layer, y'all" popups="true" refresh="10"> 
 					<metadata>http://www.geomoose.org/docs/</metadata>
 					<!--
 					<legend>images/logo_mini.gif</legend>
 					-->
 				</layer>
-				<layer title="Parcel Points" src="parcels/parcel_points" popups="true" minscale="6000" maxscale="20000" status="off">
+				<layer title="Parcel Points" src="parcels/parcels_points" popups="true" minscale="6000" maxscale="20000" status="off">
 				</layer>
-				<layer title="City and County Boundaries" src="borders/city_labels;borders/county_labels;borders/county_borders;borders/city_poly"/>
+				<layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
 			</group>
 
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
