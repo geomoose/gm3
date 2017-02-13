@@ -61,6 +61,14 @@ module.exports = function(grunt) {
                         dest: 'dist/fonts/'
                     }
                 ]
+            },
+            ol: {
+                files: [
+                    {
+                        src: ['node_modules/openlayers/dist/ol.js'],
+                        dest: 'dist/ol.js'
+                    }
+                ]
             }
         },
 
@@ -110,5 +118,5 @@ module.exports = function(grunt) {
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
     // build everything
-    grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css']);
+    grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol']);
 };
