@@ -79,10 +79,8 @@ function FindMeAction(Application, options) {
             }
         ]);
 
-        console.log('added features');
-
         var b = this.buffer;
         var x = coord[0], y = coord[1];
-        app.zoomToExtent([x-b, y-b, x+b, y+b]);
+        app.zoomToExtent([x - b, y - b, x + b, y + b]);
     }
 }

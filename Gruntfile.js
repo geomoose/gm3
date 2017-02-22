@@ -69,6 +69,15 @@ module.exports = function(grunt) {
                         dest: 'dist/ol.js'
                     }
                 ]
+            },
+            services: {
+                files: [
+                    {
+                        expand: true, flatten: true,
+                        src: ['src/services/*.js'],
+                        dest: 'dist/services/'
+                    }
+                ]
             }
         },
 
@@ -112,11 +121,11 @@ module.exports = function(grunt) {
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3']);
 
     // only build the non-minified version.
-    grunt.task.registerTask('build-dev', ['eslint', 'webpack:build-dev']);
+    grunt.task.registerTask('build-dev', ['eslint', 'copy:services', 'webpack:build-dev']);
 
     // update the css and fonts.
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
     // build everything
-    grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol']);
+    grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol', 'copy:services']);
 };

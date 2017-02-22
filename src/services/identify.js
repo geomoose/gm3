@@ -22,51 +22,43 @@
  * SOFTWARE.
  */
 
-/** Search Service.
+/** Identify Service.
  *
  *  Used to do a drill-down single-point query of all visible layers.
  *
  *  The application will be passed into the service upon registration.
  *
  */
-function SearchService(Application, options) {
+function IdentifyService(Application, options) {
     /** Define the title of the service. */
-    this.title = options.title ? options.title : 'Search';
+    this.title = options.title ? options.title : 'Identify';
 
     /** Title to show at the top of the results. */
-    this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Search Results';
+    this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Identify Results';
 
     /** Template to use for rendering returned features. */
-    this.template = options.template ? options.template : '@search';
+    this.template = options.template ? options.template : '@identify';
 
     /** Name will be set by the application when the service is registered. */
     this.name = '';
 
     /** Limit the number of selection tools available */
-    this.tools = {}; // no geo seleciton tools for search
+    this.tools = {'Point': true};
 
-    /** User input fields */
-    this.fields = options.fields ? options.fields : [
-        {type: 'text', label: 'Name', name: 'keyword'}
-    ];
+    /** User input fields, there are none for identify */
+    this.fields = [];
 
-    /** Define the highlight layer */
-    this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
-
-    /** This function is called everytime a search is executed.
+    /** This function is called everytime there is an identify query.
      *
-     *  @param selection Always null in this instance as search does not require.
-     *                   a spatial component.
+     *  @param selection contains a GeoJSON feature describing the 
+     *                   geography to be used for the query.
      *
      *  @param fields    is an array containing any user-input
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        // reformat the fields for the query engine,
-        //  "*stuff*" will do a case-ignored "contains" query.
-        var fields = [
-            {comparitor: 'ilike', name: 'OWNER_NAME', value: '*'+fields[0].value+'*'}
-        ];
+        // get the list of visible layers
+        var visible_layers = Application.getVisibleLayers();
 
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
@@ -74,7 +66,7 @@ function SearchService(Application, options) {
         //  it would be necessary to put that code here and then manually tell
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
-        Application.dispatchQuery(this.name, selection, fields, ['vector-parcels/ms:parcels']);
+        Application.dispatchQuery(this.name, selection, fields, visible_layers);
     }
 
 
@@ -91,8 +83,6 @@ function SearchService(Application, options) {
 
             // check to see that the layer has results and features were returned.
             if(query.results[path] && !query.results[path].failed) {
-                //console.log('RESULTS', query.results[path]);
-
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
                 //  and the specified template and render it. This example uses an inline
                 //  template from the mapbook. 
@@ -105,46 +95,4 @@ function SearchService(Application, options) {
         // return the html for rendering.
         return html;
     }
-
-    /** hasRendered is an object which tells renderQueryResults to ignore
-     *              queries which have already been rendered.
-     */
-    this.hasRendered = {};
-
-    /** renderQueryResults is the function called to let the service
-     *                     run basically any code it needs to execute after
-     *                     the query has been set to finish.  
-     *
-     *  WARNING! This will be called multiple times. It is best to ensure
-     *           there is some sort of flag to prevent multiple renderings.
-     */
-    this.renderQueryResults = function(queryId, query) {
-        // This is an ugly short circuit.
-        if(this.hasRendered[queryId]) {
-            // do nothing.
-            return;
-        }
-        // flag the query as rendered even though code below
-        //  this line has not finished, this prevents an accidental
-        //  double-rendering.
-        this.hasRendered[queryId] = true;
-
-        // render a set of features on a layer.
-        var all_features = [];
-        for(var i = 0, ii = query.layers.length; i < ii; i++) {
-            var path = query.layers[i];
-            if(query.results[path] && !query.results[path].failed) {
-                all_features = all_features.concat(query.results[path]);
-            }
-        }
-
-        // when features have been returned, clear out the old features
-        //  and put the new features on the highlight layer.
-        if(all_features.length > 0) {
-            Application.clearFeatures(this.highlightPath);
-            Application.addFeatures(this.highlightPath, all_features);
-        }
-    }
-
-                        
 }
