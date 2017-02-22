@@ -35,6 +35,7 @@ import { createStore, combineReducers } from 'redux';
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
 import * as uiActions from './actions/ui';
+import * as serviceActions from './actions/service';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
@@ -319,8 +320,20 @@ class Application {
             this.store.dispatch(uiActions.clearAction());
         }
     }
-        
 
+    /** Kick off an action by name.
+     *
+     */
+    startAction(actionName) {
+        this.store.dispatch(uiActions.runAction(actionName));
+    }
+
+    /** Kick off a service by name
+     *
+     */
+    startService(serviceName, options) {
+        this.store.dispatch(serviceActions.startService(serviceName));
+    }
 
     /** Handle updating the UI, does nothing in vanilla form.
      */
