@@ -31,6 +31,7 @@ var fs = require('fs');
 var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
 
 module.exports = {
+    devtool: 'source-map',
     entry: [
         'babel-polyfill',
         './src/' 
