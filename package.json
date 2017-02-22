@@ -1,5 +1,5 @@
 {
-  "name": "geomoose",
+  "name": "gm3",
   "version": "3.0.0-beta",
   "repository": "https://github.com/geomoose/gm3/",
   "description": "",
@@ -36,6 +36,7 @@
     "less": "^2.7.1",
     "markup-js": "^1.5.21",
     "ol-mapbox-style": "git+https://github.com/theduckylittle/ol-mapbox-style.git",
+    "openlayers": "^3.20.0",
     "papaparse": "^4.1.2",
     "react": "~15.3.1",
     "react-dom": "~15.3.1",
@@ -48,6 +49,5 @@
     "webpack-dev-server": "~1.16.1"
   },
   "dependencies": {
-    "openlayers": "^3.20.0"
   }
 }
