@@ -50,7 +50,7 @@ import uiReducer from './reducers/ui';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { getLayerFromPath, getVisibleLayers, getActiveMapSources } from './actions/mapSource';
+import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
 
 import Mark from 'markup-js';
 
@@ -226,6 +226,16 @@ class Application {
      */
     getVisibleLayers() {
         return getVisibleLayers(this.store);
+    }
+
+    /** Return a list of queryable layers.
+     *
+     *  @returns an array of layer paths.
+     */
+    getQueryableLayers() {
+        let l = getQueryableLayers(this.store);
+        console.log('qlayers', l);
+        return l;
     }
 
     /** zoom to an extent

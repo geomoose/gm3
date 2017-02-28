@@ -150,6 +150,7 @@ export function addFromXml(xml, config) {
         type: xml.getAttribute('type'),
         label: xml.getAttribute('title'),
         zIndex: xml.getAttribute('z-index'),
+        queryable: util.parseBoolean(xml.getAttribute('queryable'), true),
         refresh: null,
         style: null,
         layers: [],
@@ -340,20 +341,58 @@ export function getLayerFromPath(store, path) {
     return getLayer(store, {mapSourceName: ms_name, layerName: layer_name});
 }
 
-export function getVisibleLayers(store) {
+/** Check if a map-source is queryable.
+ */
+function isQueryable(mapSource) {
+    // querying can be manually turned off in the mapbook
+    //   configuration.
+    if(mapSource.queryable === false) {
+        return false;
+    }
+    // check by type
+    switch(mapSource.type) {
+        case 'wms':
+        case 'wfs':
+            return true;
+        default:
+            return false;
+    }
+}
+
+/** Get the list of visible layers.
+ *
+ *  @param store {Store} the application's store.
+ *  @param onlyQueryLayers {Boolean} When true, only return queryable layers.
+ *
+ *  @return List of layers.
+ */
+export function getVisibleLayers(store, onlyQueryLayers) {
     let map_sources = store.getState().mapSources;
     let active = [];
     for(let ms in map_sources) {
         if(isMapSourceActive(map_sources[ms])) {
-            for(let layer of map_sources[ms].layers) {
-                if(layer.on) {
-                    active.push(ms + '/' + layer.name);
+            if(!onlyQueryLayers || isQueryable(map_sources[ms])) {
+                for(let layer of map_sources[ms].layers) {
+                    if(layer.on) {
+                        active.push(ms + '/' + layer.name);
+                    }
                 }
             }
         }
     }
     return active;
 }
+
+
+/** Return the list of layers that can be queried.
+ * 
+ *  These layers are a subset of visible layers.
+ *
+ */
+export function getQueryableLayers(store) {
+    return getVisibleLayers(store, true);
+}
+
 
 /** Set the refresh rate for a map-source,
  *  null is the default state and will prevent the layer

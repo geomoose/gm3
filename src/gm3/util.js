@@ -26,7 +26,7 @@
  */
 
 export function parseBoolean(bool, def = false) {
-    if(typeof(bool) == "undefined") { return def; }
+    if(typeof(bool) == "undefined" || bool === null) { return def; }
     var boolString = new String(bool);
     if(boolString.match(/true/i)) { return true; }
     else if(boolString === '1') { return true; }

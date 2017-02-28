@@ -58,7 +58,7 @@ function IdentifyService(Application, options) {
      */
     this.query = function(selection, fields) {
         // get the list of visible layers
-        var visible_layers = Application.getVisibleLayers();
+        var visible_layers = Application.getQueryableLayers();
 
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
