@@ -346,14 +346,14 @@
 	</map-source> -->
 
 	<map-source name="usgs" type="mapserver">
-		<file>./demo/wms/usgs.map</file>
-		<layer name="DOQ"/>
-		<layer name="DRG"/>
+		<file>./demo/wms/wms_proxy.map</file>
+		<layer name="usgs_imagery"/>
+		<layer name="usgs_topo"/>
 	</map-source>
 
 	<map-source name="lmic" type="mapserver">
-		<file>./demo/wms/lmic.map</file>
-		<layer name="met10"/>
+		<file>./demo/wms/wms_proxy.map</file>
+		<layer name="mncomp"/>
 	</map-source>
 <!--
 	<map-source name="google_physical" type="google" google-type="physical">
@@ -377,6 +377,12 @@
 		<url>./images/blank.gif</url>
 		<layer name="blank" status="off"/>
 	</map-source>
+
+    <map-source name="bing" type="bing">
+        <layer name="roads"/>
+        <layer name="aerials"/>
+        <param name="key" value="'Your Key Here'"/>
+    </map-source>
 
 
 	
@@ -616,7 +622,7 @@
 		</group>
 
 		<group title="Backgrounds" expand="true" multiple="false">
-			<layer title="Reprojected Regional Aerial" src="lmic/met10" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="false" unfade="false"/>
 
 <!--
 			<layer title="Google Streets" src="google_streets/all" legend="false" fade="false" unfade="false"/>
@@ -629,9 +635,11 @@
 			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="false" unfade="false"/>
 	<!--		<layer title="OpenStreetMap - Cycle Map" src="thunderforest/osm_cycle_map" legend="false" fade="false" unfade="false"/> -->
 			
-			<layer title="USGS DOQs" src="usgs/DOQ" show-legend="false" legend="false" fade="false" unfade="false"/>
-			<layer title="USGS Topo Quads" src="usgs/DRG" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="false" unfade="false"/>
 			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="false" unfade="false"/>
 			<layer title="None" src="blank/blank" show-legend="false" legend="false" fade="false" unfade="false"/>
 		</group>
 	</catalog>

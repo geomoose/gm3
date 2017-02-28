@@ -49,6 +49,7 @@ import * as wmsLayer from './layers/wms';
 import * as xyzLayer from './layers/xyz';
 import * as agsLayer from './layers/ags';
 import * as vectorLayer from './layers/vector';
+import * as bingLayer from './layers/bing';
 
 
 class Map extends Component {
@@ -94,6 +95,9 @@ class Map extends Component {
             case 'wfs' : 
                 vectorLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
+            case 'bing':
+                bingLayer.updateLayer(this.map, ol_layer, map_source);
+                break;
             default:
                 console.info('Unhandled map-source type: ' + map_source.type);
         }
@@ -116,6 +120,8 @@ class Map extends Component {
             case 'vector':
             case 'wfs':
                 return vectorLayer.createLayer(mapSource);
+            case 'bing':
+                return bingLayer.createLayer(mapSource);
             default:
                 throw ('Unhandled creation of map-source type: ' + map_source.type);
         }
