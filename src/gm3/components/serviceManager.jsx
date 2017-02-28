@@ -70,6 +70,11 @@ class ServiceManager extends Component {
             let selection = this.props.store.getState().map.selectionFeatures[0];
             let fields = this.props.services[service].fields;
 
+            // shutdown the drawing on the layer.
+            // TODO: Add a 'keep' alive that does *not* stop this
+            //       in order to allow repeated runs of a service (e.g. Identify)
+            this.drawTool(null);
+
             this.props.services[service].query(selection, fields);
 
             this.closeForm();

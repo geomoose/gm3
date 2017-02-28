@@ -587,10 +587,13 @@ class Map extends Component {
      *
      *  @param type The type of drawing tool (Point,LineString,Polygon)
      *  @param path The layer on which to mark.  null = "selection", the ephemeral layer.
+     *  @param oneAtATime {Boolean} When true, only one feature will be allowed to be drawn
+     *                              at a time.  
      *
      */
-    activateDrawTool(type, path) {
+    activateDrawTool(type, path, oneAtATime) {
         // TODO : path is current ignored.
+        let source = this.selectionLayer.getSource();
 
         // stop the 'last' drawing tool.
         this.stopDrawing();
@@ -602,9 +605,17 @@ class Map extends Component {
         if(type !== null) {
             // switch to the new drawing tool.
             this.drawTool = new ol.interaction.Draw({
-                source: this.selectionLayer.getSource(),
+                source: source,
                 type
             });
+
+            if(oneAtATime === true) {
+                this.drawTool.on('drawstart', function() {
+                    // clear out the other features on the source.
+                    source.clear();
+                });
+            }
+
             this.map.addInteraction(this.drawTool);
         }
 
@@ -662,7 +673,9 @@ class Map extends Component {
 
             if(this.props.mapView.interactionType !== this.currentInteraction) {
                 // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
-                this.activateDrawTool(this.props.mapView.interactionType);
+                // "null" refers to the selection layer, "true" means only one feature
+                //   at a time.
+                this.activateDrawTool(this.props.mapView.interactionType, null, true);
             }
 
             // update the map size when data changes
