@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -230,21 +230,26 @@ class Map extends Component {
         let projection = this.map.getView().getProjection();
         let geom_field = 'geom';
 
-        // the internal storage mechanism requires features
-        //  returned from the query be stored in 4326 and then
-        //  reprojected on render.
-        const geojson = new ol.format.GeoJSON({
-            dataProjection: 'EPSG:4326',
-            featureProjection: this.map.getView().getProjection()
-        });
-
-        let view = this.props.mapView;
-
         // get the map source
         let ms_name = util.getMapSourceName(queryLayer);
         let layer_name = util.getLayerName(queryLayer);
 
         let map_source = this.props.mapSources[ms_name];
+
+        // the internal storage mechanism requires features
+        //  returned from the query be stored in 4326 and then
+        //  reprojected on render.
+        let query_projection = projection;
+        if(map_source.wgs84Hack) {
+            query_projection = new ol.proj.get('EPSG:4326');
+        }
+        const geojson_format = new ol.format.GeoJSON({
+            dataProjection: 'EPSG:4326',
+            featureProjection: query_projection 
+        });
+
+        let view = this.props.mapView;
+
         let ol_layer = this.olLayers[ms_name];
         if(!ol_layer) {
             ol_layer = this.createLayer(map_source);
@@ -271,6 +276,8 @@ class Map extends Component {
         if(query.selection && query.selection.geometry) {
             // convert the geojson geometry into a ol geometry.
             let ol_geom = (new ol.format.GeoJSON()).readGeometry(query.selection.geometry);
+            // convert the geometry to the query projection
+            ol_geom.transform(projection, query_projection);
             // add the intersection filter to the filter stack.
             filters.push(ol.format.filter.intersects(geom_field, ol_geom)); 
         }
@@ -303,7 +310,7 @@ class Map extends Component {
         let output_format = 'text/xml; subtype=gml/2.1.2';
 
         let feature_request = new ol.format.WFS().writeGetFeature({
-            srsName: projection.getCode(),
+            srsName: query_projection.getCode(),
             featurePrefix: type_parts[0],
             featureTypes: [type_parts[1]],
             outputFormat: output_format,
@@ -330,7 +337,7 @@ class Map extends Component {
                     let gml_format = new ol.format.GML2();
 
                     let features = gml_format.readFeatures(response); 
-                    let js_features = geojson.writeFeaturesObject(features).features;
+                    let js_features = geojson_format.writeFeaturesObject(features).features;
                     console.log('GOT FEATURES', js_features);
 
                     this.props.store.dispatch(

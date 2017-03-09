@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -134,7 +134,16 @@ function mapServerToWMS(msXml, conf) {
  * @returns Object defining the WFS service.
  */
 function mapServerToWFS(msXml, conf) {
-    return mapServerToDestType(msXml, conf, 'wfs');
+    const wfs_conf = mapServerToDestType(msXml, conf, 'wfs');
+
+    /* MapServer has a pretty major bug, it will not properly
+     * reproject bounding boxes for non-WGS84 layers when doing
+     * WFS queries.  This tells the query engine in the map component,
+     * to use an internal work-around ... aka ... "hack".
+     */
+    wfs_conf.wgs84Hack = true;
+
+    return wfs_conf;
 }
 
 var MS_Z_INDEX = 100000;
