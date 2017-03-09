@@ -56,7 +56,7 @@ export default function mapReducer(state = default_view, action) {
             }
             return Object.assign({}, state, new_view);
         case MAP.ZOOM_TO_EXTENT:
-            return Object.assign({}, state, {extent: action.extent});
+            return Object.assign({}, state, {extent: {bbox: action.extent, projection: action.projection}});
         case MAP.CURSOR:
             return Object.assign({}, state, {coords: action.coords});
         case MAP.CHANGE_TOOL:

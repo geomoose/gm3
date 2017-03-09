@@ -103,10 +103,11 @@ export function addSelectionFeature(feature) {
     }
 }
 
-export function zoomToExtent(extent) {
+export function zoomToExtent(extent, projection) {
     return {
         type: MAP.ZOOM_TO_EXTENT,
-        extent
+        extent,
+        projection
     }
 }
 

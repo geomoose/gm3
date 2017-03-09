@@ -241,10 +241,12 @@ class Application {
     /** zoom to an extent
      *
      * @param {Array} extent An array of [minx, miny, maxx, maxy]
+     * @param {String} projCode A projection code if the bounding box is in
+     *                          a projection other than the map.
      *
      */
-    zoomToExtent(extent) {
-        this.store.dispatch(mapActions.zoomToExtent(extent));
+    zoomToExtent(extent, projCode) {
+        this.store.dispatch(mapActions.zoomToExtent(extent, projCode));
     }
 
     /** Move the map to a center point and a resolution.

@@ -664,8 +664,14 @@ class Map extends Component {
      */
     componentWillUpdate(nextProps, nextState) {
         if(nextProps && nextProps.mapView.extent) {
+            let bbox = nextProps.mapView.extent.bbox;
+            const bbox_code = nextProps.mapView.extent.projection;
+            if(bbox_code) {
+                const map_proj = this.map.getView().getProjection();
+                bbox = ol.proj.transformExtent(bbox, ol.proj.get(bbox_code), map_proj);
+            }
             // move the map to the new extent.
-            this.map.getView().fit(nextProps.mapView.extent, this.map.getSize()); 
+            this.map.getView().fit(bbox, this.map.getSize()); 
         }
 
         // see if any queries need their results populated.
