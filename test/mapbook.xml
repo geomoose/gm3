@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<mapbook version="2.8.0">
+<mapbook version="3.0.0">
 	<configuration>
 		<param name="links_bar_html"><![CDATA[
 			<b>Our Stack:</b>
@@ -170,7 +170,7 @@
                     </div>
                     <div class="search-action">
                         <div style="padding: 2px">
-                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
                                 <i class="fa fa-search"></i> 
                                 {{ properties.PIN }}
                             </a>
@@ -210,7 +210,7 @@
                   </a>
                 </td>
                 <td>
-                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
                     <i class="fa fa-search"></i> 
                     {{ properties.PIN }}
                   </a>
