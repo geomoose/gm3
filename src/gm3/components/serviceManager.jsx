@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,8 @@ import * as util from '../util';
 
 import * as uuid from 'uuid';
 
+import * as mapActions from '../actions/map';
+
 import { getLayerFromPath } from '../actions/mapSource';
 
 import { setUiHint } from '../actions/ui';
@@ -54,6 +56,10 @@ class ServiceManager extends Component {
         this.renderQueryResults = this.renderQueryResults.bind(this); 
         this.renderServiceField = this.renderServiceField.bind(this); 
         this.setFieldValue = this.setFieldValue.bind(this); 
+
+        this.state = {
+            lastService: null
+        };
     }
 
     registerService(name, service) {
@@ -234,10 +240,18 @@ class ServiceManager extends Component {
         return false;
     }
 
-    componentWillUpdate() {
+    componentWillUpdate(nextProps) {
         // anytime this updates, the user should really be seeing the service 
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
+
+        // when the service changes, then clear out the previous 
+        //  selection features
+        if(this.state.lastService !== nextProps.queries.service 
+           && nextProps.queries.service !== null) {
+            this.setState({lastService: nextProps.queries.service});
+            this.props.store.dispatch(mapActions.clearSelectionFeatures());
+        }
     }
 
     render() {

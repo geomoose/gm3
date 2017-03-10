@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,6 +64,7 @@ export const MAP = {
     CHANGE_TOOL: 'MAP_CHANGE_TOOL',
 
     ADD_SELECTION_FEATURE: 'MAP_ADD_SELECTION_FEATURE',
+    CLEAR_SELECTION_FEATURES: 'MAP_CLEAR_SELECTION_FEATURES',
 
     QUERY_NEW: 'MAP_QUERY_NEW',
     QUERY_PROGRESS: 'MAP_QUERY_PROGRESS',

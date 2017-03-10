@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -123,5 +123,11 @@ export function removeQueryResults(queryId, filter) {
         type: MAP.QUERY_RESULTS_REMOVE,
         id: queryId,
         filter
+    };
+}
+
+export function clearSelectionFeatures() {
+    return {
+        type: MAP.CLEAR_SELECTION_FEATURES
     };
 }

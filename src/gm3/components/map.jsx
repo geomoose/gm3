@@ -674,6 +674,14 @@ class Map extends Component {
             this.map.getView().fit(bbox, this.map.getSize()); 
         }
 
+        // ensure that the selection features have been 'cleared' 
+        //  appropriately.
+        if(nextProps && nextProps.mapView.selectionFeatures.length == 0) {
+            if(this.selectionLayer) {
+                this.selectionLayer.getSource().clear();
+            }
+        }
+
         // see if any queries need their results populated.
         this.checkQueries(nextProps.queries);
     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,6 +67,10 @@ export default function mapReducer(state = default_view, action) {
         case MAP.ADD_SELECTION_FEATURE:
             return Object.assign({}, state, {
                 selectionFeatures: [action.feature].concat(state.selectionFeatures)
+            });
+        case MAP.CLEAR_SELECTION_FEATURES:
+            return Object.assign({}, state, {
+                selectionFeatures: []
             });
         default:
             return state;
