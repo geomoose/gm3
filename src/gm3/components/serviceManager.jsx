@@ -78,12 +78,11 @@ class ServiceManager extends Component {
             let selection = this.props.store.getState().map.selectionFeatures[0];
             let fields = service_def.fields;
 
+            // check to see if the selection should stay 
+            //  'alive' in the background.
             if(service_def.keepAlive !== true) {
                 // shutdown the drawing on the layer.
-                // TODO: Add a 'keep' alive that does *not* stop this
-                //       in order to allow repeated runs of a service (e.g. Identify)
                 this.drawTool(null);
-
             }
 
             this.closeForm();
@@ -188,6 +187,13 @@ class ServiceManager extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        // when the drawing type changes this needs to 
+        //  update the service 'page' because those elements
+        //  are tied to the state of the interactionType.
+        if(this.props.map.interactionType !== nextProps.map.interactionType) {
+            return true;
+        }
+
         for(let query_id of nextProps.queries.order) {
             if(!this.finishedQueries[query_id]) {
                 let query = nextProps.queries[query_id];
@@ -265,8 +271,6 @@ class ServiceManager extends Component {
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
 
-        console.log('Ping');
-
         // when the service changes, then clear out the previous 
         //  selection features
         if(this.state.lastService !== nextProps.queries.service 
@@ -276,8 +280,6 @@ class ServiceManager extends Component {
         } else {
             let service_name = this.state.lastService;
             let service_def = nextProps.services[service_name];
-
-            console.log('checking autoGo...');
 
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
@@ -296,31 +298,71 @@ class ServiceManager extends Component {
 
     }
 
+    /** Render a drawing tool.
+     *
+     *  @param {String} gtype The "geometry" type: Point, Line Polygon.
+     *
+     */
+    renderDrawTool(gtype) {
+        let status_icon = (<i className="fa fa-circle-o"></i>);
+        if(this.props.map.interactionType == gtype) {
+            status_icon = (<i className="fa fa-check-circle-o"></i>);
+        }
+
+        return (
+            <div key={'draw-tool-' + gtype} onClick={ () => { this.drawTool(gtype) } }>
+                { status_icon } Draw { gtype }
+            </div>
+        );
+    }
+
     render() {
         if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
 
-            if(service_def.autoGo) {
+            // remove any previous drawing tools
+            /*
+            this.drawTool(null);
+            if(service_def.tools.default) {
+                this.drawTool(service_def.tools.default);
             }
+            */
+
+            const service_tools = [];
+            for(let gtype of ['Point', 'Line', 'Polygon']) {
+                console.log('Gtype?', gtype, service_def.tools[gtype]);
+                if(service_def.tools[gtype]) {
+                    service_tools.push(this.renderDrawTool(gtype));
+                }
+            }
+
 
             return (
                 <div className="service-manager">
                     <h3>{service_def.title}</h3>
-                    {service_def.tools.Point && <div><button onClick={ () => { this.drawTool('Point') } }>Draw Point</button></div>}
-                    {service_def.tools.LineString && <div><button onClick={ () => { this.drawTool('LineString') } }>Draw LineString</button></div>}
-                    {service_def.tools.Polygon && <div><button onClick={ () => { this.drawTool('Polygon') } }>Draw Polygon</button></div>}
+                    { service_tools }
                     { service_def.fields.map(this.renderServiceField) }
                     <button onClick={() => { this.closeForm() }}>Close</button>
                     <button onClick={() => { this.startQuery(service_name) }}>Go</button>
                 </div>
             );
         } else {
-            return (
-                <div className="service-manager">
-                    { this.props.queries.order.map(this.renderQuery) }
-                </div>
-            );
+            if(this.props.queries.order.length > 0) {
+                return (
+                    <div className="service-manager">
+                        { this.props.queries.order.map(this.renderQuery) }
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="service-manager">
+                        <div className="help">
+                            Nothing available to view. Please click a service to start in the toolbar.
+                        </div>
+                    </div>
+                );
+            }
         }
     }
 
