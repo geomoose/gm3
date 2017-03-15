@@ -304,14 +304,14 @@ class ServiceManager extends Component {
      *
      */
     renderDrawTool(gtype) {
-        let status_icon = (<i className="fa fa-circle-o"></i>);
+        let tool_class = 'draw-tool';
         if(this.props.map.interactionType == gtype) {
-            status_icon = (<i className="fa fa-check-circle-o"></i>);
+            tool_class += ' selected';
         }
 
         return (
-            <div key={'draw-tool-' + gtype} onClick={ () => { this.drawTool(gtype) } }>
-                { status_icon } Draw { gtype }
+            <div key={'draw-tool-' + gtype} className={tool_class} onClick={ () => { this.drawTool(gtype) } }>
+                <i className="radio-icon"></i> Draw { gtype }
             </div>
         );
     }
@@ -331,7 +331,6 @@ class ServiceManager extends Component {
 
             const service_tools = [];
             for(let gtype of ['Point', 'Line', 'Polygon']) {
-                console.log('Gtype?', gtype, service_def.tools[gtype]);
                 if(service_def.tools[gtype]) {
                     service_tools.push(this.renderDrawTool(gtype));
                 }

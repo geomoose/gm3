@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,26 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
+.service-manager {
 
-.hide {
-    display: none;
+    .draw-tool {
+        cursor: pointer;
+
+        .radio-icon {
+            .fa;
+            &:before {
+                content: @fa-var-circle-o;
+            }
+        }
+            
+    }
+
+    .draw-tool.selected {
+        .radio-icon {
+            &:before {
+                content: @fa-var-check-circle-o;
+            }
+        }
+    }
 }
+
