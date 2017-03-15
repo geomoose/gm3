@@ -53,6 +53,13 @@ export default class TextInput extends Component {
     onChange(evt) {
         const v = evt.target.value;
         this.setState({value: v});
+
+        this.setValue(this.getName(), v);
+    }
+
+    setValue(name, value) {
+        // do nothing, this is meant for the parent to hook into.
+        this.props.setValue(name, value);
     }
 
 

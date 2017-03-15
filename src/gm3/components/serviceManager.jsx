@@ -57,14 +57,14 @@ class ServiceManager extends Component {
         this.drawTool = this.drawTool.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
         this.renderQueryResults = this.renderQueryResults.bind(this); 
+        this.onServiceFieldChange = this.onServiceFieldChange.bind(this);
 
         this.state = {
             lastService: null,
             lastFeature: ''
         };
 
-        this.inputFields = [];
-
+        this.fieldValues = {};
     }
 
     registerService(name, service) {
@@ -82,8 +82,8 @@ class ServiceManager extends Component {
             let selection = this.props.store.getState().map.selectionFeatures[0];
             let fields = [];
 
-            for(let field of this.inputFields) {
-                fields.push({name: field.getName(), value: field.getValue()});
+            for(let name in this.fieldValues) {
+                fields.push({name: name, value: this.fieldValues[name]});
             }
 
             // check to see if the selection should stay 
@@ -271,6 +271,8 @@ class ServiceManager extends Component {
             // clear out the previous selection feaures.
             this.props.store.dispatch(mapActions.clearSelectionFeatures());
 
+            // clear out the previous field values.
+            this.fieldValues = {};
         } else {
             let service_name = this.state.lastService;
             let service_def = nextProps.services[service_name];
@@ -310,13 +312,17 @@ class ServiceManager extends Component {
         );
     }
 
+    onServiceFieldChange(name, value) {
+        this.fieldValues[name] = value;
+    }
+
     getServiceField(i, field) {
         switch(field.type) {
             case 'select':
-                return (<SelectInput key={'field-'+i} field={field}/>);
+                return (<SelectInput setValue={this.onServiceFieldChange} key={'field-'+i} field={field}/>);
             case 'text':
             default: 
-                return (<TextInput key={'field-'+i} field={field}/>);
+                return (<TextInput setValue={this.onServiceFieldChange} key={'field-'+i} field={field}/>);
         }
     }
 
@@ -333,13 +339,11 @@ class ServiceManager extends Component {
             }
 
             const service_fields = [];
+
             for(let i = 0, ii = service_def.fields.length; i < ii; i++) {
                 const field = service_def.fields[i];
                 service_fields.push(this.getServiceField(i, field));
             }
-
-            this.inputFields = service_fields;
-
 
             return (
                 <div className="service-manager">
