@@ -49,12 +49,13 @@ export function changeTool(tool) {
     }
 }
 
-export function createQuery(service, selection, fields, layers) {
+export function createQuery(service, selection, fields, layers, single) {
     return {
         type: MAP.QUERY_NEW,
         query: {
             service, selection, fields, layers
-        }
+        },
+        singleQuery: single
     };
 }
 

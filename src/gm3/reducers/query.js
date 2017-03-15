@@ -109,9 +109,13 @@ export default function queryReducer(state = default_query, action) {
                 rendered: {}
             });
 
-            const query_order = [query_id].concat(state.order);
-            // TODO: Maybe add a 'culling' bit here to remove old processed 
-            //       queries
+            let query_order = [query_id].concat(state.order);
+
+            // when running in single query mode the current query should
+            //  be the only one displayed.
+            if(action.singleQuery) {
+                query_order = [query_id];
+            }
             return Object.assign({}, state, {order: query_order}, new_query);
         case MAP.QUERY_RESULTS:
             // issued when a specific layer returns a result

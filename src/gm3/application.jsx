@@ -169,7 +169,8 @@ class Application {
      *
      */
     dispatchQuery(service, selection, fields, layers) {
-        this.store.dispatch(mapActions.createQuery(service, selection, fields, layers));
+        const single_query = this.config.multipleQuery ? false : true;
+        this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query));
     }
 
     /** Render feeatures from a query using a specified template.
