@@ -342,8 +342,10 @@ class ServiceManager extends Component {
                     <h3>{service_def.title}</h3>
                     { service_tools }
                     { service_def.fields.map(this.renderServiceField) }
-                    <button onClick={() => { this.closeForm() }}>Close</button>
-                    <button onClick={() => { this.startQuery(service_name) }}>Go</button>
+                    <div className="tab-controls">
+                        <button className="close-button" onClick={() => { this.closeForm() }}><i className="close-icon"></i> Close</button>
+                        <button className="go-button" onClick={() => { this.startQuery(service_name) }}><i className="go-icon"></i> Go</button>
+                    </div>
                 </div>
             );
         } else {
