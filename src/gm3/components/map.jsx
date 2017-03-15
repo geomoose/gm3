@@ -602,6 +602,11 @@ class Map extends Component {
      *
      */
     activateDrawTool(type, path, oneAtATime) {
+        // normalize the input.
+        if(typeof(type) === 'undefined') {
+            type = null;
+        }
+
         // TODO : path is current ignored.
         let source = this.selectionLayer.getSource();
 
