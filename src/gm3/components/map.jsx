@@ -549,6 +549,8 @@ class Map extends Component {
         src_selection.on('addfeature', (evt) => {
             let geojson = new ol.format.GeoJSON();
             let json_feature = geojson.writeFeatureObject(evt.feature);
+            // assign the feature a UUID.
+            json_feature.properties = {id: uuid.v4()};
             this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
         });
     }

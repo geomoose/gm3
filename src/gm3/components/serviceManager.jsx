@@ -58,7 +58,8 @@ class ServiceManager extends Component {
         this.setFieldValue = this.setFieldValue.bind(this); 
 
         this.state = {
-            lastService: null
+            lastService: null,
+            lastFeature: ''
         };
     }
 
@@ -73,17 +74,20 @@ class ServiceManager extends Component {
      */
     startQuery(service) {
         if(this.props.services[service]) {
+            let service_def = this.props.services[service];
             let selection = this.props.store.getState().map.selectionFeatures[0];
-            let fields = this.props.services[service].fields;
+            let fields = service_def.fields;
 
-            // shutdown the drawing on the layer.
-            // TODO: Add a 'keep' alive that does *not* stop this
-            //       in order to allow repeated runs of a service (e.g. Identify)
-            this.drawTool(null);
+            if(service_def.keepAlive !== true) {
+                // shutdown the drawing on the layer.
+                // TODO: Add a 'keep' alive that does *not* stop this
+                //       in order to allow repeated runs of a service (e.g. Identify)
+                this.drawTool(null);
 
-            this.props.services[service].query(selection, fields);
+            }
 
             this.closeForm();
+            this.props.services[service].query(selection, fields);
         } else {
             console.info('Failed to start query, service: ' + service + ' not found.');
         }
@@ -237,27 +241,68 @@ class ServiceManager extends Component {
             if(!found) { return true; }
         }
 
+        // check to see if the selection features have changed.
+        const old_features = this.props.map.selectionFeatures;
+        const new_features = nextProps.map.selectionFeatures;
+        if(old_features.length != new_features.length) {
+            return true;
+        } else {
+            // TODO: do a better list-against-list matching check.
+            for(let i = 0, ii = old_features.length; i < ii; i++) {
+                if(old_features[i].properties.id != new_features[i].properties.id) {
+                    return true;
+                }
+            }
+        }
+
+
+
         return false;
     }
 
-    componentWillUpdate(nextProps) {
+    componentWillUpdate(nextProps, nextState) {
         // anytime this updates, the user should really be seeing the service 
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
+
+        console.log('Ping');
 
         // when the service changes, then clear out the previous 
         //  selection features
         if(this.state.lastService !== nextProps.queries.service 
            && nextProps.queries.service !== null) {
-            this.setState({lastService: nextProps.queries.service});
+            this.setState({lastService: nextProps.queries.service, lastFeature: ''});
             this.props.store.dispatch(mapActions.clearSelectionFeatures());
+        } else {
+            let service_name = this.state.lastService;
+            let service_def = nextProps.services[service_name];
+
+            console.log('checking autoGo...');
+
+            // if this service has 'autoGo' and the feature is different
+            //  than the last one, then execute the query.
+            if(service_def.autoGo) { 
+                let selection = nextProps.store.getState().map.selectionFeatures;
+                if(selection.length > 0) {
+                    // okay, there *is* a selection feature.
+                    let fid = selection[0].properties.id;
+                    if(nextState.lastFeature !== fid) {
+                        this.setState({lastFeature: fid});
+                        this.startQuery(service_name);
+                    }
+                }
+            }
         }
+
     }
 
     render() {
         if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
+
+            if(service_def.autoGo) {
+            }
 
             return (
                 <div className="service-manager">
@@ -284,7 +329,8 @@ class ServiceManager extends Component {
 
 const mapToProps = function(store) {
     return {
-        queries: store.query
+        queries: store.query,
+        map: store.map
     }
 }
 export default connect(mapToProps)(ServiceManager);
