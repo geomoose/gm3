@@ -42,6 +42,9 @@ import { setUiHint } from '../actions/ui';
 
 import Mark from 'markup-js';
 
+import TextInput from './serviceInputs/text';
+import SelectInput from './serviceInputs/select';
+
 class ServiceManager extends Component {
 
     constructor() {
@@ -54,13 +57,14 @@ class ServiceManager extends Component {
         this.drawTool = this.drawTool.bind(this); 
         this.renderQuery = this.renderQuery.bind(this); 
         this.renderQueryResults = this.renderQueryResults.bind(this); 
-        this.renderServiceField = this.renderServiceField.bind(this); 
-        this.setFieldValue = this.setFieldValue.bind(this); 
 
         this.state = {
             lastService: null,
             lastFeature: ''
         };
+
+        this.inputFields = [];
+
     }
 
     registerService(name, service) {
@@ -76,7 +80,11 @@ class ServiceManager extends Component {
         if(this.props.services[service]) {
             let service_def = this.props.services[service];
             let selection = this.props.store.getState().map.selectionFeatures[0];
-            let fields = service_def.fields;
+            let fields = [];
+
+            for(let field of this.inputFields) {
+                fields.push({name: field.getName(), value: field.getValue()});
+            }
 
             // check to see if the selection should stay 
             //  'alive' in the background.
@@ -163,27 +171,6 @@ class ServiceManager extends Component {
 
     closeForm() {
         this.props.store.dispatch(finishService());
-    }
-
-    /** Handle changing the event name
-     */
-    setFieldValue(fieldDefn, event) {
-        fieldDefn.value = event.target.value;
-    }
-
-    /** Render a user input field
-     *
-     *  @param {Object} fieldDefn Definition of the field to be rendered.
-     *
-     * @returns JSX
-     */
-    renderServiceField(fieldDefn) {
-        // TODO: Make bootstrappy? 
-        return (
-            <div key="{ fieldDefn.name }" className="field-input">
-                <label>{ fieldDefn.label }</label> <input onChange={ (event) => { this.setFieldValue(fieldDefn, event) } }/>
-            </div>
-        );
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -323,6 +310,16 @@ class ServiceManager extends Component {
         );
     }
 
+    getServiceField(i, field) {
+        switch(field.type) {
+            case 'select':
+                return (<SelectInput key={'field-'+i} field={field}/>);
+            case 'text':
+            default: 
+                return (<TextInput key={'field-'+i} field={field}/>);
+        }
+    }
+
     render() {
         if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
@@ -335,12 +332,20 @@ class ServiceManager extends Component {
                 }
             }
 
+            const service_fields = [];
+            for(let i = 0, ii = service_def.fields.length; i < ii; i++) {
+                const field = service_def.fields[i];
+                service_fields.push(this.getServiceField(i, field));
+            }
+
+            this.inputFields = service_fields;
+
 
             return (
                 <div className="service-manager">
                     <h3>{service_def.title}</h3>
                     { service_tools }
-                    { service_def.fields.map(this.renderServiceField) }
+                    { service_fields }
                     <div className="tab-controls">
                         <button className="close-button" onClick={() => { this.closeForm() }}><i className="close-icon"></i> Close</button>
                         <button className="go-button" onClick={() => { this.startQuery(service_name) }}><i className="go-icon"></i> Go</button>
