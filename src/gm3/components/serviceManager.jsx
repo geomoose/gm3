@@ -275,8 +275,15 @@ class ServiceManager extends Component {
         //  selection features
         if(this.state.lastService !== nextProps.queries.service 
            && nextProps.queries.service !== null) {
+            let service_def = nextProps.services[nextProps.queries.service];
+            // clear out the previous drawing tool when
+            //  changing services.
+            this.drawTool(service_def.tools.default);
+            // 'rotate' the current servie to the next services.
             this.setState({lastService: nextProps.queries.service, lastFeature: ''});
+            // clear out the previous selection feaures.
             this.props.store.dispatch(mapActions.clearSelectionFeatures());
+
         } else {
             let service_name = this.state.lastService;
             let service_def = nextProps.services[service_name];
@@ -320,14 +327,6 @@ class ServiceManager extends Component {
         if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
-
-            // remove any previous drawing tools
-            /*
-            this.drawTool(null);
-            if(service_def.tools.default) {
-                this.drawTool(service_def.tools.default);
-            }
-            */
 
             const service_tools = [];
             for(let gtype of ['Point', 'Line', 'Polygon']) {
