@@ -567,6 +567,7 @@ class Map extends Component {
         this.map = new ol.Map({
             target: this.mapId,
             layers: [this.selectionLayer],
+            logo: false,
             view: new ol.View({
                 center: [ -10370351.141856, 5550949.728470501 ],
                 zoom: 12
