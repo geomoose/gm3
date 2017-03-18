@@ -253,6 +253,27 @@ class ServiceManager extends Component {
         return false;
     }
 
+    /** Iterate through all of the queries and execute 
+     *  the service's "runQuery" method if the query is
+     *  in the appropriate state.
+     *
+     *  @param {Object} queries the Queries state.
+     *
+     */
+    checkQueries(queries) {
+        for(let query_id of queries.order) {
+            let query = queries[query_id];
+            let service = this.props.services[query.service];
+
+            if(query && query.progress === 'new') {
+                if(typeof(service.runQuery) == 'function') {
+                    this.props.dispatch(mapActions.startQuery(query_id));
+                    service.runQuery(query_id, query);
+                }
+            }
+        }
+    }
+
     componentWillUpdate(nextProps, nextState) {
         // anytime this updates, the user should really be seeing the service 
         //  tab.
@@ -292,6 +313,9 @@ class ServiceManager extends Component {
             }
         }
 
+        // check the queries and see if the services need to 
+        //  dispatch anything
+        this.checkQueries(nextProps.queries);
     }
 
     /** Render a drawing tool.

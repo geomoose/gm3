@@ -85,7 +85,7 @@ class Application {
     registerService(serviceName, serviceClass, options) {
         // when options are not an object, then default it to be
         //  an object.
-        if(typeof(options) != Object) { options = {}; }
+        if(typeof(options) != 'object') { options = {}; }
         // "serviceClass" should be a class that can be created,
         //  the only parameter to the constructor should be the application,
         //  which it uses to tie back to the 'react' environment.
@@ -196,14 +196,14 @@ class Application {
                     template_contents = null;
                     console.info('Failed to find template.', path, template_name);
                 }
+            }
 
-                // do not try to iterate through the features if
-                //  the template does not exist.
-                if(template_contents) {
-                    for(let feature of query.results[path]) {
-                        // TODO: Make this plugable, check by template "type"?!?
-                        html_contents += Mark.up(template_contents, feature, util.FORMAT_OPTIONS);
-                    }
+            // do not try to iterate through the features if
+            //  the template does not exist.
+            if(template_contents) {
+                for(let feature of query.results[path]) {
+                    // TODO: Make this plugable, check by template "type"?!?
+                    html_contents += Mark.up(template_contents, feature, util.FORMAT_OPTIONS);
                 }
             }
         }
@@ -352,6 +352,18 @@ class Application {
      */
     uiUpdate() {
         // pass
+    }
+
+    /** Bridge to a useful AJAX handler.
+     *
+     *  this is really a direct bridge to reqwest, which is the
+     *  httplib used by the application.
+     *
+     *  @param {Object} opts The options for Reqwest.
+     *
+     */
+    xhr(opts) {
+        return Request(opts);
     }
 };
 

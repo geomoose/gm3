@@ -63,3 +63,7 @@ target/
 
 # node stuff
 node_modules/
+
+# GeoMoose private-y stuff
+
+test/globals.js

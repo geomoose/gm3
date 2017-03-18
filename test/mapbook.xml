@@ -1,51 +1,5 @@
 <?xml version="1.0"?>
 <mapbook version="3.0.0">
-	<configuration>
-		<param name="links_bar_html"><![CDATA[
-			<b>Our Stack:</b>
-			<a target="_blank" href="http://www.geomoose.org">GeoMOOSE.org</a> |
-			<a target="_blank" href="http://www.mapserver.org">MapServer</a> |
-			<a target="_blank" href="http://www.openlayers.org">OpenLayers</a> |
-			<a target="_blank" href="http://www.dojotoolkit.org">Dojo</a> 
-		]]></param>
-		<param name="projection">EPSG:3857</param>
-
-		<param name="zoomto"><![CDATA[
-		{
-			"Jump To:" : {
-				"World" : [-20614760.777156,1751325.1919492,-1927436.1053437,7915207.1517617],
-				"Parcel Data" : [-10384069.859924,5538318.529767,-10356632.423788,5563580.927174],
-				"Full State of MN" : [-10742765,5398288,-9920914,6310641]
-			}
-		}
-		]]></param>
-		<param name="max_extent">-20037508.342789,-20037508.342789,20037508.342789,20037508.342789</param>
-		<param name="initial_extent">-10384069.859924,5538318.529767,-10356632.423788,5563580.927174</param>
-		<param name="measure_tool.show_area_segments">false</param>
-
-		<param name="layer_controls.legend.on">false</param>
-		<param name="layer_controls.metadata.on">false</param>		
-		<param name="layer_controls.legend.on">true</param>	
-
-		<param name="group_checkboxes">false</param>
-	      
-		<param name="ground_units">m</param>
-		<param name="maxResolution">156543.03390625</param>
-		<param name="numZoomLevels">20</param>
-
-		<param name="coordinate_display.usng">true</param>
-		<param name="jumpto_scales"><![CDATA[
-		{
-			"1:100000" : 100000,
-			"1:50000" : 50000,
-			"1:24000" : 24000,
-			"1:10000" : 10000,
-			"1:5000" : 5000
-		}
-	]]></param>	
-
-		<param name="services.tools.select_feature.status">true</param>
-	</configuration>
 	<!--
 		The mapping services define the source of the mapping data.
 	-->
@@ -355,37 +309,12 @@
 		<file>./demo/wms/wms_proxy.map</file>
 		<layer name="mncomp"/>
 	</map-source>
-<!--
-	<map-source name="google_physical" type="google" google-type="physical">
-		<layer name="all"/>
-	</map-source>
-
-	<map-source name="google_streets" type="google" google-type="streets">
-		<layer name="all"/>
-	</map-source>
-
-	<map-source name="google_hybrid" type="google" google-type="hybrid">
-		<layer name="all"/>
-	</map-source>
-
-	<map-source name="google_satellite" type="google" google-type="satellite">
-		<layer name="all"/>
-	</map-source>
--->
-
-	<map-source name="blank" type="wms" tiled="false" display-in-catalog="false">
-		<url>./images/blank.gif</url>
-		<layer name="blank" status="off"/>
-	</map-source>
 
     <map-source name="bing" type="bing">
         <layer name="roads"/>
         <layer name="aerials"/>
         <param name="key" value="'Your Key Here'"/>
     </map-source>
-
-
-	
 
 
 	<service name="print" title="Print Map" keep-others="true">
@@ -624,13 +553,6 @@
 		<group title="Backgrounds" expand="true" multiple="false">
 			<layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="false" unfade="false"/>
 
-<!--
-			<layer title="Google Streets" src="google_streets/all" legend="false" fade="false" unfade="false"/>
-			<layer title="Google Physical" src="google_physical/all" legend="false" fade="false" unfade="false"/>
-			<layer title="Google Hybrid" src="google_hybrid/all" legend="false" fade="false" unfade="false"/>
-			<layer title="Google Satellite" src="google_satellite/all" legend="false" fade="false" unfade="false"/>
--->
-
 			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="false" unfade="false"/>
 			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="false" unfade="false"/>
 	<!--		<layer title="OpenStreetMap - Cycle Map" src="thunderforest/osm_cycle_map" legend="false" fade="false" unfade="false"/> -->
@@ -640,7 +562,6 @@
 			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="false" unfade="false"/>
 			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="false" unfade="false"/>
 			<layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="false" unfade="false"/>
-			<layer title="None" src="blank/blank" show-legend="false" legend="false" fade="false" unfade="false"/>
 		</group>
 	</catalog>
 
@@ -666,7 +587,7 @@
 		  -  The Geocoder will not work until google_api_key has been defined
 		  -   in local_settings.ini.
 		-->
-		<tool name="geocode" title="Geocode Address" type="service" service="geocode_address" selectable="true"/> 	
+		<tool name="geocode" title="Geocode Address" type="service"/> 
 
 		<tool name="buffered_select" title="Select Features" type="service" service="buffered_select" show-label="true"/>
 		<tool name="search" title="Search Parcels" type="service"/>

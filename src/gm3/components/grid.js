@@ -189,24 +189,31 @@ class Grid extends Component {
             let query = this.props.queries[query_id];
             if(query.progress === 'finished') {
                 let layer_path = Object.keys(query.results)[0];
-                let layer = getLayerFromPath(this.props.store, layer_path);
-
-                // try to parse the grid columns
+                let layer = null;
                 try {
-                    grid_cols = JSON.parse(layer.templates.gridColumns);
+                    layer = getLayerFromPath(this.props.store, layer_path);
                 } catch(err) {
-                    // swallow the error
+                    // no layer, no problem.
                 }
 
-                if(layer.templates.gridRow) {
-                    grid_row = layer.templates.gridRow;
-                }
+                if(layer !== null) {
+                    // try to parse the grid columns
+                    try {
+                        grid_cols = JSON.parse(layer.templates.gridColumns);
+                    } catch(err) {
+                        // swallow the error
+                    }
 
-                if(grid_cols !== null && grid_row !== null) {
-                    // render as a grid.
-                    features = query.results[layer_path];
-                } else {
-                    console.error(layer_path + ' does not have gridColumns or gridRow templates.');
+                    if(layer.templates.gridRow) {
+                        grid_row = layer.templates.gridRow;
+                    }
+
+                    if(grid_cols !== null && grid_row !== null) {
+                        // render as a grid.
+                        features = query.results[layer_path];
+                    } else {
+                        //console.error(layer_path + ' does not have gridColumns or gridRow templates.');
+                    }
                 }
             }
         }

@@ -389,7 +389,7 @@ class Map extends Component {
     checkQueries(queries) {
         for(let query_id in queries) {
             let query = queries[query_id];
-            if(query && query.progress === 'new') {
+            if(query && query.progress === 'new' && query.layers.length > 0) {
                 // issue a 'started' modification so the query is
                 //  not run twice.
                 this.props.dispatch(mapActions.startQuery(query_id));

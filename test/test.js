@@ -7,7 +7,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,12 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
+    app.registerService('select', SelectService);
+    // BING_KEY should be set in globals.js
+    app.registerService('geocode', BingGeocoder, {
+        key: BING_KEY
+    });
+
     app.registerAction('findme', FindMeAction);
 
     app.add(gm3.components.Catalog, 'catalog');
@@ -64,26 +70,5 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     tracker.startTracking();
 
     showTab('catalog');
-    
-    var feature = {
-        geometry: {
-            type: 'Polygon',
-            coordinates: [[ 
-                [-10389434,5577792],
-                [-10366527,5577656],
-                [-10369441,5561594],
-                [-10391264,5558748],
-                [-10389434,5577792]
-            ]]
-        }
-    };
-
-    /*
-    app.dispatchQuery('identify', null,
-        [
-            {comparitor: 'ilike', name: 'OWNER_NAME', value: '*Pete*'}
-        ],
-        ['vector-parcels/ms:parcels']);
-    */
-
+   
 });
