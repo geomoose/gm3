@@ -43,7 +43,7 @@ function IdentifyService(Application, options) {
     this.name = '';
 
     /** Limit the number of selection tools available */
-    this.tools = {'Point': true, 'default' : 'Point'};
+    this.tools = {'Point': true, 'default': 'Point'};
 
     /** autoGo = true instructs the service to query whenever
      *                the geometry has changed.
