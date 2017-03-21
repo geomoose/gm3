@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2362,7 +2362,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2539,7 +2539,107 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2017 Dan "Ducky" Little
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+.service-manager .draw-tool {
+  cursor: pointer;
+  padding-left: 15px;
+}
+.service-manager .draw-tool .radio-icon {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.service-manager .draw-tool .radio-icon.fa-pull-left {
+  margin-right: .3em;
+}
+.service-manager .draw-tool .radio-icon.fa-pull-right {
+  margin-left: .3em;
+}
+.service-manager .draw-tool .radio-icon.pull-left {
+  margin-right: .3em;
+}
+.service-manager .draw-tool .radio-icon.pull-right {
+  margin-left: .3em;
+}
+.service-manager .draw-tool .radio-icon:before {
+  content: "\f10c";
+}
+.service-manager .draw-tool.selected .radio-icon:before {
+  content: "\f05d";
+}
+.service-manager .tab-controls {
+  padding-top: 1em;
+}
+.service-manager .tab-controls .go-button,
+.service-manager .tab-controls .close-button {
+  font-size: 1.25em;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.service-manager .tab-controls .go-button {
+  float: right;
+}
+.service-manager .tab-controls .close-button {
+  float: left;
+}
+.service-manager .tab-controls .go-icon,
+.service-manager .tab-controls .close-icon {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.service-manager .tab-controls .go-icon.fa-pull-left,
+.service-manager .tab-controls .close-icon.fa-pull-left {
+  margin-right: .3em;
+}
+.service-manager .tab-controls .go-icon.fa-pull-right,
+.service-manager .tab-controls .close-icon.fa-pull-right {
+  margin-left: .3em;
+}
+.service-manager .tab-controls .go-icon.pull-left,
+.service-manager .tab-controls .close-icon.pull-left {
+  margin-right: .3em;
+}
+.service-manager .tab-controls .go-icon.pull-right,
+.service-manager .tab-controls .close-icon.pull-right {
+  margin-left: .3em;
+}
+.service-manager .tab-controls .go-icon:before {
+  content: "\f01d";
+}
+.service-manager .tab-controls .close-icon:before {
+  content: "\f05c";
+}
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2670,6 +2770,10 @@
 }
 .results-download-icon:before {
   content: "\f019";
+}
+.coordinate-display .coordinates label {
+  font-weight: bold;
+  padding-left: 5px;
 }
 .hide {
   display: none;
