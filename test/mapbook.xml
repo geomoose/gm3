@@ -132,6 +132,7 @@
                     </div>
                 </div>
             ]]></template>
+            <template name="select" alias="search"/>
             <template name="gridColumns"><![CDATA[
             [
                 {
@@ -255,9 +256,11 @@
 		<layer name="testing"/>
 	</map-source>
 
-	<map-source name="borders" type="mapserver" reference="true" up="true" down="true" title="City and County Borders" fido-search="true">
+	<map-source name="borders" type="mapserver" title="City and County Borders"> 
 		<file>./demo/statedata/basemap.map</file>
-		<layer name="city_poly" status="off"/>
+		<layer name="city_poly" status="off">
+            <template name="identify" src="./city.html"/>
+        </layer>
 		<layer name="county_borders" status="off"/>
 	</map-source>
 
@@ -588,8 +591,7 @@
 		  -   in local_settings.ini.
 		-->
 		<tool name="geocode" title="Geocode Address" type="service"/> 
-
-		<tool name="buffered_select" title="Select Features" type="service" service="buffered_select" show-label="true"/>
+		<tool name="select" title="Select Features" type="service"/>
 		<tool name="search" title="Search Parcels" type="service"/>
 
         <tool name="findme" title="Find Me" type="action"/>
