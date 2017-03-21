@@ -40,6 +40,8 @@ import * as Papa from 'papaparse';
 
 import Mark from 'markup-js';
 
+import FileSaver from 'file-saver';
+
 class Grid extends Component {
 
     constructor() {
@@ -159,20 +161,14 @@ class Grid extends Component {
         }
 
         // create the data
-        let csv_string = 'data:text/csv;charset=utf-8,' + Papa.unparse(feature_data);
+        let csv_blob = new Blob([Papa.unparse(feature_data)], {type: 'text/csv;charset=utf-8'});
 
         // create a unique string
         let uniq = '' + (new Date()).getTime();
+        const csv_name = 'download_' + uniq + '.csv';
 
-        // make a temprary link with a filename and data
-        let temp_a = document.createElement('a');
-        temp_a.setAttribute('download', 'download_' + uniq + '.csv');
-        temp_a.setAttribute('href', encodeURI(csv_string));
-
-        // add the link to the body, click it, and remove it.
-        document.body.appendChild(temp_a);
-        temp_a.click();
-        document.body.removeChild(temp_a);
+        // now have FileSaver 'normalize' how to do a save-as.
+        FileSaver.saveAs(csv_blob, csv_name);
     }
 
     render() {
