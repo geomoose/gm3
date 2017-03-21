@@ -569,8 +569,8 @@ class Map extends Component {
             layers: [this.selectionLayer],
             logo: false,
             view: new ol.View({
-                center: [ -10370351.141856, 5550949.728470501 ],
-                zoom: 12
+                center: this.props.center,
+                zoom: this.props.zoom
             })
         });
 
@@ -684,7 +684,7 @@ class Map extends Component {
 
         // ensure that the selection features have been 'cleared' 
         //  appropriately.
-        if(nextProps && nextProps.mapView.selectionFeatures.length === 0) {
+        if(nextProps && nextProps.mapView.selectionFeatures.length == 0) {
             if(this.selectionLayer) {
                 this.selectionLayer.getSource().clear();
             }

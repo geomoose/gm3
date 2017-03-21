@@ -78,7 +78,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
         usng: true, latLon: true
     });
-    app.add(gm3.components.Map, 'map');
+    app.add(gm3.components.Map, 'map', {
+        center: [ -10370351.141856, 5550949.728470501 ],
+        zoom: 12
+    });
 
 
     tracker.startTracking();
