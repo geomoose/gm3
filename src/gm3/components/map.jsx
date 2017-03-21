@@ -684,7 +684,7 @@ class Map extends Component {
 
         // ensure that the selection features have been 'cleared' 
         //  appropriately.
-        if(nextProps && nextProps.mapView.selectionFeatures.length == 0) {
+        if(nextProps && nextProps.mapView.selectionFeatures.length === 0) {
             if(this.selectionLayer) {
                 this.selectionLayer.getSource().clear();
             }
