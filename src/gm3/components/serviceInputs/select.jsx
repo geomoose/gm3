@@ -22,24 +22,25 @@
  * SOFTWARE.
  */
 
+import React from 'react';
 import TextInput from './text';
 
 
-class SelectInput extends TextInput {
+export default class SelectInput extends TextInput {
 
 
     renderOption(opt) {
-        return (<option value={opt.value}>{opt.label}</option>);
+        return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
     }
 
     render() {
         const id = this.getId();
 
         return (
-            <div key={id} className='service-input'>
-                <label for={ 'input-'+id }>{ this.label }</label>
-                <select id={ 'input-' + id} value={this.state.value} onChange={this.onChange}>
-                { this.fieldDefn.options.map(this.renderOption) }
+            <div className='service-input'>
+                <label htmlFor={ 'input-'+id }>{ this.props.field.label }</label>
+                <select id={ 'input-'+id} value={this.state.value} onChange={this.onChange}>
+                { this.props.field.options.map(this.renderOption) }
                 </select>
             </div>
         );
