@@ -68,7 +68,7 @@ export default class TextInput extends Component {
 
         return (
             <div className='service-input'>
-                <label htmlFor={ 'input-'+id }>{ this.props.field.label }</label>
+                <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
                 <input onChange={this.onChange} value={this.state.value} type="text" id={ 'input-' + id}></input>
             </div>
         );

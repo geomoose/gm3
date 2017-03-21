@@ -53,7 +53,7 @@ class CoordinateDisplay extends Component {
      */
     latLon() {
         let latlon = this.getLatLonCoords();
-        return latlon[1].toFixed(3) +', '+latlon[0].toFixed(3);
+        return latlon[1].toFixed(3) + ', ' + latlon[0].toFixed(3);
     }
 
     render() {

@@ -208,7 +208,7 @@ class Grid extends Component {
                         // render as a grid.
                         features = query.results[layer_path];
                     } else {
-                        //console.error(layer_path + ' does not have gridColumns or gridRow templates.');
+                        // console.error(layer_path + ' does not have gridColumns or gridRow templates.');
                     }
                 }
             }

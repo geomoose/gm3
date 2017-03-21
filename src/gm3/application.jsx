@@ -147,7 +147,7 @@ class Application {
         }
     }
 
-    add(component, domId, inProps={}) {
+    add(component, domId, inProps = {}) {
         let props = Object.assign({
             store: this.store
         }, inProps);

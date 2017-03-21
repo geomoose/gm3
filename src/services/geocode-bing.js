@@ -87,8 +87,8 @@ function BingGeocoder(Application, options) {
                 });
                 // mark this as finished.
                 Application.dispatch({
-                   id: queryId,
-                   type: 'MAP_QUERY_FINISHED'
+                    id: queryId,
+                    type: 'MAP_QUERY_FINISHED'
                 });
 
 
@@ -107,7 +107,7 @@ function BingGeocoder(Application, options) {
                             ]
                         },
                         properties: {
-                            id: 'address'+i
+                            id: 'address' + i
                         }
                     });
                 }

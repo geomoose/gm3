@@ -237,12 +237,12 @@ class ServiceManager extends Component {
         // check to see if the selection features have changed.
         const old_features = this.props.map.selectionFeatures;
         const new_features = nextProps.map.selectionFeatures;
-        if(old_features.length != new_features.length) {
+        if(old_features.length !== new_features.length) {
             return true;
         } else {
             // TODO: do a better list-against-list matching check.
             for(let i = 0, ii = old_features.length; i < ii; i++) {
-                if(old_features[i].properties.id != new_features[i].properties.id) {
+                if(old_features[i].properties.id !== new_features[i].properties.id) {
                     return true;
                 }
             }
@@ -325,7 +325,7 @@ class ServiceManager extends Component {
      */
     renderDrawTool(gtype) {
         let tool_class = 'draw-tool';
-        if(this.props.map.interactionType == gtype) {
+        if(this.props.map.interactionType === gtype) {
             tool_class += ' selected';
         }
 
@@ -343,10 +343,10 @@ class ServiceManager extends Component {
     getServiceField(i, field) {
         switch(field.type) {
             case 'select':
-                return (<SelectInput setValue={this.onServiceFieldChange} key={'field-'+i} field={field}/>);
+                return (<SelectInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
             case 'text':
             default: 
-                return (<TextInput setValue={this.onServiceFieldChange} key={'field-'+i} field={field}/>);
+                return (<TextInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
         }
     }
 
