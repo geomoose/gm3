@@ -55,10 +55,16 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             {value: 'vector-parcels/ms:parcels', label: 'Parcels'}
         ]
     });
+
+    // check to see if the 'bing key' has been defined,
+    //  if so, use Bing as the geocoder otherwise the application
+    //  will show a "can't find the service" message.
     // BING_KEY should be set in globals.js
-    app.registerService('geocode', BingGeocoder, {
-        key: BING_KEY
-    });
+    if(typeof(BING_KEY) !== 'undefined') {
+        app.registerService('geocode', BingGeocoder, {
+            key: BING_KEY
+        });
+    }
 
     app.registerAction('findme', FindMeAction);
 
