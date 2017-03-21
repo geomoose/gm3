@@ -195,13 +195,13 @@ class Grid extends Component {
                 if(layer !== null) {
                     // try to parse the grid columns
                     try {
-                        grid_cols = JSON.parse(layer.templates.gridColumns);
+                        grid_cols = JSON.parse(layer.templates.gridColumns.contents);
                     } catch(err) {
                         // swallow the error
                     }
 
                     if(layer.templates.gridRow) {
-                        grid_row = layer.templates.gridRow;
+                        grid_row = layer.templates.gridRow.contents;
                     }
 
                     if(grid_cols !== null && grid_row !== null) {

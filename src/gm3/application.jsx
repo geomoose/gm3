@@ -192,8 +192,17 @@ class Application {
             if(template.substring(0, 1) === '@') {
                 let template_name = template.substring(1);
                 let layer = getLayerFromPath(this.store, path);
-                if(layer.templates[template_name]) {
-                    template_contents = layer.templates[template_name];
+                let layer_template = layer.templates[template_name];
+
+                if(layer_template) {
+                    if(layer_template.type === 'alias') {
+                        // TODO: Someone is likely to think it's funny to do multiple
+                        //       levels of aliasing, this should probably look through that
+                        //       possibility.
+                        template_contents = layer.templates[layer_template.alias].contents;
+                    } else {
+                        template_contents = layer.templates[template_name].contents;
+                    }
                 } else {
                     template_contents = null;
                     console.info('Failed to find template.', path, template_name);

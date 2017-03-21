@@ -233,10 +233,25 @@ export function addFromXml(xml, config) {
 
         let templates = layerXml.getElementsByTagName('template');
         for(let x = 0, xx = templates.length; x < xx; x++) {
+            let template_def = {};
+
             let template_xml = templates[x];
             let template_name = template_xml.getAttribute('name');
-            let template_contents = util.getXmlTextContents(template_xml);
-            layer.templates[template_name] = template_contents;
+
+            let template_alias = template_xml.getAttribute('alias');
+            if(template_alias) {
+                template_def = {
+                    type: 'alias',
+                    alias: template_alias
+                };
+            } else {
+                template_def = {
+                    type: 'local',
+                    contents: util.getXmlTextContents(template_xml)
+                }
+            }
+
+            layer.templates[template_name] = template_def;
         }
 
         map_layers.push(addLayer(map_source.name, layer));
