@@ -68,10 +68,10 @@ function FindMeAction(Application, options) {
 
 
         // clear the target layer
-        app.clearFeatures(this.targetLayer);
+        Application.clearFeatures(this.targetLayer);
 
         // mark the location in the highlight layer
-        app.addFeatures(this.targetLayer, [
+        Application.addFeatures(this.targetLayer, [
             {
                 type: 'Point',
                 coordinates: [lon, lat],
@@ -81,6 +81,6 @@ function FindMeAction(Application, options) {
 
         var b = this.buffer;
         var x = coord[0], y = coord[1];
-        app.zoomToExtent([x - b, y - b, x + b, y + b]);
+        Application.zoomToExtent([x - b, y - b, x + b, y + b]);
     }
 }
