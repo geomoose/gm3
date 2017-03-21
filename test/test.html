@@ -21,13 +21,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
- * This version of the HTML uses files only found in dist and node_modules.
 -->
 <html>
 <head>
     <title>GeoMoose 3 Test Instance</title>
+    <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet/less" href="/src/less/gm3.less" />
+    <script ="text/javascript" src="/node_modules/less/dist/less.min.js"></script>
+
+    <!-- uncomment to test compiled version of the CSS 
     <link rel="stylesheet" type="text/css" href="../dist/css/geomoose.css">
+    -->
     <link rel="stylesheet" type="text/css" href="test.css"/>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -58,14 +62,14 @@
     </div>
 
     <script type="text/javascript" src="globals.js"></script>
-    <script type="text/javascript" src="../dist/ol.js"></script>
-    <script type="text/javascript" src="../dist/geomoose.min.js"></script>
-    <script type="text/javascript" src="../dist/services/identify.js"></script>
-    <script type="text/javascript" src="../dist/services/search.js"></script>
-    <script type="text/javascript" src="../dist/services/select.js"></script>
-    <script type="text/javascript" src="../dist/services/geocode-bing.js"></script>
-    <script type="text/javascript" src="../dist/services/findme.js"></script>
-    <script type="text/javascript" src="../dist/services/zoomto.js"></script>
+    <script type="text/javascript" src="/node_modules/openlayers/dist/ol.js"></script>
+    <script type="text/javascript" src="/dist/geomoose.js"></script>
+    <script type="text/javascript" src="/src/services/identify.js"></script>
+    <script type="text/javascript" src="/src/services/search.js"></script>
+    <script type="text/javascript" src="/src/services/select.js"></script>
+    <script type="text/javascript" src="/src/services/geocode-bing.js"></script>
+    <script type="text/javascript" src="/src/services/findme.js"></script>
+    <script type="text/javascript" src="/src/services/zoomto.js"></script>
     <script type="text/javascript" src="tabs.js"></script>
     <script type="text/javascript" src="test.js"></script>
 </body>
