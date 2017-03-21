@@ -50,7 +50,11 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
-    app.registerService('select', SelectService);
+    app.registerService('select', SelectService, {
+        queryLayers: [
+            {value: 'vector-parcels/ms:parcels', label: 'Parcels'}
+        ]
+    });
     // BING_KEY should be set in globals.js
     app.registerService('geocode', BingGeocoder, {
         key: BING_KEY

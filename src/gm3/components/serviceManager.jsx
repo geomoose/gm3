@@ -82,8 +82,8 @@ class ServiceManager extends Component {
             let selection = this.props.store.getState().map.selectionFeatures[0];
             let fields = [];
 
-            for(let name in this.fieldValues) {
-                fields.push({name: name, value: this.fieldValues[name]});
+            for(let name in this.fieldValues[service]) {
+                fields.push({name: name, value: this.fieldValues[service][name]});
             }
 
             // check to see if the selection should stay 
@@ -293,7 +293,9 @@ class ServiceManager extends Component {
             this.props.store.dispatch(mapActions.clearSelectionFeatures());
 
             // clear out the previous field values.
-            this.fieldValues = {};
+            if(!this.fieldValues[nextProps.queries.service]) {
+                this.fieldValues[nextProps.queries.service] = {};
+            }
         } else {
             let service_name = this.state.lastService;
             let service_def = nextProps.services[service_name];
@@ -337,7 +339,7 @@ class ServiceManager extends Component {
     }
 
     onServiceFieldChange(name, value) {
-        this.fieldValues[name] = value;
+        this.fieldValues[this.props.queries.service][name] = value;
     }
 
     getServiceField(i, field) {

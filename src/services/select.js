@@ -63,14 +63,12 @@ function SelectService(Application, options) {
     this.fields = [{
         type: 'select',
         name: 'layer',
-        options: [
-            {value: 'parcels/parcels', label: 'Parcels'},
-            {value: 'pipelines/pipelines', label: 'Pipelines'},
-            {value: 'parcels/points', label: 'Parcel Points'},
-        ]
+        label: 'Query Layer',
+        default: options.queryLayers ? options.queryLayers[0].value : '',
+        options: options.queryLayers ? options.queryLayers : []
     }];
 
-    /** This function is called everytime there is an identify query.
+    /** This function is called everytime there is an select query.
      *
      *  @param selection contains a GeoJSON feature describing the 
      *                   geography to be used for the query.
@@ -79,16 +77,10 @@ function SelectService(Application, options) {
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        // get the list of visible layers
-        var visible_layers = Application.getQueryableLayers();
-
-        // This will dispatch the query.
-        // Application.dispatchQuery is used to query a set of map-sources
-        //  as they are defined in the mapbook.  To perform other types of queries
-        //  it would be necessary to put that code here and then manually tell
-        //  the application when the query has finished, at which point resultsAsHtml()
-        //  would be called by the service tab.
-        Application.dispatchQuery(this.name, selection, fields, visible_layers);
+        // get the query layer.
+        var query_layer = fields[0].value;
+        // dispatch the query against on the query layer!
+        Application.dispatchQuery(this.name, selection, [], [query_layer]);
     }
 
 
@@ -105,11 +97,6 @@ function SelectService(Application, options) {
 
             // check to see that the layer has results and features were returned.
             if(query.results[path] && !query.results[path].failed) {
-                // renderFeaturesWithTemplate will take the query, the layer specified by path,
-                //  and the specified template and render it. This example uses an inline
-                //  template from the mapbook. 
-                // The layer in the mapbook should have a <template name='identify'>
-                //  child which will be rendered here..
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);
             }
         }
