@@ -98,7 +98,7 @@ class Application {
      *  will run when they are a clicked.
      */
     registerAction(actionName, actionClass, options) {
-        if(typeof(options) != Object) { options = {}; }
+        if(typeof(options) != 'object') { options = {}; }
         this.actions[actionName] = new actionClass(this, options);
     }
 

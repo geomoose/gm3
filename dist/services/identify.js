@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 GeoMoose
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,17 @@ function IdentifyService(Application, options) {
     this.name = '';
 
     /** Limit the number of selection tools available */
-    this.tools = {'Point': true};
+    this.tools = {'Point': true, 'default': 'Point'};
+
+    /** autoGo = true instructs the service to query whenever
+     *                the geometry has changed.
+     */
+    this.autoGo = true;
+
+    /** keepAlive = true will keep the service in 'query mode'
+     *                   in the background, until it is explictly turned off.
+     */
+    this.keepAlive = true;
 
     /** User input fields, there are none for identify */
     this.fields = [];
