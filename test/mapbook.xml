@@ -572,9 +572,12 @@
 		The toolbar defines which services are referneces in the toolbar
 	-->
 	<toolbar>
+        <!--
 		<tool name="previous" title="Previous Extent" type="internal" action="previous" selectable="false"/>
 		<tool name="next" title="Next Extent" type="internal" action="next" selectable="false"/>
-		<tool name="fullextent" title="Zoom to Full Extent" type="internal" action="fullextent" selectable="false"/>
+        -->
+
+		<tool name="fullextent" title="Zoom to Full Extent" type="action"/>
 		<tool name="measure" title="Measure" type="internal" action="measure"/>
 		<tool name="measurearea" title="Measure Area" type="internal" action="measurearea"/>
 		<tool name="print" title="Print" type="service" service="print" selectable="false" icon-class="sprite-control sprite-control-printer"/>

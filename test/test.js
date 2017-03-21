@@ -68,6 +68,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerAction('findme', FindMeAction);
 
+    app.registerAction('fullextent', ZoomToAction, {
+        extent: [-10742765,5398288,-9920914,6310641]
+    });
+
     app.add(gm3.components.Catalog, 'catalog');
     app.add(gm3.components.Favorites, 'favorites');
     app.add(gm3.components.VisibleLayers, 'visible-layers');
