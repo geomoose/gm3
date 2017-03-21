@@ -24,8 +24,14 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import USNG from 'usng-tools-js';
 
 class CoordinateDisplay extends Component {
+
+    constructor(props) {
+        super(props);
+        this.u = new USNG();
+    }
 
     mapXY() {
         const coords = this.props.mapView.coords;
@@ -33,7 +39,13 @@ class CoordinateDisplay extends Component {
     }
 
     usng() {
-        return '--';
+        const coords = this.getLatLonCoords();
+        try {
+            return this.u.fromLonLat({ lon: coords[0], lat: coords[1] }, 4);
+        } catch (e) {
+            console.log(e);
+            return '--';
+        }
     }
 
     /** Transform the map coordinate in to a lat-lon 

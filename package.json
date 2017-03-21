@@ -48,6 +48,7 @@
     "redux": "~3.6.0",
     "reqwest": "~2.0.5",
     "uuid": "~2.0.3",
+    "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
     "webpack": "~1.13.2",
     "webpack-dev-server": "~1.16.1"
   },
