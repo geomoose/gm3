@@ -42,6 +42,7 @@ import Favorites from './gm3/components/favorites';
 import VisibleLayers from './gm3/components/visibleLayers';
 import Grid from './gm3/components/grid';
 import Version from './gm3/components/version';
+import CoordinateDisplay from './gm3/components/coordinates';
 
 import LocalStorageTracker from './gm3/trackers/localStorage';
 
@@ -56,7 +57,8 @@ var components = {
     Favorites: Favorites,
     VisibleLayers: VisibleLayers,
     Grid: Grid,
-    Version: Version
+    Version: Version,
+    CoordinateDisplay: CoordinateDisplay
 };
 
 var trackers = {

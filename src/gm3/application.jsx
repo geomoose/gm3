@@ -147,13 +147,15 @@ class Application {
         }
     }
 
-    add(component, domId, hasServices) {
-        let props = {
+    add(component, domId, inProps={}) {
+        let props = Object.assign({
             store: this.store
-        }
-        if(hasServices) {
+        }, inProps);
+
+        if(inProps.services) {
             props.services = this.services;
         }
+
         var e = React.createElement(component, props);
         ReactDOM.render(e, document.getElementById(domId));
         return e;

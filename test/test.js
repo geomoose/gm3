@@ -61,11 +61,15 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.Catalog, 'catalog');
     app.add(gm3.components.Favorites, 'favorites');
     app.add(gm3.components.VisibleLayers, 'visible-layers');
-    app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
+    app.add(gm3.components.ServiceManager, 'service-tab', {services: true});
     app.add(gm3.components.Toolbar, 'toolbar');
     app.add(gm3.components.Grid, 'results-grid');
     app.add(gm3.components.Version, 'version');
+    app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
+        usng: true, latLon: true
+    });
     app.add(gm3.components.Map, 'map');
+
 
     tracker.startTracking();
 
