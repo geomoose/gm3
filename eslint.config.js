@@ -85,7 +85,7 @@ module.exports = {
 
 	'line-comment-position' : ['error', {position: 'above'}],
 
-	'linebreak-style' : ['error', 'unix'],
+	//'linebreak-style' : ['error', 'unix'],
 
 	'no-array-constructor': 'error',
 
