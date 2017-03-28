@@ -331,9 +331,17 @@ class ServiceManager extends Component {
             tool_class += ' selected';
         }
 
+        let tool_label = gtype;
+        if(gtype === 'LineString') {
+            tool_label = 'Line';
+        } else if(gtype === 'MultiPoint') {
+            tool_label = 'Multi-Point';
+        }
+
+
         return (
             <div key={'draw-tool-' + gtype} className={tool_class} onClick={ () => { this.drawTool(gtype) } }>
-                <i className="radio-icon"></i> Draw { gtype }
+                <i className="radio-icon"></i> Draw { tool_label }
             </div>
         );
     }
@@ -358,7 +366,7 @@ class ServiceManager extends Component {
             let service_def = this.props.services[service_name];
 
             const service_tools = [];
-            for(let gtype of ['Point', 'Line', 'Polygon']) {
+            for(let gtype of ['Point', 'LineString', 'Polygon']) {
                 if(service_def.tools[gtype]) {
                     service_tools.push(this.renderDrawTool(gtype));
                 }
