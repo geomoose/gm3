@@ -694,6 +694,14 @@ class Map extends Component {
         this.checkQueries(nextProps.queries);
     }
 
+    getPrintImage(width, height, scale='auto') {
+        if(this.map) {
+            let viewport = this.map.getViewport();
+            console.log('VIEWPORT', viewport);
+            //let canvas = viewport.getElementsByTagName('canvas')[0];
+        }
+    }
+
     render() {
         // ensure the map is defined and ready.
         if(this.map) {
