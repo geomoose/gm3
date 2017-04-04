@@ -747,3 +747,18 @@ const mapToProps = function(store) {
 }
 
 export default connect(mapToProps)(Map);
+
+
+
+export function getLegend(mapSource, mapView, layerName) {
+    switch(mapSource.type) {
+        case 'wms' :
+            return wmsLayer.getLegend(mapSource, mapView, layerName);
+        default:
+            return {
+                type: 'nolegend'
+            };
+    }
+}
+
+

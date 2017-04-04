@@ -39,6 +39,8 @@ import * as mapSourceActions from '../actions/mapSource';
 
 import { UploadTool, ClearTool } from './catalog/tools';
 
+import Legend from './catalog/legend';
+
 const mapCatalogToProps = function(store) {
     return {
         mapSources: store.mapSources,
@@ -244,6 +246,8 @@ export class Catalog extends Component {
                 <div className="layer-tools">
                     {tools}
                 </div>
+
+                <Legend store={this.props.store} layer={layer}/>
             </div>
         );
     }
