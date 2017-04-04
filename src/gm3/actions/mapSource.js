@@ -228,8 +228,19 @@ export function addFromXml(xml, config) {
             on: util.parseBoolean(layerXml.getAttribute('status')),
             favorite: util.parseBoolean(layerXml.getAttribute('favorite')),
             label: layer_title ? layer_title : map_source.label,
-            templates: {}
+            templates: {},
+            legend: null
         };
+
+        // user defined legend. 
+        // two types currently supported: "html" and "img"
+        let legends = layerXml.getElementsByTagName('legend');
+        if(legends.length > 0) {
+            layer.legend = {
+                type: legends[0].getAttribute('type'),
+                contents: util.getXmlTextContents(legends[0])
+            };
+        }
 
         let templates = layerXml.getElementsByTagName('template');
         for(let x = 0, xx = templates.length; x < xx; x++) {

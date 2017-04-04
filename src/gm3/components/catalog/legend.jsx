@@ -37,12 +37,19 @@ class CatalogLegend extends Component {
         this.renderLegend = this.renderLegend.bind(this);
     }
 
+    htmlLegend(html) {
+        return {__html: html};
+    }
+
     renderLegend(src) {
         const legend = getLegend(this.props.mapSources[src.mapSourceName], this.props.mapView, src.layerName);
 
         const key = 'legend_'+src.mapSourceName+'_'+src.layerName;
 
         switch(legend.type) {
+            case 'html':
+                return (<div key={key} className="legend-html" 
+                        dangerouslySetInnerHTML={this.htmlLegend(legend.html)} />);
             case 'img':
                 const img_tags = [];
                 for(let img_src of legend.images) {

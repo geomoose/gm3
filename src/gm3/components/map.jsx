@@ -751,6 +751,25 @@ export default connect(mapToProps)(Map);
 
 
 export function getLegend(mapSource, mapView, layerName) {
+    // see if the layer has a fixed legend.
+    for(const layer of mapSource.layers) {
+        if(layer.name === layerName && layer.legend !== null) {
+            // translate from the store represenation to
+            // what's used to render the legend.
+            if(layer.legend.type === 'html') {
+                return {
+                    type: 'html', html: layer.legend.contents
+                }
+            } else if(layer.legend.type === 'img') {
+                return {
+                    type: 'img', images: [layer.legend.contents]
+                }
+            }
+        }
+    }
+
+    // if the mapSource type supports legends, fetch them,
+    // otherwise return 'nolegend'.
     switch(mapSource.type) {
         case 'wms' :
             return wmsLayer.getLegend(mapSource, mapView, layerName);
