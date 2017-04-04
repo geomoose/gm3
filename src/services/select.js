@@ -47,7 +47,7 @@ function SelectService(Application, options) {
     this.tools = {
         'Point': true, 
         'Polygon': true, 
-        'Line': true, 
+        'LineString': true, 
         'default': 'Polygon',
         'buffer': true
     };
