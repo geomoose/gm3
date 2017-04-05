@@ -44,7 +44,7 @@ class CatalogLegend extends Component {
     renderLegend(src) {
         const legend = getLegend(this.props.mapSources[src.mapSourceName], this.props.mapView, src.layerName);
 
-        const key = 'legend_'+src.mapSourceName+'_'+src.layerName;
+        const key = 'legend_' + src.mapSourceName + '_' + src.layerName;
 
         switch(legend.type) {
             case 'html':
@@ -58,7 +58,8 @@ class CatalogLegend extends Component {
                 return (<div key={key} className="legend-images"> { img_tags } </div>);
             case 'nolegend':
             default:
-                return false; // no DOM'ing.
+                // no legend, no DOM'ing.
+                return false; 
         }
     }
 

@@ -65,6 +65,7 @@ class Map extends Component {
 
         // the current 'active' interaction
         this.currentInteraction = null;
+        this.activeSource = null;
 
         // a hash of interval timers for layers that
         //  are set to auto-refresh
@@ -101,6 +102,20 @@ class Map extends Component {
             default:
                 console.info('Unhandled map-source type: ' + map_source.type);
         }
+    }
+
+    /** Adds vector feature events to a vector-type layer.
+     *
+     *  @param mapSourceName
+     *  @param layerName
+     *  @param {ol.source.Vector} source
+     *
+     */
+    addFeatureEvents(mapSourceName, layerName, source) {
+
+        // geojson -- the one true Javascript object representation.
+        source.on('addfeature', (evt) => {
+        });
     }
 
     /** Create an OL Layers based on a GM MapSource definition
@@ -602,19 +617,31 @@ class Map extends Component {
      *
      */
     activateDrawTool(type, path, oneAtATime) {
+        const is_selection = (path === null);
+        const map_source_name = util.getMapSourceName(path);
+        const layer_name = util.getLayerName(path);
+
         // normalize the input.
         if(typeof(type) === 'undefined') {
             type = null;
         }
 
-        // TODO : path is current ignored.
+        // when path is null, use the selection layer,
+        //  else use the specified source.
         let source = this.selectionLayer.getSource();
+        console.log('activateDrawTool', 'PATH=', path);
+        console.log('from state', this.props.mapView.activeSource);
+        if(!is_selection) {
+            source = this.olLayers[map_source_name].getSource();
+            console.log('SOURCE', path, source);
+        }
 
         // stop the 'last' drawing tool.
         this.stopDrawing();
 
         // make sure the type is set.
         this.currentInteraction = type;
+        this.activeSource = this.props.mapView.activeSource;
 
         // "null" interaction mean no more drawing.
         if(type !== null) {
@@ -625,9 +652,22 @@ class Map extends Component {
             });
 
             if(oneAtATime === true) {
+                console.log('ONE AT A TIME IS TRUE');
                 this.drawTool.on('drawstart', function() {
                     // clear out the other features on the source.
                     source.clear();
+                });
+            }
+
+            if(!is_selection) {
+                this.drawTool.on('drawend', (evt) => {
+                    let geojson = new ol.format.GeoJSON();
+                    let json_feature = geojson.writeFeatureObject(evt.feature);
+                    // assign the feature a UUID.
+                    json_feature.properties = {_id: uuid.v4()};
+
+                    this.props.store.dispatch(mapSourceActions.addFeatures(
+                                                 map_source_name, layer_name, [json_feature]));
                 });
             }
 
@@ -644,7 +684,7 @@ class Map extends Component {
         if(this.drawTool) {
             // off the map
             this.map.removeInteraction(this.drawTool);
-            // and null'd.
+            // null out for logic.
             this.drawTool = null;
         }
     }
@@ -694,25 +734,20 @@ class Map extends Component {
         this.checkQueries(nextProps.queries);
     }
 
-    getPrintImage(width, height, scale='auto') {
-        if(this.map) {
-            let viewport = this.map.getViewport();
-            console.log('VIEWPORT', viewport);
-            //let canvas = viewport.getElementsByTagName('canvas')[0];
-        }
-    }
-
     render() {
         // ensure the map is defined and ready.
         if(this.map) {
             // refresh all the map sources, as approriate.
             this.refreshMapSources();
 
-            if(this.props.mapView.interactionType !== this.currentInteraction) {
+            if(this.props.mapView.interactionType !== this.currentInteraction
+               || this.props.mapView.activeSource !== this.activeSource) {
                 // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
-                this.activateDrawTool(this.props.mapView.interactionType, null, true);
+                let is_selection = (this.props.mapView.activeSource === null);
+                this.activateDrawTool(this.props.mapView.interactionType, 
+                                      this.props.mapView.activeSource, is_selection);
             }
 
             // update the map size when data changes

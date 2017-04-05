@@ -8,11 +8,20 @@
         <layer name="default" status="on">
             <style><![CDATA[
             {
-                "line-color" : "#E9967A",
-                "fill-color" : "#E9967A",
-                "fill-opacity" : 0.5
+                "circle-radius": 4,
+                "circle-color": "#ff0000",
+                "circle-stroke-color": "#ff0000",
+                "line-color" : "#ff0000",
+                "line-width" : 4,
+                "fill-color" : "#ff0000",
+                "fill-opacity" : 0.25
             }
             ]]></style>
+
+            <legend type="html"><![CDATA[
+            The <b>Drawing and Markup</b> layer can be used to add user defined shapes
+            to the map.
+            ]]></legend>
         </layer>
 
 		<attribute name="title" type="user" default-value="" label="Feature Label:"/>
@@ -229,7 +238,7 @@
                     <div class="item"><label>PIN:</label> {{ properties.PIN }}</div>
                     <div class="item"><label>Owner Name:</label> {{ properties.OWNER_NAME }}</div>
                     <div class="item">
-                        <label>Est. Market Value:</label> {{ properties.EMV_TOTAL }}
+                        <label>Est. Market Value:</label> <i>{{ properties.EMV_TOTAL }}</i>
                     </div>
                     <div class="item"><label>Acres:</label> {{ properties.ACRES_POLY }}</div>
                 </div>
@@ -244,9 +253,6 @@
 		<layer name="all"/>
 	</map-source>
 
-    
-
-	
 	<!-- 
 	 * This map-source is used solely for testing geomose 
 	 * with international characters.
@@ -521,7 +527,7 @@
 		<!-- Layer for testing international character support. 
 		<layer title="Test International Characters" src="international/testing"/>
 		-->
-		<layer title="Drawing and Markup" src="sketch/default" upload="true" clear="true"/>
+		<layer title="Drawing and Markup" src="sketch/default" upload="true" clear="true" draw-point="true"/>
 		
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>

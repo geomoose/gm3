@@ -151,6 +151,7 @@ export function objectsDiffer(objA, objB, deep) {
  *  @returns a string with the map-source's name.
  */
 export function getMapSourceName(path) {
+    if(path === null) { return ''; }
     return path.split('/')[0];
 }
 
@@ -161,6 +162,7 @@ export function getMapSourceName(path) {
  * @returns a layer name
  */
 export function getLayerName(path) {
+    if(path === null) { return ''; }
     const c = path.split('/');
     c.shift();
     // layers can have "/" in the name, so they need

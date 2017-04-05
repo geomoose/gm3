@@ -37,7 +37,7 @@ import { connect } from 'react-redux';
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
-import { UploadTool, ClearTool } from './catalog/tools';
+import { UploadTool, ClearTool, DrawTool } from './catalog/tools';
 
 import Legend from './catalog/legend';
 
@@ -179,6 +179,13 @@ export class Catalog extends Component {
                     break;
                 case 'clear':
                     tools.push(<ClearTool store={this.props.store} key={layer.id + '_clear'} layer={layer} />);
+                    break;
+
+                case 'draw-point':
+                case 'draw-polygon':
+                case 'draw-line':
+                    const draw_type = tool_name.split('-')[1];
+                    tools.push(<DrawTool store={this.props.store} drawType={draw_type} key={layer.id + '-' + tool_name} layer={layer} />);
                     break;
                 default:
                     // pass

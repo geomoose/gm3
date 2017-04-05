@@ -42,10 +42,10 @@ export function cursor(coords) {
     }
 }
 
-export function changeTool(tool) {
+export function changeTool(tool, src = null) {
     return {
         type: MAP.CHANGE_TOOL,
-        tool
+        tool, src
     }
 }
 

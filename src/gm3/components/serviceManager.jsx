@@ -177,7 +177,7 @@ class ServiceManager extends Component {
         // when the drawing type changes this needs to 
         //  update the service 'page' because those elements
         //  are tied to the state of the interactionType.
-        if(this.props.map.interactionType !== nextProps.map.interactionType) {
+        if(this.props.map.interactionType !== nextProps.map.interactionType && nextProps.map.activeSource === null) {
             return true;
         }
 

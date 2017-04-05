@@ -124,6 +124,11 @@
         }
     }
 
+    .tool {
+        &:before {
+            content: @fa-var-wrench;
+        }
+    }
 
     .tool.upload {
         &:before {
@@ -137,6 +142,34 @@
         }
     }
 
+    .tool.point,.tool.line,.tool.polygon,.tool.edit {
+        font: normal normal normal 14px/1 mapskin;
+    }
+
+    .tool.point {
+        &:before {
+            content: "\e01b";
+        }
+    }
+
+    .tool.polygon {
+        &:before {
+            content: "\e01d"; 
+        }
+    }
+
+
+    .tool.line {
+        &:before {
+            content: "\e01c";
+        }
+    }
+
+    .tool.edit {
+        &:before {
+            content: "\e09e";
+        }
+    }
 }
 
 .layer.favorite {

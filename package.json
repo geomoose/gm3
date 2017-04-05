@@ -37,6 +37,7 @@
     "grunt-webpack": "^1.0.14",
     "gruntify-eslint": "~3.1.0",
     "less": "^2.7.1",
+    "mapskin": "^1.0.0",
     "markup-js": "^1.5.21",
     "ol-mapbox-style": "git+https://github.com/theduckylittle/ol-mapbox-style.git",
     "openlayers": "^3.20.0",
@@ -52,5 +53,6 @@
     "webpack": "~1.13.2",
     "webpack-dev-server": "~1.16.1"
   },
-  "dependencies": {}
+  "dependencies": {
+  }
 }

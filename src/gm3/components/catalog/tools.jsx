@@ -25,7 +25,8 @@
 
 import React, {Component, PropTypes } from 'react';
 
-import * as msActions from '../../actions/mapSource'
+import * as msActions from '../../actions/mapSource';
+import * as mapActions from '../../actions/map';
 
 /** Upload features to a vector layer from a file
  *  on the user's hard drive.
@@ -134,8 +135,8 @@ export class UploadTool extends Component {
 /** Generic class for basic "click this, do this" tools.
  */
 class Tool extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.onClick = this.onClick.bind(this);
 
@@ -168,5 +169,31 @@ export class ClearTool extends Tool {
         let src = this.props.layer.src[0];
         this.props.store.dispatch(
             msActions.clearFeatures(src.mapSourceName, src.layerName));
+    }
+}
+
+/* Draw a point on the map.
+ *
+ */
+export class DrawTool extends Tool {
+    constructor(props) {
+        super(props);
+
+        this.tip = 'Add a ' + props.drawType + ' to the layer';
+        this.iconClass = props.drawType + ' tool';
+        this.drawType = {
+            'point': 'Point',
+            'line': 'LineString',
+            'polygon': 'Polygon'
+        }[props.drawType];
+    }
+
+    onClick() {
+        let src = this.props.layer.src[0];
+        let path = src.mapSourceName + '/' + src.layerName;
+
+        this.props.store.dispatch(
+            mapActions.changeTool(this.drawType, path)
+        );
     }
 }
