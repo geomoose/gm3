@@ -320,7 +320,7 @@ export function getFeaturesExtent(mapSource) {
                 for(let pt of geom.coordinates) {
                     update_bounds(pt[0], pt[1]);
                 }
-            } else if(geom.type === 'Polygon') {
+            } else if(geom.type === 'Polygon' || geom.type === 'MultiLineString') {
                 for(let ring of geom.coordinates) {
                     for(let pt of ring) {
                         update_bounds(pt[0], pt[1]);
