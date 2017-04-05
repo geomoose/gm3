@@ -527,7 +527,7 @@
 		<!-- Layer for testing international character support. 
 		<layer title="Test International Characters" src="international/testing"/>
 		-->
-		<layer title="Drawing and Markup" src="sketch/default" upload="true" clear="true" draw-point="true"/>
+		<layer title="Drawing and Markup" src="sketch/default" zoomto="true" upload="true" clear="true" draw-point="true"/>
 		
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>

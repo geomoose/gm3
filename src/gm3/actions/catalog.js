@@ -102,6 +102,7 @@ function parseLayer(store, layerXml) {
         clear: false,
         fade: false, unfade: false,
         up: false, down: false,
+        zoomto: false,
         'draw-point': false, 
         'draw-polygon': false,
         'draw-line': false

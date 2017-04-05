@@ -281,3 +281,54 @@ export function getVersion() {
     let v = GM_VERSION;
     return v;
 }
+
+/** Determine the extent of the features in a source.
+ *  WARNING! This only works with vector sources.
+ *
+ * @param {MapSource} mapSource 
+ *
+ * @returns Array containing [minx,miny,maxx,maxy]
+ */
+export function getFeaturesExtent(mapSource) {
+    let layer = mapSource.layers[0];
+
+    let bounds = [null, null, null, null];
+
+    let min = function(x, y) {
+        if(x === null || y < x) { return y; }
+        return x;
+    };
+
+    let max = function(x, y) {
+        if(x === null || y > x) { return y; }
+        return x;
+    };
+
+    let update_bounds = function(x, y) {
+        bounds[0] = min(bounds[0], x);
+        bounds[1] = min(bounds[1], y);
+        bounds[2] = max(bounds[2], x);
+        bounds[3] = max(bounds[3], y);
+    };
+
+    if(layer.features) {
+        for(let feature of layer.features) {
+            let geom = feature.geometry;
+            if(geom.type === 'Point') {
+                update_bounds(geom.coordinates[0], geom.coordinates[1]);
+            } else if(geom.type === 'LineString') {
+                for(let pt of geom.coordinates) {
+                    update_bounds(pt[0], pt[1]);
+                }
+            } else if(geom.type === 'Polygon') {
+                for(let ring of geom.coordinates) {
+                    for(let pt of ring) {
+                        update_bounds(pt[0], pt[1]);
+                    }
+                }
+            }
+        }
+    }
+
+    return bounds;
+}

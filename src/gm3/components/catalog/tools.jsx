@@ -24,9 +24,12 @@
 
 
 import React, {Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import * as msActions from '../../actions/mapSource';
 import * as mapActions from '../../actions/map';
+
+import * as util from '../../util';
 
 /** Upload features to a vector layer from a file
  *  on the user's hard drive.
@@ -197,3 +200,37 @@ export class DrawTool extends Tool {
         );
     }
 }
+
+/* Zoom the the extent of a vector layer's features.
+ *
+ */
+class dumb_ZoomToTool extends Tool {
+    constructor() {
+        super();
+        this.tip = 'Zoom to layer extents.';
+        this.iconClass = 'zoomto tool';
+    }
+
+    onClick() {
+        const src = this.props.layer.src[0];
+        const extent = util.getFeaturesExtent(this.props.mapSources[src.mapSourceName]);
+        // ensure the extent is not null,
+        // which happens when there are no features on the layer.
+        if(extent[0] !== null) {
+            this.props.store.dispatch(
+                mapActions.zoomToExtent(extent)
+            );
+        }
+    }
+}
+
+/* This makes the ZoomToTool a 'smart' object which
+ * can more properly interact with the state.
+ */
+const mapZoomToProps = function(store) {
+    return {
+        mapSources: store.mapSources
+    }
+}
+const ZoomToTool = connect(mapZoomToProps)(dumb_ZoomToTool);
+export { ZoomToTool };
