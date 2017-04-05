@@ -87,6 +87,12 @@ export class UploadTool extends Component {
                     if(input_format !== null) {
                         // parse the features.
                         let ol_features = input_format.readFeatures(e.target.result);
+
+                        // TODO: This should be getting the map projection
+                        //       from the map-view!!!
+                        for(let f of ol_features) {
+                            f.setGeometry(f.getGeometry().transform('EPSG:4326', 'EPSG:3857'));
+                        }
                         // internal feature representation is as GeoJSON, so the parsed
                         //  ol feautures need converted here...
                         let collection = geojson_format.writeFeaturesObject(ol_features);
