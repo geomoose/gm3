@@ -43,6 +43,7 @@ import VisibleLayers from './gm3/components/visibleLayers';
 import Grid from './gm3/components/grid';
 import Version from './gm3/components/version';
 import CoordinateDisplay from './gm3/components/coordinates';
+import MeasureTool from './gm3/components/measure';
 
 import LocalStorageTracker from './gm3/trackers/localStorage';
 
@@ -64,7 +65,8 @@ var components = {
     VisibleLayers: VisibleLayers,
     Grid: Grid,
     Version: Version,
-    CoordinateDisplay: CoordinateDisplay
+    CoordinateDisplay: CoordinateDisplay,
+    MeasureTool: MeasureTool 
 };
 
 var trackers = {
