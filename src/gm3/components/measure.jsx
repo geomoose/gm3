@@ -38,7 +38,60 @@ class MeasureTool extends Component {
         this.mapProjection = ol.proj.get('EPSG:3857');
     }
 
-    calculateHeading() {
+    /* Get the bearing of a drawing.  
+     * This is directly ported from GeoMoose 2.X
+     *
+     * @param {Array} pointA Array of x,y
+     * @param {Array} pointB Array of x,y
+     *
+     * @return {string} Bearing description 
+     */
+    getBearing(pointA, pointB) {
+        var bearing = '-';
+        if(pointA && pointB) {
+            var bearing = 'N0-0-0E';
+
+            var rise = pointB[1] - pointA[1];
+            var run = pointB[0] - pointA[0];
+            if(rise == 0) {
+                if(pointA[0] > pointB.x) {
+                    bearing = 'Due West';
+                } else {
+                    bearing = 'Due East';
+                }
+            } else if(run == 0) {
+                if(pointA.y > pointB.y) {
+                    bearing = 'Due South';
+                } else {
+                    bearing = 'Due North';
+                }
+            } else {
+                var ns_quad = 'N';
+                var ew_quad = 'E';
+                if(rise < 0) {
+                    ns_quad = 'S';
+                }
+                if(run < 0) {
+                    ew_quad = 'W';
+                }
+                /* we've determined the quadrant, so we can make these absolute */
+                rise = Math.abs(rise);
+                run = Math.abs(run);
+                /* convert to degrees */
+                // var degrees = Math.atan(rise/run) / (2*Math.PI) * 360;
+                // Calculation suggested by Dean Anderson, refs: #153
+                var degrees = Math.atan(run/rise) / (2*Math.PI) * 360;
+
+                /* and to DMS ... */
+                var d = parseInt(degrees);
+                var t = (degrees - d) * 60;
+                var m = parseInt(t);
+                var s = parseInt(60 * (t-m));
+
+                bearing = ns_quad+d+'-'+m+'-'+s+ew_quad;
+            }
+        }
+        return bearing;
     }
 
     /* Calcualte the distance between two points,
@@ -80,14 +133,15 @@ class MeasureTool extends Component {
 
         for(let i = 1, ii = coords.length; i < ii; i++) {
             const seg_len = this.calculateLength(coords[i-1], coords[i], utm_zone);
-            const heading = '(heading)';
+            const bearing = this.getBearing(coords[i-1], coords[i]);
 
             segments.push({
-                len: seg_len, heading
+                id: i,
+                len: seg_len, bearing 
             });
         }
 
-        return segments;
+        return segments.reverse();
     }
 
     renderSegments(geom) {
@@ -95,11 +149,12 @@ class MeasureTool extends Component {
 
         const segment_html = [];
         for(let i = 0, ii = segments.length; i < ii; i++) {
+            const seg = segments[i];
             segment_html.push((
                 <tr key={ 'segment' + i}>
-                    <td>{ i + 1 }</td>
-                    <td>{ segments[i].len.toFixed(2) }</td>
-                    <td>{ segments[i].heading }</td>
+                    <td>{ seg.id }</td>
+                    <td>{ seg.len.toFixed(2) }</td>
+                    <td>{ seg.bearing }</td>
                 </tr>
             ));
         }
@@ -108,7 +163,7 @@ class MeasureTool extends Component {
             <table className="measured-segments">
                 <tbody>
                     <tr key="header">
-                        <th></th><th>Segment Length (m)</th><th>Heading</th>
+                        <th></th><th>Segment Length (m)</th><th>Bearing</th>
                     </tr>
                     { segment_html }
                 </tbody>
