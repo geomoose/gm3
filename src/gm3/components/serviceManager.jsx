@@ -209,7 +209,8 @@ class ServiceManager extends Component {
         // when the drawing type changes this needs to 
         //  update the service 'page' because those elements
         //  are tied to the state of the interactionType.
-        if(this.props.map.interactionType !== nextProps.map.interactionType && nextProps.map.activeSource === null) {
+        if(this.props.map.interactionType !== nextProps.map.interactionType 
+           && nextProps.map.activeSource === null) {
             return true;
         }
 
@@ -334,7 +335,7 @@ class ServiceManager extends Component {
 
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
-            if(service_def.autoGo) { 
+            if(service_def && service_def.autoGo) { 
                 let selection = nextProps.store.getState().map.selectionFeatures;
                 if(selection.length > 0) {
                     // okay, there *is* a selection feature.
