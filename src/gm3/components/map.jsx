@@ -629,11 +629,8 @@ class Map extends Component {
         // when path is null, use the selection layer,
         //  else use the specified source.
         let source = this.selectionLayer.getSource();
-        console.log('activateDrawTool', 'PATH=', path);
-        console.log('from state', this.props.mapView.activeSource);
         if(!is_selection) {
             source = this.olLayers[map_source_name].getSource();
-            console.log('SOURCE', path, source);
         }
 
         // stop the 'last' drawing tool.
@@ -651,8 +648,7 @@ class Map extends Component {
                 type
             });
 
-            if(oneAtATime === true) {
-                console.log('ONE AT A TIME IS TRUE');
+            if(oneAtATime === true && type !== 'MultiPoint') {
                 this.drawTool.on('drawstart', function() {
                     // clear out the other features on the source.
                     source.clear();

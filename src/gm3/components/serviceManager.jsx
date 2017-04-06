@@ -72,6 +72,35 @@ class ServiceManager extends Component {
         this.services[name] = service;
     }
 
+    /* Normalizes the selectionFeatures from the map
+     * for use with a service.
+     *
+     */
+    normalizeSelection(selectionFeatures) {
+        // OpenLayers handles MultiPoint geometries in an awkward way,
+        // each feature is a 'MultiPoint' type but only contains one feature,
+        //  this normalizes that in order to be submitted properly to query services.
+        if(selectionFeatures.length > 0) {
+            if(selectionFeatures[0].geometry.type === 'MultiPoint') {
+                const all_coords = [];
+                for(let feature of selectionFeatures) {
+                    if(feature.geometry.type === 'MultiPoint') {
+                        all_coords.push(feature.geometry.coordinates[0]);
+                    }
+                }
+                return {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'MultiPoint',
+                        coordinates: all_coords
+                    }
+                };
+            }
+        }
+        return selectionFeatures[0];
+    }
+
     /** Call the service with the relevant information
      *  and have it start a query.
      *
@@ -79,7 +108,7 @@ class ServiceManager extends Component {
     startQuery(service) {
         if(this.props.services[service]) {
             let service_def = this.props.services[service];
-            let selection = this.props.store.getState().map.selectionFeatures[0];
+            let selection = this.normalizeSelection(this.props.store.getState().map.selectionFeatures);
             let fields = [];
 
             for(let name in this.fieldValues[service]) {
@@ -366,7 +395,7 @@ class ServiceManager extends Component {
             let service_def = this.props.services[service_name];
 
             const service_tools = [];
-            for(let gtype of ['Point', 'LineString', 'Polygon']) {
+            for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon']) {
                 if(service_def.tools[gtype]) {
                     service_tools.push(this.renderDrawTool(gtype));
                 }
