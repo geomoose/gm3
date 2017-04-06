@@ -113,6 +113,39 @@ class MeasureTool extends Component {
         );
     }
 
+    /* Render the HTML for the area of the polygon
+     * being drawn.
+     *
+     * @param {GeoJson} geom
+     *
+     * @return JSX
+     */
+    renderArea(geom) {
+        let point0 = new ol.geom.Point(geom.coordinates[0][0]);
+        point0 = point0.transform(this.mapProjection, 'EPSG:4326');
+
+        // determine an appropriate utm zone for measurement.
+        const utm_zone = ol.proj.get(util.getUtmZone(point0.getCoordinates()));
+
+        const utm_geom = util.jsonToGeom(geom).transform(this.mapProjection, utm_zone)
+
+        const area = utm_geom.getArea();
+
+
+        return (
+            <table className="measured-area">
+                <tbody>
+                    <tr key="header">
+                        <td>Area (sq.m)</td>
+                    </tr>
+                    <tr>
+                        <td>{ area }</td>
+                    </tr>
+                </tbody>
+            </table>
+        );
+    }
+
     renderMeasureOutput() {
         let g = this.props.cursor.sketchGeometry;
 
@@ -126,8 +159,9 @@ class MeasureTool extends Component {
                 </div>
             );
         } else if (g.type === 'LineString') {
-            return this.renderSegments(g)
+            return this.renderSegments(g);
         } else { // assume polygon 
+            return this.renderArea(g);
         }
 
         return (
@@ -139,6 +173,9 @@ class MeasureTool extends Component {
         // TODO: These events can happen when measuring is not happening!!!
         return (
             <div>
+                <div>
+                    Use <b>Draw line</b> to measure distances and <b>Draw Polygon</b> to measure areas.
+                </div>
                 <div className="draw-tools">
                     <DrawTool key="measure-line" store={this.props.store} geomType="LineString"/>
                     <DrawTool key="measure-poly" store={this.props.store} geomType="Polygon"/>

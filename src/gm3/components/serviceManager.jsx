@@ -48,6 +48,8 @@ import DrawTool from './drawTool';
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
 
+import MeasureTool from './measure';
+
 class ServiceManager extends Component {
 
     constructor() {
@@ -312,9 +314,14 @@ class ServiceManager extends Component {
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
 
+        // if the measure tool has been triggered, quiet the 
+        //  rest of hte noise.
+        if(nextProps.queries.service === 'measure') {
+
+
         // when the service changes, then clear out the previous 
         //  selection features
-        if(this.state.lastService !== nextProps.queries.service 
+        } else if(this.state.lastService !== nextProps.queries.service 
            && nextProps.queries.service !== null) {
             let service_def = nextProps.services[nextProps.queries.service];
             // clear out the previous drawing tool when
@@ -368,7 +375,11 @@ class ServiceManager extends Component {
     }
 
     render() {
-        if(this.props.queries.service != null) {
+        if(this.props.queries.service === 'measure') {
+            return (
+                <MeasureTool store={this.props.store} />
+            );
+        } else if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
 
