@@ -71,7 +71,10 @@ class MeasureTool extends Component {
         const coords = [].concat(geom.coordinates);
 
         // ensure the last point is the current cursor.
-        coords[coords.length - 1] = this.props.cursor.coords;
+        //  only when there is an active sketch!
+        if(this.props.cursor.sketchGeometry !== null) {
+            coords[coords.length - 1] = this.props.cursor.coords;
+        }
 
         const segments = [];
 
@@ -149,6 +152,10 @@ class MeasureTool extends Component {
     renderMeasureOutput() {
         let g = this.props.cursor.sketchGeometry;
 
+        if(g === null && this.props.map.selectionFeatures.length > 0) {
+            g = this.props.map.selectionFeatures[0].geometry;
+        }
+
         if(g === null ||
             (g.type === 'LineString' && g.coordinates.length < 2) ||
             (g.type === 'Polygon' && g.coordinates[0].length < 3)
@@ -189,7 +196,7 @@ class MeasureTool extends Component {
 
 const mapToProps = function(store) {
     return {
-        mapView: store.map,
+        map: store.map,
         cursor: store.cursor
     }
 }
