@@ -72,6 +72,9 @@ class Map extends Component {
         this.intervals = {};
 
         this.updateMapSize = this.updateMapSize.bind(this);
+
+        // this is used when a feature isn't finished yet.
+        this.sketchFeature = null;
     }
 
     /** Update a source's important bits.
@@ -601,6 +604,13 @@ class Map extends Component {
         this.map.on('pointermove', (event) => {
             var action = mapActions.cursor(event.coordinate);
             this.props.store.dispatch(action);
+
+            if(this.sketchFeature) {
+                // convert the sketch feature's geometry to JSON and kick it out
+                // to the store.
+                const json_geom = util.geomToJson(this.sketchFeature.getGeometry());
+                this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
+            }
         });
 
         // once the map is created, kick off the initial startup.
@@ -648,9 +658,15 @@ class Map extends Component {
             });
 
             if(oneAtATime === true && type !== 'MultiPoint') {
-                this.drawTool.on('drawstart', function() {
+                this.drawTool.on('drawstart', (evt) => {
                     // clear out the other features on the source.
                     source.clear();
+
+                    this.sketchFeature = evt.feature;
+                });
+            } else {
+                this.drawTool.on('drawstart', (evt) => {
+                    this.sketchFeature = evt.feature;
                 });
             }
 
@@ -663,6 +679,16 @@ class Map extends Component {
 
                     this.props.store.dispatch(mapSourceActions.addFeatures(
                                                  map_source_name, layer_name, [json_feature]));
+
+                    // drawing is finished, no longer sketching.
+                    this.sketchFeature = null;
+                    this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                });
+            } else {
+                this.drawTool.on('drawend', (evt) => {
+                    // drawing is finished, no longer sketching.
+                    this.sketchFeature = null;
+                    this.props.store.dispatch(mapActions.updateSketchGeometry(null));
                 });
             }
 

@@ -31,13 +31,16 @@ import { MAP } from '../actionTypes';
 import * as util from '../util';
 
 const default_view = {
-    coords: [0, 0]
+    coords: [0, 0],
+    sketchGeometry: null
 };
 
 export default function cursorReducer(state = default_view, action) {
     switch(action.type) {
         case MAP.CURSOR:
             return Object.assign({}, state, {coords: action.coords});
+        case MAP.SKETCH_GEOMETRY:
+            return Object.assign({}, state, {sketchGeometry: action.geometry}); 
         default:
             return state;
     }

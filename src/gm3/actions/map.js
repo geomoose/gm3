@@ -132,3 +132,10 @@ export function clearSelectionFeatures() {
         type: MAP.CLEAR_SELECTION_FEATURES
     };
 }
+
+export function updateSketchGeometry(geometry) {
+    return {
+        type: MAP.SKETCH_GEOMETRY,
+        geometry
+    };
+}
