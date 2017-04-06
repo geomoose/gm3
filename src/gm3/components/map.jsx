@@ -187,8 +187,6 @@ class Map extends Component {
                         let features = gml_format.readFeatures(response.responseText);
                         let js_features = geojson.writeFeaturesObject(features).features;
 
-                        console.log('RESULTS', queryLayer, js_features);
-
                         this.props.store.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                         );
@@ -352,8 +350,10 @@ class Map extends Component {
                     let gml_format = new ol.format.GML2();
 
                     let features = gml_format.readFeatures(response); 
-                    let js_features = geojson_format.writeFeaturesObject(features).features;
-                    console.log('GOT FEATURES', js_features);
+                    for(const feature of features) {
+                        feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
+                    }
+                    let js_features = (new ol.format.GeoJSON()).writeFeaturesObject(features).features;
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -471,7 +471,6 @@ class Map extends Component {
     createRefreshInterval(mapSource) {
         // prevent the creation of a pile of intervals
         if(!this.intervals.hasOwnProperty(mapSource.name)) {
-            console.log('CREATED REFRESH INTERVAL', mapSource.name, mapSource.refresh * 1000);
             // refresh is stored in seconds, multiplying by 1000
             //  converts ito the milliseconds expected by setInterval.
             this.intervals[mapSource.name] = setInterval(() => {
