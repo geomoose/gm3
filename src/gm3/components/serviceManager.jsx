@@ -40,7 +40,10 @@ import { getLayerFromPath } from '../actions/mapSource';
 
 import { setUiHint } from '../actions/ui';
 
+
 import Mark from 'markup-js';
+
+import DrawTool from './drawTool';
 
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
@@ -349,32 +352,6 @@ class ServiceManager extends Component {
         this.checkQueries(nextProps.queries);
     }
 
-    /** Render a drawing tool.
-     *
-     *  @param {String} gtype The "geometry" type: Point, Line Polygon.
-     *
-     */
-    renderDrawTool(gtype) {
-        let tool_class = 'draw-tool';
-        if(this.props.map.interactionType === gtype) {
-            tool_class += ' selected';
-        }
-
-        let tool_label = gtype;
-        if(gtype === 'LineString') {
-            tool_label = 'Line';
-        } else if(gtype === 'MultiPoint') {
-            tool_label = 'Multi-Point';
-        }
-
-
-        return (
-            <div key={'draw-tool-' + gtype} className={tool_class} onClick={ () => { this.drawTool(gtype) } }>
-                <i className="radio-icon"></i> Draw { tool_label }
-            </div>
-        );
-    }
-
     onServiceFieldChange(name, value) {
         this.fieldValues[this.props.queries.service][name] = value;
     }
@@ -396,8 +373,9 @@ class ServiceManager extends Component {
 
             const service_tools = [];
             for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon']) {
+                const dt_key = 'draw_tool_'+gtype;
                 if(service_def.tools[gtype]) {
-                    service_tools.push(this.renderDrawTool(gtype));
+                    service_tools.push(<DrawTool key={dt_key} store={this.props.store} geomType={gtype} />);
                 }
             }
 
