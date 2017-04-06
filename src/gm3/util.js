@@ -342,8 +342,8 @@ export function getFeaturesExtent(mapSource) {
  *
  */
 export function configureProjections(p4) {
-    //var utm_zone = GeoMOOSE.getUtmZone(bounds.left);
-    //var north = bounds.top > 0 ? 'north' : 'south';
+    // var utm_zone = GeoMOOSE.getUtmZone(bounds.left);
+    // var north = bounds.top > 0 ? 'north' : 'south';
 
     for(let utm_zone = 1; utm_zone <= 60; utm_zone++) {
         for(let north of ['north', 'south']) {
@@ -363,4 +363,35 @@ export function configureProjections(p4) {
         }
     }
 
+}
+
+/* Determine the UTM zone for a point
+ *
+ * @param {Point-like} An array containing [x,y] in WGS84 or NAD83 DD
+ *
+ * @return UTM string (e.g. UTM15N)
+ */
+export function getUtmZone(pt) {
+    let utm_string = 'UTM';
+
+    // No citation provideded for this calculation,
+    // it was working in the GM2.X series without a lot
+    // of complaints. 
+    const zone = Math.ceil((pt[0] / 6.0) + 30) + 1;
+
+    // north zones are north of 0.
+    const north = (pt[1] > 0) ? 'N' : 'S';
+
+    // boom, string ot the user.
+    return 'UTM' + zone + north;
+}
+
+const GEOJSON_FORMAT = new ol.format.GeoJSON();
+
+export function geomToJson(geom) {
+    return GEOJSON_FORMAT.writeGeometryObject(geom);
+}
+
+export function jsonToGeom(geom) {
+    return GEOJSON_FORMAT.readGeometry(geom);
 }
