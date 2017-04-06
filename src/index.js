@@ -48,6 +48,12 @@ import LocalStorageTracker from './gm3/trackers/localStorage';
 
 import * as util from './gm3/util';
 
+import proj4 from 'proj4';
+
+// setup some real proj4 action.
+ol.proj.setProj4(proj4);
+
+util.configureProjections(proj4);
 
 var components = {
     Catalog: Catalog,
