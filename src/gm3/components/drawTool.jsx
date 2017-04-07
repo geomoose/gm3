@@ -27,22 +27,55 @@ import { connect } from 'react-redux';
 
 import { changeTool } from '../actions/map';
 
+import { getSelectableLayers, getLayerByPath } from '../actions/mapSource';
+
 class DrawTool extends Component {
 
     constructor(props) {
         super(props);
 
         this.changeDrawTool = this.changeDrawTool.bind(this);
+        this.changeSelectLayer = this.changeSelectLayer.bind(this);
+
+        this.state = {
+            selectLayer: null
+        }
+
+        if(this.props.geomType === 'Select') {
+            this.state.selectLayer = getSelectableLayers(this.props.store)[0];
+        }
+
     }
 
     changeDrawTool(type) {
-        this.props.store.dispatch(changeTool(type));
+        this.props.store.dispatch(changeTool(type, this.state.selectLayer));
+    }
+
+    changeSelectLayer(event) {
+        this.setState({selectLayer: event.target.value});
+    }
+
+    getSelectOptions() {
+        const selectable_layers = getSelectableLayers(this.props.store);
+        const options = [];
+
+        for(let layer of selectable_layers) {
+            const label = getLayerByPath(this.props.store, layer).label;
+            options.push((
+                <option key={ layer } value={ layer }>{ label }</option>
+            ));
+        }
+
+        return options;
     }
 
     render() {
         let gtype = this.props.geomType;
 
         let tool_class = 'draw-tool';
+
+        let select_options = '';
+
 
         // ensures the state of the drawing tool 
         // matches what is checked. 
@@ -51,15 +84,24 @@ class DrawTool extends Component {
         }
 
         let tool_label = gtype;
-        if(gtype === 'LineString') {
-            tool_label = 'Line';
+        if(gtype === 'Select') {
+            tool_label = 'Select from: ';
+            select_options = (
+              <select value={ this.state.selectLayer } onChange={ this.changeSelectLayer }>
+                { this.getSelectOptions() }
+              </select>
+            );
+        } else if(gtype === 'LineString') {
+            tool_label = 'Draw Line';
         } else if(gtype === 'MultiPoint') {
-            tool_label = 'Multi-Point';
+            tool_label = 'Draw Multi-Point';
+        } else {
+            tool_label = 'Draw ' + gtype;
         }
 
         return (
             <div key={'draw-tool-' + gtype} className={tool_class} onClick={ () => { this.changeDrawTool(gtype) } }>
-                <i className="radio-icon"></i> Draw { tool_label }
+                <i className="radio-icon"></i> { tool_label } { select_options }
             </div>
         );
 

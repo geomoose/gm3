@@ -51,7 +51,7 @@ import cursorReducer from './reducers/cursor';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
+import { getLayerFromPath, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
 
 import Mark from 'markup-js';
 
@@ -247,9 +247,7 @@ class Application {
      *  @returns an array of layer paths.
      */
     getQueryableLayers() {
-        let l = getQueryableLayers(this.store);
-        console.log('qlayers', l);
-        return l;
+        return getQueryableLayers(this.store);
     }
 
     /** zoom to an extent

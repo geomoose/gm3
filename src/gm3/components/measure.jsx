@@ -235,14 +235,12 @@ class MeasureTool extends Component {
             );
         } else if (g.type === 'LineString') {
             return this.renderSegments(g);
-        } else { 
+        } else if (g.type === 'Polygon') { 
             // assume polygon 
             return this.renderArea(g);
         }
 
-        return (
-            <div>Enjoy this HTML placeholder.</div>
-        );
+        return false;
     }
 
     changeUnits(value) {
@@ -260,7 +258,14 @@ class MeasureTool extends Component {
 
     renderUnitOptions() {
         const units = 'Units';
-        if(this.props.map.interactionType === 'LineString') {
+        let measurement_type = this.props.map.interactionType;
+        if(measurement_type === 'Select') {
+            if(this.props.map.selectionFeatures.length > 0) {
+                measurement_type = this.props.map.selectionFeatures[0].geometry.type;
+            }
+        }
+
+        if(measurement_type === 'LineString') {
             return (
                 <div className="measure-units">
                     <b>{units}:</b>
@@ -270,7 +275,7 @@ class MeasureTool extends Component {
                     { this.renderUnitOption('mi', 'Miles') }
                 </div>
             );
-        } else if(this.props.map.interactionType === 'Polygon') {
+        } else if(measurement_type === 'Polygon') {
             return (
                 <div className="measure-units">
                     <b>{units}:</b>
@@ -298,6 +303,7 @@ class MeasureTool extends Component {
                 <div className="draw-tools">
                     <DrawTool key="measure-line" store={this.props.store} geomType="LineString"/>
                     <DrawTool key="measure-poly" store={this.props.store} geomType="Polygon"/>
+                    <DrawTool key="measure-select" store={this.props.store} geomType="Select"/>
                 </div>
 
                 { this.renderUnitOptions() }

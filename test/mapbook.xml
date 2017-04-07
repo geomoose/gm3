@@ -4,8 +4,8 @@
 		The mapping services define the source of the mapping data.
 	-->
 
-	<map-source name="sketch" type="vector">
-        <layer name="default" status="on">
+	<map-source name="sketch" type="vector" title="Drawing and Markup">
+        <layer name="default" selectable="true" status="on">
             <style><![CDATA[
             {
                 "circle-radius": 4,
@@ -114,7 +114,7 @@
 	</map-source>
 
     <map-source name="vector-parcels" type="mapserver-wfs">
-        <layer name="ms:parcels">
+        <layer name="ms:parcels" selectable="true" title="Parcels">
             <template name="identify"><![CDATA[
                 <div class="identify-result">
                     <div class="feature-class">Vector Parcel</div>
@@ -527,7 +527,9 @@
 		<!-- Layer for testing international character support. 
 		<layer title="Test International Characters" src="international/testing"/>
 		-->
-		<layer title="Drawing and Markup" src="sketch/default" zoomto="true" upload="true" clear="true" draw-point="true"/>
+		<layer src="sketch/default" 
+               zoomto="true" upload="true" clear="true" 
+               draw-point="true" draw-polygon="true" />
 		
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>

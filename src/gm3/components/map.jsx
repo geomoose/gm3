@@ -639,6 +639,7 @@ class Map extends Component {
         //  else use the specified source.
         let source = this.selectionLayer.getSource();
         if(!is_selection) {
+            console.log('MAP SOURCE', map_source_name);
             source = this.olLayers[map_source_name].getSource();
         }
 
@@ -652,44 +653,60 @@ class Map extends Component {
         // "null" interaction mean no more drawing.
         if(type !== null) {
             // switch to the new drawing tool.
-            this.drawTool = new ol.interaction.Draw({
-                source: source,
-                type
-            });
+            if(type === 'Select') {
+                this.drawTool = new ol.interaction.Select({
+                    layers: [this.olLayers[map_source_name]]
+                });
 
-            if(oneAtATime === true && type !== 'MultiPoint') {
-                this.drawTool.on('drawstart', (evt) => {
-                    // clear out the other features on the source.
-                    source.clear();
-
-                    this.sketchFeature = evt.feature;
+                this.drawTool.on('select', (evt) => {
+                    const selection_src = this.selectionLayer.getSource();
+                    // clear out previously selected objects.
+                    selection_src.clear();
+                    // add the selected feature.
+                    if(evt.selected.length > 0) {
+                        selection_src.addFeature(evt.selected[0]);
+                    }
                 });
             } else {
-                this.drawTool.on('drawstart', (evt) => {
-                    this.sketchFeature = evt.feature;
+                this.drawTool = new ol.interaction.Draw({
+                    source: source,
+                    type
                 });
-            }
 
-            if(!is_selection) {
-                this.drawTool.on('drawend', (evt) => {
-                    let geojson = new ol.format.GeoJSON();
-                    let json_feature = geojson.writeFeatureObject(evt.feature);
-                    // assign the feature a UUID.
-                    json_feature.properties = {_id: uuid.v4()};
+                if(oneAtATime === true && type !== 'MultiPoint') {
+                    this.drawTool.on('drawstart', (evt) => {
+                        // clear out the other features on the source.
+                        source.clear();
 
-                    this.props.store.dispatch(mapSourceActions.addFeatures(
-                                                 map_source_name, layer_name, [json_feature]));
+                        this.sketchFeature = evt.feature;
+                    });
+                } else {
+                    this.drawTool.on('drawstart', (evt) => {
+                        this.sketchFeature = evt.feature;
+                    });
+                }
 
-                    // drawing is finished, no longer sketching.
-                    this.sketchFeature = null;
-                    this.props.store.dispatch(mapActions.updateSketchGeometry(null));
-                });
-            } else {
-                this.drawTool.on('drawend', (evt) => {
-                    // drawing is finished, no longer sketching.
-                    this.sketchFeature = null;
-                    this.props.store.dispatch(mapActions.updateSketchGeometry(null));
-                });
+                if(!is_selection) {
+                    this.drawTool.on('drawend', (evt) => {
+                        let geojson = new ol.format.GeoJSON();
+                        let json_feature = geojson.writeFeatureObject(evt.feature);
+                        // assign the feature a UUID.
+                        json_feature.properties = {_id: uuid.v4()};
+
+                        this.props.store.dispatch(mapSourceActions.addFeatures(
+                                                     map_source_name, layer_name, [json_feature]));
+
+                        // drawing is finished, no longer sketching.
+                        this.sketchFeature = null;
+                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                    });
+                } else {
+                    this.drawTool.on('drawend', (evt) => {
+                        // drawing is finished, no longer sketching.
+                        this.sketchFeature = null;
+                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                    });
+                }
             }
 
             this.map.addInteraction(this.drawTool);
