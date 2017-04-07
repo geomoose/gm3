@@ -36,6 +36,10 @@ class MeasureTool extends Component {
 
         // TODO: sniff the map for the proj.
         this.mapProjection = ol.proj.get('EPSG:3857');
+
+        this.state = {
+            units: 'ft'
+        };
     }
 
     /* Get the bearing of a drawing.  
@@ -108,7 +112,9 @@ class MeasureTool extends Component {
         // transform into the new projection
         line = line.transform(this.mapProjection, utmZone);
         // return the measurement.
-        return line.getLength();
+        let meters = line.getLength();
+
+        return util.metersLengthToUnits(meters, this.state.units);
     }
 
 
@@ -144,6 +150,12 @@ class MeasureTool extends Component {
         return segments.reverse();
     }
 
+    /* Render a LineString Measurement.
+     *
+     * @param {GeoJson} geom
+     *
+     * @return the table showing the log
+     */
     renderSegments(geom) {
         const segments = this.getSegmentInfo(geom);
 
@@ -163,7 +175,7 @@ class MeasureTool extends Component {
             <table className="measured-segments">
                 <tbody>
                     <tr key="header">
-                        <th></th><th>Segment Length (m)</th><th>Bearing</th>
+                        <th></th><th>Segment Length ({this.state.units})</th><th>Bearing</th>
                     </tr>
                     { segment_html }
                 </tbody>
@@ -187,17 +199,18 @@ class MeasureTool extends Component {
 
         const utm_geom = util.jsonToGeom(geom).transform(this.mapProjection, utm_zone)
 
-        const area = utm_geom.getArea();
+        const area_m = utm_geom.getArea();
 
+        const area = util.metersAreaToUnits(area_m, this.state.units);
 
         return (
             <table className="measured-area">
                 <tbody>
                     <tr key="header">
-                        <td>Area (sq.m)</td>
+                        <th>Area (sq. {this.state.units})</th>
                     </tr>
                     <tr>
-                        <td>{ area }</td>
+                        <td>{ area.toFixed(2) }</td>
                     </tr>
                 </tbody>
             </table>
@@ -231,6 +244,49 @@ class MeasureTool extends Component {
         );
     }
 
+    changeUnits(value) {
+        this.setState({units: value});
+    }
+
+    renderUnitOption(value, label) {
+        let selected = (this.state.units === value) ? 'selected' : '';
+        return (
+            <div key={'units-' + value} className={'radio-option ' + selected } onClick={ () => { this.changeUnits(value) } }>
+                <i className="radio-icon"></i> { label }
+            </div>
+        );
+    }
+
+    renderUnitOptions() {
+        const units = 'Units';
+        if(this.props.map.interactionType == 'LineString') {
+            return (
+                <div className="measure-units">
+                    <b>{units}:</b>
+                    { this.renderUnitOption('m', 'Meters') }
+                    { this.renderUnitOption('km', 'Kilometers') }
+                    { this.renderUnitOption('ft', 'Feet') }
+                    { this.renderUnitOption('mi', 'Miles') }
+                </div>
+            );
+        } else if(this.props.map.interactionType == 'Polygon') {
+            return (
+                <div className="measure-units">
+                    <b>{units}:</b>
+                    { this.renderUnitOption('m', 'Sq. Meters') }
+                    { this.renderUnitOption('km', 'Sq. Kilometers') }
+                    { this.renderUnitOption('ft', 'Sq. Feet') }
+                    { this.renderUnitOption('mi', 'Sq. Miles') }
+                    { this.renderUnitOption('a', 'Acres') }
+                    { this.renderUnitOption('h', 'Hectares') }
+                </div>
+            );
+        } else {
+            // no options for nothing to do.
+            return false;
+        }
+    }
+
     render() {
         // TODO: These events can happen when measuring is not happening!!!
         return (
@@ -242,6 +298,9 @@ class MeasureTool extends Component {
                     <DrawTool key="measure-line" store={this.props.store} geomType="LineString"/>
                     <DrawTool key="measure-poly" store={this.props.store} geomType="Polygon"/>
                 </div>
+
+                { this.renderUnitOptions () }
+                <br/>
                 { this.renderMeasureOutput() }
             </div>
         );

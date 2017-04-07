@@ -395,3 +395,41 @@ export function geomToJson(geom) {
 export function jsonToGeom(geom) {
     return GEOJSON_FORMAT.readGeometry(geom);
 }
+
+/* Converts from meters to a given units.
+ *
+ */
+export function metersLengthToUnits(meters, units) {
+    switch(units) {
+        case 'ft':
+            return meters * 3.28084;
+        case 'mi':
+            return meters / 1609.34;
+        case 'km':
+            return meters / 1000;
+        case 'm':
+        default:
+            return meters;
+    }
+}
+
+/* Convert Square Meters to a given units.
+ *
+ */
+export function metersAreaToUnits(meters, units) {
+    switch(units) {
+        case 'ft':
+            return meters / 0.092903;
+        case 'mi':
+            return meters / 2590000;
+        case 'a':
+            return meters / 4046.86;
+        case 'h':
+            return meters / 10000;
+        case 'km':
+            return meters / 1000000;
+        case 'm':
+        default:
+            return meters;
+    }
+}
