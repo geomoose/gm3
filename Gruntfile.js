@@ -99,6 +99,10 @@ module.exports = function(grunt) {
                 options: {
                     spawn: false,
                 }
+            },
+            services: {
+                files: ['src/services/*'],
+                tasks: ['copy:services']
             }
         },
 
@@ -118,7 +122,7 @@ module.exports = function(grunt) {
 
     grunt.task.registerTask('lint', ['eslint']);
 
-    grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3']);
+    grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3', 'watch:services']);
 
     // only build the non-minified version.
     grunt.task.registerTask('build-dev', ['eslint', 'copy:services', 'webpack:build-dev']);
