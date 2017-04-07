@@ -385,7 +385,7 @@ class ServiceManager extends Component {
 
             const service_tools = [];
             for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon']) {
-                const dt_key = 'draw_tool_'+gtype;
+                const dt_key = 'draw_tool_' + gtype;
                 if(service_def.tools[gtype]) {
                     service_tools.push(<DrawTool key={dt_key} store={this.props.store} geomType={gtype} />);
                 }

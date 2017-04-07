@@ -57,13 +57,13 @@ class MeasureTool extends Component {
 
             var rise = pointB[1] - pointA[1];
             var run = pointB[0] - pointA[0];
-            if(rise == 0) {
+            if(rise === 0) {
                 if(pointA[0] > pointB.x) {
                     bearing = 'Due West';
                 } else {
                     bearing = 'Due East';
                 }
-            } else if(run == 0) {
+            } else if(run === 0) {
                 if(pointA.y > pointB.y) {
                     bearing = 'Due South';
                 } else {
@@ -84,15 +84,15 @@ class MeasureTool extends Component {
                 /* convert to degrees */
                 // var degrees = Math.atan(rise/run) / (2*Math.PI) * 360;
                 // Calculation suggested by Dean Anderson, refs: #153
-                var degrees = Math.atan(run/rise) / (2*Math.PI) * 360;
+                var degrees = Math.atan(run / rise) / (2 * Math.PI) * 360;
 
                 /* and to DMS ... */
                 var d = parseInt(degrees);
                 var t = (degrees - d) * 60;
                 var m = parseInt(t);
-                var s = parseInt(60 * (t-m));
+                var s = parseInt(60 * (t - m));
 
-                bearing = ns_quad+d+'-'+m+'-'+s+ew_quad;
+                bearing = ns_quad + d + '-' + m + '-' + s + ew_quad;
             }
         }
         return bearing;
@@ -138,8 +138,8 @@ class MeasureTool extends Component {
         const segments = [];
 
         for(let i = 1, ii = coords.length; i < ii; i++) {
-            const seg_len = this.calculateLength(coords[i-1], coords[i], utm_zone);
-            const bearing = this.getBearing(coords[i-1], coords[i]);
+            const seg_len = this.calculateLength(coords[i - 1], coords[i], utm_zone);
+            const bearing = this.getBearing(coords[i - 1], coords[i]);
 
             segments.push({
                 id: i,
@@ -235,7 +235,8 @@ class MeasureTool extends Component {
             );
         } else if (g.type === 'LineString') {
             return this.renderSegments(g);
-        } else { // assume polygon 
+        } else { 
+            // assume polygon 
             return this.renderArea(g);
         }
 
@@ -259,7 +260,7 @@ class MeasureTool extends Component {
 
     renderUnitOptions() {
         const units = 'Units';
-        if(this.props.map.interactionType == 'LineString') {
+        if(this.props.map.interactionType === 'LineString') {
             return (
                 <div className="measure-units">
                     <b>{units}:</b>
@@ -269,7 +270,7 @@ class MeasureTool extends Component {
                     { this.renderUnitOption('mi', 'Miles') }
                 </div>
             );
-        } else if(this.props.map.interactionType == 'Polygon') {
+        } else if(this.props.map.interactionType === 'Polygon') {
             return (
                 <div className="measure-units">
                     <b>{units}:</b>
@@ -299,7 +300,7 @@ class MeasureTool extends Component {
                     <DrawTool key="measure-poly" store={this.props.store} geomType="Polygon"/>
                 </div>
 
-                { this.renderUnitOptions () }
+                { this.renderUnitOptions() }
                 <br/>
                 { this.renderMeasureOutput() }
             </div>
