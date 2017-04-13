@@ -59,6 +59,11 @@ module.exports = function(grunt) {
                         expand: true, flatten: true,
                         src: ['node_modules/font-awesome/fonts/*'],
                         dest: 'dist/fonts/'
+                    },
+                    {                   {
+                        expand: true, flatten: true,
+                        src: ['node_modules/mapskin/fonts/*'],
+                        dest: 'dist/fonts/'
                     }
                 ]
             },
