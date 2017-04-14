@@ -5,6 +5,9 @@ __pycache__/
 
 *.swp
 
+# ignore testing generated "coverage" directory
+coverage/
+
 # C extensions
 *.so
 
