@@ -46,8 +46,9 @@ function SelectService(Application, options) {
     /** Limit the number of selection tools available */
     this.tools = {
         'Point': true, 
+        'MultiPoint': true,
         'Polygon': true, 
-        'Line': true, 
+        'LineString': true, 
         'default': 'Polygon',
         'buffer': true
     };

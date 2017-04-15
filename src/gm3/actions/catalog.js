@@ -101,7 +101,11 @@ function parseLayer(store, layerXml) {
         upload: false, 
         clear: false,
         fade: false, unfade: false,
-        up: false, down: false
+        up: false, down: false,
+        zoomto: false,
+        'draw-point': false, 
+        'draw-polygon': false,
+        'draw-line': false
     };
 
     // iterate through the available tools, if it's set in the XML

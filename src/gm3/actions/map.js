@@ -42,10 +42,10 @@ export function cursor(coords) {
     }
 }
 
-export function changeTool(tool) {
+export function changeTool(tool, src = null) {
     return {
         type: MAP.CHANGE_TOOL,
-        tool
+        tool, src
     }
 }
 
@@ -130,5 +130,12 @@ export function removeQueryResults(queryId, filter) {
 export function clearSelectionFeatures() {
     return {
         type: MAP.CLEAR_SELECTION_FEATURES
+    };
+}
+
+export function updateSketchGeometry(geometry) {
+    return {
+        type: MAP.SKETCH_GEOMETRY,
+        geometry
     };
 }

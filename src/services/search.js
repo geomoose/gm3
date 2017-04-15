@@ -49,8 +49,26 @@ function SearchService(Application, options) {
 
     /** User input fields */
     this.fields = options.fields ? options.fields : [
-        {type: 'text', label: 'Name', name: 'keyword'}
+        {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'}
     ];
+
+    /** Define the layer(s) to be searched. */
+    this.searchLayers = options.searchLayers ? options.searchLayers : [
+        'vector-parcels/ms:parcels'
+    ];
+
+    /** Field transfomation function. */
+    this.prepareFields = options.prepareFields ? options.prepareFields : function(fields) {
+        // reformat the fields for the query engine,
+        //  "*stuff*" will do a case-ignored "contains" query.
+        return [
+            {
+                comparitor: 'ilike',
+                name: 'OWNER_NAME',
+                value: '*' + fields[0].value + '*'
+            }
+        ];
+    };
 
     /** Define the highlight layer */
     this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
@@ -64,19 +82,13 @@ function SearchService(Application, options) {
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        // reformat the fields for the query engine,
-        //  "*stuff*" will do a case-ignored "contains" query.
-        var fields = [
-            {comparitor: 'ilike', name: 'OWNER_NAME', value: '*' + fields[0].value + '*'}
-        ];
-
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
         //  as they are defined in the mapbook.  To perform other types of queries
         //  it would be necessary to put that code here and then manually tell
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
-        Application.dispatchQuery(this.name, selection, fields, ['vector-parcels/ms:parcels']);
+        Application.dispatchQuery(this.name, selection, this.prepareFields(fields), this.searchLayers);
     }
 
 

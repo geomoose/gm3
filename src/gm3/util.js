@@ -151,6 +151,7 @@ export function objectsDiffer(objA, objB, deep) {
  *  @returns a string with the map-source's name.
  */
 export function getMapSourceName(path) {
+    if(path === null) { return ''; }
     return path.split('/')[0];
 }
 
@@ -161,6 +162,7 @@ export function getMapSourceName(path) {
  * @returns a layer name
  */
 export function getLayerName(path) {
+    if(path === null) { return ''; }
     const c = path.split('/');
     c.shift();
     // layers can have "/" in the name, so they need
@@ -278,4 +280,156 @@ export function changeFeatures(features, filter, properties) {
 export function getVersion() {
     let v = GM_VERSION;
     return v;
+}
+
+/** Determine the extent of the features in a source.
+ *  WARNING! This only works with vector sources.
+ *
+ * @param {MapSource} mapSource 
+ *
+ * @returns Array containing [minx,miny,maxx,maxy]
+ */
+export function getFeaturesExtent(mapSource) {
+    let layer = mapSource.layers[0];
+
+    let bounds = [null, null, null, null];
+
+    let min = function(x, y) {
+        if(x === null || y < x) { return y; }
+        return x;
+    };
+
+    let max = function(x, y) {
+        if(x === null || y > x) { return y; }
+        return x;
+    };
+
+    let update_bounds = function(x, y) {
+        bounds[0] = min(bounds[0], x);
+        bounds[1] = min(bounds[1], y);
+        bounds[2] = max(bounds[2], x);
+        bounds[3] = max(bounds[3], y);
+    };
+
+    if(layer.features) {
+        for(let feature of layer.features) {
+            let geom = feature.geometry;
+            if(geom.type === 'Point') {
+                update_bounds(geom.coordinates[0], geom.coordinates[1]);
+            } else if(geom.type === 'LineString') {
+                for(let pt of geom.coordinates) {
+                    update_bounds(pt[0], pt[1]);
+                }
+            } else if(geom.type === 'Polygon' || geom.type === 'MultiLineString') {
+                for(let ring of geom.coordinates) {
+                    for(let pt of ring) {
+                        update_bounds(pt[0], pt[1]);
+                    }
+                }
+            }
+        }
+    }
+
+    return bounds;
+}
+
+/* Configure a set of projections useful for GeoMoose.
+ *
+ * At this point this will just configure the UTM zones
+ * as they are used to do accurate measurement and buffers.
+ *
+ * @param {Proj4} p4 The Proj4 Library.
+ *
+ */
+export function configureProjections(p4) {
+    // var utm_zone = GeoMOOSE.getUtmZone(bounds.left);
+    // var north = bounds.top > 0 ? 'north' : 'south';
+
+    for(let utm_zone = 1; utm_zone <= 60; utm_zone++) {
+        for(let north of ['north', 'south']) {
+            // southern utm zones are 327XX, northern 326XX
+            const epsg_code = 32600 + utm_zone + (north === 'north' ? 0 : 100);
+
+            const proj_id = 'EPSG:' + epsg_code;
+            const proj_alias = 'UTM' + utm_zone + (north === 'north' ? 'N' : 'S');
+            // it's nice to have a formulary.
+            const proj_string = '+proj=utm +zone=' + utm_zone + ' +' + north + '+datum=WGS84 +units=m +no_defs';
+
+            // set up the standard way of calling the projection
+            //  (using the EPSG Code)
+            p4.defs(proj_id, proj_string);
+            // add an alias, so it can be referred by 'UTM15N' for example.
+            p4.defs(proj_alias, p4.defs(proj_id));
+        }
+    }
+
+}
+
+/* Determine the UTM zone for a point
+ *
+ * @param {Point-like} An array containing [x,y] in WGS84 or NAD83 DD
+ *
+ * @return UTM string (e.g. UTM15N)
+ */
+export function getUtmZone(pt) {
+    let utm_string = 'UTM';
+
+    // No citation provideded for this calculation,
+    // it was working in the GM2.X series without a lot
+    // of complaints. 
+    const zone = Math.ceil((pt[0] / 6.0) + 30) + 1;
+
+    // north zones are north of 0.
+    const north = (pt[1] > 0) ? 'N' : 'S';
+
+    // boom, string ot the user.
+    return 'UTM' + zone + north;
+}
+
+const GEOJSON_FORMAT = new ol.format.GeoJSON();
+
+export function geomToJson(geom) {
+    return GEOJSON_FORMAT.writeGeometryObject(geom);
+}
+
+export function jsonToGeom(geom) {
+    return GEOJSON_FORMAT.readGeometry(geom);
+}
+
+/* Converts from meters to a given units.
+ *
+ */
+export function metersLengthToUnits(meters, units) {
+    switch(units) {
+        case 'ft':
+            return meters * 3.28084;
+        case 'mi':
+            return meters / 1609.34;
+        case 'km':
+            return meters / 1000;
+        case 'm':
+        default:
+            return meters;
+    }
+}
+
+/* Convert Square Meters to a given units.
+ *
+ */
+export function metersAreaToUnits(meters, units) {
+    switch(units) {
+        case 'ft':
+            return meters / 0.092903;
+        case 'mi':
+            return meters / 2590000;
+        case 'a':
+            return meters / 4046.86;
+        case 'h':
+            return meters / 10000;
+        case 'km':
+            return meters / 1000000;
+        case 'm':
+        default:
+            return meters;
+    }
 }

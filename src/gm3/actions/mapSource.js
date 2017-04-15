@@ -227,9 +227,21 @@ export function addFromXml(xml, config) {
             name: layerXml.getAttribute('name'),
             on: util.parseBoolean(layerXml.getAttribute('status')),
             favorite: util.parseBoolean(layerXml.getAttribute('favorite')),
+            selectable: util.parseBoolean(layerXml.getAttribute('selectable')),
             label: layer_title ? layer_title : map_source.label,
-            templates: {}
+            templates: {},
+            legend: null
         };
+
+        // user defined legend. 
+        // two types currently supported: "html" and "img"
+        let legends = layerXml.getElementsByTagName('legend');
+        if(legends.length > 0) {
+            layer.legend = {
+                type: legends[0].getAttribute('type'),
+                contents: util.getXmlTextContents(legends[0])
+            };
+        }
 
         let templates = layerXml.getElementsByTagName('template');
         for(let x = 0, xx = templates.length; x < xx; x++) {
@@ -300,6 +312,21 @@ export function getLayer(store, layer) {
     }
     console.error('Cannot find layer', layer.mapSourceName, layer.layerName);
     throw {message: "Cannot find layer", layer};
+}
+
+/** Get a layer using the internal path format "source"/"layer"
+ *
+ *  @param store The master store.
+ *  @param path  String defining the path.
+ *
+ * @return The layer from the map-source in the store.
+ */
+export function getLayerByPath(store, path) {
+    const p = path.split('/'); 
+    return getLayer(store, {
+        mapSourceName: p[0],
+        layerName: p[1]
+    });
 }
 
 /** This query is common enough that it's been reduced to 
@@ -383,30 +410,55 @@ function isQueryable(mapSource) {
     }
 }
 
-/** Get the list of visible layers.
- *
- *  @param store {Store} the application's store.
- *  @param onlyQueryLayers {Boolean} When true, only return queryable layers.
- *
- *  @return List of layers.
+/** check if a layer is on.
  */
-export function getVisibleLayers(store, onlyQueryLayers) {
+function isVisible(mapSource, layer) {
+    return (layer.on === true);
+}
+
+/** Check if a layer is selectable
+ */
+function isSelectable(mapSource, layer) {
+    switch(mapSource.type) {
+        case 'wfs':
+        case 'vector':
+            return (layer.selectable === true);
+        default:
+            return false
+    }
+    return false;
+}
+
+/* Match layers based on a matching function.
+ *
+ * @param store The application's store.
+ * @param matchFunction The function that matches against the mapsource and layer.
+ *
+ * @return List of layers (as paths).
+ */
+export function matchLayers(store, matchFunction) {
     let map_sources = store.getState().mapSources;
-    let active = [];
+    let matches = [];
     for(let ms in map_sources) {
-        if(isMapSourceActive(map_sources[ms])) {
-            if(!onlyQueryLayers || isQueryable(map_sources[ms])) {
-                for(let layer of map_sources[ms].layers) {
-                    if(layer.on) {
-                        active.push(ms + '/' + layer.name);
-                    }
-                }
+        for(let layer of map_sources[ms].layers) {
+            if(matchFunction(map_sources[ms], layer)) {
+                matches.push(ms + '/' + layer.name);
             }
         }
     }
-    return active;
+    return matches;
+
 }
 
+/** Get the list of visible layers.
+ *
+ *  @param store {Store} the application's store.
+ *
+ *  @return List of layers.
+ */
+export function getVisibleLayers(store) {
+    return matchLayers(store, isVisible);
+}
 
 /** Return the list of layers that can be queried.
  * 
@@ -414,7 +466,17 @@ export function getVisibleLayers(store, onlyQueryLayers) {
  *
  */
 export function getQueryableLayers(store) {
-    return getVisibleLayers(store, true);
+    const match_fn = function(ms, layer) {
+        return (isQueryable(ms, layer) && isVisible(ms, layer));
+    }
+    return matchLayers(store, match_fn);
+}
+
+export function getSelectableLayers(store) {
+    const match_fn = function(ms, layer) {
+        return (isSelectable(ms, layer) && isVisible(ms, layer));
+    }
+    return matchLayers(store, match_fn);
 }
 
 

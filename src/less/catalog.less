@@ -97,7 +97,7 @@
     }
 
 
-    .tool, .favorite-icon, .refresh-icon {
+    .favorite-icon, .refresh-icon {
         .fa;
         margin-right: 0.25em;
         font-size: 110%;
@@ -124,6 +124,19 @@
         }
     }
 
+    .tool {
+        font: normal normal normal 14px/1 mapskin;
+        cursor: pointer;
+        margin-right: 0.25em;
+
+        &:before {
+            content: "\e031";
+        }
+    }
+
+    .tool.upload, .tool.clear {
+        .fa;
+    }
 
     .tool.upload {
         &:before {
@@ -137,6 +150,39 @@
         }
     }
 
+    .tool.point,.tool.line,.tool.polygon,.tool.edit {
+    }
+
+    .tool.point {
+        &:before {
+            content: "\e01b";
+        }
+    }
+
+    .tool.polygon {
+        &:before {
+            content: "\e01d"; 
+        }
+    }
+
+
+    .tool.line {
+        &:before {
+            content: "\e01c";
+        }
+    }
+
+    .tool.edit {
+        &:before {
+            content: "\e09e";
+        }
+    }
+
+    .tool.zoomto {
+        &:before {
+            content: "\e008";
+        }
+    }
 }
 
 .layer.favorite {

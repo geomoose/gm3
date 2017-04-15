@@ -46,11 +46,12 @@ import mapReducer from './reducers/map';
 import toolbarReducer from './reducers/toolbar';
 import queryReducer from './reducers/query';
 import uiReducer from './reducers/ui';
+import cursorReducer from './reducers/cursor';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
+import { getLayerFromPath, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
 
 import Mark from 'markup-js';
 
@@ -74,7 +75,8 @@ class Application {
             'map': mapReducer,
             'toolbar': toolbarReducer,
             'query': queryReducer,
-            'ui': uiReducer
+            'ui': uiReducer,
+            'cursor': cursorReducer 
         }));
 
         this.state = {};
@@ -245,9 +247,7 @@ class Application {
      *  @returns an array of layer paths.
      */
     getQueryableLayers() {
-        let l = getQueryableLayers(this.store);
-        console.log('qlayers', l);
-        return l;
+        return getQueryableLayers(this.store);
     }
 
     /** zoom to an extent

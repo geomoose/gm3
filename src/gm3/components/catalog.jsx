@@ -37,7 +37,9 @@ import { connect } from 'react-redux';
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
-import { UploadTool, ClearTool } from './catalog/tools';
+import { UploadTool, ClearTool, DrawTool, ZoomToTool } from './catalog/tools';
+
+import Legend from './catalog/legend';
 
 const mapCatalogToProps = function(store) {
     return {
@@ -171,12 +173,24 @@ export class Catalog extends Component {
     getTools(layer) {
         let tools = [];
         for(let tool_name of layer.tools) {
+            let key = layer.id + '_' + tool_name;
+
             switch(tool_name) {
+                case 'zoomto':
+                    tools.push(<ZoomToTool store={this.props.store} key={key} layer={layer} />);
+                    break;
                 case 'upload':
-                    tools.push(<UploadTool store={this.props.store} key={layer.id + '_upload'} layer={layer} />);
+                    tools.push(<UploadTool store={this.props.store} key={key} layer={layer} />);
                     break;
                 case 'clear':
-                    tools.push(<ClearTool store={this.props.store} key={layer.id + '_clear'} layer={layer} />);
+                    tools.push(<ClearTool store={this.props.store} key={key} layer={layer} />);
+                    break;
+
+                case 'draw-point':
+                case 'draw-polygon':
+                case 'draw-line':
+                    const draw_type = tool_name.split('-')[1];
+                    tools.push(<DrawTool store={this.props.store} drawType={draw_type} key={key} layer={layer} />);
                     break;
                 default:
                     // pass
@@ -244,6 +258,8 @@ export class Catalog extends Component {
                 <div className="layer-tools">
                     {tools}
                 </div>
+
+                <Legend store={this.props.store} layer={layer}/>
             </div>
         );
     }

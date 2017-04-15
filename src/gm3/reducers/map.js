@@ -33,7 +33,6 @@ import * as util from '../util';
 const default_view = {
     center: [0, 0],
     resolution: 1000,
-    coords: [0, 0],
     extent: null,
     activeSource: null,
     interactionType: null,
@@ -57,8 +56,6 @@ export default function mapReducer(state = default_view, action) {
             return Object.assign({}, state, new_view);
         case MAP.ZOOM_TO_EXTENT:
             return Object.assign({}, state, {extent: {bbox: action.extent, projection: action.projection}});
-        case MAP.CURSOR:
-            return Object.assign({}, state, {coords: action.coords});
         case MAP.CHANGE_TOOL:
             return Object.assign({}, state, {
                 activeSource: action.src, 

@@ -24,8 +24,12 @@
 
 
 import React, {Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
-import * as msActions from '../../actions/mapSource'
+import * as msActions from '../../actions/mapSource';
+import * as mapActions from '../../actions/map';
+
+import * as util from '../../util';
 
 /** Upload features to a vector layer from a file
  *  on the user's hard drive.
@@ -83,6 +87,12 @@ export class UploadTool extends Component {
                     if(input_format !== null) {
                         // parse the features.
                         let ol_features = input_format.readFeatures(e.target.result);
+
+                        // TODO: This should be getting the map projection
+                        //       from the map-view!!!
+                        for(let f of ol_features) {
+                            f.setGeometry(f.getGeometry().transform('EPSG:4326', 'EPSG:3857'));
+                        }
                         // internal feature representation is as GeoJSON, so the parsed
                         //  ol feautures need converted here...
                         let collection = geojson_format.writeFeaturesObject(ol_features);
@@ -134,8 +144,8 @@ export class UploadTool extends Component {
 /** Generic class for basic "click this, do this" tools.
  */
 class Tool extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.onClick = this.onClick.bind(this);
 
@@ -170,3 +180,63 @@ export class ClearTool extends Tool {
             msActions.clearFeatures(src.mapSourceName, src.layerName));
     }
 }
+
+/* Draw a point on the map.
+ *
+ */
+export class DrawTool extends Tool {
+    constructor(props) {
+        super(props);
+
+        this.tip = 'Add a ' + props.drawType + ' to the layer';
+        this.iconClass = props.drawType + ' tool';
+        this.drawType = {
+            'point': 'Point',
+            'line': 'LineString',
+            'polygon': 'Polygon'
+        }[props.drawType];
+    }
+
+    onClick() {
+        let src = this.props.layer.src[0];
+        let path = src.mapSourceName + '/' + src.layerName;
+
+        this.props.store.dispatch(
+            mapActions.changeTool(this.drawType, path)
+        );
+    }
+}
+
+/* Zoom the the extent of a vector layer's features.
+ *
+ */
+class dumb_ZoomToTool extends Tool {
+    constructor() {
+        super();
+        this.tip = 'Zoom to layer extents.';
+        this.iconClass = 'zoomto tool';
+    }
+
+    onClick() {
+        const src = this.props.layer.src[0];
+        const extent = util.getFeaturesExtent(this.props.mapSources[src.mapSourceName]);
+        // ensure the extent is not null,
+        // which happens when there are no features on the layer.
+        if(extent[0] !== null) {
+            this.props.store.dispatch(
+                mapActions.zoomToExtent(extent)
+            );
+        }
+    }
+}
+
+/* This makes the ZoomToTool a 'smart' object which
+ * can more properly interact with the state.
+ */
+const mapZoomToProps = function(store) {
+    return {
+        mapSources: store.mapSources
+    }
+}
+const ZoomToTool = connect(mapZoomToProps)(dumb_ZoomToTool);
+export { ZoomToTool };

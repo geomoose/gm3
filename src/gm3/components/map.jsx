@@ -65,12 +65,16 @@ class Map extends Component {
 
         // the current 'active' interaction
         this.currentInteraction = null;
+        this.activeSource = null;
 
         // a hash of interval timers for layers that
         //  are set to auto-refresh
         this.intervals = {};
 
         this.updateMapSize = this.updateMapSize.bind(this);
+
+        // this is used when a feature isn't finished yet.
+        this.sketchFeature = null;
     }
 
     /** Update a source's important bits.
@@ -101,6 +105,20 @@ class Map extends Component {
             default:
                 console.info('Unhandled map-source type: ' + map_source.type);
         }
+    }
+
+    /** Adds vector feature events to a vector-type layer.
+     *
+     *  @param mapSourceName
+     *  @param layerName
+     *  @param {ol.source.Vector} source
+     *
+     */
+    addFeatureEvents(mapSourceName, layerName, source) {
+
+        // geojson -- the one true Javascript object representation.
+        source.on('addfeature', (evt) => {
+        });
     }
 
     /** Create an OL Layers based on a GM MapSource definition
@@ -171,8 +189,6 @@ class Map extends Component {
                         let gml_format = new ol.format.WMSGetFeatureInfo();
                         let features = gml_format.readFeatures(response.responseText);
                         let js_features = geojson.writeFeaturesObject(features).features;
-
-                        console.log('RESULTS', queryLayer, js_features);
 
                         this.props.store.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -337,8 +353,10 @@ class Map extends Component {
                     let gml_format = new ol.format.GML2();
 
                     let features = gml_format.readFeatures(response); 
-                    let js_features = geojson_format.writeFeaturesObject(features).features;
-                    console.log('GOT FEATURES', js_features);
+                    for(const feature of features) {
+                        feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
+                    }
+                    let js_features = (new ol.format.GeoJSON()).writeFeaturesObject(features).features;
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -456,7 +474,6 @@ class Map extends Component {
     createRefreshInterval(mapSource) {
         // prevent the creation of a pile of intervals
         if(!this.intervals.hasOwnProperty(mapSource.name)) {
-            console.log('CREATED REFRESH INTERVAL', mapSource.name, mapSource.refresh * 1000);
             // refresh is stored in seconds, multiplying by 1000
             //  converts ito the milliseconds expected by setInterval.
             this.intervals[mapSource.name] = setInterval(() => {
@@ -587,6 +604,13 @@ class Map extends Component {
         this.map.on('pointermove', (event) => {
             var action = mapActions.cursor(event.coordinate);
             this.props.store.dispatch(action);
+
+            if(this.sketchFeature) {
+                // convert the sketch feature's geometry to JSON and kick it out
+                // to the store.
+                const json_geom = util.geomToJson(this.sketchFeature.getGeometry());
+                this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
+            }
         });
 
         // once the map is created, kick off the initial startup.
@@ -602,33 +626,87 @@ class Map extends Component {
      *
      */
     activateDrawTool(type, path, oneAtATime) {
+        const is_selection = (path === null);
+        const map_source_name = util.getMapSourceName(path);
+        const layer_name = util.getLayerName(path);
+
         // normalize the input.
         if(typeof(type) === 'undefined') {
             type = null;
         }
 
-        // TODO : path is current ignored.
+        // when path is null, use the selection layer,
+        //  else use the specified source.
         let source = this.selectionLayer.getSource();
+        if(!is_selection) {
+            console.log('MAP SOURCE', map_source_name);
+            source = this.olLayers[map_source_name].getSource();
+        }
 
         // stop the 'last' drawing tool.
         this.stopDrawing();
 
         // make sure the type is set.
         this.currentInteraction = type;
+        this.activeSource = this.props.mapView.activeSource;
 
         // "null" interaction mean no more drawing.
         if(type !== null) {
             // switch to the new drawing tool.
-            this.drawTool = new ol.interaction.Draw({
-                source: source,
-                type
-            });
-
-            if(oneAtATime === true) {
-                this.drawTool.on('drawstart', function() {
-                    // clear out the other features on the source.
-                    source.clear();
+            if(type === 'Select') {
+                this.drawTool = new ol.interaction.Select({
+                    layers: [this.olLayers[map_source_name]]
                 });
+
+                this.drawTool.on('select', (evt) => {
+                    const selection_src = this.selectionLayer.getSource();
+                    // clear out previously selected objects.
+                    selection_src.clear();
+                    // add the selected feature.
+                    if(evt.selected.length > 0) {
+                        selection_src.addFeature(evt.selected[0]);
+                    }
+                });
+            } else {
+                this.drawTool = new ol.interaction.Draw({
+                    source: source,
+                    type
+                });
+
+                if(oneAtATime === true && type !== 'MultiPoint') {
+                    this.drawTool.on('drawstart', (evt) => {
+                        // clear out the other features on the source.
+                        source.clear();
+
+                        this.sketchFeature = evt.feature;
+                    });
+                } else {
+                    this.drawTool.on('drawstart', (evt) => {
+                        this.sketchFeature = evt.feature;
+                    });
+                }
+
+                if(!is_selection) {
+                    this.drawTool.on('drawend', (evt) => {
+                        let geojson = new ol.format.GeoJSON();
+                        let json_feature = geojson.writeFeatureObject(evt.feature);
+                        // assign the feature a UUID.
+                        json_feature.properties = {_id: uuid.v4()};
+
+                        this.props.store.dispatch(mapSourceActions.addFeatures(
+                                                     map_source_name, layer_name, [json_feature]));
+
+                        // drawing is finished, no longer sketching.
+                        this.sketchFeature = null;
+                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                    });
+                } else {
+                    this.drawTool.on('drawend', (evt) => {
+                        // drawing is finished, no longer sketching.
+                        this.sketchFeature = null;
+                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                    });
+                }
             }
 
             this.map.addInteraction(this.drawTool);
@@ -644,7 +722,7 @@ class Map extends Component {
         if(this.drawTool) {
             // off the map
             this.map.removeInteraction(this.drawTool);
-            // and null'd.
+            // null out for logic.
             this.drawTool = null;
         }
     }
@@ -700,11 +778,14 @@ class Map extends Component {
             // refresh all the map sources, as approriate.
             this.refreshMapSources();
 
-            if(this.props.mapView.interactionType !== this.currentInteraction) {
+            if(this.props.mapView.interactionType !== this.currentInteraction
+               || this.props.mapView.activeSource !== this.activeSource) {
                 // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
-                this.activateDrawTool(this.props.mapView.interactionType, null, true);
+                let is_selection = (this.props.mapView.activeSource === null);
+                this.activateDrawTool(this.props.mapView.interactionType, 
+                                      this.props.mapView.activeSource, is_selection);
             }
 
             // update the map size when data changes
@@ -739,3 +820,37 @@ const mapToProps = function(store) {
 }
 
 export default connect(mapToProps)(Map);
+
+
+
+export function getLegend(mapSource, mapView, layerName) {
+    // see if the layer has a fixed legend.
+    for(const layer of mapSource.layers) {
+        if(layer.name === layerName && layer.legend !== null) {
+            // translate from the store represenation to
+            // what's used to render the legend.
+            if(layer.legend.type === 'html') {
+                return {
+                    type: 'html', html: layer.legend.contents
+                }
+            } else if(layer.legend.type === 'img') {
+                return {
+                    type: 'img', images: [layer.legend.contents]
+                }
+            }
+        }
+    }
+
+    // if the mapSource type supports legends, fetch them,
+    // otherwise return 'nolegend'.
+    switch(mapSource.type) {
+        case 'wms' :
+            return wmsLayer.getLegend(mapSource, mapView, layerName);
+        default:
+            return {
+                type: 'nolegend'
+            };
+    }
+}
+
+

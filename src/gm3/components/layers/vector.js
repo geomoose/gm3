@@ -70,8 +70,9 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    var opts = {
-        source: new ol.source.Vector(defineSource(mapSource))
+    const source = new ol.source.Vector(defineSource(mapSource));
+    const opts = {
+        source
     };
 
     if(mapSource.style) {
@@ -121,8 +122,10 @@ export function updateLayer(map, layer, mapSource) {
             source.clear(true);
             // setup the JSON parser
             const output_format = new ol.format.GeoJSON({
+            /*
                 dataProjection: 'EPSG:4326',
                 featureProjection: map.getView().getProjection()
+            */
             });
             // bring in the new features.
             const features = output_format.readFeatures({
@@ -132,6 +135,7 @@ export function updateLayer(map, layer, mapSource) {
 
             // update the version number
             layer.set('featuresVersion', mapSource.layers[0].featuresVersion);
+
         }
     }
 }

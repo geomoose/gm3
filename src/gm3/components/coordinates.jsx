@@ -34,7 +34,7 @@ class CoordinateDisplay extends Component {
     }
 
     mapXY() {
-        const coords = this.props.mapView.coords;
+        const coords = this.props.cursor.coords;
         return coords[0].toFixed(1) + ', ' + coords[1].toFixed(1);
     }
 
@@ -58,7 +58,7 @@ class CoordinateDisplay extends Component {
         const latlon_proj = new ol.proj.get('EPSG:4326');
 
         // transform the point
-        return ol.proj.transform(this.props.mapView.coords, map_proj, latlon_proj);
+        return ol.proj.transform(this.props.cursor.coords, map_proj, latlon_proj);
     }
 
     /** This formats the lat-lon as a string.
@@ -101,7 +101,7 @@ class CoordinateDisplay extends Component {
 
 const mapToProps = function(store) {
     return {
-        mapView: store.map
+        cursor: store.cursor
     }
 }
 

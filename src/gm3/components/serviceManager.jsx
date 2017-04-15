@@ -40,10 +40,15 @@ import { getLayerFromPath } from '../actions/mapSource';
 
 import { setUiHint } from '../actions/ui';
 
+
 import Mark from 'markup-js';
+
+import DrawTool from './drawTool';
 
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
+
+import MeasureTool from './measure';
 
 class ServiceManager extends Component {
 
@@ -72,6 +77,35 @@ class ServiceManager extends Component {
         this.services[name] = service;
     }
 
+    /* Normalizes the selectionFeatures from the map
+     * for use with a service.
+     *
+     */
+    normalizeSelection(selectionFeatures) {
+        // OpenLayers handles MultiPoint geometries in an awkward way,
+        // each feature is a 'MultiPoint' type but only contains one feature,
+        //  this normalizes that in order to be submitted properly to query services.
+        if(selectionFeatures.length > 0) {
+            if(selectionFeatures[0].geometry.type === 'MultiPoint') {
+                const all_coords = [];
+                for(let feature of selectionFeatures) {
+                    if(feature.geometry.type === 'MultiPoint') {
+                        all_coords.push(feature.geometry.coordinates[0]);
+                    }
+                }
+                return {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'MultiPoint',
+                        coordinates: all_coords
+                    }
+                };
+            }
+        }
+        return selectionFeatures[0];
+    }
+
     /** Call the service with the relevant information
      *  and have it start a query.
      *
@@ -79,7 +113,7 @@ class ServiceManager extends Component {
     startQuery(service) {
         if(this.props.services[service]) {
             let service_def = this.props.services[service];
-            let selection = this.props.store.getState().map.selectionFeatures[0];
+            let selection = this.normalizeSelection(this.props.store.getState().map.selectionFeatures);
             let fields = [];
 
             for(let name in this.fieldValues[service]) {
@@ -177,7 +211,8 @@ class ServiceManager extends Component {
         // when the drawing type changes this needs to 
         //  update the service 'page' because those elements
         //  are tied to the state of the interactionType.
-        if(this.props.map.interactionType !== nextProps.map.interactionType) {
+        if(this.props.map.interactionType !== nextProps.map.interactionType 
+           && nextProps.map.activeSource === null) {
             return true;
         }
 
@@ -279,9 +314,14 @@ class ServiceManager extends Component {
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
 
+        // if the measure tool has been triggered, quiet the 
+        //  rest of hte noise.
+        if(nextProps.queries.service === 'measure') {
+
+
         // when the service changes, then clear out the previous 
         //  selection features
-        if(this.state.lastService !== nextProps.queries.service 
+        } else if(this.state.lastService !== nextProps.queries.service 
            && nextProps.queries.service !== null) {
             let service_def = nextProps.services[nextProps.queries.service];
             // clear out the previous drawing tool when
@@ -302,7 +342,7 @@ class ServiceManager extends Component {
 
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
-            if(service_def.autoGo) { 
+            if(service_def && service_def.autoGo) { 
                 let selection = nextProps.store.getState().map.selectionFeatures;
                 if(selection.length > 0) {
                     // okay, there *is* a selection feature.
@@ -320,24 +360,6 @@ class ServiceManager extends Component {
         this.checkQueries(nextProps.queries);
     }
 
-    /** Render a drawing tool.
-     *
-     *  @param {String} gtype The "geometry" type: Point, Line Polygon.
-     *
-     */
-    renderDrawTool(gtype) {
-        let tool_class = 'draw-tool';
-        if(this.props.map.interactionType === gtype) {
-            tool_class += ' selected';
-        }
-
-        return (
-            <div key={'draw-tool-' + gtype} className={tool_class} onClick={ () => { this.drawTool(gtype) } }>
-                <i className="radio-icon"></i> Draw { gtype }
-            </div>
-        );
-    }
-
     onServiceFieldChange(name, value) {
         this.fieldValues[this.props.queries.service][name] = value;
     }
@@ -353,14 +375,19 @@ class ServiceManager extends Component {
     }
 
     render() {
-        if(this.props.queries.service != null) {
+        if(this.props.queries.service === 'measure') {
+            return (
+                <MeasureTool store={this.props.store} />
+            );
+        } else if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
 
             const service_tools = [];
-            for(let gtype of ['Point', 'Line', 'Polygon']) {
+            for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon']) {
+                const dt_key = 'draw_tool_' + gtype;
                 if(service_def.tools[gtype]) {
-                    service_tools.push(this.renderDrawTool(gtype));
+                    service_tools.push(<DrawTool key={dt_key} store={this.props.store} geomType={gtype} />);
                 }
             }
 

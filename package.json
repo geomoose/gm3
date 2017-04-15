@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node node_modules/jest/bin/jest.js --coverage ./tests/",
     "serve": "./node_modules/.bin/webpack-dev-server"
   },
   "babel": {
@@ -14,6 +14,10 @@
       "react"
     ]
   },
+  "jest": {
+    "setupFiles" : [ "./tests/setup.js" ],
+    "moduleDirectories": ["node_modules", "src/"]
+  },
   "author": "Dan 'Ducky' Little",
   "license": "MIT",
   "devDependencies": {
@@ -21,10 +25,12 @@
     "babel-cli": "~6.14.0",
     "babel-core": "~6.14.0",
     "babel-eslint": "^6.1.2",
+    "babel-jest": "^19.0.0",
     "babel-loader": "~6.2.5",
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015": "~6.14.0",
     "babel-preset-react": "~6.11.1",
+    "enzyme": "^2.8.1",
     "eslint": "^3.18.0",
     "eslint-loader": "^1.6.3",
     "eslint-plugin-react": "^6.10.3",
@@ -36,19 +42,23 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-webpack": "^1.0.14",
     "gruntify-eslint": "~3.1.0",
+    "jest": "^19.0.2",
     "less": "^2.7.1",
+    "mapskin": "^1.0.0",
     "markup-js": "^1.5.21",
     "ol-mapbox-style": "git+https://github.com/theduckylittle/ol-mapbox-style.git",
     "openlayers": "^3.20.0",
     "papaparse": "^4.1.2",
+    "proj4": "^2.4.3",
     "react": "~15.3.1",
+    "react-addons-test-utils": "^15.5.1",
     "react-dom": "~15.3.1",
     "react-hot-loader": "^1.3.0",
     "react-redux": "~4.4.5",
     "redux": "~3.6.0",
     "reqwest": "~2.0.5",
-    "uuid": "~2.0.3",
     "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
+    "uuid": "~2.0.3",
     "webpack": "~1.13.2",
     "webpack-dev-server": "~1.16.1"
   },
