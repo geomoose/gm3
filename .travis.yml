@@ -1,0 +1,10 @@
+#
+# (c) 2017 Dan "Ducky" Little
+#
+language: node_js
+node_js:
+    - "node"
+
+# ensure the code lints clean.
+before_script:
+    - grunt lint
