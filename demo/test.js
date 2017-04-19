@@ -30,8 +30,8 @@
 
 
 var app = new gm3.Application({
-    mapserver_url: '/mapserver/cgi-bin/mapserv',
-    mapfile_root: '/data/'
+    mapserver_url: CONFIG.mapserver_url,
+    mapfile_root: CONFIG.mapfile_root
 });
 
 app.uiUpdate = function(ui) {
@@ -60,9 +60,9 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     //  if so, use Bing as the geocoder otherwise the application
     //  will show a "can't find the service" message.
     // BING_KEY should be set in globals.js
-    if(typeof(BING_KEY) !== 'undefined') {
+    if(typeof(CONFIG.bing_key) !== 'undefined') {
         app.registerService('geocode', BingGeocoder, {
-            key: BING_KEY
+            key: CONFIG.bing_key 
         });
     }
 
