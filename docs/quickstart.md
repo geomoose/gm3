@@ -10,9 +10,9 @@ This is the quickstart to *development* guide. If you are looking for a quicksta
 
 ## Create your fork
 
-GeoMoose contributions are done using Pull Requests.  You can read more about [https://help.github.com/articles/about-pull-requests/](pull requests on GitHub.)
+GeoMoose contributions are done using Pull Requests.  You can read more about [pull requests on GitHub.](https://help.github.com/articles/about-pull-requests/)
 
-<a class="github-button" href="https://github.com/geomoose/gm3/fork" aria-label="Fork geomoose/gm3 on GitHub">Fork</a>
+<a target="_blank" class="github-button" href="https://github.com/geomoose/gm3/fork" aria-label="Fork geomoose/gm3 on GitHub">Click here to create your own Fork</a>
 
 ## Cloning the repositories
 
