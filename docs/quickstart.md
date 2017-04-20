@@ -22,7 +22,7 @@ This will download all the data necessary to get started.
 cd ~
 mkdir geomoose
 cd geomoose
-git clone git@github.com:geomoose/gm3.git
+git clone git@github.com:[YOUR_USER_NAME]/gm3.git
 git clone git@github.com:geomoose/gm3-demo-data.git
 ```
 
