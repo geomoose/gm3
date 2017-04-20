@@ -29,9 +29,11 @@ var webpackDeployConfig = require('./webpack-deploy.config');
 
 module.exports = function(grunt) {
     grunt.loadNpmTasks('gruntify-eslint');
+    grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-gitinfo');
     grunt.loadNpmTasks('grunt-webpack');
 
     grunt.initConfig({
@@ -44,6 +46,30 @@ module.exports = function(grunt) {
             target: ['src/**/*.jsx', 'src/**/*.js']
         },
 
+        // makes a compressed archive of the SDK release
+        compress: {
+             main: {
+                 options: {
+                     archive: 'gm3-sdk-<%= gitinfo.local.branch.current.shortSHA %>.zip'
+                 },
+                 files: [
+                     { src: [
+                           'demo/**',
+                           'dist/**',
+                           'docs/**',
+                           'eslint.config.js',
+                           'Gruntfile.js',
+                           'LICENSE',
+                           'package.json',
+                           'README.md',
+                           'src',
+                           'tests',
+                           'webpack.config.js',
+                           'webpack-deploy.config.js'
+                       ], dest: 'geomoose' }
+                 ]
+             }
+        },
         // copies useful files places.
         copy: {
             // this will copy the "test" files into dist,
@@ -137,4 +163,7 @@ module.exports = function(grunt) {
 
     // build everything
     grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol', 'copy:services']);
+
+    // build release.zip
+    grunt.task.registerTask('build-release', ['build', 'gitinfo', 'compress']);
 };
