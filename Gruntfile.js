@@ -62,8 +62,8 @@ module.exports = function(grunt) {
                            'LICENSE',
                            'package.json',
                            'README.md',
-                           'src',
-                           'tests',
+                           'src/**',
+                           'tests/**',
                            'webpack.config.js',
                            'webpack-deploy.config.js'
                        ], dest: 'geomoose' }
