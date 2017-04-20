@@ -580,15 +580,22 @@ class Map extends Component {
         // create the selection layer.
         this.configureSelectionLayer();
 
+        const view_params = {
+            center: this.props.center
+        };
+
+        if(this.props.zoom) {
+            view_params.zoom = this.props.zoom;
+        } else if(this.props.resolution) {
+            view_params.resolution = this.props.resolution;
+        }
+
         // initialize the map.
         this.map = new ol.Map({
             target: this.mapId,
             layers: [this.selectionLayer],
             logo: false,
-            view: new ol.View({
-                center: this.props.center,
-                zoom: this.props.zoom
-            })
+            view: new ol.View(view_params)
         });
 
         // when the map moves, dispatch an action
@@ -612,6 +619,11 @@ class Map extends Component {
                 this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
             }
         });
+
+        // call back for when the map has finished rendering.
+        if(this.props.mapRenderedCallback) {
+            this.map.on('postrender', this.props.mapRenderedCallback);
+        }
 
         // once the map is created, kick off the initial startup.
         this.refreshMapSources();

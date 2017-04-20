@@ -22,30 +22,24 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-.hide {
-    display: none;
+class PrintPreview extends Component {
+
+    render() {
+        if(this.props.print.state === 'printing') {
+            return (<img alt="Print Preview" src={ this.props.print.printData }/>);
+        }
+        return false;
+    }
 }
 
-
-/* Print images are not visible to the user
- * and only used to generate a temporary space 
- * to get the image data from them.
- */
-.print-image {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 100;
+const mapToProps = function(store) {
+    return {
+        print: store.print,
+        mapView: store.map,
+    }
 }
 
-.map {
-    width: 100%; height: 100%;
-}
+export default connect(mapToProps)(PrintPreview);

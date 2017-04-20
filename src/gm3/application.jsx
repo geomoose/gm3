@@ -47,6 +47,7 @@ import toolbarReducer from './reducers/toolbar';
 import queryReducer from './reducers/query';
 import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
+import printReducer from './reducers/print';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -56,6 +57,9 @@ import { getLayerFromPath, getQueryableLayers, getActiveMapSources } from './act
 import Mark from 'markup-js';
 
 import * as util from './util';
+
+import PrintImage from './components/printImage';
+import Map from './components/map';
 
 class Application {
 
@@ -76,7 +80,8 @@ class Application {
             'toolbar': toolbarReducer,
             'query': queryReducer,
             'ui': uiReducer,
-            'cursor': cursorReducer 
+            'cursor': cursorReducer,
+            'print': printReducer
         }));
 
         this.state = {};
@@ -375,6 +380,45 @@ class Application {
      */
     xhr(opts) {
         return Request(opts);
+    }
+
+    /* Get a print image.
+     *
+     */
+    getPrintImage(width = 640, height = 480, fixedScale = null) {
+        // create a container for the image.
+        const body = document.getElementsByTagName('body')[0];
+        const print_div = document.createElement('div');
+
+        //print_div.id = 'print-image';
+        print_div.className = 'print-image';
+        body.appendChild(print_div);
+        //} else {
+        //    print_div = document.getElementById('print-image');
+        //}
+
+        // create the print image and render it in the tree.
+        const e = React.createElement(PrintImage, {store: this.store});
+        ReactDOM.render(e, print_div);
+
+        // pull out the canvas contents.
+        const canvas = print_div.getElementsByTagName('canvas')[0];
+        // const ctx = canvas.getContext('2d');
+
+        // console.log("REACT ELEM", e);
+
+        // other options:
+        // canvas.toDataURL('image/png')
+        // canvas.toDataURL('image/jpeg', quality)
+        // ctx.getImageData();
+
+        const png_data = canvas.toDataURL('image/png');
+
+        // remove the component from the tree and clear it out of the DOM
+        // ReactDOM.unmountComponentAtNode(print_div);
+        // body.removeChild(print_div);
+
+        return png_data;
     }
 };
 

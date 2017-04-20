@@ -106,3 +106,9 @@ export const UI = {
     RUN_ACTION: 'UI_RUN_ACTION',
     CLEAR_ACTION: 'UI_CLEAR_ACTION'
 };
+
+export const PRINT = {
+    FINISHED: 'PRINT_DONE',
+    REQUEST: 'PRINT_REQUEST',
+    IMAGE: 'PRINT_IMAGE', 
+};
