@@ -22,15 +22,44 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'modal.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
+import { connect } from 'react-redux';
+import React, {Component, PropTypes } from 'react';
 
-.hide {
-    display: none;
+export default class ModalDialog extends Component {
+
+    renderBody() {
+        return '';
+    }
+
+    renderFooter() {
+        return '';
+    }
+
+    close(response) {
+        if(this.props.onClose) {
+            this.props.onClose(response);
+        }
+
+        // make all this go away.
+        // this.destroy();
+    }
+
+    render() {
+        return (
+            <div className="modal-blocker">
+                <div className="modal-frame">
+                    <div className="modal-title">
+                        <h3>{ this.props.title }</h3>
+                    </div>
+                    <div className="modal-body">
+                        { this.renderBody() }
+                    </div>
+
+                    <div className="modal-footer">
+                        { this.renderFooter() }
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }

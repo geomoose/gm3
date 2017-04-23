@@ -48,6 +48,8 @@ import queryReducer from './reducers/query';
 import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
 
+import Alert from './components/modals/alert';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -375,6 +377,24 @@ class Application {
      */
     xhr(opts) {
         return Request(opts);
+    }
+
+    /* Show an alert type dialog
+     */
+
+    alert(message, callback = null) {
+        var body = document.getElementsByTagName('body')[0];
+        var modal_div = document.createElement('div');
+        body.appendChild(modal_div);
+        
+        const props = { 
+            title: 'Alert',
+            onClose: callback,
+            message
+        };
+
+        const e = React.createElement(Alert, props);
+        ReactDOM.render(e, modal_div);
     }
 };
 

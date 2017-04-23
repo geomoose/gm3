@@ -91,5 +91,6 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     tracker.startTracking();
 
     showTab('catalog');
-   
+
+    app.alert('This is an alert message!');
 });
