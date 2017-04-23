@@ -153,7 +153,7 @@ module.exports = function(grunt) {
 
     grunt.task.registerTask('lint', ['eslint']);
 
-    grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch:gm3', 'watch:services']);
+    grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch']);
 
     // only build the non-minified version.
     grunt.task.registerTask('build-dev', ['eslint', 'copy:services', 'webpack:build-dev']);
