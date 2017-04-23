@@ -1,0 +1,104 @@
+#header {
+	img {
+		// Override display:inline's tendency to create mysterious spacing issues around images
+		display: block;
+	}
+}
+
+#toolbar {
+	margin-top: 3px;
+	height: 22px;
+	border: 0 solid #000;
+	border-top-width: 1px;
+	button.tool {
+		height: 22px;
+		padding: 0 7px;
+		font-size: 14px;
+		border: 0 solid rgba(0,0,0,0.1);
+		background: none;
+		&:not(:last-child) {
+			border-right-width: 1px;
+		}
+		&:hover {
+			cursor: pointer;
+			text-decoration: underline;
+		}	
+	}
+}
+
+.tool .icon {
+	margin-right: 5px;
+	display: none;
+}
+
+.tool-fullextent {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-arrows-alt;
+		}
+	}
+}
+
+.tool-measure {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-arrows-h;
+		}
+	}
+}
+
+.tool-print {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-print;
+		}
+	}
+}
+
+.tool-identify {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-info-circle;
+		}
+	}
+}
+
+.tool-geocode {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-globe;
+		}
+	}
+}
+
+.tool-select {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-mouse-pointer;
+		}
+	}
+}
+
+.tool-search {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-search;
+		}
+	}
+}
+
+.tool-findme {
+	.icon {
+		.fa; 
+		&:before {
+			content: @fa-var-location-arrow;
+		}
+	}
+}
