@@ -131,6 +131,10 @@ module.exports = function(grunt) {
                     spawn: false,
                 }
             },
+            less: {
+                files: ['src/less/**/*'],
+                tasks: ['less:build']
+            },
             services: {
                 files: ['src/services/*'],
                 tasks: ['copy:services']
