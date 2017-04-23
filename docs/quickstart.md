@@ -32,6 +32,7 @@ The Docker image is a quickstart way of setting up MapServer.
 
 ```
 cd ~/geomoose/gm3-demo-data/docker
+./build.sh
 ./run.sh
 ```
 
