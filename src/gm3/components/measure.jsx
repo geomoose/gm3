@@ -273,6 +273,7 @@ class MeasureTool extends Component {
                     { this.renderUnitOption('km', 'Kilometers') }
                     { this.renderUnitOption('ft', 'Feet') }
                     { this.renderUnitOption('mi', 'Miles') }
+                    { this.renderUnitOption('ch', 'Chains') }
                 </div>
             );
         } else if(measurement_type === 'Polygon') {
