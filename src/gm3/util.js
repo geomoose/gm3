@@ -405,6 +405,9 @@ export function metersLengthToUnits(meters, units) {
             return meters * 3.28084;
         case 'mi':
             return meters / 1609.34;
+        case 'ch':
+            // 1 chain = 66 US survey feet.  1 sft = 1200/3937 meters.
+            return meters * (3937 / 79200);
         case 'km':
             return meters / 1000;
         case 'm':
