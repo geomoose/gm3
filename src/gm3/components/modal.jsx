@@ -27,39 +27,66 @@ import React, {Component, PropTypes } from 'react';
 
 export default class ModalDialog extends Component {
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            open: false
+        }
+
+        this.renderBody = this.renderBody.bind(this);
+        this.renderFooter = this.renderFooter.bind(this);
+    }
+
     renderBody() {
-        return '';
+        return this.props.message;
     }
 
     renderFooter() {
-        return '';
+        const buttons = [];
+        for(const option of this.props.options) {
+            buttons.push(
+                <button key={option.value } 
+                        onClick={ () => { this.close(option.value) } }>
+                            { option.label }
+                </button>
+            );
+        }
+
+        return buttons;
     }
 
     close(response) {
         if(this.props.onClose) {
             this.props.onClose(response);
         }
-
-        // make all this go away.
-        // this.destroy();
+        this.setState({open: false});
     }
 
     render() {
-        return (
-            <div className="modal-blocker">
-                <div className="modal-frame">
-                    <div className="modal-title">
-                        <h3>{ this.props.title }</h3>
-                    </div>
-                    <div className="modal-body">
-                        { this.renderBody() }
-                    </div>
+        if(this.state.open) {
+            const footer_classes = {
+                1: 'one', 2: 'two', 3: 'three'
+            };
+            const footer_class = 'modal-footer '+footer_classes[this.props.options.length];
 
-                    <div className="modal-footer">
-                        { this.renderFooter() }
+            return (
+                <div className="modal-blocker">
+                    <div className="modal-frame">
+                        <div className="modal-title">
+                            <h3>{ this.props.title }</h3>
+                        </div>
+                        <div className="modal-body">
+                            { this.renderBody() }
+                        </div>
+
+                        <div className={footer_class}>
+                            { this.renderFooter() }
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
+        return false;
     }
 }

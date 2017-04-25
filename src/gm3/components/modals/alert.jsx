@@ -39,7 +39,7 @@ export default class AlertDialog extends Modal {
 
     renderFooter() {
         return (
-            <button onClick={ this.close('dismiss') }>Okay</button>
+            <button onClick={ () => { this.close('dismiss') } }>Okay</button>
         );
     }
 
