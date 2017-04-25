@@ -91,5 +91,4 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     tracker.startTracking();
 
     showTab('catalog');
-   
 });

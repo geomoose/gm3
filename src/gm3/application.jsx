@@ -49,6 +49,8 @@ import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
 import printReducer from './reducers/print';
 
+import Modal from './components/modal';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -87,6 +89,8 @@ class Application {
         this.state = {};
 
         this.store.subscribe(() => { this.shouldUiUpdate(); });
+
+        this.dialogs = {};
     }
 
     registerService(serviceName, serviceClass, options) {
@@ -420,6 +424,52 @@ class Application {
 
         return png_data;
     }
+
+    /* Show an alert type dialog
+     */
+
+    alert(signature, message, callback = null) {
+        const options = [
+            {label: 'Okay', value: 'dismiss'}
+        ];
+        this.showDialog(signature, 'Alert', message, options, callback);
+    }
+
+    confirm(signature, message, callback = null) {
+        const options = [
+            {label: 'Cancel', value: 'dismiss'},
+            {label: 'Okay', value: 'confirm'}
+        ];
+        this.showDialog(signature, 'Confirm', message, options, callback);
+    }
+
+    showDialog(signature, title, message, options, callback = null) {
+        // If the dialog does not exist, then create it.
+        if(!this.dialogs[signature]) {
+            // create a target div for the dialog.
+            var body = document.getElementsByTagName('body')[0];
+            var modal_div = document.createElement('div');
+            body.appendChild(modal_div);
+           
+            // configure the new props.
+            const props = { 
+                title: title,
+                onClose: callback,
+                options,
+                message
+            };
+
+            // create the element
+            const e = React.createElement(Modal, props);
+            const elem = ReactDOM.render(e, modal_div);
+            // registry the dialogs signature.
+            this.dialogs[signature] = elem;
+        }
+
+        // open the dialog
+        this.dialogs[signature].setState({open: true});
+    }
+
 };
 
 

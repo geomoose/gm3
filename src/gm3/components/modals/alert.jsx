@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,25 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'modal.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
+import { connect } from 'react-redux';
+import React, {Component, PropTypes } from 'react';
 
-.hide {
-    display: none;
-}
+import Modal from '../modal';
 
+export default class AlertDialog extends Modal {
 
-/* Print images are not visible to the user
- * and only used to generate a temporary space 
- * to get the image data from them.
- */
-.print-image {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 100;
-}
+    renderBody() {
+        return (
+            <div className="alert-message">
+            { this.props.message }
+            </div>
+        );
+    }
 
-.map {
-    width: 100%; height: 100%;
+    renderFooter() {
+        return (
+            <button onClick={ () => { this.close('dismiss') } }>Okay</button>
+        );
+    }
+
 }
