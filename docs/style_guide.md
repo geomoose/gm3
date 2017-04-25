@@ -1,5 +1,9 @@
 # GeoMoose 3 Style Guide
 
+## For any and all files
+
+* No hard tabs. This is further explained in the library development which is properly linted.
+
 ## For GeoMoose application development
 
 As GeoMoose application development is really an exercise left for the administrator/installer, 
@@ -47,4 +51,10 @@ This is a summary of changes and is inspired by the [AirBnB Javascript Style Gui
 * Comments
     * Comments before declarations should use `/* */` and follow Doxygen style.
     * Comments inside of code blocks should use `//` and be on the line BEFORE not inline or after.
-    
+
+### Regarding CSS/LESS
+
+* The demo application in `demo/` CSS may have *id* referenced elements.  Referencing elements by ID is generally done for layout purposes.
+* The LESS files *should never* refer to an element by ID.  The LESS files are to provide styling for *components only.*
+
+
