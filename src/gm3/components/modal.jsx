@@ -68,7 +68,7 @@ export default class ModalDialog extends Component {
             const footer_classes = {
                 1: 'one', 2: 'two', 3: 'three'
             };
-            const footer_class = 'modal-footer '+footer_classes[this.props.options.length];
+            const footer_class = 'modal-footer ' + footer_classes[this.props.options.length];
 
             return (
                 <div className="modal-blocker">
