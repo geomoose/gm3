@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,32 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'modal.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-.hide {
-    display: none;
-}
+import Modal from 'gm3/components/modal';
+
+import { shallow } from 'enzyme';
+
+
+it('renders a one button Modal Dialog', () => {
+    // create a dummy call back that can be monitored
+    //  by the testing suite.
+    const callback = jest.fn();
+
+    // create the dialog.
+    const dialog = shallow(
+        <Modal title='Title' message='Testing message for dialog'
+               options={ [{label: 'Okay', value: 'okay'}] }
+               onClose={ callback } />
+    );
+
+    // open the dialog.
+    dialog.setState({open: true});
+
+    // close the dialog by simulating a click on the button.
+    dialog.find('button').simulate('click'); 
+
+    // ensure the call back was called with the closing value.
+    expect(callback).toBeCalledWith('okay');
+});

@@ -1,0 +1,88 @@
+
+.modal-blocker {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,.75);
+    text-align: center;
+}
+
+.modal-frame {
+    margin-top: 6px;
+    background: white;
+    /* TODO: Make this change based on screen size */
+    width: 400px;
+    display: inline-block;
+    text-align: left;
+}
+
+.modal-title {
+    background: #afa;
+    border-bottom: solid 1px #ccc;
+
+    h3 {
+        padding: 4px;
+        margin: 0;
+        color: #333;
+        font-weight: normal;
+    }
+
+}
+
+.modal-body {
+    padding: 4px;
+}
+
+.modal-footer {
+    padding: 0px;
+    text-align: right;
+    background-color: #fafafa;
+    border-top: solid 1px #ccc;
+
+    button {
+        text-align: center;
+        display: inline-block;
+        margin: 0px;
+        width: 50%;
+        border: none;
+        color: white;
+        font-weight: bold;
+        padding: 5px;
+        cursor: pointer;
+
+        background-color: #7fbf7b;
+    }
+}
+
+.modal-footer.two {
+    button:nth-child(1) {
+        background-color: #f7f7f7;
+        color: #4c9c39;
+    }
+
+    button:nth-child(2) {
+        background-color: #7fbf7b;
+    }
+}
+
+/** Handle the case when there are three buttons in the footer. */
+.modal-footer.three {
+    button {
+        width: 33%;
+    }
+
+    button:nth-child(1) {
+        background-color: #f7f7f7;
+        color: #4c9c39;
+    }
+
+    button:nth-child(2) {
+        background-color: #af8dc3;
+    }
+
+    button:nth-child(3) {
+        background-color: #7fbf7b;
+    }
+}
+
+
