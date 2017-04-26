@@ -58,7 +58,7 @@ class Toolbar extends Component {
         };
 
         return (
-            <button onClick={tool_click} key={tool.name}>
+            <button onClick={tool_click} key={tool.name} className={"tool tool-" + tool.name}>
                 <span className="icon"></span><span className="label">{tool.label}</span>
             </button>
         );
