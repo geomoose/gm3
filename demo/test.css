@@ -53,21 +53,9 @@ body {
     height: 75px;
 }
 
-#toolbar {
-    height: 25px;
+#header img {
+    display: inline;
 }
-
-#toolbar button {
-    border: none;
-    background: none;
-    text-decoration: underline;
-    color: steelblue;
-    padding: 2px;
-    font-size: 10px;
-    margin: 2px;
-    cursor: pointer;
-}
-
 
 #tabs {
     bottom: 20px;

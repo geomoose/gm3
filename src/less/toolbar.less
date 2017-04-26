@@ -1,0 +1,88 @@
+button.tool {
+    height: 22px;
+    padding: 0 7px;
+    font-size: 14px;
+    border: none;
+    background: none;
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
+
+.tool .icon {
+    margin-right: 5px;
+    display: none;
+}
+
+.tool-fullextent {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-arrows-alt;
+        }
+    }
+}
+
+.tool-measure {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-arrows-h;
+        }
+    }
+}
+
+.tool-print {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-print;
+        }
+    }
+}
+
+.tool-identify {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-info-circle;
+        }
+    }
+}
+
+.tool-geocode {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-globe;
+        }
+    }
+}
+
+.tool-select {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-mouse-pointer;
+        }
+    }
+}
+
+.tool-search {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-search;
+        }
+    }
+}
+
+.tool-findme {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-location-arrow;
+        }
+    }
+}
