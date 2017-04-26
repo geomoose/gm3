@@ -10,3 +10,4 @@ Listing your name below is an agreement to contribute your work product to the G
 ## Contributors (in alphabetical order)
 
 * [Dan "Ducky" Little](https://github.com/theduckylittle)
+* [Caitlin Wolters](https://github.com/CaitW)
