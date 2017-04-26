@@ -53,6 +53,10 @@ body {
     height: 75px;
 }
 
+#header img {
+    display: inline;
+}
+
 #tabs {
     bottom: 20px;
     border-top: solid 1px black;
