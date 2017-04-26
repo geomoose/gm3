@@ -35,6 +35,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-gitinfo');
     grunt.loadNpmTasks('grunt-webpack');
+    // load our custom tasks
+    grunt.loadTasks('./src/tasks');
 
     grunt.initConfig({
         // linting task. Used to ensure code is clean
@@ -45,6 +47,16 @@ module.exports = function(grunt) {
             },
             target: ['src/**/*.jsx', 'src/**/*.js']
         },
+
+        // line the CSS
+        lintless: {
+            all: {
+                files: [
+                    {src: ['src/less/**/*.less']}
+                ]
+            }
+        },
+
 
         // makes a compressed archive of the SDK release
         compress: {
@@ -155,7 +167,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.task.registerTask('lint', ['eslint']);
+    grunt.task.registerTask('lint', ['lintless', 'eslint']);
 
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch']);
 
