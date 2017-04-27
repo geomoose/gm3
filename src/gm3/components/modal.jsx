@@ -32,28 +32,48 @@ export default class ModalDialog extends Component {
 
         this.state = {
             open: false
-        }
+        };
 
         this.renderBody = this.renderBody.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
+    }
+
+    getTitle() {
+        return this.props.title;
     }
 
     renderBody() {
         return this.props.message;
     }
 
+    renderOption(option) {
+        return (
+            <button key={option.value } 
+                    onClick={ () => { this.close(option.value) } }>
+                        { option.label }
+            </button>
+        );
+    }
+
+    getFooterClass(n) {
+        const footer_classes = {
+            1: 'one', 2: 'two', 3: 'three'
+        };
+        return 'modal-footer ' + footer_classes[n];
+    }
+
     renderFooter() {
+        const footer_class = this.getFooterClass(this.props.options.length);
+
         const buttons = [];
         for(const option of this.props.options) {
-            buttons.push(
-                <button key={option.value } 
-                        onClick={ () => { this.close(option.value) } }>
-                            { option.label }
-                </button>
-            );
+            buttons.push(this.renderOption(option));
         }
-
-        return buttons;
+        return (
+            <div className={footer_class}>
+                { buttons }
+            </div>
+        );
     }
 
     close(response) {
@@ -65,24 +85,18 @@ export default class ModalDialog extends Component {
 
     render() {
         if(this.state.open) {
-            const footer_classes = {
-                1: 'one', 2: 'two', 3: 'three'
-            };
-            const footer_class = 'modal-footer ' + footer_classes[this.props.options.length];
 
             return (
                 <div className="modal-blocker">
                     <div className="modal-frame">
                         <div className="modal-title">
-                            <h3>{ this.props.title }</h3>
+                            <h3>{ this.getTitle() }</h3>
                         </div>
                         <div className="modal-body">
                             { this.renderBody() }
                         </div>
 
-                        <div className={footer_class}>
-                            { this.renderFooter() }
-                        </div>
+                        { this.renderFooter() }
                     </div>
                 </div>
             );
