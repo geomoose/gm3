@@ -587,7 +587,7 @@
 
 		<tool name="fullextent" title="Zoom to Full Extent" type="action"/>
 		<tool name="measure" title="Measure" type="service"/>
-		<tool name="print" title="Print" type="service" service="print" selectable="false" icon-class="sprite-control sprite-control-printer"/>
+		<tool name="print" title="Print" type="action"/>
 
 		<tool name="identify" title="Identify" type="service" service="identify"/>
 
