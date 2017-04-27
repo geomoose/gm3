@@ -25,7 +25,8 @@
 
 const default_state = {
     state: 'printed', 
-    printData: '', // populated with a png or jpeg base64 string,
+    // populated with a png or jpeg base64 string,
+    printData: '',
     request: null,
 };
 

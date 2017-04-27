@@ -27,9 +27,9 @@ import { connect } from 'react-redux';
 
 import uuid from 'uuid';
 
-import Map from './map';
+import Map from '../map';
 
-import { printImage } from '../actions/print';
+import { printImage } from '../../actions/print';
 
 class PrintImage extends Component {
 
@@ -57,7 +57,7 @@ class PrintImage extends Component {
 
         if(canvas.length > 0) {
             
-            //const ctx = canvas.getContext('2d');
+            // const ctx = canvas.getContext('2d');
 
         // other options:
             return canvas[0].toDataURL('image/png');

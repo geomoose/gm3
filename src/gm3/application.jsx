@@ -60,7 +60,6 @@ import Mark from 'markup-js';
 
 import * as util from './util';
 
-import PrintImage from './components/printImage';
 import Map from './components/map';
 
 class Application {
@@ -167,9 +166,9 @@ class Application {
             props.services = this.services;
         }
 
-        var e = React.createElement(component, props);
-        ReactDOM.render(e, document.getElementById(domId));
-        return e;
+        const e = React.createElement(component, props);
+        const elem = ReactDOM.render(e, document.getElementById(domId));
+        return elem;
     }
 
 
@@ -386,45 +385,6 @@ class Application {
         return Request(opts);
     }
 
-    /* Get a print image.
-     *
-     */
-    getPrintImage(width = 640, height = 480, fixedScale = null) {
-        // create a container for the image.
-        const body = document.getElementsByTagName('body')[0];
-        const print_div = document.createElement('div');
-
-        //print_div.id = 'print-image';
-        print_div.className = 'print-image';
-        body.appendChild(print_div);
-        //} else {
-        //    print_div = document.getElementById('print-image');
-        //}
-
-        // create the print image and render it in the tree.
-        const e = React.createElement(PrintImage, {store: this.store});
-        ReactDOM.render(e, print_div);
-
-        // pull out the canvas contents.
-        const canvas = print_div.getElementsByTagName('canvas')[0];
-        // const ctx = canvas.getContext('2d');
-
-        // console.log("REACT ELEM", e);
-
-        // other options:
-        // canvas.toDataURL('image/png')
-        // canvas.toDataURL('image/jpeg', quality)
-        // ctx.getImageData();
-
-        const png_data = canvas.toDataURL('image/png');
-
-        // remove the component from the tree and clear it out of the DOM
-        // ReactDOM.unmountComponentAtNode(print_div);
-        // body.removeChild(print_div);
-
-        return png_data;
-    }
-
     /* Show an alert type dialog
      */
 
@@ -469,7 +429,6 @@ class Application {
         // open the dialog
         this.dialogs[signature].setState({open: true});
     }
-
 };
 
 

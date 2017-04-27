@@ -22,24 +22,56 @@
  * SOFTWARE.
  */
 
+/*
+ * Present the user with a preview of what
+ * they will get in a print.
+ *
+ * This really provides a buffer for the map to load
+ * and hopefully the user does not hit "print" until
+ * that image is ready.
+ */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-class PrintPreview extends Component {
+import Modal from '../modal';
+import PrintImage from './printImage';
 
-    render() {
-        if(this.props.print.state === 'printing') {
-            return (<img alt="Print Preview" src={ this.props.print.printData }/>);
+export default class PrintPreview extends Modal {
+
+    close(status) {
+        if(status === 'print') {
+            console.log('PRINT IMAGE?', this.refs.print_image);
         }
-        return false;
+        this.setState({open: false});
     }
-}
 
-const mapToProps = function(store) {
-    return {
-        print: store.print,
-        mapView: store.map,
+    getTitle() {
+        return 'Print Preview';
     }
-}
 
-export default connect(mapToProps)(PrintPreview);
+    renderFooter() {
+        const buttons = [
+            this.renderOption({value: 'dismiss', label: 'Cancel'}),
+            this.renderOption({value: 'print', label: 'Print'})
+        ];
+
+        return (
+            <div className={ this.getFooterClass(2) }>
+                { buttons }
+            </div>
+        );
+    }
+
+    renderBody() {
+        return (
+            <div>
+                <label>
+                    Map title: <input placeholder="Map title"/>
+                </label>
+                <PrintImage ref='print_image' store={this.props.store}/>
+            </div>
+        );
+                
+    }
+
+}
