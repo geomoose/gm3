@@ -172,13 +172,13 @@ module.exports = function(grunt) {
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch']);
 
     // only build the non-minified version.
-    grunt.task.registerTask('build-dev', ['eslint', 'copy:services', 'webpack:build-dev']);
+    grunt.task.registerTask('build-dev', ['lint', 'copy:services', 'webpack:build-dev']);
 
     // update the css and fonts.
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
     // build everything
-    grunt.task.registerTask('build', ['eslint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol', 'copy:services']);
+    grunt.task.registerTask('build', ['lint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol', 'copy:services']);
 
     // build release.zip
     grunt.task.registerTask('build-release', ['build', 'gitinfo', 'compress']);
