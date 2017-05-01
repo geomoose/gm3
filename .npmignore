@@ -30,4 +30,4 @@ gm3*.zip
 
 # Results of building
 # Note: this should be ignored by git but by not npm
-dist/
+# dist/
