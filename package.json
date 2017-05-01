@@ -1,12 +1,16 @@
 {
   "name": "gm3",
   "version": "3.0.0-beta",
-  "repository": "https://github.com/geomoose/gm3/",
+  "repository": "https://github.com/geomoose/gm3.git",
   "description": "",
   "main": "index.js",
+  "homepage": "http://www.geomoose.org",
+  "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
     "test": "node node_modules/jest/bin/jest.js --coverage ./tests/",
-    "serve": "./node_modules/.bin/webpack-dev-server"
+    "prepublish": "grunt build",
+    "start": "grunt serve",
+    "serve": "grunt serve"
   },
   "babel": {
     "presets": [
