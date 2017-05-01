@@ -33,15 +33,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import jsPDF from 'jspdf';
+
 import Modal from '../modal';
 import PrintImage from './printImage';
 import PrintPreviewImage from './printPreviewImage';
 
-export default class PrintPreview extends Modal {
+export default class PrintModal extends Modal {
 
     close(status) {
         if(status === 'print') {
             console.log('PRINT IMAGE?', this.refs.print_image);
+
+            this.makePDF();
         }
         this.setState({open: false});
     }
@@ -50,19 +54,21 @@ export default class PrintPreview extends Modal {
         return 'Print Preview';
     }
 
-    updatePreview() {
-        // get the contents of the print image,
-        // then scale it down to fit into our preview canvas.
-        const print_canvas = this.refs.print_image.getElementsByTagName('canvas');
-        // get the preview canvas
-        const preview_ctx = this.refs.prevew.getContext('2d');
+    makePDF() {
+        // new PDF document
+        const doc = new jsPDF();
+        // some sample text based on the map title
+        doc.text(20, 20, this.refs.map_title.value);
 
-        // get the image contents
-        const print_image = print_canvas.getContext('2d').getImageData();
+        // this is not a smart component and it doesn't need to be,
+        //  so sniffing the state for the current image is just fine.
+        const image_data = this.props.store.getState().print.printData;
 
-        // put the image contents on the preview.
-        preview_ctx.putImageData(print_image, 0, 0);
+        // add the map image to the page.
+        doc.addImage(image_data, 20, 40) //, 600, 400);
 
+        // kick it back out to the user.
+        doc.save('geomoose_print.pdf');
     }
 
     renderFooter() {
@@ -91,7 +97,7 @@ export default class PrintPreview extends Modal {
         return (
             <div>
                 <label>
-                    Map title: <input placeholder="Map title"/>
+                    Map title: <input ref='map_title' placeholder="Map title"/>
                 </label>
                 <div>
                     <PrintPreviewImage store={this.props.store}/>

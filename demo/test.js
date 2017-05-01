@@ -87,12 +87,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         zoom: 12
     });
 
-    var print_preview = app.add(gm3.components.PrintPreview, 'print-preview', {});
+    var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
     app.registerAction('print', function() {
         this.run = function() {
            print_preview.setState({open: true}); 
-           console.log('set to open');
-           console.log('Print preview?', print_preview);
         }
     }, {});
             

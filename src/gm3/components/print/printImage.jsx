@@ -52,21 +52,19 @@ class PrintImage extends Component {
      *
      */
     getImage() {
+        // there are many opportunities for the map to
+        //  disappear "out of order" and this makes sure all
+        //  of the DOM elements required still exists.
         const p = document.getElementById(this.state.mapId);
-        const canvas = p.getElementsByTagName('canvas');
-
-        if(canvas.length > 0) {
-            
-            // const ctx = canvas.getContext('2d');
-
-        // other options:
-            return canvas[0].toDataURL('image/png');
-            // canvas.toDataURL('image/jpeg', quality)
+        if(p) {
+            const canvas = p.getElementsByTagName('canvas');
+            if(canvas.length > 0) {
+                // other options:
+                // canvas.toDataURL('image/jpeg', quality)
+                return canvas[0].toDataURL('image/png');
+            }
         }
         return '';
-
-        // kick back the image data.
-        // return ctx.getImageData();
     }
 
     /* When the map renders, update the image in the reducer.

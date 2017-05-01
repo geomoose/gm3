@@ -44,7 +44,7 @@ import Grid from './gm3/components/grid';
 import Version from './gm3/components/version';
 import CoordinateDisplay from './gm3/components/coordinates';
 import MeasureTool from './gm3/components/measure';
-import PrintPreview from './gm3/components/print/printPreview';
+import PrintModal from './gm3/components/print/printModal';
 
 import LocalStorageTracker from './gm3/trackers/localStorage';
 
@@ -68,7 +68,7 @@ var components = {
     Version: Version,
     CoordinateDisplay: CoordinateDisplay,
     MeasureTool: MeasureTool,
-    PrintPreview: PrintPreview,
+    PrintModal: PrintModal,
 };
 
 var trackers = {
