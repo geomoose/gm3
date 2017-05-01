@@ -35,6 +35,7 @@ import { connect } from 'react-redux';
 
 import Modal from '../modal';
 import PrintImage from './printImage';
+import PrintPreviewImage from './printPreviewImage';
 
 export default class PrintPreview extends Modal {
 
@@ -47,6 +48,21 @@ export default class PrintPreview extends Modal {
 
     getTitle() {
         return 'Print Preview';
+    }
+
+    updatePreview() {
+        // get the contents of the print image,
+        // then scale it down to fit into our preview canvas.
+        const print_canvas = this.refs.print_image.getElementsByTagName('canvas');
+        // get the preview canvas
+        const preview_ctx = this.refs.prevew.getContext('2d');
+
+        // get the image contents
+        const print_image = print_canvas.getContext('2d').getImageData();
+
+        // put the image contents on the preview.
+        preview_ctx.putImageData(print_image, 0, 0);
+
     }
 
     renderFooter() {
@@ -63,12 +79,27 @@ export default class PrintPreview extends Modal {
     }
 
     renderBody() {
+        // small set of CSS hacks to keep the print map
+        //  invisible but drawn.
+        const map_style_hack = {
+            visibility: 'hidden',
+            zIndex: -1,
+            position: 'absolute',
+            top: 0, left: 0
+        };
+
         return (
             <div>
                 <label>
                     Map title: <input placeholder="Map title"/>
                 </label>
-                <PrintImage ref='print_image' store={this.props.store}/>
+                <div>
+                    <PrintPreviewImage store={this.props.store}/>
+                </div>
+
+                <div style={ map_style_hack }>
+                    <PrintImage store={this.props.store}/>
+                </div>
             </div>
         );
                 
