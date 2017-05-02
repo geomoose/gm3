@@ -36,14 +36,8 @@ class PrintImage extends Component {
     constructor(props) {
         super(props);
 
-        // TODO: Get the image size from the props.
         this.state = {
-            on: true,
-            mapId: 'print-map-' + uuid.v4(),
-            size: {
-                width: 600,
-                height: 400
-            }
+            mapId: 'print-map-' + uuid.v4()
         };
     }
 
@@ -77,8 +71,8 @@ class PrintImage extends Component {
     render() {
         const image_style = {
             display: 'inline-block',
-            width: this.state.size.width + 'px',
-            height: this.state.size.height + 'px',
+            width: (this.props.width ? this.props.width : 600) + 'px',
+            height: (this.props.height ? this.props.height : 400) + 'px',
         };
         
         const center = this.props.mapView.center;

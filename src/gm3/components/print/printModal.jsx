@@ -34,6 +34,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import jsPDF from 'jspdf';
+import Mark from 'markup-js';
 
 import Modal from '../modal';
 import PrintImage from './printImage';
@@ -41,34 +42,139 @@ import PrintPreviewImage from './printPreviewImage';
 
 export default class PrintModal extends Modal {
 
+    constructor(props) {
+        super(props);
+
+        // Define the built-in layouts.
+        // If the user overrides this then they just get their
+        //  layouts.
+        this.layouts = props.layouts ? props.layouts : [{
+            label: 'Letter - Landscape',
+            orientation: 'landscape',
+            page: 'letter',
+            units: 'in',
+            elements: [
+                {
+                    type: 'text', 
+                    size: 18, fontStyle: 'bold',
+                    x: .5, y: .70, text: '{{title}}'
+                },
+                {
+                    type: 'map',
+                    x: .5, y: .75,
+                    width: 10, height: 7,
+                    widthPx: 10 * 72, heightPx: 7 * 72
+                },
+                {
+                    type: 'text',
+                    x: .5, y: 8, text: 'Printed on {{month}} / {{day}} / {{year}}'
+                }
+            ]
+        }];
+
+        this.pxConversion = {
+            'pt' : 1,
+            'in' : 72,
+            'mm' : 2.83465
+        };
+
+        this.state = this.getMapSize(this.layouts[0], 1);
+    }
+
+    /* Print the PDF! Or, ya know, close the dialog. 
+     */
     close(status) {
         if(status === 'print') {
-            console.log('PRINT IMAGE?', this.refs.print_image);
-
-            this.makePDF();
+            this.makePDF(this.layouts[0]);
         }
         this.setState({open: false});
     }
 
+    /* Return the title for the dialog. */
     getTitle() {
-        return 'Print Preview';
+        return 'Print';
     }
 
-    makePDF() {
-        // new PDF document
-        const doc = new jsPDF();
-        // some sample text based on the map title
-        doc.text(20, 20, this.refs.map_title.value);
 
+    addText(doc, def) {
+        // these are the subsitution strings for the map text elements
+        const date = new Date();
+        const subst_dict = {
+            title: this.refs.map_title.value,
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate()
+        };
+
+        // def needs to define: x, y, text
+        const defaults = {
+            size: 13,
+            color: [0, 0, 0],
+            font: 'Arial',
+            fontStyle: 'normal'
+        };
+
+        // create a new font definition object based on
+        //  the combination of the defaults and the definition
+        //  passed in by the user.
+        const full_def = Object.assign({}, defaults, def);
+
+        // set the size
+        doc.setFontSize(full_def.size);
+        // the color 
+        doc.setTextColor(full_def.color[0], full_def.color[1], full_def.color[2]);
+        // and the font face.
+        doc.setFont(full_def.font, full_def.fontStyle);
+        // then mark the face.
+        doc.text(full_def.x, full_def.y, Mark.up(full_def.text, subst_dict));
+    }
+
+    addImage(doc, def) {
+        // optionally scale the image to fit the space.
+        if(def.width && def.height) {
+            doc.addImage(def.image_data, def.x, def.y, def.width, def.height);
+        } else {
+            doc.addImage(def.image_data, def.x, def.y);
+        }
+
+    }
+
+    addMapImage(doc, def) {
         // this is not a smart component and it doesn't need to be,
         //  so sniffing the state for the current image is just fine.
         const image_data = this.props.store.getState().print.printData;
+        this.addImage(doc, Object.assign({}, def, {image_data: image_data}));
+    }
 
-        // add the map image to the page.
-        doc.addImage(image_data, 20, 40) //, 600, 400);
+
+    makePDF(layout) {
+        // new PDF document
+        const doc = new jsPDF(layout.orientation, layout.units, layout.page);
+
+        // add some fonts
+        doc.addFont('Arial', 'Arial', 'normal');
+        doc.addFont('Arial-Bold', 'Arial', 'bold');
+
+        // iterate through the elements of the layout
+        //  and place them in the document.
+        for(const element of layout.elements) {
+            switch(element.type) {
+                case 'text':
+                    this.addText(doc, element);
+                    break;
+                case 'map':
+                    this.addMapImage(doc, element);
+                    break;
+                case 'image':
+                    this.addImage(doc, element);
+                    break;
+                default:
+                    // pass, do nothing.
+            }
+        }
 
         // kick it back out to the user.
-        doc.save('geomoose_print.pdf');
+        doc.save('print_'+((new Date()).getTime())+'.pdf');
     }
 
     renderFooter() {
@@ -84,6 +190,77 @@ export default class PrintModal extends Modal {
         );
     }
 
+    /* The Map Image size changes based on the layout used
+     * and the resolution selected by the user.
+     * 
+     * @param layout The layout definition.
+     * @param resolution The "map size" multiplier. 
+     *
+     * @return An object with "width" and "height" properties.
+     */
+    getMapSize(layout, resolution) {
+        const units = this.pxConversion[layout.units];
+
+        // iterate through the layout elements looking
+        //  for the map.
+        let map_element = null;
+        for(const element of layout.elements) {
+            if(element.type === 'map') {
+                map_element = element;
+                break;
+            }
+        }
+
+        // caculate the width and height and kick it back.
+        return {
+            width: map_element.width * units * resolution,
+            height: map_element.height * units * resolution
+        };
+    }
+
+    /* Update the map size whenever
+     * The layout or resolutoin has changed.
+     */
+    updateMapLayout() {
+        // check for the first map element and then 
+        //  use that as the render size.
+        const layout = this.layouts[parseInt(this.refs.layout.value)];
+        // convert the resoltion to a multiplier.
+        const resolution = parseFloat(this.refs.resolution.value);
+
+        this.setState(this.getMapSize(layout, resolution));
+    }
+
+    /** Render a select box with the layouts.
+     */
+    renderLayoutSelect() {
+        // convert the layouts to options based on their index
+        //  and the label given in "label"
+        const options = [];
+        for(let i = 0, ii = this.layouts.length; i < ii; i++) {
+            options.push(<option key={ i } value={ i }>{ this.layouts[i].label }</option>);
+        }
+        // kick back the select.
+        return (
+            <select ref='layout' onChange={ () => { this.updateMapLayout(); } }>
+                { options }
+            </select>
+        );
+    }
+
+    /** Render a select drop down that allows the user
+     *  to up the DPI.
+     */
+    renderResolutionSelect() {
+        return (
+            <select ref='resolution' onChange={ () => { this.updateMapLayout(); } }>
+                <option value='1'>Normal</option>
+                <option value='1.5'>Higher</option>
+                <option value='2'>Highest</option>
+            </select>
+        );
+    }
+
     renderBody() {
         // small set of CSS hacks to keep the print map
         //  invisible but drawn.
@@ -96,15 +273,24 @@ export default class PrintModal extends Modal {
 
         return (
             <div>
-                <label>
-                    Map title: <input ref='map_title' placeholder="Map title"/>
-                </label>
+                <p>
+                    <label>Map title:</label>
+                    <input ref='map_title' placeholder="Map title"/>
+                </p>
+                <p>
+                    <label>Page layout:</label>
+                    { this.renderLayoutSelect() } 
+                </p>
+                <p>
+                    <label>Resolution:</label>
+                    { this.renderResolutionSelect() }
+                </p>
                 <div>
                     <PrintPreviewImage store={this.props.store}/>
                 </div>
 
                 <div style={ map_style_hack }>
-                    <PrintImage store={this.props.store}/>
+                    <PrintImage width={this.state.width} height={this.state.height} store={this.props.store}/>
                 </div>
             </div>
         );
