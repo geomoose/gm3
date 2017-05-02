@@ -62,8 +62,13 @@ export default class PrintModal extends Modal {
                 {
                     type: 'map',
                     x: .5, y: .75,
+                    width: 10, height: 7
+                },
+                {
+                    type: 'rect',
+                    x: .5, y: .75,
                     width: 10, height: 7,
-                    widthPx: 10 * 72, heightPx: 7 * 72
+                    strokeWidth: .01
                 },
                 {
                     type: 'text',
@@ -129,6 +134,8 @@ export default class PrintModal extends Modal {
         doc.text(full_def.x, full_def.y, Mark.up(full_def.text, subst_dict));
     }
 
+    /* Embed an image in the PDF
+     */
     addImage(doc, def) {
         // optionally scale the image to fit the space.
         if(def.width && def.height) {
@@ -139,11 +146,42 @@ export default class PrintModal extends Modal {
 
     }
 
+    /* Wraps addImage specifically for the map.
+     */
     addMapImage(doc, def) {
         // this is not a smart component and it doesn't need to be,
         //  so sniffing the state for the current image is just fine.
         const image_data = this.props.store.getState().print.printData;
         this.addImage(doc, Object.assign({}, def, {image_data: image_data}));
+    }
+
+    /* Draw a shape on the map.
+     *
+     * Supported shapes: rect, ellipse
+     */
+    addDrawing(doc, def) {
+        // determine the style string
+        let style = 'S';
+        if(def.filled) {
+            style = 'DF';
+        }
+
+        // set the colors
+        const stroke = def.stroke ? def.stroke : [0, 0, 0];
+        const fill = def.fill ? def.fill : [255, 255, 255];
+        doc.setDrawColor(stroke[0], stroke[1], stroke[2]);
+        doc.setFillColor(fill[0], fill[1], fill[2]);
+
+        // set the stroke width
+        const stroke_width = def.strokeWidth ? def.strokeWidth : 1;
+        doc.setLineWidth(stroke_width);
+
+        // draw the shape.
+        if(def.type === 'rect') {
+            doc.rect(def.x, def.y, def.width, def.height, style);
+        } else if(def.type === 'ellipse') {
+            doc.ellipse(def.x, def.y, def.rx, def.ry, style);
+        }
     }
 
 
@@ -167,6 +205,10 @@ export default class PrintModal extends Modal {
                     break;
                 case 'image':
                     this.addImage(doc, element);
+                    break;
+                case 'rect':
+                case 'ellipse':
+                    this.addDrawing(doc, element);
                     break;
                 default:
                     // pass, do nothing.
