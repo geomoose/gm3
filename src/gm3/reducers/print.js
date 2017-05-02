@@ -22,32 +22,43 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'modal.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
-@import 'toolbar.less';
 
-.hide {
-    display: none;
-}
+const default_state = {
+    state: 'printed', 
+    // populated with a png or jpeg base64 string,
+    printData: '',
+    request: null,
+};
 
-
-/* Print images are not visible to the user
- * and only used to generate a temporary space 
- * to get the image data from them.
+/* Example Request Structure:
+ *
+ * { size: [600, 400], center: [0,0], resolution: 1000 }
+ *
  */
-.print-image {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 100;
-}
 
-.map {
-    width: 100%; height: 100%;
-}
+import { PRINT } from '../actionTypes';
+
+
+export default function printReducer(state = default_state, action) {
+    switch(action.type) {
+        // requests come in specifying the size, center, and resolution.
+        case PRINT.REQUEST: 
+            return Object.assign({}, state, {
+                state: 'printing',
+                request: action.request
+            });
+        case PRINT.IMAGE:
+            return Object.assign({}, state, {
+                state: 'printing',
+                printData: action.data
+            });
+        case PRINT.FINISHED:
+            return Object.assign({}, state, {
+                state: 'printed',
+                data: '',
+                request: null
+            });
+        default:
+            return state;
+    }
+};

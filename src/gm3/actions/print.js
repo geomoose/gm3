@@ -22,32 +22,36 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'modal.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
-@import 'toolbar.less';
+import { PRINT } from '../actionTypes';
 
-.hide {
-    display: none;
-}
-
-
-/* Print images are not visible to the user
- * and only used to generate a temporary space 
- * to get the image data from them.
+/* Action issued to start a print request.
  */
-.print-image {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 100;
+export function printRequest(width, height, center, resolution, format = 'image/png') {
+    return {
+        type: PRINT.REQUEST,
+        size: [width, height],
+        center: center,
+        resolution: resolution
+    };
 }
 
-.map {
-    width: 100%; height: 100%;
+/* Action issued when the print image data should be updated.
+ */
+export function printImage(data) {
+    return {
+        type: PRINT.IMAGE,
+        data
+    };
+}
+
+/* Close out a print job.
+ *
+ * Strictly speaking, this never needs to be called. However,
+ * if it is not called then the print image stays in memory which
+ * is pretty greedy.
+ */
+export function printed() {
+    return {
+        type: PRINT.FINISHED
+    };
 }

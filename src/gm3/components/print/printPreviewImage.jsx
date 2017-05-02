@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,47 @@
  * SOFTWARE.
  */
 
-@import (inline) '../../node_modules/openlayers/dist/ol.css';
-@import '../../node_modules/font-awesome/less/font-awesome.less';
-@import (inline) '../../node_modules/mapskin/css/mapskin.min.css';
-@import 'modal.less';
-@import 'catalog.less';
-@import 'serviceForms.less';
-@import 'results.less';
-@import 'coordinates.less';
-@import 'toolbar.less';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-.hide {
-    display: none;
+import uuid from 'uuid';
+
+import Map from '../map';
+
+import { printImage } from '../../actions/print';
+
+class PrintPreviewImage extends Component {
+
+    constructor(props) {
+        super(props);
+
+        // TODO: Get the image size from the props.
+        this.state = {
+            size: {
+                width: 600,
+                height: 400
+            }
+        };
+    }
+
+    render() {
+        const image_style = {
+            display: 'block',
+            width: '100%'
+        };
+        
+        if(this.props.print.printData) {
+            return (<img style={image_style} src={ this.props.print.printData }/>);
+        }
+        return false;
+    }
 }
 
 
-/* Print images are not visible to the user
- * and only used to generate a temporary space 
- * to get the image data from them.
- */
-.print-image {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 100;
+const mapToProps = function(store) {
+    return {
+        print: store.print
+    }
 }
 
-.map {
-    width: 100%; height: 100%;
-}
+export default connect(mapToProps)(PrintPreviewImage);

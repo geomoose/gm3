@@ -47,6 +47,7 @@ import toolbarReducer from './reducers/toolbar';
 import queryReducer from './reducers/query';
 import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
+import printReducer from './reducers/print';
 
 import Modal from './components/modal';
 
@@ -58,6 +59,8 @@ import { getLayerFromPath, getQueryableLayers, getActiveMapSources } from './act
 import Mark from 'markup-js';
 
 import * as util from './util';
+
+import Map from './components/map';
 
 class Application {
 
@@ -78,7 +81,8 @@ class Application {
             'toolbar': toolbarReducer,
             'query': queryReducer,
             'ui': uiReducer,
-            'cursor': cursorReducer 
+            'cursor': cursorReducer,
+            'print': printReducer
         }));
 
         this.state = {};
@@ -162,9 +166,9 @@ class Application {
             props.services = this.services;
         }
 
-        var e = React.createElement(component, props);
-        ReactDOM.render(e, document.getElementById(domId));
-        return e;
+        const e = React.createElement(component, props);
+        const elem = ReactDOM.render(e, document.getElementById(domId));
+        return elem;
     }
 
 
@@ -425,7 +429,6 @@ class Application {
         // open the dialog
         this.dialogs[signature].setState({open: true});
     }
-
 };
 
 
