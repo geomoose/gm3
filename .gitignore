@@ -25,7 +25,7 @@ node_modules/
 coverage/
 
 # Results of packaging
-gm3*.tgz
+geomoose*.tgz
 gm3*.zip
 
 # Results of building

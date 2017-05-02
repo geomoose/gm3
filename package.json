@@ -1,9 +1,9 @@
 {
-  "name": "gm3",
+  "name": "geomoose",
   "version": "3.0.0-beta",
   "repository": "https://github.com/geomoose/gm3.git",
-  "description": "",
-  "main": "index.js",
+  "description": "GeoMoose is a Web Client JavaScript Framework for displaying distributed cartographic data.",
+  "main": "dist/geomoose.js",
   "homepage": "http://www.geomoose.org",
   "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
@@ -29,6 +29,12 @@
   },
   "author": "Dan 'Ducky' Little",
   "license": "MIT",
+  "directories": {
+    "doc": "docs",
+    "example": "demo",
+    "lib": "src",
+    "test": "tests"
+  },
   "devDependencies": {
     "babel": "~6.5.2",
     "babel-cli": "~6.14.0",
