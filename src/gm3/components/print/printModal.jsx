@@ -40,6 +40,8 @@ import Modal from '../modal';
 import PrintImage from './printImage';
 import PrintPreviewImage from './printPreviewImage';
 
+import DefaultLayouts from './printLayouts';
+
 export default class PrintModal extends Modal {
 
     constructor(props) {
@@ -48,35 +50,8 @@ export default class PrintModal extends Modal {
         // Define the built-in layouts.
         // If the user overrides this then they just get their
         //  layouts.
-        this.layouts = props.layouts ? props.layouts : [{
-            label: 'Letter - Landscape',
-            orientation: 'landscape',
-            page: 'letter',
-            units: 'in',
-            elements: [
-                {
-                    type: 'text', 
-                    size: 18, fontStyle: 'bold',
-                    x: .5, y: .70, text: '{{title}}'
-                },
-                {
-                    type: 'map',
-                    x: .5, y: .75,
-                    width: 10, height: 7
-                },
-                {
-                    type: 'rect',
-                    x: .5, y: .75,
-                    width: 10, height: 7,
-                    strokeWidth: .01
-                },
-                {
-                    type: 'text',
-                    x: .5, y: 8, text: 'Printed on {{month}} / {{day}} / {{year}}'
-                }
-            ]
-        }];
-
+        this.layouts = props.layouts ? props.layouts : DefaultLayouts;
+       
         this.pxConversion = {
             'pt' : 1,
             'in' : 72,
@@ -90,7 +65,8 @@ export default class PrintModal extends Modal {
      */
     close(status) {
         if(status === 'print') {
-            this.makePDF(this.layouts[0]);
+            const layout = parseInt(this.refs.layout.value);
+            this.makePDF(this.layouts[layout]);
         }
         this.setState({open: false});
     }
