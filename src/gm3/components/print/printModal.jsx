@@ -40,6 +40,8 @@ import Modal from '../modal';
 import PrintImage from './printImage';
 import PrintPreviewImage from './printPreviewImage';
 
+import { printed } from '../../actions/print';
+
 import DefaultLayouts from './printLayouts';
 
 export default class PrintModal extends Modal {
@@ -53,9 +55,9 @@ export default class PrintModal extends Modal {
         this.layouts = props.layouts ? props.layouts : DefaultLayouts;
        
         this.pxConversion = {
-            'pt' : 1,
-            'in' : 72,
-            'mm' : 2.83465
+            'pt': 1,
+            'in': 72,
+            'mm': 2.83465
         };
 
         this.state = this.getMapSize(this.layouts[0], 1);
@@ -67,6 +69,10 @@ export default class PrintModal extends Modal {
         if(status === 'print') {
             const layout = parseInt(this.refs.layout.value);
             this.makePDF(this.layouts[layout]);
+            // tell the store that the print is done,
+            // this ensures that the memory is freed that was used
+            // to store the (sometimes) enormous image.
+            this.props.store.dispatch(printed());
         }
         this.setState({open: false});
     }
@@ -192,7 +198,7 @@ export default class PrintModal extends Modal {
         }
 
         // kick it back out to the user.
-        doc.save('print_'+((new Date()).getTime())+'.pdf');
+        doc.save('print_' + ((new Date()).getTime()) + '.pdf');
     }
 
     renderFooter() {
