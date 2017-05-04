@@ -137,7 +137,7 @@ class UploadModal extends Modal {
 // setup the default prop options for the modal dialog.
 UploadModal.defaultProps = {
     title: 'Upload data',
-    helpText: 'Choose a file with the input below and then click Okay to add the features to your layer.',
+    helpText: 'Use the browse button to select a KML or GeoJSON file then click "Okay" to upload the features to the map.',
     options: [
         {label: 'Cancel', value: 'dismiss'},
         {label: 'Okay', value: 'upload'}
