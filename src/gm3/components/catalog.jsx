@@ -37,7 +37,8 @@ import { connect } from 'react-redux';
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
-import { UploadTool, ClearTool, DrawTool, ZoomToTool } from './catalog/tools';
+import { ClearTool, DrawTool, ZoomToTool } from './catalog/tools';
+import { UploadTool } from './catalog/tools/upload';
 
 import Legend from './catalog/legend';
 
