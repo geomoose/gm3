@@ -436,7 +436,13 @@ export function metersAreaToUnits(meters, units) {
             return meters;
     }
 }
-
+/** Converts numeric lengths between given units
+ *
+ * @param {number} length - Length
+ * @param {string} srcUnits - Source unit
+ * @param {string} destUnits - Destination unit
+ * @return {number} Converted length
+ */
 export function convertLength(length, srcUnits, destUnits) {
     // US survey feet, miles
     const equivalentMeters = {

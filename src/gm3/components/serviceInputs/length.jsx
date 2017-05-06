@@ -21,6 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+/**
+ * Service input type for specifying length
+ * - Renders a numeric text input and a select-list of units
+ * - User-specified length is converted to its equivalent in meters and stored
+ *   in the component state
+ *
+ * @extends TextInput
+ */
 import React from 'react';
 import TextInput from './text.jsx';
 import { convertLength } from '../../util.js';
@@ -60,6 +69,13 @@ export default class LengthInput extends TextInput {
         this.setState({ value: lengthInMeters });
         this.setValue(this.getName(), lengthInMeters);
     }
+    /**
+     * Renders individual units of length as options within length select input
+     * @param {Object} opt - Unit to be rendered
+     * @param {string} opt.label - Unit Label, to be displayed in select
+     * @param {string} opt.value - Unit abbreviated ID
+     * @return {ReactElement} option to render
+     */
     renderOption(opt) {
         return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
     }
