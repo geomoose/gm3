@@ -30,9 +30,11 @@
  *
  * @extends TextInput
  */
+
 import React from 'react';
 import TextInput from './text.jsx';
 import { convertLength } from '../../util.js';
+
 export default class LengthInput extends TextInput {
     constructor(props) {
         super(props);
@@ -62,6 +64,7 @@ export default class LengthInput extends TextInput {
             value: props.field.default ? props.field.default : 0
         };
     }
+
     onChange() {
         let lengthInput = parseFloat(this.lengthInput.value);
         let unitInput = this.unitInput.value;
@@ -69,6 +72,7 @@ export default class LengthInput extends TextInput {
         this.setState({ value: lengthInMeters });
         this.setValue(this.getName(), lengthInMeters);
     }
+
     /**
      * Renders individual units of length as options within length select input
      * @param {Object} opt - Unit to be rendered
@@ -79,6 +83,7 @@ export default class LengthInput extends TextInput {
     renderOption(opt) {
         return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
     }
+
     render() {
         const id = this.getId();
         return (

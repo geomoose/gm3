@@ -436,6 +436,17 @@ export function metersAreaToUnits(meters, units) {
             return meters;
     }
 }
+
+const EQUIVALENT_METERS = {
+    'ft': 0.3048,
+    'yd': 0.9144,
+    'mi': 1609.347,
+    'in': 0.0254,
+    'm': 1,
+    'km': 1000,
+    "ch": 20.11684
+};
+
 /** Converts numeric lengths between given units
  *
  * @param {number} length - Length
@@ -445,14 +456,5 @@ export function metersAreaToUnits(meters, units) {
  */
 export function convertLength(length, srcUnits, destUnits) {
     // US survey feet, miles
-    const equivalentMeters = {
-        'ft': 0.3048,
-        'yd': 0.9144,
-        'mi': 1609.347,
-        'in': 0.0254,
-        'm': 1,
-        'km': 1000,
-        "ch": 20.11684
-    };
-    return length * equivalentMeters[srcUnits] / equivalentMeters[destUnits];
+    return length * EQUIVALENT_METERS[srcUnits] / EQUIVALENT_METERS[destUnits];
 }
