@@ -200,6 +200,42 @@ export const FORMAT_OPTIONS = {
     }
 }
 
+
+/* Check to see if a value is in a list.
+ *
+ * @param value The value to test.
+ * @param list  The list with acceptable values.
+ *
+ * @return Boolean.
+ */
+function inList(value, list) {
+    return (list.indexOf(value) >= 0);
+}
+
+/* Check to see if a value is in a range from min to max.
+ *
+ * @param value The value to test.
+ * @param min   The minimum value (or null if no minimum)
+ * @param max   The maximum value (or null if no maximum)
+ *
+ * @return Boolean.
+ */
+function inRange(value, min = null, max = null) {
+    if(min !== null && max !== null) {
+        return (min < value && value < max);
+    }
+    if(min === null) {
+        return (value < max);
+    } 
+    if(max === null) {
+        return (min < value);
+    }
+
+    // if everything is null, then the value is 
+    //  considered in range.
+    return true;
+}
+
 /** Check to see if a feature matches the given filter.
  *
  *  @param {Array} features The list of features
@@ -210,8 +246,33 @@ export const FORMAT_OPTIONS = {
 export function featureMatch(feature, filter) {
     let match_all = (filter.match === 'any') ? false : true;
     for(let filter_key in filter) {
-        // check to see if the values match
-        let v = filter[filter_key] === feature.properties[filter_key];
+        const filter_def = filter[filter_key];
+        const prop_val = feature.properties[filter_key];
+        let v = false;
+        switch(filter_def.type) {
+            // range filters can have a min, max, or both.
+            case 'range':
+                v = inRange(prop_val, filter_def.min, filter_def.max);
+                break;
+            case 'list':
+                v = inList(prop_val, filter_def.value);
+                break;
+            // simple equals match
+            case 'equals':
+                v = (filter_def.value === prop_val);
+                break;
+            // no ".type" was set, assume the filter
+            // is defined as an "equals" match, e.g. {'PIN' : '123456'}
+            default:
+                // if filter_def is an array, or specified
+                //  as a "list type" then do the list match.
+                if(Array.isArray(filter_def)) {
+                    v = inList(prop_val, filter_def);
+                } else {
+                    // check to see if the values match
+                    v = (filter_def === prop_val);
+                }
+        }
         // if they match, and this is an 'any' search then short-circuit
         //  and return true;
         if(v && !match_all) { return true; }
@@ -235,19 +296,36 @@ export function featureMatch(feature, filter) {
  *
  *  @param {Array} features The list of features
  *  @param {Object} filter key-value pairs of filter for the features.
+ *  @param {Boolean} inverse Optional. Defaults to true. 
+ *                           When true, filter out matching features.
+ *                           When false,return matching features.
  *
  * @returns New list of features.
  */
-export function filterFeatures(features, filter) {
+export function filterFeatures(features, filter, inverse = true) {
     let new_features = [];
 
     for(let feature of features) {
-        if(!featureMatch(feature, filter)) {
+        if(inverse !== featureMatch(feature, filter)) {
             new_features.push(feature);
         }
     }
 
     return new_features;
+}
+
+/* Match the feature specified by the filter.
+ * 
+ * This is really a wrapper around filterFeatures and is presented 
+ * for code-clarity.
+ *
+ * @param {Array}  features The list of features.
+ * @param {Object} filter   Filter objects. key-value-pairs or {field: '', type: '', value/min/max}
+ *
+ * @returns New list of features.
+ */
+export function matchFeatures(features, filter) {
+    return filterFeatures(features, filter, false);
 }
 
 /** Update feature properties.
