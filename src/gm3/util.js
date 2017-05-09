@@ -325,6 +325,10 @@ export function filterFeatures(features, filter, inverse = true) {
  * @returns New list of features.
  */
 export function matchFeatures(features, filter) {
+    // when no filter is applied, just return the features.
+    if(filter === null || filter === false) {
+        return features;
+    }
     return filterFeatures(features, filter, false);
 }
 

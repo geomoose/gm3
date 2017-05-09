@@ -92,7 +92,7 @@
 }
 
 
-.results-sort-icon, .results-download-icon{
+.results-sort-icon, .results-download-icon, .results-filter-icon {
     .fa;
     cursor: pointer;
 
@@ -117,5 +117,11 @@
 .results-download-icon {
     &:before {
         content: @fa-var-download;
+    }
+}
+
+.results-filter-icon {
+    &:before {
+        content: @fa-var-filter;
     }
 }

@@ -26,9 +26,11 @@ import React, {Component, PropTypes } from 'react';
 
 import { connect } from 'react-redux';
 
-import { createQuery, changeTool, renderedResultsForQuery} from '../actions/map';
+import { createQuery, changeTool, renderedResultsForQuery, addFilter, removeFilter } from '../actions/map';
 
 import { startService, finishService } from '../actions/service';
+
+import ModalDialog from './modal';
 
 import * as util from '../util';
 
@@ -42,6 +44,95 @@ import Mark from 'markup-js';
 
 import FileSaver from 'file-saver';
 
+
+class FilterModal extends ModalDialog {
+    constructor(props) {
+        super(props);
+
+        this.onChange = this.onChange.bind(this);
+
+        this.state = {
+            value: ''
+        };
+    }
+
+    onChange(evt) {
+        this.setState({value: evt.target.value});
+    }
+
+    close(status) {
+        const property = this.props.column.property;
+
+        if(status === 'set') {
+            const filter_def = {};
+            const value = this.state.value;
+
+            filter_def[property] = value;
+
+            // add/update this filter.
+            this.props.store.dispatch(
+                addFilter(this.props.queryId, filter_def)
+            );
+
+            this.setState({value: value}); 
+        } else if (status === 'clear') {
+            // remove the filter from the query
+            this.props.store.dispatch(
+                removeFilter(this.props.queryId, this.props.column.property)
+            );
+            this.setState({value: ''}); 
+        }
+        this.setState({open: false});
+    }
+
+    getTitle() {
+        return 'Set filter for ' + this.props.column.title;
+    }
+
+    getOptions() {
+        return [
+            {label: 'Cancel', value: 'dismiss'},
+            {label: 'Clear', value: 'clear'},
+            {label: 'Set', value: 'set'},
+        ];
+    };
+
+    renderBody() {
+        return (
+            <div>
+                <label>Value:</label> <input onChange={ this.onChange } value={ this.state.value } ref='input'/>
+            </div>
+        );
+    }
+}
+
+/* Provides a control for filtering a column's values.
+ */
+class ColumnFilter extends Component {
+    
+    showFilterDialog() {
+        this.refs.modal.setState({open: true});
+    }
+
+    render() {
+        const filter_title = 'filter';
+        return (
+            <span>
+                <i title={ filter_title}  
+                   onClick={ () => { this.showFilterDialog() } } className="results-filter-icon"></i>
+
+                <FilterModal ref='modal' 
+                   column={this.props.column} 
+                   store={this.props.store} queryId={this.props.queryId} />
+            </span>
+        );
+    }
+}
+
+/* Renders query results as a table that can be sorted, filtered,
+ * and downloaded as a CSV file.
+ *
+ */
 class Grid extends Component {
 
     constructor() {
@@ -78,6 +169,10 @@ class Grid extends Component {
     getHeaderRow(results, headerConf) {
         let header_cells = [];
         let col_id = 0;
+
+        // grid always handles the first query.
+        let query_id = this.props.queries.order[0];
+
         for(let column_def of headerConf) {
             let sort_tool = null; 
             let sort_classes = 'results-sort-icon';
@@ -94,7 +189,11 @@ class Grid extends Component {
                 sort_tool = (<i title={ sort_title } onClick={ () => { this.nextSort(column_def); } } className={ sort_classes }></i>);
             }
 
-            header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool}</th>));
+            let filter = ( 
+                <ColumnFilter store={ this.props.store } column={ column_def } queryId={ query_id } /> 
+            );
+
+            header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool} {filter} </th>));
             col_id++;
         }
         return header_cells;
@@ -206,7 +305,7 @@ class Grid extends Component {
 
                     if(grid_cols !== null && grid_row !== null) {
                         // render as a grid.
-                        features = query.results[layer_path];
+                        features = util.matchFeatures(query.results[layer_path], query.filter);
                     } else {
                         // console.error(layer_path + ' does not have gridColumns or gridRow templates.');
                     }

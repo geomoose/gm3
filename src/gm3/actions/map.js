@@ -139,3 +139,23 @@ export function updateSketchGeometry(geometry) {
         geometry
     };
 }
+
+/* Add a filter to a results set.
+ */
+export function addFilter(queryId, filterDefn) {
+    return {
+        type: MAP.ADD_FILTER,
+        id: queryId,
+        filter: filterDefn
+    };
+}
+
+/* Remove a filter from a results set.
+ */
+export function removeFilter(queryId, field) {
+    return {
+        type: MAP.REMOVE_FILTER,
+        id: queryId,
+        field
+    }
+}
