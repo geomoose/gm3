@@ -71,7 +71,15 @@ class FilterModal extends ModalDialog {
                 value: value
             }
         } else if(this.props.column.filter.type === 'range') {
-            // no op
+            filter_def = {
+                type: 'range'
+            }
+            if(this.state.min !== '') {
+                filter_def.min = this.state.min;
+            }
+            if(this.state.max !== '') {
+                filter_def.max = this.state.max;
+            }
         } else {
             // straight equals...
             filter_def = value;
@@ -121,6 +129,11 @@ class FilterModal extends ModalDialog {
 }
 
 
+/* Creates a settings Modal for lists of values.
+ *
+ * Each list option is rendered as a checkbox.
+ *
+ */
 class ListFilterModal extends FilterModal {
 
     constructor(props) {
@@ -179,6 +192,8 @@ class ListFilterModal extends FilterModal {
         this.setState({value: new_values});
     }
 
+    /* Determine whether a checkbox should be checked or not.
+     */
     isChecked(value) {
         return (this.state.value.indexOf(value) >= 0);
     }
@@ -206,6 +221,59 @@ class ListFilterModal extends FilterModal {
         return (
             <div>
                 { settings }
+            </div>
+        );
+    }
+}
+
+/* Handle creating value ranges.
+ *
+ * Present the user with a min and max field to set
+ * a range on a field.
+ *
+ */
+class RangeFilterModal extends FilterModal {
+    constructor(props) {
+        super(props);
+
+        this.setMax = this.setMax.bind(this);
+        this.setMin = this.setMin.bind(this);
+
+        this.state = {
+            min: '', max: ''
+        }
+    }
+
+    setBound(side, value) {
+        const bounds = {};
+        if(value !== '') {
+            bounds[side] = parseFloat(value);
+        } else {
+            bounds[side] = '';
+        }
+        this.setState(bounds);
+    }
+
+    setMin(evt) {
+        this.setBound('min', evt.target.value);
+    }
+
+    setMax(evt) {
+        this.setBound('max', evt.target.value);
+    }
+
+    renderBody() {
+        return (
+            <div>
+                <div>
+                    <label>Min:</label>
+                    <input value={this.state.min} onChange={ this.setMin }/>
+                </div>
+
+                <div>
+                    <label>Max:</label>
+                    <input value={this.state.max} onChange={ this.setMax}/>
+                </div>
             </div>
         );
     }
@@ -239,7 +307,13 @@ class ColumnFilter extends Component {
                 );
                 break;
             case 'range':
-                console.info('Range filters are not yet implemented.');
+                modal = (
+                    <RangeFilterModal ref='modal'
+                       column={this.props.column} 
+                       results={this.props.results}
+                       store={this.props.store} queryId={this.props.queryId} />
+                );
+                break;
             default:
                 modal = (
                     <FilterModal ref='modal' 
