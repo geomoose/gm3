@@ -87,6 +87,11 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
                 refreshEnabled: action.refreshEnabled
             });
             return Object.assign({}, state, new_layer);
+        case CATALOG.LEGEND_VIS:
+            new_layer[action.id] = Object.assign({}, state[action.id], {
+                legend: action.on
+            });
+            return Object.assign({}, state, new_layer);
         default:
             return state;
     }

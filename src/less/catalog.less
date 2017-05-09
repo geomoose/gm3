@@ -92,10 +92,9 @@
         }
     }
 
-    .layer-tools {
+    .layer-tools, .catalog-legend {
         padding-left: (@checkbox-width + @checkbox-margin * 2);
     }
-
 
     .favorite-icon, .refresh-icon {
         .fa;
@@ -181,6 +180,14 @@
     .tool.zoomto {
         &:before {
             content: "\e008";
+        }
+    }
+
+    .tool.legend {
+        .fa;
+
+        &:before {
+            content: @fa-var-list-alt;
         }
     }
 }
