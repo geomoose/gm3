@@ -60,21 +60,35 @@ class FilterModal extends ModalDialog {
         this.setState({value: evt.target.value});
     }
 
-    close(status) {
+    setFilter() {
+        const value = this.state.value;
         const property = this.props.column.property;
+        let filter_def = '';
 
+        if(this.props.column.filter.type === 'list') {
+            filter_def = {
+                type: 'list',
+                value: value
+            }
+        } else if(this.props.column.filter.type === 'range') {
+            // no op
+        } else {
+            // straight equals...
+            filter_def = value;
+        }
+
+        const new_filter = {};
+        new_filter[property] = filter_def;
+
+        // add/update this filter.
+        this.props.store.dispatch(
+            addFilter(this.props.queryId, new_filter)
+        );
+    }
+
+    close(status) {
         if(status === 'set') {
-            const filter_def = {};
-            const value = this.state.value;
-
-            filter_def[property] = value;
-
-            // add/update this filter.
-            this.props.store.dispatch(
-                addFilter(this.props.queryId, filter_def)
-            );
-
-            this.setState({value: value}); 
+            this.setFilter();
         } else if (status === 'clear') {
             // remove the filter from the query
             this.props.store.dispatch(
@@ -106,6 +120,97 @@ class FilterModal extends ModalDialog {
     }
 }
 
+
+class ListFilterModal extends FilterModal {
+
+    constructor(props) {
+        super(props);
+
+        const filter_def = props.column.filter;
+
+        this.filter_values = [];
+
+        // when "values" is set in the column's 
+        // filter property, that is expected to be an enumerated
+        // list of values for picking-and-choosing.
+        if(filter_def.values) {
+            this.filter_values = filter_def.values;
+        } else { 
+            const prop = this.props.column.property;
+            // when the values are not specified they need
+            // to be pulled from the results.
+            for(const result of this.props.results) {
+                const v = result.properties[prop];
+                this.filter_values.push({
+                    value: v, label: v
+                });
+            }
+        }
+
+        // everything is checked by default
+        const value = [];
+        for(const f of this.filter_values) {
+            value.push(f.value);
+        }
+
+
+        // value is an array for list types.
+        this.state = {
+            value: value
+        };
+    }
+
+    /* onChange handles removing and adding the
+     * appropriate settings from the checkboxes. 
+     */
+    onChange(evt) {
+        const target = evt.target;
+        const new_values = this.state.value.slice();
+
+        if(target.checked) {
+            new_values.push(target.value);
+            this.setState({value: new_values});
+        } else {
+            const val_pos = new_values.indexOf(target.value);
+            if(val_pos >= 0) {
+                new_values.splice(val_pos, 1);
+            }
+        }
+        this.setState({value: new_values});
+    }
+
+    isChecked(value) {
+        return (this.state.value.indexOf(value) >= 0);
+    }
+    
+    renderBody() {
+        const filter_def = this.props.column.filter;
+
+        // now convert the filter_values into
+        //  proper dom elements.
+        const settings = [];
+
+        for(let i = 0, ii = this.filter_values.length; i < ii; i++) {
+            const val = this.filter_values[i];
+            settings.push((
+                <div key={ 'key' + i }>
+                    <input type="checkbox" 
+                        value={ val.value }
+                        checked={ this.isChecked(val.value) } 
+                        onChange={ this.onChange } />
+                    { val.label }
+                </div>
+            ));
+        }
+        
+        return (
+            <div>
+                { settings }
+            </div>
+        );
+    }
+}
+
 /* Provides a control for filtering a column's values.
  */
 class ColumnFilter extends Component {
@@ -115,15 +220,42 @@ class ColumnFilter extends Component {
     }
 
     render() {
+        // if there is no filter or the filter is set to false,
+        // then do not present filtering as an option
+        if(!this.props.column.filter) {
+            return false;
+        }
+
+        let modal = false;
+        const filter_type = this.props.column.filter.type;
+
+        switch(this.props.column.filter.type) {
+            case 'list':
+                modal = (
+                    <ListFilterModal ref='modal' 
+                       column={this.props.column} 
+                       results={this.props.results}
+                       store={this.props.store} queryId={this.props.queryId} />
+                );
+                break;
+            case 'range':
+                console.info('Range filters are not yet implemented.');
+            default:
+                modal = (
+                    <FilterModal ref='modal' 
+                       column={this.props.column} 
+                       results={this.props.results}
+                       store={this.props.store} queryId={this.props.queryId} />
+                );
+        }
+
+
         const filter_title = 'filter';
         return (
             <span>
                 <i title={ filter_title}  
                    onClick={ () => { this.showFilterDialog() } } className="results-filter-icon"></i>
-
-                <FilterModal ref='modal' 
-                   column={this.props.column} 
-                   store={this.props.store} queryId={this.props.queryId} />
+                { modal }
             </span>
         );
     }
@@ -190,7 +322,8 @@ class Grid extends Component {
             }
 
             let filter = ( 
-                <ColumnFilter store={ this.props.store } column={ column_def } queryId={ query_id } /> 
+                <ColumnFilter store={ this.props.store } column={ column_def } 
+                              results={results} queryId={ query_id } /> 
             );
 
             header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool} {filter} </th>));
@@ -275,6 +408,7 @@ class Grid extends Component {
         const header_row = [];
 
         let features = null;
+        let display_table = false;
 
         let grid_cols = null, grid_row = null;
 
@@ -306,6 +440,9 @@ class Grid extends Component {
                     if(grid_cols !== null && grid_row !== null) {
                         // render as a grid.
                         features = util.matchFeatures(query.results[layer_path], query.filter);
+                        if(query.results[layer_path].length > 0) {
+                            display_table = true;
+                        }
                     } else {
                         // console.error(layer_path + ' does not have gridColumns or gridRow templates.');
                     }
@@ -314,7 +451,7 @@ class Grid extends Component {
         }
         
         // render the empty string if there is nothing to show.
-        if(features === null || features.length === 0) {
+        if(!display_table) {
             return null;
         }
 
