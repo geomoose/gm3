@@ -251,7 +251,6 @@ export class Catalog extends Component {
 
         let legend = false;
         if(layer.legend) {
-            console.log(layer.src, layer.legend);
             legend = ( <Legend store={this.props.store} layer={layer}/> );
         }
 
