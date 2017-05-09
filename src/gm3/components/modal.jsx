@@ -62,11 +62,16 @@ export default class ModalDialog extends Component {
         return 'modal-footer ' + footer_classes[n];
     }
 
+    getOptions() {
+        return this.props.options;
+    }
+
     renderFooter() {
-        const footer_class = this.getFooterClass(this.props.options.length);
+        const options = this.getOptions();
+        const footer_class = this.getFooterClass(options.length);
 
         const buttons = [];
-        for(const option of this.props.options) {
+        for(const option of options) {
             buttons.push(this.renderOption(option));
         }
         return (

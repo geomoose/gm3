@@ -105,6 +105,7 @@ export default function queryReducer(state = default_query, action) {
             const query_id = uuid.v4();
             new_query[query_id] = Object.assign({}, action.query, {
                 progress: 'new',
+                filter: null,
                 results: {},
                 rendered: {}
             });
@@ -146,6 +147,19 @@ export default function queryReducer(state = default_query, action) {
             return filterQueryResults(state, action.id, action.filter);
         case MAP.QUERY_REMOVE:
             return removeQuery(state, action.id);
+        case MAP.ADD_FILTER:
+            new_query[action.id] = Object.assign({}, state[action.id], {
+                filter: Object.assign({}, state[action.id].filter, action.filter)
+            });
+            return Object.assign({}, state, new_query);
+        case MAP.REMOVE_FILTER:
+            const new_filter = Object.assign({}, state[action.id].filter);
+            delete new_filter[action.field];
+
+            new_query[action.id] = Object.assign({}, state[action.id], {
+                filter: new_filter
+            });
+            return Object.assign({}, state, new_query);
         default:
             return state;
     }
