@@ -322,7 +322,9 @@
 
 	<map-source name="lmic" type="mapserver">
 		<file>./demo/wms/wms_proxy.map</file>
-		<layer name="mncomp"/>
+		<layer name="mncomp">
+            <legend type="nolegend"/>
+        </layer>
 	</map-source>
 
     <map-source name="bing" type="bing">
@@ -547,7 +549,7 @@
 
 			<group title="County Layers" expand="false">
 
-				<layer src="parcels/parcels" metadata="true" legend="true" tip="this a parcel layer, y'all" popups="true" refresh="10"> 
+				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" popups="true" refresh="10"> 
 					<metadata>http://www.geomoose.org/docs/</metadata>
 					<!--
 					<legend>images/logo_mini.gif</legend>

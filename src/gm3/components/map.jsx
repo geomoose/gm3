@@ -849,6 +849,10 @@ export function getLegend(mapSource, mapView, layerName) {
                 return {
                     type: 'img', images: [layer.legend.contents]
                 }
+            } else if(layer.legend.type === 'nolegend') {
+                return {
+                    type: 'nolegend'
+                }
             }
         }
     }

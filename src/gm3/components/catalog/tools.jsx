@@ -28,6 +28,7 @@ import { connect } from 'react-redux';
 
 import * as msActions from '../../actions/mapSource';
 import * as mapActions from '../../actions/map';
+import { setLegendVisibility } from '../../actions/catalog';
 
 import * as util from '../../util';
 
@@ -130,3 +131,20 @@ const mapZoomToProps = function(store) {
 }
 const ZoomToTool = connect(mapZoomToProps)(dumb_ZoomToTool);
 export { ZoomToTool };
+
+/* Toggle whether a legend is visible or not.
+ *
+ */
+export class LegendToggle extends Tool {
+    constructor(props) {
+        super(props);
+        this.tip = 'Toggle legend visibility.';
+        this.iconClass = 'legend tool';
+    }
+
+    onClick() {
+        this.props.store.dispatch(
+            setLegendVisibility(this.props.layer.id, this.props.layer.legend !== true)
+        );
+    }
+}
