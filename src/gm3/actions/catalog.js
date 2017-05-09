@@ -85,6 +85,7 @@ function parseLayer(store, layerXml) {
     let new_layer = {
         id: layerXml.getAttribute('uuid'),
         label: layerXml.getAttribute('title'),
+        legend: true,
         src: [],
         on: false,
         favorite: false,
@@ -103,6 +104,7 @@ function parseLayer(store, layerXml) {
         fade: false, unfade: false,
         up: false, down: false,
         zoomto: false,
+        'legend-toggle': false,
         'draw-point': false, 
         'draw-polygon': false,
         'draw-line': false
@@ -225,4 +227,14 @@ export function parseCatalog(store, catalogXml) {
     }
 
     return subtreeActions(store, null, catalogXml);
+}
+
+/* Change the visibility of a legend.
+ */
+export function setLegendVisibility(layerId, on) {
+    return {
+        type: CATALOG.LEGEND_VIS,
+        id: layerId,
+        on
+    };
 }

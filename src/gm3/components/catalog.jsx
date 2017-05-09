@@ -37,7 +37,7 @@ import { connect } from 'react-redux';
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
-import { ClearTool, DrawTool, ZoomToTool } from './catalog/tools';
+import { ClearTool, DrawTool, ZoomToTool, LegendToggle } from './catalog/tools';
 import { UploadTool } from './catalog/tools/upload';
 
 import Legend from './catalog/legend';
@@ -193,6 +193,9 @@ export class Catalog extends Component {
                     const draw_type = tool_name.split('-')[1];
                     tools.push(<DrawTool store={this.props.store} drawType={draw_type} key={key} layer={layer} />);
                     break;
+                case 'legend-toggle':
+                    tools.push(<LegendToggle store={this.props.store} layer={layer} key={key} />);
+                    break;
                 default:
                     // pass
             }
@@ -246,6 +249,12 @@ export class Catalog extends Component {
 
         let tools = this.getTools(layer);
 
+        let legend = false;
+        if(layer.legend) {
+            console.log(layer.src, layer.legend);
+            legend = ( <Legend store={this.props.store} layer={layer}/> );
+        }
+
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label"> 
@@ -259,8 +268,7 @@ export class Catalog extends Component {
                 <div className="layer-tools">
                     {tools}
                 </div>
-
-                <Legend store={this.props.store} layer={layer}/>
+                { legend }
             </div>
         );
     }
