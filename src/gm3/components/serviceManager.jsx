@@ -47,6 +47,7 @@ import DrawTool from './drawTool';
 
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
+import LengthInput from './serviceInputs/length';
 
 import MeasureTool from './measure';
 
@@ -368,8 +369,10 @@ class ServiceManager extends Component {
         switch(field.type) {
             case 'select':
                 return (<SelectInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
+            case 'length':
+                return (<LengthInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
             case 'text':
-            default: 
+            default:
                 return (<TextInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
         }
     }
