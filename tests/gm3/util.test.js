@@ -10,7 +10,6 @@ test('parseBoolean', () => {
     expect(util.parseBoolean('true')).toBe(true);
 });
 
-<<<<<<< ec315ac2987c42937f46a75a7d9b31bff5902adc
 /*
  * Test the query filter matching.
  */
@@ -86,7 +85,7 @@ describe('Test repojection', () => {
     });
 
 });
-=======
+
 test('getMapSourceName', () => {
     expect(util.getMapSourceName('map/path/stuff')).toBe('map');
 });
@@ -128,5 +127,3 @@ test ('convertLength', () => {
     expect(util.convertLength(1,'m','m')).toBe(1);
     expect(util.convertLength(1,'yd','ft')).toBe(3);
 });
-
->>>>>>> first bunch of tests with some fixes to utils
