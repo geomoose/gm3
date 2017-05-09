@@ -102,7 +102,17 @@ class FilterModal extends ModalDialog {
             this.props.store.dispatch(
                 removeFilter(this.props.queryId, this.props.column.property)
             );
-            this.setState({value: ''}); 
+            if(this.props.column.filter.type === 'list') {
+                const all_values = [];
+                for(const opt of this.filter_values) {
+                    all_values.push(opt.value);
+                }
+                this.setState({value: all_values});
+            } else if(this.props.column.filter.type === 'range') {
+                this.setState({min: '', max: ''});
+            } else {
+                this.setState({value: ''}); 
+            }
         }
         this.setState({open: false});
     }
