@@ -61,12 +61,21 @@ module.exports = {
     devServer: {
         contentBase: './',
         port: 4000,
-        proxy: {
-            '/mapserver' : {
+        proxy: [
+            {
+                context: ['/mapserver'],
                 target: 'http://localhost:8000/',
                 secure: false
-            }
-        }
+            },
+            {
+                // point the example "geomoose" directories back
+                //  at the geomoose repository.
+                context: ['/examples/desktop/geomoose/', '/examples/mobile/geomoose/'],
+                target: 'http://localhost:4000/',
+                pathRewrite: {'^/examples/(desktop|mobile)/geomoose' : '' },
+                secure: false
+            },
+        ]
     },
     externals: {
         openlayers: 'ol',
