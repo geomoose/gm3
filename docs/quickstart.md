@@ -89,6 +89,6 @@ If the test are working then let's open up GeoMoose!
 grunt serve
 ```
 
-Open GeoMoose in a browser: [http://localhost:4000/demo/test.html](http://localhost:4000/demo/test.html)
+Open GeoMoose in a browser: [http://localhost:4000/examples/desktop/debug.html](http://localhost:4000/examples/desktop/debug.html)
 
 
