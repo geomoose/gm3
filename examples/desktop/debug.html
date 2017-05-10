@@ -21,14 +21,19 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
- * This version of the HTML uses files only found in dist and node_modules.
 -->
 <html>
 <head>
-    <title>GeoMoose 3 Test Instance</title>
+    <title>GeoMoose 3 Debug Instance</title>
+    <link rel="stylesheet" type="text/css" href="geomoose/node_modules/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="geomoose/node_modules/mapskin/css/mapskin.min.css" />
+    <link rel="stylesheet/less" href="geomoose/src/less/gm3.less" />
+    <script ="text/javascript" src="geomoose/node_modules/less/dist/less.min.js"></script>
+
+    <!-- uncomment to test compiled version of the CSS 
     <link rel="stylesheet" type="text/css" href="../dist/css/geomoose.css">
-    <link rel="stylesheet" type="text/css" href="test.css"/>
+    -->
+    <link rel="stylesheet" type="text/css" href="app.css"/>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 </head>
@@ -60,15 +65,15 @@
     <div id="print-preview"></div>
 
     <script type="text/javascript" src="config.js"></script>
-    <script type="text/javascript" src="../dist/ol.js"></script>
-    <script type="text/javascript" src="../dist/geomoose.min.js"></script>
-    <script type="text/javascript" src="../dist/services/identify.js"></script>
-    <script type="text/javascript" src="../dist/services/search.js"></script>
-    <script type="text/javascript" src="../dist/services/select.js"></script>
-    <script type="text/javascript" src="../dist/services/geocode-bing.js"></script>
-    <script type="text/javascript" src="../dist/services/findme.js"></script>
-    <script type="text/javascript" src="../dist/services/zoomto.js"></script>
+    <script type="text/javascript" src="geomoose/node_modules/openlayers/dist/ol.js"></script>
+    <script type="text/javascript" src="geomoose/dist/geomoose.js"></script>
+    <script type="text/javascript" src="geomoose/src/services/identify.js"></script>
+    <script type="text/javascript" src="geomoose/src/services/search.js"></script>
+    <script type="text/javascript" src="geomoose/src/services/select.js"></script>
+    <script type="text/javascript" src="geomoose/src/services/geocode-bing.js"></script>
+    <script type="text/javascript" src="geomoose/src/services/findme.js"></script>
+    <script type="text/javascript" src="geomoose/src/services/zoomto.js"></script>
     <script type="text/javascript" src="tabs.js"></script>
-    <script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript" src="app.js"></script>
 </body>
 </html>

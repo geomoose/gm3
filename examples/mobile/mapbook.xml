@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<mapbook version="2.8.0">
+	<map-source name="sketch" type="vector">
+	<layer name="default" status="on">
+	    <style><![CDATA[
+	    {
+		"line-color" : "#E9967A",
+		"fill-color" : "#E9967A",
+		"fill-opacity" : 0.5
+	    }
+	    ]]></style>
+	</layer>
+	</map-source>
+
+	<map-source name="highlight" type="vector">
+	<layer name="highlight" status="on">
+	    <style><![CDATA[
+	    {
+		"circle-radius": 4,
+		"circle-color": "#ffff00",
+		"circle-stroke-color": "#ffff00",
+		"line-color" : "#ffff00",
+		"line-width" : 4,
+		"fill-color" : "#ffff00",
+		"fill-opacity" : 0.25
+	    }
+	    ]]></style>
+	</layer>
+	</map-source>
+
+    <map-source name="vector-parcels" type="mapserver-wfs">
+        <layer name="ms:parcels">
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Vector Parcel</div>
+                    <div class="item"><label>PIN:</label> {{ properties.PIN }}</div>
+                    <div class="item"><label>Owner Name:</label> {{ properties.OWNER_NAME }}</div>
+                    <div class="item">
+                        <label>Est. Market Value:</label> {{ properties.EMV_TOTAL }}
+                    </div>
+                    <div class="item"><label>Acres:</label> {{ properties.ACRES_POLY }}</div>
+                </div>
+            ]]></template>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.OWNER_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                                <i class="fa fa-search"></i> 
+                                {{ properties.PIN }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "PIN",
+                    "property" : "PIN"
+                },
+                {
+                    "title" : "Owner Name",
+                    "property" : "OWNER_NAME",
+                    "sortAs" : "string"
+                },
+                {
+                    "title" : "Est. Value",
+                    "property" : "EMV_TOTAL",
+                    "sortAs" : "number"
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr 
+              onmouseenter="app.changeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}, {'displayClass' : 'red'})"
+              onmouseleave="app.changeFeatures('highlight/highlight', {'displayClass' : 'red'}, {'displayClass' : 'blue'})"
+            >
+                <td>
+                  <a onClick="app.removeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}) ; app.removeQueryResults('{{ query }}', {'PIN' : '{{ properties.PIN }}'})">
+                    <i title="Remove from results" class="fa fa-trash"></i>
+                  </a>
+                </td>
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                    <i class="fa fa-search"></i> 
+                    {{ properties.PIN }}
+                  </a>
+                </td>
+                <td>{{ properties.OWNER_NAME }}</td>
+                <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
+            </td>
+            ]]></template>
+        </layer>
+		<file>./demo/parcels/parcels.map</file>
+        <style><![CDATA[
+		{
+			"line-color" : "#00A138",
+            "line-width" : 2
+		}
+        ]]></style>
+
+    </map-source>
+
+	<map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
+		<file>./demo/scalebars/scalebar_miles.map</file>
+		<layer name="scalebar"/>
+		<param name="FORMAT" value="image/png"/>
+	</map-source>
+
+
+	<map-source name="scalebar_feet" type="mapserver" title="Scalebar Feet">
+		<file>./demo/scalebars/scalebar_feet.map</file>
+		<layer name="scalebar"/>
+		<param name="FORMAT" value="image/png"/>
+	</map-source>
+
+
+	<map-source name="scalebar_kilometers" type="mapserver" title="Scalebar Kilometers">
+		<file>./demo/scalebars/scalebar_kilometers.map</file>
+		<layer name="scalebar"/>
+		<param name="FORMAT" value="image/png"/>
+	</map-source>
+
+	<map-source name="pipelines" type="mapserver" title="Pipelines">
+		<file>./demo/pipelines/pipelines.map</file>
+		<layer name="pipelines" status="off"/>
+		<param name="FORMAT" value="image/png"/>
+	</map-source>
+
+	<!-- Demo of parcels as points. -->
+    <!--
+	<map-source name="parcel_points" type="mapserver" up="true" down="true" title="Parcel Points">
+		<file>./demo/parcels/parcels.map</file>
+		<layer name="parcel_points"/>
+		<param name="FORMAT" value="image/png"/>
+	</map-source>
+    -->
+
+	<map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
+		<file>./demo/parcels/parcels.map</file>
+		<layer name="parcels" status="on">
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Parcel</div>
+                    <div class="item"><label>PIN:</label> {{ properties.PIN }}</div>
+                    <div class="item"><label>Owner Name:</label> {{ properties.OWNER_NAME }}</div>
+                    <div class="item">
+                        <label>Est. Market Value:</label> {{ properties.EMV_TOTAL }}
+                    </div>
+                    <div class="item"><label>Acres:</label> {{ properties.ACRES_POLY }}</div>
+                </div>
+            ]]></template>
+        </layer>
+		<layer name="parcels_points"/>
+		<param name="FORMAT" value="image/png"/>
+		<!-- this is used only for testing the group-functionality -->
+		<!--
+		-->
+		<layer name="parcels_group"/>
+		<layer name="all"/>
+	</map-source>
+
+    
+	<map-source name="borders" type="mapserver" reference="true" up="true" down="true" title="City and County Borders" fido-search="true">
+		<file>./demo/statedata/basemap.map</file>
+		<layer name="city_poly" status="off"/>
+		<layer name="county_borders" status="off"/>
+	</map-source>
+
+	<map-source name="iastate" type="wms">
+		<url>http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
+		<layer name="nexrad-n0r"/>
+		<param name="FORMAT" value="image/png"/>
+		<param name="TRANSPARENT" value="TRUE"/>
+	</map-source>
+
+
+	<map-source name="ags" type="ags">
+		<url>http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
+		<layer name="NatGeo_World_Map"/>
+		<param name="FORMAT" value="png"/>
+	</map-source>
+
+	<map-source name="openstreetmap" type="xyz">
+		<layer name="osm_mapnik" />
+		<url>http://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+		<url>http://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+		<url>http://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+		<param name="attribution" value="Data and tiles by OpenStreetMap contributors"/>
+	</map-source>
+	
+	<map-source name="wmflabs" type="xyz">
+		<layer name="osm_black_n_white" />
+		<url>http://a.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
+		<url>http://b.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
+		<url>http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
+		<param name="attribution" value="Data by OpenStreetMap contributors, Tiles by Wikimedia Foundation Labs"/>
+	</map-source>
+
+	<map-source name="usgs" type="mapserver">
+		<file>./demo/wms/usgs.map</file>
+		<layer name="DOQ"/>
+		<layer name="DRG"/>
+	</map-source>
+
+	<map-source name="lmic" type="mapserver">
+		<file>./demo/wms/lmic.map</file>
+		<layer name="met10"/>
+	</map-source>
+
+	<!-- 
+		The catalog defines how the layers will be displayed in the catalog tab.
+	-->
+	<catalog>
+		<!-- Layer for testing international character support. 
+		<layer title="Test International Characters" src="international/testing"/>
+		-->
+		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
+		<group title="Overlays">
+			<layer src="pipelines/pipelines"></layer>
+
+			<group title="County Layers" expand="false">
+
+				<layer src="parcels/parcels" metadata="true" legend="true" tip="this a parcel layer, y'all" popups="true" refresh="10"> 
+					<metadata>http://www.geomoose.org/docs/</metadata>
+					<!--
+					<legend>images/logo_mini.gif</legend>
+					-->
+				</layer>
+				<layer title="Parcel Points" src="parcels/parcels_points" popups="true" minscale="6000" maxscale="20000" status="off">
+				</layer>
+				<layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
+			</group>
+
+			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
+		</group>
+
+		<group title="Scalebars" expand="false">
+			<layer src="scalebar_miles/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
+			<layer src="scalebar_feet/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
+			<layer src="scalebar_kilometers/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
+		</group>
+
+		<group title="Backgrounds" expand="true" multiple="false">
+			<layer title="Reprojected Regional Aerial" src="lmic/met10" show-legend="false" legend="false" fade="false" unfade="false"/>
+
+			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="false" unfade="false"/>
+			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="false" unfade="false"/>
+			<layer title="USGS DOQs" src="usgs/DOQ" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="USGS Topo Quads" src="usgs/DRG" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="false" unfade="false"/>
+		</group>
+	</catalog>
+</mapbook>

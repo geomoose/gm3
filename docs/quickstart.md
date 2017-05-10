@@ -1,6 +1,6 @@
 # Quickstart
 
-This is the quickstart to *development* guide. If you are looking for a quickstart guide for running GeoMoose then you should look at installing one of the GeoMoose demos. This quickstart utilizes the GeoMoose docker image for serving the demo data and MapServer.
+This is the quickstart to *development* guide. If you are looking for a quickstart guide for running GeoMoose then you should look at installing one of the GeoMoose examples. This quickstart utilizes the GeoMoose docker image for serving the demo data and MapServer.
 
 ## Basic requirements
 
@@ -63,9 +63,9 @@ grunt build
 ```
 
 ## Create a config.js file
-To configure the demo application, it needs to know where MapServer and the Mapfiles are on the server.
+To configure the example application, it needs to know where MapServer and the Mapfiles are on the server.
 
-Add the following to `~/geomoose/gm3/demo/config.js`:
+Add the following to `~/geomoose/gm3/examples/desktop/config.js`:
 ```
 CONFIG = {
     mapserver_url: '/mapserver/cgi-bin/mapserv',
@@ -73,7 +73,7 @@ CONFIG = {
 };
 ```
 
-*Fun fact!* This is the same contents as `config.js.example`, so you could also `cp config.js.example config.js`.
+*Fun fact!* This is the same contents as `~/geomoose/gm3/examples/config.js.example`, so you could also `cp ../config.js.example config.js`.
 
 ## Running the tests
 
@@ -89,6 +89,6 @@ If the test are working then let's open up GeoMoose!
 grunt serve
 ```
 
-Open GeoMoose in a browser: [http://localhost:4000/demo/test.html](http://localhost:4000/demo/test.html)
+Open GeoMoose in a browser: [http://localhost:4000/examples/desktop/debug.html](http://localhost:4000/examples/desktop/debug.html)
 
 

@@ -1,0 +1,73 @@
+<html>
+<head>
+	<title>GeoMoose3 Mobile Demo</title>
+	<!--
+	/*
+	 * The MIT License (MIT)
+	 *
+	 * Copyright (c) 2016 GeoMoose
+	 *
+	 * Permission is hereby granted, free of charge, to any person obtaining a copy
+	 * of this software and associated documentation files (the "Software"), to deal
+	 * in the Software without restriction, including without limitation the rights
+	 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	 * copies of the Software, and to permit persons to whom the Software is
+	 * furnished to do so, subject to the following conditions:
+	 *
+	 * The above copyright notice and this permission notice shall be included in all
+	 * copies or substantial portions of the Software.
+	 *
+	 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	 * SOFTWARE.
+	 */
+	-->
+
+	<link rel="stylesheet" href="geomoose/dist/css/geomoose.css">
+
+	<link rel="stylesheet" href="node_modules/jquery-mobile/dist/jquery.mobile.css">
+	<script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src="node_modules/jquery-mobile/dist/jquery.mobile.min.js"></script>
+
+	<link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+		<div data-role="tabs" id="tabs">
+			<div data-role="navbar">
+				<ul id="tab-bar">
+					<li><a id="map-btn" href="#map"><i class="fa fa-map"></i></a></li>
+					<li><a href="#catalog"><i class="fa fa-book"></i></a></li>
+					<li><a href="#favorites"><i class="fa fa-star"></i></a></li>
+					<li><a href="#controls"><i class="fa fa-wrench"></i></a></li>
+					<li><a id="service-tab-btn" href="#service-tab"><i class="fa fa-table"></i></a></li>
+				</ul>
+			</div>
+			<div id="map" class="ui-body-d ui-content tab-content"></div>
+			<div id="catalog" class="ui-body-d ui-content tab-content"></div>
+			<div id="favorites" class="ui-body-d ui-content tab-content"></div>
+			<div id="controls" class="ui-body-d ui-content tab-content">
+				<button id="findme-btn" class="service-btn ui-btn ui-btn-inline">
+					<i class="fa fa-map-marker" aria-hidden="true"></i><br>
+					Find Me
+				</button>
+				<button id="identify-btn" class="service-btn ui-btn ui-btn-inline">
+					<i class="fa fa-info-circle" aria-hidden="true"></i><br>
+					Identify
+				</button>
+			</div>
+			<div id="service-tab" class="ui-body-d ui-content tab-content"></div>
+		</div>
+
+        <script type="text/javascript" src="config.js"></script>
+		<script type="text/javascript" src="geomoose/dist/ol.js"></script>
+		<script type="text/javascript" src="geomoose/dist/geomoose.min.js"></script>
+		<script type="text/javascript" src="geomoose/dist/services/identify.js"></script>
+		<script type="text/javascript" src="geomoose/dist/services/findme.js"></script>
+		<script type="text/javascript" src="mobile.js"></script>
+</body>
+
+
