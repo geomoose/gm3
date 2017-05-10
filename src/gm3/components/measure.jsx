@@ -29,7 +29,7 @@ import DrawTool from './drawTool';
 
 import * as util from '../util';
 
-class MeasureTool extends Component {
+export class MeasureTool extends Component {
 
     constructor(props) {
         super(props);
