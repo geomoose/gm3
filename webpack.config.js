@@ -70,9 +70,9 @@ module.exports = {
             {
                 // point the example "geomoose" directories back
                 //  at the geomoose repository.
-                context: ['/examples/desktop/geomoose/', '/examples/mobile/geomoose/'],
+                context: ['/examples/geomoose/'],
                 target: 'http://localhost:4000/',
-                pathRewrite: {'^/examples/(desktop|mobile)/geomoose' : '' },
+                pathRewrite: {'^/examples/geomoose' : '' },
                 secure: false
             },
         ]
