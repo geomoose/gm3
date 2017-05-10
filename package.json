@@ -7,7 +7,7 @@
   "homepage": "http://www.geomoose.org",
   "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
-    "test": "node node_modules/jest/bin/jest.js --coverage ./tests/",
+    "test": "node node_modules/jest/bin/jest.js --coverage tests",
     "prepublish": "grunt build",
     "start": "grunt serve",
     "serve": "grunt serve"
