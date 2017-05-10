@@ -29,7 +29,7 @@ import DrawTool from './drawTool';
 
 import * as util from '../util';
 
-class MeasureTool extends Component {
+export class MeasureTool extends Component {
 
     constructor(props) {
         super(props);
@@ -58,13 +58,13 @@ class MeasureTool extends Component {
             var rise = pointB[1] - pointA[1];
             var run = pointB[0] - pointA[0];
             if(rise === 0) {
-                if(pointA[0] > pointB.x) {
+                if(pointA[0] > pointB[0]) {
                     bearing = 'Due West';
                 } else {
                     bearing = 'Due East';
                 }
             } else if(run === 0) {
-                if(pointA.y > pointB.y) {
+                if(pointA[1] > pointB[1]) {
                     bearing = 'Due South';
                 } else {
                     bearing = 'Due North';
