@@ -511,14 +511,14 @@ export function convertLength(length, srcUnits, destUnits) {
  */
 export function convertArea(area, srcUnits, destUnits) {
     // US survey feet, miles
-    return area * Math.pow(EQUIVALENT_METERS[srcUnits],2) / Math.pow(EQUIVALENT_METERS[destUnits],2);
+    return area * Math.pow(EQUIVALENT_METERS[srcUnits], 2) / Math.pow(EQUIVALENT_METERS[destUnits], 2);
 }
 
 /* Convert  Meters to a given units.
  *
  */
 export function metersLengthToUnits(meters, units) {
-    return convertLength(meters,'m',units);
+    return convertLength(meters, 'm', units);
 }
 
 /* Convert Square Meters to a given units.
