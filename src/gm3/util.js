@@ -459,7 +459,7 @@ export function getUtmZone(pt) {
     // No citation provideded for this calculation,
     // it was working in the GM2.X series without a lot
     // of complaints. 
-    const zone = Math.ceil((pt[0] / 6.0) + 30) + 1;
+    const zone = Math.floor((pt[0] / 6.0) + 30) + 1;
 
     // north zones are north of 0.
     const north = (pt[1] > 0) ? 'N' : 'S';
@@ -478,47 +478,6 @@ export function jsonToGeom(geom) {
     return GEOJSON_FORMAT.readGeometry(geom);
 }
 
-/* Converts from meters to a given units.
- *
- */
-export function metersLengthToUnits(meters, units) {
-    switch(units) {
-        case 'ft':
-            return meters * 3.28084;
-        case 'mi':
-            return meters / 1609.34;
-        case 'ch':
-            // 1 chain = 66 US survey feet.  1 sft = 1200/3937 meters.
-            return meters * (3937 / 79200);
-        case 'km':
-            return meters / 1000;
-        case 'm':
-        default:
-            return meters;
-    }
-}
-
-/* Convert Square Meters to a given units.
- *
- */
-export function metersAreaToUnits(meters, units) {
-    switch(units) {
-        case 'ft':
-            return meters / 0.092903;
-        case 'mi':
-            return meters / 2590000;
-        case 'a':
-            return meters / 4046.86;
-        case 'h':
-            return meters / 10000;
-        case 'km':
-            return meters / 1000000;
-        case 'm':
-        default:
-            return meters;
-    }
-}
-
 const EQUIVALENT_METERS = {
     'ft': 0.3048,
     'yd': 0.9144,
@@ -526,7 +485,9 @@ const EQUIVALENT_METERS = {
     'in': 0.0254,
     'm': 1,
     'km': 1000,
-    "ch": 20.11684
+    "ch": 20.11684,
+    "a": 63.63,
+    "h": 100
 };
 
 /** Converts numeric lengths between given units
@@ -539,4 +500,30 @@ const EQUIVALENT_METERS = {
 export function convertLength(length, srcUnits, destUnits) {
     // US survey feet, miles
     return length * EQUIVALENT_METERS[srcUnits] / EQUIVALENT_METERS[destUnits];
+}
+
+/** Converts numeric areas between given units
+ *
+ * @param {number} area - Area
+ * @param {string} srcUnits - Source unit
+ * @param {string} destUnits - Destination unit
+ * @return {number} Converted area
+ */
+export function convertArea(area, srcUnits, destUnits) {
+    // US survey feet, miles
+    return area * Math.pow(EQUIVALENT_METERS[srcUnits], 2) / Math.pow(EQUIVALENT_METERS[destUnits], 2);
+}
+
+/* Convert  Meters to a given units.
+ *
+ */
+export function metersLengthToUnits(meters, units) {
+    return convertLength(meters, 'm', units);
+}
+
+/* Convert Square Meters to a given units.
+ *
+ */
+export function metersAreaToUnits(meters, units) {
+    return convertArea(meters, 'm', units);
 }
