@@ -96,7 +96,7 @@ function OSMGeocoder(Application, options) {
                         type: 'Feature',
                         geometry: {
                             type: 'Point',
-                            coordinates: [feature.lon, feature.lat]
+                            coordinates: [r.lon, r.lat]
                         },
                         properties: {
                             id: 'address' + i
