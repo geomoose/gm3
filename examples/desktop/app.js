@@ -56,16 +56,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         ]
     });
 
-    // check to see if the 'bing key' has been defined,
-    //  if so, use Bing as the geocoder otherwise the application
-    //  will show a "can't find the service" message.
-    // BING_KEY should be set in globals.js
-    if(typeof(CONFIG.bing_key) !== 'undefined') {
-        app.registerService('geocode', BingGeocoder, {
-            key: CONFIG.bing_key 
-        });
-    }
-
+    // This uses the OpenStreetMap Nominatim geocoder,
+    // there is also a BingGeocoder service, but requires
+    // signing up for Bing and getting an appropriate usage key.
+    app.registerService('geocode', OSMGeocoder, {});
     app.registerAction('findme', FindMeAction);
 
     app.registerAction('fullextent', ZoomToAction, {
