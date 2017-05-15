@@ -160,7 +160,7 @@ export default class HashTracker {
         // The "substring(1)" removes the "#" from the leading edge,
         //  replacing it with the '?' then cuases the hash to be parsed like
         //  a normal query string.
-        const parsed = url.parse('?'+window.location.hash.substring(1), true);
+        const parsed = url.parse('?' + window.location.hash.substring(1), true);
 
         if(parsed.query) {
             if(parsed.query.loc) {
