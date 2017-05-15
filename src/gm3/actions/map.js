@@ -159,3 +159,15 @@ export function removeFilter(queryId, field) {
         field
     }
 }
+
+/* Set the view of the map.
+ *
+ * @param view {Object} An object containing center and zoom or resolution.
+ *
+ * @return An action definition.
+ */
+export function setView(view) {
+    return Object.assign({
+        type: MAP.MOVE
+    }, view);
+}

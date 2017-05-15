@@ -580,14 +580,24 @@ class Map extends Component {
         // create the selection layer.
         this.configureSelectionLayer();
 
-        const view_params = {
-            center: this.props.center
-        };
+        const view_params = {};
 
-        if(this.props.zoom) {
-            view_params.zoom = this.props.zoom;
-        } else if(this.props.resolution) {
-            view_params.resolution = this.props.resolution;
+        if(this.props.center) {
+            view_params.center = this.props.center
+
+            // check for a z-settings.
+            if(this.props.zoom) {
+                view_params.zoom = this.props.zoom;
+            } else if(this.props.resolution) {
+                view_params.resolution = this.props.resolution;
+            }
+        } else {
+            view_params.center = this.props.mapView.center;
+            if(this.props.mapView.zoom) {
+                view_params.zoom = this.props.mapView.zoom;
+            } else {
+                view_params.resolution = this.props.mapView.resolution; 
+            }
         }
 
         // initialize the map.
@@ -603,7 +613,12 @@ class Map extends Component {
             // get the view of the map
             let view = this.map.getView();
             // create a "mapAction" and dispatch it.
-            this.props.store.dispatch(mapActions.move(view.getCenter(), view.getResolution()));
+            // this.props.store.dispatch(mapActions.move(view.getCenter(), view.getResolution()));
+            this.props.store.dispatch(mapActions.setView({
+                center: view.getCenter(),
+                resolution: view.getResolution(),
+                zoom: view.getZoom()
+            }));
         });
 
         // and when the cursor moves, dispatch an action

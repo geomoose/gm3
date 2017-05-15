@@ -429,6 +429,16 @@ class Application {
         // open the dialog
         this.dialogs[signature].setState({open: true});
     }
+
+    /* Set the view of the map
+     *
+     * @param view {Object} A view definition containing center and zoom or resolution
+     *
+     */
+    setView(view) {
+        this.store.dispatch(mapActions.setView(view));
+    }
+
 };
 
 

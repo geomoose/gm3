@@ -44,9 +44,18 @@ app.uiUpdate = function(ui) {
 }
 
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
+    // set the default view.
+    app.setView({
+        center: [ -10370351.141856, 5550949.728470501 ],
+        zoom: 12
+    });
+
+    // establish some state trackers
     var tracker = new gm3.trackers.LocalStorageTracker(app.store);
+    var hash_tracker = new gm3.trackers.HashTracker(app.store);
 
     tracker.restore();
+    hash_tracker.restore();
 
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
@@ -76,10 +85,9 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
         usng: true, latLon: true
     });
-    app.add(gm3.components.Map, 'map', {
-        center: [ -10370351.141856, 5550949.728470501 ],
-        zoom: 12
-    });
+
+
+    app.add(gm3.components.Map, 'map', {});
 
     var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
     app.registerAction('print', function() {
@@ -90,6 +98,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             
 
     tracker.startTracking();
+    hash_tracker.startTracking();
 
     showTab('catalog');
 });
