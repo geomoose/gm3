@@ -28,6 +28,7 @@ import { connect } from 'react-redux';
 
 import { getVisibleLayers } from '../actions/mapSource';
 import * as mapActions from '../actions/map';
+import { MAPSOURCE } from '../actionTypes';
 
 import * as util from '../util';
 
@@ -52,6 +53,8 @@ export default class HashTracker {
         // track the last hash, don't update the window
         //  if it need not be updated.
         this.lastHash = '';
+
+        this.joinSymbol = ';';
     }
 
     /** turn on tracking.
@@ -66,9 +69,51 @@ export default class HashTracker {
         this.tracking = false;
     }
 
-    /** Issue the commands to restore the favorites settings.
+    /* Batch and issue commands to handle the restoration of layers.
      */
-    restoreFavorites() {
+    restoreLayers(layersOn) {
+        // get the list of layers from the query.
+        const layers = layersOn.split(this.joinSymbol);
+
+        // check for what the visible layers are now.
+        const visible_layers = getVisibleLayers(this.store);
+
+        // layers to turn on
+        const turn_off = [];
+        const turn_on = [];
+
+        for(var i = 0, ii = layers.length; i < ii; i++) {
+            // the layer from the URL is not "visible"
+            if(visible_layers.indexOf(layers[i]) < 0) {
+                turn_on.push(layers[i]);
+            } 
+        }
+
+        for(var i = 0, ii = visible_layers.length; i < ii; i++) {
+            if(layers.indexOf(visible_layers[i]) < 0) {
+                turn_off.push(visible_layers[i]);
+            }
+        }
+
+        for(var layer of turn_on) {
+            this.store.dispatch({
+                type: MAPSOURCE.LAYER_VIS,
+                mapSourceName: util.getMapSourceName(layer),
+                layerName: util.getLayerName(layer),
+                on: true
+            })
+        }
+
+
+        for(var layer of turn_off) {
+            this.store.dispatch({
+                type: MAPSOURCE.LAYER_VIS,
+                mapSourceName: util.getMapSourceName(layer),
+                layerName: util.getLayerName(layer),
+                on: false
+            })
+        }
+
         /*
         // get the favorites list
         let faves = localStorage.getItem('favorites');
@@ -97,7 +142,7 @@ export default class HashTracker {
     restoreLocation(loc) {
         // I wholly believe that map/forEach is evil,
         //  but this code is rather elegant when written this way.
-        const zxy = loc.split(',').map(parseFloat);
+        const zxy = loc.split(this.joinSymbol).map(parseFloat);
         this.store.dispatch(mapActions.setView({
             // unset the "zoom level" which normally takes precendent.
             zoom: null, 
@@ -120,6 +165,9 @@ export default class HashTracker {
         if(parsed.query) {
             if(parsed.query.loc) {
                 this.restoreLocation(parsed.query.loc);
+            }
+            if(parsed.query.on) {
+                this.restoreLayers(parsed.query.on);
             }
         }
     }
@@ -148,11 +196,11 @@ export default class HashTracker {
             let new_hash = '';
 
             // put the layers in the hash
-            new_hash += 'on=' + this.trackLayers().join(',');
+            new_hash += 'on=' + this.trackLayers().join(this.joinSymbol);
 
             // get the locaiton in htere.
             const loc = this.trackLocation();
-            new_hash += '&loc=' + [loc.z, loc.x, loc.y].join(','); 
+            new_hash += '&loc=' + [loc.z, loc.x, loc.y].join(this.joinSymbol); 
 
             if(this.lastHash !== new_hash) {
                 window.location.hash = new_hash;
