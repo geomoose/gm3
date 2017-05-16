@@ -98,21 +98,19 @@ function parseLayer(store, layerXml) {
     //  for parsing the tool availabiltiy from the XML,
     //  somehwere this should be more configurable but 
     //  for now it'll "work."
-    const tools = {
-        upload: false, 
-        clear: false,
-        fade: false, unfade: false,
-        up: false, down: false,
-        zoomto: false,
-        'legend-toggle': false,
-        'draw-point': false, 
-        'draw-polygon': false,
-        'draw-line': false
-    };
+    const tools = [
+        'zoomto',
+        'upload', 'download',
+        'fade', 'unfade',
+        'up', 'down',
+        'legend-toggle',
+        'draw-point', 'draw-line', 'draw-polygon',
+        'clear'
+    ];
 
     // iterate through the available tools, if it's set in the XML
     //  then honour that setting, otherwise, use the default.
-    for(let tool_name in tools) {
+    for(const tool_name of tools) {
         if(util.parseBoolean(layerXml.getAttribute(tool_name), false)) {
             new_layer.tools.push(tool_name);
         } else if(tools[tool_name]) {
