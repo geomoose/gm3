@@ -787,6 +787,21 @@ class Map extends Component {
             this.map.getView().fit(bbox, this.map.getSize()); 
         }
 
+        // check to see if the view has been altered.
+        if(nextProps && nextProps.mapView) {
+            const map_view = this.map.getView();
+            const view = nextProps.mapView;
+            
+            const center = map_view.getCenter();
+            const resolution = map_view.getResolution();
+
+            if(center[0] !== view.center[0] || center[1] !== view.center[1]
+                || resolution !== view.resolution) {
+                    this.map.getView().setCenter(view.center);
+                    this.map.getView().setResolution(view.resolution);
+            }
+        }
+
         // ensure that the selection features have been 'cleared' 
         //  appropriately.
         if(nextProps && nextProps.mapView.selectionFeatures.length === 0) {

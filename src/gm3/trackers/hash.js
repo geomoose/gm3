@@ -47,6 +47,10 @@ export default class HashTracker {
         // localize the store.
         this.store = store;
 
+        // wrap the window change tracker so that
+        //  it points to the same place no matter.
+        this.trackWindowChanges = this.trackWindowChanges.bind(this);
+
         // when the store changes, track those changes.
         store.subscribe(() => { this.track(); });
 
@@ -61,6 +65,8 @@ export default class HashTracker {
      */
     startTracking() {
         this.tracking = true;
+
+        window.addEventListener('hashchange', this.trackWindowChanges, false);
     }
 
     /** turn off tracking.
@@ -188,6 +194,14 @@ export default class HashTracker {
         }
     }
 
+    /* Track the window changes.
+     */
+    trackWindowChanges() {
+        if(window.location.hash !== ('#' + this.lastHash)) {
+            this.restore();
+        }
+    }
+
     track() {
         // when tracking is not active, just return null.
         if(this.tracking) {
@@ -203,8 +217,11 @@ export default class HashTracker {
             new_hash += '&loc=' + [loc.z, loc.x, loc.y].join(this.joinSymbol); 
 
             if(this.lastHash !== new_hash) {
-                window.location.hash = new_hash;
+                // update the hash first so we don't trigger
+                //  a hash change
                 this.lastHash = new_hash;
+                // now update the hash
+                window.location.hash = new_hash;
             }
         }
 
