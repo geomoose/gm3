@@ -180,13 +180,11 @@ export default class HashTracker {
 
     /* Get the location.
      */
-    trackLocation() {
-        const state = this.store.getState();
-
+    trackLocation(map) {
         return {
-            x: state.map.center[0],
-            y: state.map.center[1],
-            z: state.map.resolution
+            x: map.center[0],
+            y: map.center[1],
+            z: map.resolution
         }
     }
 
@@ -195,15 +193,18 @@ export default class HashTracker {
         if(this.tracking) {
             let new_hash = '';
 
+            const state = this.store.getState();
+
             // put the layers in the hash
             new_hash += 'on=' + this.trackLayers().join(this.joinSymbol);
 
             // get the locaiton in htere.
-            const loc = this.trackLocation();
+            const loc = this.trackLocation(state.map);
             new_hash += '&loc=' + [loc.z, loc.x, loc.y].join(this.joinSymbol); 
 
             if(this.lastHash !== new_hash) {
                 window.location.hash = new_hash;
+                this.lastHash = new_hash;
             }
         }
 
