@@ -100,6 +100,7 @@ function parseLayer(store, layerXml) {
     //  for now it'll "work."
     const tools = {
         upload: false, 
+        download: false,
         clear: false,
         fade: false, unfade: false,
         up: false, down: false,

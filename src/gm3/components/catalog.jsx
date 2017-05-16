@@ -39,6 +39,7 @@ import * as mapSourceActions from '../actions/mapSource';
 
 import { ClearTool, DrawTool, ZoomToTool, LegendToggle } from './catalog/tools';
 import { UploadTool } from './catalog/tools/upload';
+import { DownloadTool } from './catalog/tools/download';
 
 import Legend from './catalog/legend';
 
@@ -182,6 +183,9 @@ export class Catalog extends Component {
                     break;
                 case 'upload':
                     tools.push(<UploadTool store={this.props.store} key={key} layer={layer} />);
+                    break;
+                case 'download':
+                    tools.push(<DownloadTool store={this.props.store} key={key} layer={layer} />);
                     break;
                 case 'clear':
                     tools.push(<ClearTool store={this.props.store} key={key} layer={layer} />);
