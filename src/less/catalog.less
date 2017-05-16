@@ -133,13 +133,19 @@
         }
     }
 
-    .tool.upload, .tool.clear {
+    .tool.upload, .tool.clear, .tool.download {
         .fa;
     }
 
     .tool.upload {
         &:before {
             content: @fa-var-upload;
+        }
+    }
+
+    .tool.download {
+        &:before {
+            content: @fa-var-download;
         }
     }
 
