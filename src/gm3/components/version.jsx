@@ -29,7 +29,7 @@ import React, {Component, PropTypes } from 'react';
 
 import * as util from '../util';
 
-export default class Toolbar extends Component {
+export default class Version extends Component {
 
     render() {
         return (
