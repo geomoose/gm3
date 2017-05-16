@@ -342,7 +342,7 @@
 		-->
 		<layer src="sketch/default" 
                zoomto="true" upload="true" clear="true" 
-               draw-point="true" draw-polygon="true" />
+               draw-point="true" draw-line="true" draw-polygon="true" />
 		
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
