@@ -797,8 +797,9 @@ class Map extends Component {
 
             if(center[0] !== view.center[0] || center[1] !== view.center[1]
                 || resolution !== view.resolution) {
-                    this.map.getView().setCenter(view.center);
-                    this.map.getView().setResolution(view.resolution);
+
+                this.map.getView().setCenter(view.center);
+                this.map.getView().setResolution(view.resolution);
             }
         }
 
