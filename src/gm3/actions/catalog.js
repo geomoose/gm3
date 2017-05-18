@@ -87,7 +87,6 @@ function parseLayer(store, layerXml) {
         label: layerXml.getAttribute('title'),
         legend: true,
         src: [],
-        on: false,
         favorite: false,
         refreshEnabled: false,
         refresh: null,
@@ -125,7 +124,6 @@ function parseLayer(store, layerXml) {
     }
 
     // collect the src states
-    let src_state = true;
     let src_favorite = false;
 
     // parse out the souces
@@ -149,8 +147,6 @@ function parseLayer(store, layerXml) {
 
             // if any of the underlaying paths in the src
             //  are false, then turn all of them off. 
-            src_state = src_state && mapSources.getVisibility(store, s);
-
             src_favorite = src_favorite || mapSources.isFavoriteLayer(store, s);
 
             // check to see if a 'default' name is needed
@@ -166,7 +162,6 @@ function parseLayer(store, layerXml) {
     }
 
     // set the new layer state based on the src.
-    new_layer.on = src_state;
     new_layer.favorite = src_favorite;
 
     let p = layerXml.parentNode;

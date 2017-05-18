@@ -32,7 +32,7 @@ import * as util from '../util';
 
 const default_view = {
     center: [0, 0],
-    resolution: 1000,
+    resolution: null,
     extent: null,
     activeSource: null,
     interactionType: null,
@@ -49,7 +49,7 @@ export default function mapReducer(state = default_view, action) {
                 extent: null
             };
             for(const key of ['center', 'zoom', 'resolution']) {
-                if(action[key]) {
+                if(typeof(action[key]) !== 'undefined') {
                     new_view[key] = action[key];
                 }
             }

@@ -70,6 +70,7 @@ export class FavoriteLayers extends Catalog {
 
 const mapFavoritesToProps = function(store) {
     return {
+        mapSources: store.mapSources,
         catalog: store.catalog
     }
 }

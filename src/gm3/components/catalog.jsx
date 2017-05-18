@@ -34,6 +34,8 @@ import ReactDOM from 'react-dom';
 
 import { connect } from 'react-redux';
 
+import { isLayerOn } from '../util';
+
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
@@ -62,7 +64,6 @@ export class Catalog extends Component {
         this.renderGroup = this.renderGroup.bind(this);
         this.renderTreeNode = this.renderTreeNode.bind(this);
 
-        this.toggleLayer = this.toggleLayer.bind(this);
         this.toggleFavoriteLayer = this.toggleFavoriteLayer.bind(this);
 
         this.filterCatalog = this.filterCatalog.bind(this);
@@ -71,20 +72,6 @@ export class Catalog extends Component {
             searchFilter: ''
         };
         this.searchable = true;
-    }
-
-    /** Change the layer's visibility state
-     *
-     *  @param layer Catalog layer definition.
-     *
-     */
-    toggleLayer(layer) {
-        // change the actual layer value.
-        this.props.store.dispatch({
-            type: CATALOG.LAYER_VIS,
-            id: layer.id,
-            on: !layer.on
-        });
     }
 
     /** Toggle whether a layer is considered a "favorite" 
@@ -126,14 +113,14 @@ export class Catalog extends Component {
      *  @param layer Catalog layer definition.
      *  
      */
-    renderMapSources(layer) {
+    renderMapSources(layer, on) {
         // "render" the src
         for(let src of layer.src) {
             this.props.store.dispatch({
                 type: MAPSOURCE.LAYER_VIS,
                 layerName: src.layerName,
                 mapSourceName: src.mapSourceName,
-                on: !layer.on
+                on
             })
         }
     }
@@ -207,11 +194,11 @@ export class Catalog extends Component {
         return tools;
     }
 
-
     renderLayer(layer) {
         let toggle = () => {
-            this.toggleLayer(layer);
-            this.renderMapSources(layer);
+            const map_sources = this.props.store.getState().mapSources;
+            console.log('TOGGLE', layer, isLayerOn(map_sources, layer));
+            this.renderMapSources(layer, !isLayerOn(map_sources, layer));
         };
 
         let toggleFavorite = () => {
@@ -258,10 +245,15 @@ export class Catalog extends Component {
             legend = ( <Legend store={this.props.store} layer={layer}/> );
         }
 
+        // check to see if the layer is on or not.
+        const is_on = isLayerOn(this.props.mapSources, layer);
+
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label"> 
-                    <input className="checkbox" type="checkbox" onChange={doNothing} onClick={toggle} checked={layer.on} />
+                    <input className="checkbox" type="checkbox" 
+                       onChange={doNothing} onClick={toggle} checked={is_on} />
+
                     <i className="favorite-icon" onClick={toggleFavorite}/> 
                     <span onClick={toggle}>
                         {layer.label}

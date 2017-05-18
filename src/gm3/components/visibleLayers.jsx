@@ -27,34 +27,50 @@ import React, {Component, PropTypes } from 'react';
 
 import { FavoriteLayers } from './favorites';
 
+import { isLayerOn } from '../util';
+
 
 class VisibleLayers extends FavoriteLayers {
-
-    constructor() {
-        super();
-        this.nVisible = 0;
-    }
-
-    shouldRenderNode(node) {
-        let vis = (!node.children && node.on);
-        if(vis) {
-            this.nVisible += 1;
-        }
-        return vis;
+    getZValue(layer) {
+        // only care about the first src
+        const src = layer.src[0];
+        return this.props.mapSources[src.mapSourceName].zIndex;
     }
 
     render() {
-        this.nVisible = 0;
+        let layers = [];
+        for(const key of Object.keys(this.props.catalog)) {
+            const node = this.props.catalog[key];
+            // no children, should be a layer
+            if(node && typeof(node.children) === 'undefined') {
+                if(isLayerOn(this.props.mapSources, node)) {
+                    layers.push({
+                        zIndex: this.getZValue(node),
+                        layer: node
+                    });
+                }
+            }
+        }
 
-        let layers = Object.keys(this.props.catalog).map(this.renderTreeNode)
+        // sort the catalog layers by zIndex
+        layers.sort(function(a, b) {
+            return (a.zIndex > b.zIndex) ? -1 : 1;
+        });
 
-        if(this.nVisible === 0) {
-            layers = (<i>No layers are visible</i>);
+        const rendered_layers = [];
+        for(const layer of layers) {
+            rendered_layers.push(this.renderLayer(layer.layer));
+        }
+
+        let no_layers_error = '';
+        if(layers.length === 0) {
+            no_layers_error = (<i>No layers are visible</i>);
         }
         
         return (
             <div className="catalog visble-layers flat">
-                { layers }
+                { no_layers_error }
+                { rendered_layers }
             </div>
         );
     }
@@ -63,6 +79,7 @@ class VisibleLayers extends FavoriteLayers {
 
 const mapFavoritesToProps = function(store) {
     return {
+        mapSources: store.mapSources,
         catalog: store.catalog
     }
 }

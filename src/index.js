@@ -47,6 +47,7 @@ import MeasureTool from './gm3/components/measure';
 import PrintModal from './gm3/components/print/printModal';
 
 import LocalStorageTracker from './gm3/trackers/localStorage';
+import HashTracker from './gm3/trackers/hash';
 
 import * as util from './gm3/util';
 
@@ -72,7 +73,8 @@ var components = {
 };
 
 var trackers = {
-    LocalStorageTracker
+    LocalStorageTracker,
+    HashTracker,
 };
 
 export {

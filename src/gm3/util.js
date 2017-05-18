@@ -527,3 +527,33 @@ export function metersLengthToUnits(meters, units) {
 export function metersAreaToUnits(meters, units) {
     return convertArea(meters, 'm', units);
 }
+
+/* Check to see if a layer should be checked or not.
+ *
+ * @param mapSources The mapsources section of the state tree.
+ * @param layer      The catalog layer definition.
+ *
+ */
+export function isLayerOn(mapSources, layer) {
+    // during "bootstrap" mapSources can be undefined,
+    //  this catches that scenario.
+    if(!mapSources) { return false };
+
+    // assume the layer is on
+    let is_on = true;
+    // iterate through each src,
+    //  if any are off, mark the checkbox as "off".
+    for(const src of layer.src) {
+        if(mapSources[src.mapSourceName]) {
+            const map_source = mapSources[src.mapSourceName];
+            for(const layer of map_source.layers) {
+                if(layer.name === src.layerName) {
+                    is_on = (is_on && layer.on);
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+    return is_on;
+}
