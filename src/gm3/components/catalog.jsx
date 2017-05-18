@@ -194,10 +194,9 @@ export class Catalog extends Component {
         return tools;
     }
 
-    renderLayer(layer) {
+    renderLayer(layer, forceTools) {
         let toggle = () => {
             const map_sources = this.props.store.getState().mapSources;
-            console.log('TOGGLE', layer, isLayerOn(map_sources, layer));
             this.renderMapSources(layer, !isLayerOn(map_sources, layer));
         };
 
