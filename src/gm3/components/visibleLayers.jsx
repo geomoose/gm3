@@ -27,6 +27,8 @@ import React, {Component, PropTypes } from 'react';
 
 import { FavoriteLayers } from './favorites';
 
+import { isLayerOn } from '../util';
+
 
 class VisibleLayers extends FavoriteLayers {
 
@@ -36,7 +38,7 @@ class VisibleLayers extends FavoriteLayers {
     }
 
     shouldRenderNode(node) {
-        let vis = (!node.children && node.on);
+        let vis = (!node.children && isLayerOn(this.props.mapSources, node));
         if(vis) {
             this.nVisible += 1;
         }
@@ -63,6 +65,7 @@ class VisibleLayers extends FavoriteLayers {
 
 const mapFavoritesToProps = function(store) {
     return {
+        mapSources: store.mapSources,
         catalog: store.catalog
     }
 }

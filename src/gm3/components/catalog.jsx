@@ -34,6 +34,8 @@ import ReactDOM from 'react-dom';
 
 import { connect } from 'react-redux';
 
+import { isLayerOn } from '../util';
+
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource'; 
 
@@ -78,12 +80,12 @@ export class Catalog extends Component {
      *  @param layer Catalog layer definition.
      *
      */
-    toggleLayer(layer) {
+    toggleLayer(layer, on) {
         // change the actual layer value.
         this.props.store.dispatch({
             type: CATALOG.LAYER_VIS,
             id: layer.id,
-            on: !layer.on
+            on
         });
     }
 
@@ -207,10 +209,9 @@ export class Catalog extends Component {
         return tools;
     }
 
-
     renderLayer(layer) {
-        let toggle = () => {
-            this.toggleLayer(layer);
+        let toggle = (evt) => {
+            this.toggleLayer(layer, evt.target.checked);
             this.renderMapSources(layer);
         };
 
@@ -258,10 +259,15 @@ export class Catalog extends Component {
             legend = ( <Legend store={this.props.store} layer={layer}/> );
         }
 
+        // check to see if the layer is on or not.
+        const is_on = isLayerOn(this.props.mapSources, layer);
+
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label"> 
-                    <input className="checkbox" type="checkbox" onChange={doNothing} onClick={toggle} checked={layer.on} />
+                    <input className="checkbox" type="checkbox" 
+                       onChange={doNothing} onClick={toggle} checked={is_on} />
+
                     <i className="favorite-icon" onClick={toggleFavorite}/> 
                     <span onClick={toggle}>
                         {layer.label}

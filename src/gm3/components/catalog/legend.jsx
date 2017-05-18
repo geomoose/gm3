@@ -28,6 +28,7 @@ import { connect } from 'react-redux';
 
 import { getLegend } from '../map';
 
+import { isLayerOn } from '../../util';
 
 class CatalogLegend extends Component {
 
@@ -70,7 +71,7 @@ class CatalogLegend extends Component {
 
         // short the rendering a legend if the layer
         // is not on.
-        if(!layer.on) {
+        if(!isLayerOn(this.props.mapSources, layer)) {
             return false;
         }
        
