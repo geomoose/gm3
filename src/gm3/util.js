@@ -557,3 +557,49 @@ export function isLayerOn(mapSources, layer) {
     }
     return is_on;
 }
+
+/* Given the map sources and a catalog layer definition
+ * get the zIndex.
+ *
+ * @param mapSources The mapSources from the state.
+ * @param layer      The layer definition from the catalog.
+ *
+ * @return The Z Index.
+ */
+export function getZValue(mapSources, layer) {
+    // only care about the first src
+    const src = layer.src[0];
+    return mapSources[src.mapSourceName].zIndex;
+}
+
+/* Sort the list of visible catalog layers by their zIndex.
+ *
+ * @param catalog The catalog from the state.
+ * @param mapSources The mapSources section of the state.
+ *
+ * @return An array of objects with two keys zIndex and layer.
+ *         zIndex is an integer, layer is the catalog definition
+ *         of a layer.
+ */
+export function getLayersByZOrder(catalog, mapSources) {
+    let layers = [];
+    for(const key of Object.keys(catalog)) {
+        const node = catalog[key];
+        // no children, should be a layer
+        if(node && typeof(node.children) === 'undefined') {
+            if(isLayerOn(mapSources, node)) {
+                layers.push({
+                    zIndex: getZValue(mapSources, node),
+                    layer: node
+                });
+            }
+        }
+    }
+
+    // sort the catalog layers by zIndex
+    layers.sort(function(a, b) {
+        return (a.zIndex > b.zIndex) ? -1 : 1;
+    });
+
+    return layers;
+}

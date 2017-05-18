@@ -148,3 +148,54 @@ export class LegendToggle extends Tool {
         );
     }
 }
+
+/* Move the layer up in the stack.
+ */
+export class UpTool extends Tool {
+    constructor() {
+        super();
+        this.tip = 'Move layer up in the order'
+        this.iconClass = 'up tool';
+
+        this.direction = -1;
+    }
+
+    onClick() {
+        // this is the map-source to go "up"
+        let up_src = this.props.layer.src[0];
+
+        const state = this.props.store.getState();
+        const layer_order = util.getLayersByZOrder(state.catalog, state.mapSources);
+
+        const actions = [];
+        for(let i = 0, ii = layer_order.length; i < ii; i++) {
+            const layer = layer_order[i];
+            if(layer.layer.src[0].mapSourceName === up_src.mapSourceName) {
+                const swap = i + this.direction;
+                if(swap >= 0 && swap <= ii) {
+                    const current_z = layer.zIndex;
+                    const new_z = layer_order[swap].zIndex;
+                    const other_ms = layer_order[swap].layer.src[0].mapSourceName;
+
+                    actions.push(msActions.setMapSourceZIndex(up_src.mapSourceName, new_z));
+                    actions.push(msActions.setMapSourceZIndex(other_ms, current_z));
+                }
+            }
+        }
+
+        for(const action of actions) {
+            this.props.store.dispatch(action);
+        }
+    }
+}
+
+/* Move the layer down in the stack.
+ */
+export class DownTool extends UpTool {
+    constructor() {
+        super();
+        this.tip = 'Move layer down in the order';
+        this.iconClass = 'down tool';
+        this.direction = 1;
+    }
+}
