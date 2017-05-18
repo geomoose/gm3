@@ -508,12 +508,12 @@ class Map extends Component {
             if(!this.olLayers[ms_name]) {
                 // create the OL layer
                 this.olLayers[ms_name] = this.createLayer(map_source);
-                this.olLayers[ms_name].setZIndex(map_source.zIndex);
                 this.map.addLayer(this.olLayers[ms_name]);
             } else {
                 this.updateSource(ms_name);
                 this.olLayers[ms_name].setVisible(true);
             }
+            this.olLayers[ms_name].setZIndex(map_source.zIndex);
 
             // if there is a refresh interval set then
             //  create an interval which refreshes the 

@@ -29,39 +29,115 @@ import { FavoriteLayers } from './favorites';
 
 import { isLayerOn } from '../util';
 
+import { Tool } from './catalog/tools';
 
-class VisibleLayers extends FavoriteLayers {
-    getZValue(layer) {
-        // only care about the first src
-        const src = layer.src[0];
-        return this.props.mapSources[src.mapSourceName].zIndex;
+import { setMapSourceZIndex } from '../actions/mapSource';
+
+
+function getZValue(mapSources, layer) {
+    // only care about the first src
+    const src = layer.src[0];
+    return mapSources[src.mapSourceName].zIndex;
+}
+
+function getLayersByZOrder(catalog, mapSources) {
+    let layers = [];
+    for(const key of Object.keys(catalog)) {
+        const node = catalog[key];
+        // no children, should be a layer
+        if(node && typeof(node.children) === 'undefined') {
+            if(isLayerOn(mapSources, node)) {
+                layers.push({
+                    zIndex: getZValue(mapSources, node),
+                    layer: node
+                });
+            }
+        }
     }
 
-    render() {
-        let layers = [];
-        for(const key of Object.keys(this.props.catalog)) {
-            const node = this.props.catalog[key];
-            // no children, should be a layer
-            if(node && typeof(node.children) === 'undefined') {
-                if(isLayerOn(this.props.mapSources, node)) {
-                    layers.push({
-                        zIndex: this.getZValue(node),
-                        layer: node
-                    });
+    // sort the catalog layers by zIndex
+    layers.sort(function(a, b) {
+        return (a.zIndex > b.zIndex) ? -1 : 1;
+    });
+
+    return layers;
+}
+
+class UpTool extends Tool {
+    constructor() {
+        super();
+        this.tip = 'Move layer up in the order'
+        this.iconClass = 'up tool';
+
+        this.direction = -1;
+    }
+
+    onClick() {
+        // this is the map-source to go "up"
+        let up_src = this.props.layer.src[0];
+
+        const state = this.props.store.getState();
+        const layer_order = getLayersByZOrder(state.catalog, state.mapSources);
+
+        const actions = [];
+        for(let i = 0, ii = layer_order.length; i < ii; i++) {
+            const layer = layer_order[i];
+            if(layer.layer.src[0].mapSourceName === up_src.mapSourceName) {
+                const swap = i + this.direction;
+                if(swap >= 0 && swap < ii) {
+                    const current_z = layer.zIndex;
+                    const new_z = layer_order[swap].zIndex;
+                    actions.push(setMapSourceZIndex(up_src.mapSourceName, new_z)); 
+                    const other_ms = layer.layer.src[0].mapSourceName;
+                    actions.push(setMapSourceZIndex(other_ms, new_z)); 
                 }
             }
         }
 
-        // sort the catalog layers by zIndex
-        layers.sort(function(a, b) {
-            return (a.zIndex > b.zIndex) ? -1 : 1;
-        });
+        for(const action of actions) {
+            this.props.store.dispatch(action);
+        }
+    }
+}
 
-        const rendered_layers = [];
-        for(const layer of layers) {
-            rendered_layers.push(this.renderLayer(layer.layer));
+class DownTool extends UpTool {
+    constructor() {
+        super();
+        this.tip = 'Move layer down in the order';
+        this.iconClass = 'down tool';
+        this.direction = 1;
+    }
+}
+
+
+/* VisibleLayers Tab.
+ *
+ * Displays layers in their map layer order.
+ *
+ */
+class VisibleLayers extends FavoriteLayers {
+
+    render() {
+        // get the list of layers order'd by the stack order
+        const layers = getLayersByZOrder(this.props.catalog, this.props.mapSources);
+
+        // convert the layer to something to render
+        const layer_objects = [];
+        for(let i = 0, ii = layers.length; i < ii; i++) {
+            const layer = layers[i];
+
+            layer_objects.push((
+                <div className='layer' key={ 'layers' + i }>
+                    <div className='layer-tools'>
+                        <UpTool store={this.props.store} layer={layer.layer} />
+                        <DownTool store={this.props.store} layer={layer.layer} />
+                    </div>
+                    { this.renderLayer(layer.layer) }
+                </div>
+            ));
         }
 
+        // put a message out if there are no layers.
         let no_layers_error = '';
         if(layers.length === 0) {
             no_layers_error = (<i>No layers are visible</i>);
@@ -70,7 +146,7 @@ class VisibleLayers extends FavoriteLayers {
         return (
             <div className="catalog visble-layers flat">
                 { no_layers_error }
-                { rendered_layers }
+                { layer_objects }
             </div>
         );
     }

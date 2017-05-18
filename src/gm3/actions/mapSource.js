@@ -537,3 +537,18 @@ export function getOrderedMapSources(mapSources) {
         return (a.zIndex < b.zIndex) ? -1 : 1;
     });
 }
+
+/* Get an action for setting the zIndex of a Map Source
+ *
+ * @param mapSourceName The name of the map-source
+ * @param zIndex        The new zindex.
+ *
+ * @return action.
+ */
+export function setMapSourceZIndex(mapSourceName, zIndex) {
+    return {
+        type: MAPSOURCE.SET_Z,
+        mapSourceName,
+        zIndex
+    };
+}

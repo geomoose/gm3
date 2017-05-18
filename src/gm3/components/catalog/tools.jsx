@@ -34,7 +34,7 @@ import * as util from '../../util';
 
 /** Generic class for basic "click this, do this" tools.
  */
-class Tool extends Component {
+export class Tool extends Component {
     constructor(props) {
         super(props);
 
