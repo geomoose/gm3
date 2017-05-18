@@ -210,8 +210,8 @@ export class Catalog extends Component {
     }
 
     renderLayer(layer) {
-        let toggle = (evt) => {
-            this.toggleLayer(layer, evt.target.checked);
+        let toggle = () => {
+            this.toggleLayer(layer, !isLayerOn(this.props.mapSources, layer));
             this.renderMapSources(layer);
         };
 
