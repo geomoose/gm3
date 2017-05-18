@@ -350,8 +350,6 @@
 		<layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		-->
 		<group title="Overlays">
-			<layer src="pipelines/pipelines"></layer>
-
 			<group title="County Layers" expand="false">
 
 				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" popups="true" refresh="10"> 
@@ -365,6 +363,7 @@
 				<layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
 			</group>
 
+			<layer src="pipelines/pipelines"></layer>
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
 		</group>
 

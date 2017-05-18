@@ -520,3 +520,20 @@ export function changeFeatures(mapSourceName, layerName, filter, properties) {
         mapSourceName, layerName, filter, properties
     };
 }
+
+/* Get the active map-sources sorted by zIndex.
+ *
+ */
+export function getOrderedMapSources(mapSources) {
+    let active = [];
+    for(let ms in mapSources) {
+        if(isMapSourceActive(map_sources[ms])) {
+            active.push(ms);
+        }
+    }
+
+    // sort the active sources by their zIndex.
+    return active.sort(function(a, b) {
+        return (a.zIndex < b.zIndex) ? -1 : 1;
+    });
+}
