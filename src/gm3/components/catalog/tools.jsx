@@ -55,7 +55,7 @@ export class Tool extends Component {
     }
 }
 
-/** Clears features from a vector layer. 
+/** Clears features from a vector layer.
  *
  */
 export class ClearTool extends Tool {

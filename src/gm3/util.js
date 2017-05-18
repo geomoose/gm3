@@ -49,9 +49,9 @@ export function getXmlTextContents(node) {
         return node.text;
     } else if(node.textContent) {
         return node.textContent;
-    } 
+    }
 
-    return null; 
+    return null;
 }
 
 
@@ -66,7 +66,7 @@ export function getXmlTextContents(node) {
  *  @param xml      An XML fragment.
  *  @param tagName  The tagname to return.
  *  @param multiple Whether to return an array or the first element.
- * 
+ *
  *  @returns Value of the text in the tag, or null if not found.
  */
 export function getTagContents(xml, tagName, multiple) {
@@ -84,12 +84,12 @@ export function getTagContents(xml, tagName, multiple) {
             return node_value;
         }
     }
-    
+
     return contents;
 }
 
 /** Compare two objects
- * 
+ *
  *  @param objA The first object
  *  @param objB The second object
  *  @param deep Whether to go "deeper" into the object.
@@ -131,14 +131,14 @@ export function objectsDiffer(objA, objB, deep) {
     }
 
     // The above loop ensures that all the keys
-    //  in "A" match a key in "B", if "B" has any 
+    //  in "A" match a key in "B", if "B" has any
     //  extra keys then the objects differ.
     for(const key of b_keys) {
         if(a_keys.indexOf(key) < 0) {
             return true;
         }
     }
-        
+
     return false;
 }
 
@@ -226,12 +226,12 @@ function inRange(value, min = null, max = null) {
     }
     if(min === null) {
         return (value < max);
-    } 
+    }
     if(max === null) {
         return (min < value);
     }
 
-    // if everything is null, then the value is 
+    // if everything is null, then the value is
     //  considered in range.
     return true;
 }
@@ -281,7 +281,7 @@ export function featureMatch(feature, filter) {
         if(!v && match_all) { return false; }
     }
 
-    // no false values could have been set 
+    // no false values could have been set
     //  and reach this point with match_all
     if(match_all) {
         return true;
@@ -296,7 +296,7 @@ export function featureMatch(feature, filter) {
  *
  *  @param {Array} features The list of features
  *  @param {Object} filter key-value pairs of filter for the features.
- *  @param {Boolean} inverse Optional. Defaults to true. 
+ *  @param {Boolean} inverse Optional. Defaults to true.
  *                           When true, filter out matching features.
  *                           When false,return matching features.
  *
@@ -315,8 +315,8 @@ export function filterFeatures(features, filter, inverse = true) {
 }
 
 /* Match the feature specified by the filter.
- * 
- * This is really a wrapper around filterFeatures and is presented 
+ *
+ * This is really a wrapper around filterFeatures and is presented
  * for code-clarity.
  *
  * @param {Array}  features The list of features.
@@ -367,7 +367,7 @@ export function getVersion() {
 /** Determine the extent of the features in a source.
  *  WARNING! This only works with vector sources.
  *
- * @param {MapSource} mapSource 
+ * @param {MapSource} mapSource
  *
  * @returns Array containing [minx,miny,maxx,maxy]
  */
@@ -458,7 +458,7 @@ export function getUtmZone(pt) {
 
     // No citation provideded for this calculation,
     // it was working in the GM2.X series without a lot
-    // of complaints. 
+    // of complaints.
     const zone = Math.floor((pt[0] / 6.0) + 30) + 1;
 
     // north zones are north of 0.

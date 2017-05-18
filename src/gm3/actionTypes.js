@@ -24,7 +24,7 @@
 
 /** Dictionary of GeoMoose Actions.
  *
- *  Every action for GeoMoose needs to be mapped to 
+ *  Every action for GeoMoose needs to be mapped to
  *  one of the 'action' dictionaries below.
  *
  */
@@ -115,5 +115,5 @@ export const UI = {
 export const PRINT = {
     FINISHED: 'PRINT_DONE',
     REQUEST: 'PRINT_REQUEST',
-    IMAGE: 'PRINT_IMAGE', 
+    IMAGE: 'PRINT_IMAGE',
 };

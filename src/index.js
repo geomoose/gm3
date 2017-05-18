@@ -24,8 +24,8 @@
 
 /** "index" module that ties together all the
  *  submodules of geomoose.  This is what ultimately defines
- *  the public API of GeoMoose. 
- * 
+ *  the public API of GeoMoose.
+ *
  */
 
 import 'babel-polyfill';

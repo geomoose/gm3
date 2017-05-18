@@ -51,7 +51,7 @@ class DownloadModal extends Modal {
 
     download() {
         let filename = 'geomoose_' + (new Date()).getTime();
-        filename += '.' + this.state.downloadFormat; 
+        filename += '.' + this.state.downloadFormat;
 
         // TODO: Sniff the real map projection
         const map_proj = 'EPSG:3857';
@@ -124,7 +124,7 @@ class DownloadModal extends Modal {
             </div>
         );
     }
-    
+
 }
 
 // setup the default prop options for the modal dialog.
@@ -147,7 +147,7 @@ export class DownloadTool extends Component {
 
     constructor() {
         super();
-        this.showModal = this.showModal.bind(this); 
+        this.showModal = this.showModal.bind(this);
     }
 
     showModal() {

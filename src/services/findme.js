@@ -42,7 +42,7 @@ function FindMeAction(Application, options) {
 
     /** This function is called everytime there is an identify query.
      *
-     *  @param selection contains a GeoJSON feature describing the 
+     *  @param selection contains a GeoJSON feature describing the
      *                   geography to be used for the query.
      *
      *  @param fields    is an array containing any user-input

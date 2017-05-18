@@ -74,7 +74,7 @@ class PrintImage extends Component {
             width: (this.props.width ? this.props.width : 600) + 'px',
             height: (this.props.height ? this.props.height : 400) + 'px',
         };
-        
+
         const center = this.props.mapView.center;
         const rez = this.props.mapView.resolution;
 

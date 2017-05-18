@@ -92,7 +92,7 @@ export default class HashTracker {
             // the layer from the URL is not "visible"
             if(visible_layers.indexOf(layers[i]) < 0) {
                 turn_on.push(layers[i]);
-            } 
+            }
         }
 
         for(var i = 0, ii = visible_layers.length; i < ii; i++) {
@@ -151,7 +151,7 @@ export default class HashTracker {
         const zxy = loc.split(this.joinSymbol).map(parseFloat);
         this.store.dispatch(mapActions.setView({
             // unset the "zoom level" which normally takes precendent.
-            zoom: null, 
+            zoom: null,
             center: [zxy[1], zxy[2]],
             resolution: zxy[0]
         }));
@@ -214,7 +214,7 @@ export default class HashTracker {
 
             // get the locaiton in htere.
             const loc = this.trackLocation(state.map);
-            new_hash += '&loc=' + [loc.z, loc.x, loc.y].join(this.joinSymbol); 
+            new_hash += '&loc=' + [loc.z, loc.x, loc.y].join(this.joinSymbol);
 
             if(this.lastHash !== new_hash) {
                 // update the hash first so we don't trigger

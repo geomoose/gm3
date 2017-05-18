@@ -55,7 +55,7 @@ class UploadModal extends Modal {
             </div>
         );
     }
-    
+
     parseFiles() {
         // grab the list of files.
         const files = this.refs.fileInput.files;
@@ -116,7 +116,7 @@ class UploadModal extends Modal {
                         self.props.store.dispatch(msActions.addFeatures(
                             src.mapSourceName, src.layerName, collection.features));
 
-                        // TODO: Notify the user that n-number of features 
+                        // TODO: Notify the user that n-number of features
                         //       were added to the layer.
                         // this.store.dispatch(createNotice('info', '...'));
                     } else {
@@ -154,7 +154,7 @@ export class UploadTool extends Component {
 
     constructor() {
         super();
-        this.showModal = this.showModal.bind(this); 
+        this.showModal = this.showModal.bind(this);
     }
 
     showModal() {

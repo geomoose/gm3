@@ -45,10 +45,10 @@ function SelectService(Application, options) {
 
     /** Limit the number of selection tools available */
     this.tools = {
-        'Point': true, 
+        'Point': true,
         'MultiPoint': true,
-        'Polygon': true, 
-        'LineString': true, 
+        'Polygon': true,
+        'LineString': true,
         'default': 'Polygon',
         'buffer': true
     };
@@ -74,7 +74,7 @@ function SelectService(Application, options) {
 
     /** This function is called everytime there is an select query.
      *
-     *  @param selection contains a GeoJSON feature describing the 
+     *  @param selection contains a GeoJSON feature describing the
      *                   geography to be used for the query.
      *
      *  @param fields    is an array containing any user-input
@@ -117,7 +117,7 @@ function SelectService(Application, options) {
 
     /** renderQueryResults is the function called to let the service
      *                     run basically any code it needs to execute after
-     *                     the query has been set to finish.  
+     *                     the query has been set to finish.
      *
      *  WARNING! This will be called multiple times. It is best to ensure
      *           there is some sort of flag to prevent multiple renderings.

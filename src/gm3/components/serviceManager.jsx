@@ -59,10 +59,10 @@ class ServiceManager extends Component {
 
         this.finishedQueries = {};
 
-        this.startQuery = this.startQuery.bind(this); 
-        this.drawTool = this.drawTool.bind(this); 
-        this.renderQuery = this.renderQuery.bind(this); 
-        this.renderQueryResults = this.renderQueryResults.bind(this); 
+        this.startQuery = this.startQuery.bind(this);
+        this.drawTool = this.drawTool.bind(this);
+        this.renderQuery = this.renderQuery.bind(this);
+        this.renderQueryResults = this.renderQueryResults.bind(this);
         this.onServiceFieldChange = this.onServiceFieldChange.bind(this);
 
         this.state = {
@@ -121,7 +121,7 @@ class ServiceManager extends Component {
                 fields.push({name: name, value: this.fieldValues[service][name]});
             }
 
-            // check to see if the selection should stay 
+            // check to see if the selection should stay
             //  'alive' in the background.
             if(service_def.keepAlive !== true) {
                 // shutdown the drawing on the layer.
@@ -145,7 +145,7 @@ class ServiceManager extends Component {
      *  @returns a Hash appropriate for dnagerouslySetInnerHTML
      */
     renderQueryResults(queryId, query) {
-        var html_contents = ''; 
+        var html_contents = '';
 
         if(query.progress === 'finished' && this.props.services[query.service]) {
             let service = this.props.services[query.service];
@@ -196,7 +196,7 @@ class ServiceManager extends Component {
 
 
     /** Activate a drawing tool for selection,
-     *  
+     *
      *  @param type Point, LineString, Polygon
      *
      */
@@ -209,10 +209,10 @@ class ServiceManager extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        // when the drawing type changes this needs to 
+        // when the drawing type changes this needs to
         //  update the service 'page' because those elements
         //  are tied to the state of the interactionType.
-        if(this.props.map.interactionType !== nextProps.map.interactionType 
+        if(this.props.map.interactionType !== nextProps.map.interactionType
            && nextProps.map.activeSource === null) {
             return true;
         }
@@ -246,8 +246,8 @@ class ServiceManager extends Component {
 
         // each array is the same length (see the test above)
         const len = old_keys.length;
-        // the arrays are un-sorted so go through each and 
-        //   if there is any missing keys, then kick back a true 
+        // the arrays are un-sorted so go through each and
+        //   if there is any missing keys, then kick back a true
         for(let i = 0; i < len; i++) {
             let found = false;
             for(let j = 0; j < len && !found; j++) {
@@ -289,7 +289,7 @@ class ServiceManager extends Component {
         return false;
     }
 
-    /** Iterate through all of the queries and execute 
+    /** Iterate through all of the queries and execute
      *  the service's "runQuery" method if the query is
      *  in the appropriate state.
      *
@@ -311,18 +311,18 @@ class ServiceManager extends Component {
     }
 
     componentWillUpdate(nextProps, nextState) {
-        // anytime this updates, the user should really be seeing the service 
+        // anytime this updates, the user should really be seeing the service
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
 
-        // if the measure tool has been triggered, quiet the 
+        // if the measure tool has been triggered, quiet the
         //  rest of hte noise.
         if(nextProps.queries.service === 'measure') {
 
 
-        // when the service changes, then clear out the previous 
+        // when the service changes, then clear out the previous
         //  selection features
-        } else if(this.state.lastService !== nextProps.queries.service 
+        } else if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
             let service_def = nextProps.services[nextProps.queries.service];
             // clear out the previous drawing tool when
@@ -343,7 +343,7 @@ class ServiceManager extends Component {
 
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
-            if(service_def && service_def.autoGo) { 
+            if(service_def && service_def.autoGo) {
                 let selection = nextProps.store.getState().map.selectionFeatures;
                 if(selection.length > 0) {
                     // okay, there *is* a selection feature.
@@ -356,7 +356,7 @@ class ServiceManager extends Component {
             }
         }
 
-        // check the queries and see if the services need to 
+        // check the queries and see if the services need to
         //  dispatch anything
         this.checkQueries(nextProps.queries);
     }

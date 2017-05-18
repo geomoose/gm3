@@ -142,7 +142,7 @@ class VisibleLayers extends FavoriteLayers {
         if(layers.length === 0) {
             no_layers_error = (<i>No layers are visible</i>);
         }
-        
+
         return (
             <div className="catalog visble-layers flat">
                 { no_layers_error }

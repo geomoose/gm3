@@ -40,7 +40,7 @@ export default function cursorReducer(state = default_view, action) {
         case MAP.CURSOR:
             return Object.assign({}, state, {coords: action.coords});
         case MAP.SKETCH_GEOMETRY:
-            return Object.assign({}, state, {sketchGeometry: action.geometry}); 
+            return Object.assign({}, state, {sketchGeometry: action.geometry});
         default:
             return state;
     }
