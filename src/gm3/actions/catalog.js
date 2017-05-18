@@ -98,6 +98,7 @@ function parseLayer(store, layerXml) {
     //  somehwere this should be more configurable but
     //  for now it'll "work."
     const tools = [
+        'down', 'up',
         'zoomto',
         'upload', 'download',
         'fade', 'unfade',

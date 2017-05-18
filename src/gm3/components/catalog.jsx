@@ -39,7 +39,7 @@ import { isLayerOn } from '../util';
 import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource';
 
-import { ClearTool, DrawTool, ZoomToTool, LegendToggle } from './catalog/tools';
+import { UpTool, DownTool, ClearTool, DrawTool, ZoomToTool, LegendToggle } from './catalog/tools';
 import { UploadTool } from './catalog/tools/upload';
 import { DownloadTool } from './catalog/tools/download';
 
@@ -157,14 +157,20 @@ export class Catalog extends Component {
     }
 
 
-    /** Parcel out the rendering of the tools.
+    /* Convert the tool definitions to components.
      */
-    getTools(layer) {
+    getTools(layer, enabledTools) {
         let tools = [];
-        for(let tool_name of layer.tools) {
+        for(let tool_name of enabledTools) {
             let key = layer.id + '_' + tool_name;
 
             switch(tool_name) {
+                case 'up':
+                    tools.push(<UpTool store={this.props.store} key={key} layer={layer} />);
+                    break;
+                case 'down':
+                    tools.push(<DownTool store={this.props.store} key={key} layer={layer} />);
+                    break;
                 case 'zoomto':
                     tools.push(<ZoomToTool store={this.props.store} key={key} layer={layer} />);
                     break;
@@ -194,10 +200,13 @@ export class Catalog extends Component {
         return tools;
     }
 
+    getToolsForLayer(layer) {
+        return this.getTools(layer, layer.tools);
+    }
+
     renderLayer(layer) {
         let toggle = () => {
             const map_sources = this.props.store.getState().mapSources;
-            console.log('TOGGLE', layer, isLayerOn(map_sources, layer));
             this.renderMapSources(layer, !isLayerOn(map_sources, layer));
         };
 
@@ -238,7 +247,7 @@ export class Catalog extends Component {
             refresh_tool = (<i className="refresh-icon" onClick={toggleRefresh}/>);
         }
 
-        let tools = this.getTools(layer);
+        let tools = this.getToolsForLayer(layer);
 
         let legend = false;
         if(layer.legend) {

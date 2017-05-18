@@ -138,15 +138,22 @@ function changeLayerFeatures(state, action) {
 }
 
 export default function mapSource(state = [], action) {
+    const new_elem = {};
+
     switch(action.type) {
         case MAPSOURCE.LAYER_VIS:
             return setLayerAttribute(state, action, 'on');
         case MAPSOURCE.LAYER_FAVORITE:
             return setLayerAttribute(state, action, 'favorite');
         case MAPSOURCE.ADD:
-            const new_elem = {};
             new_elem[action.mapSource.name] = action.mapSource;
             return Object.assign({}, state, new_elem);
+        case MAPSOURCE.SET_Z:
+            const new_z_ms = {};
+            new_z_ms[action.mapSourceName] = Object.assign({},
+                                                           state[action.mapSourceName],
+                                                           {zIndex: action.zIndex});
+            return Object.assign({}, state, new_z_ms);
         case MAPSOURCE.ADD_LAYER:
             if(state[action.mapSourceName]) {
                 const ms = {};
