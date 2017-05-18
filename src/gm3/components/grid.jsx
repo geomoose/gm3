@@ -111,7 +111,7 @@ class FilterModal extends ModalDialog {
             } else if(this.props.column.filter.type === 'range') {
                 this.setState({min: '', max: ''});
             } else {
-                this.setState({value: ''}); 
+                this.setState({value: ''});
             }
         }
         this.setState({open: false});
@@ -153,12 +153,12 @@ class ListFilterModal extends FilterModal {
 
         this.filter_values = [];
 
-        // when "values" is set in the column's 
+        // when "values" is set in the column's
         // filter property, that is expected to be an enumerated
         // list of values for picking-and-choosing.
         if(filter_def.values) {
             this.filter_values = filter_def.values;
-        } else { 
+        } else {
             const prop = this.props.column.property;
             // when the values are not specified they need
             // to be pulled from the results.
@@ -184,7 +184,7 @@ class ListFilterModal extends FilterModal {
     }
 
     /* onChange handles removing and adding the
-     * appropriate settings from the checkboxes. 
+     * appropriate settings from the checkboxes.
      */
     onChange(evt) {
         const target = evt.target;
@@ -207,7 +207,7 @@ class ListFilterModal extends FilterModal {
     isChecked(value) {
         return (this.state.value.indexOf(value) >= 0);
     }
-    
+
     renderBody() {
         const filter_def = this.props.column.filter;
 
@@ -219,15 +219,15 @@ class ListFilterModal extends FilterModal {
             const val = this.filter_values[i];
             settings.push((
                 <div key={ 'key' + i }>
-                    <input type="checkbox" 
+                    <input type="checkbox"
                         value={ val.value }
-                        checked={ this.isChecked(val.value) } 
+                        checked={ this.isChecked(val.value) }
                         onChange={ this.onChange } />
                     { val.label }
                 </div>
             ));
         }
-        
+
         return (
             <div>
                 { settings }
@@ -292,7 +292,7 @@ class RangeFilterModal extends FilterModal {
 /* Provides a control for filtering a column's values.
  */
 class ColumnFilter extends Component {
-    
+
     showFilterDialog() {
         this.refs.modal.setState({open: true});
     }
@@ -310,8 +310,8 @@ class ColumnFilter extends Component {
         switch(this.props.column.filter.type) {
             case 'list':
                 modal = (
-                    <ListFilterModal ref='modal' 
-                       column={this.props.column} 
+                    <ListFilterModal ref='modal'
+                       column={this.props.column}
                        results={this.props.results}
                        store={this.props.store} queryId={this.props.queryId} />
                 );
@@ -319,15 +319,15 @@ class ColumnFilter extends Component {
             case 'range':
                 modal = (
                     <RangeFilterModal ref='modal'
-                       column={this.props.column} 
+                       column={this.props.column}
                        results={this.props.results}
                        store={this.props.store} queryId={this.props.queryId} />
                 );
                 break;
             default:
                 modal = (
-                    <FilterModal ref='modal' 
-                       column={this.props.column} 
+                    <FilterModal ref='modal'
+                       column={this.props.column}
                        results={this.props.results}
                        store={this.props.store} queryId={this.props.queryId} />
                 );
@@ -337,7 +337,7 @@ class ColumnFilter extends Component {
         const filter_title = 'filter';
         return (
             <span>
-                <i title={ filter_title}  
+                <i title={ filter_title}
                    onClick={ () => { this.showFilterDialog() } } className="results-filter-icon"></i>
                 { modal }
             </span>
@@ -390,7 +390,7 @@ class Grid extends Component {
         let query_id = this.props.queries.order[0];
 
         for(let column_def of headerConf) {
-            let sort_tool = null; 
+            let sort_tool = null;
             let sort_classes = 'results-sort-icon';
             let sort_title = 'Click to sort';
 
@@ -405,9 +405,9 @@ class Grid extends Component {
                 sort_tool = (<i title={ sort_title } onClick={ () => { this.nextSort(column_def); } } className={ sort_classes }></i>);
             }
 
-            let filter = ( 
-                <ColumnFilter store={ this.props.store } column={ column_def } 
-                              results={results} queryId={ query_id } /> 
+            let filter = (
+                <ColumnFilter store={ this.props.store } column={ column_def }
+                              results={results} queryId={ query_id } />
             );
 
             header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool} {filter} </th>));
@@ -420,7 +420,7 @@ class Grid extends Component {
         let sorted_results = [].concat(results);
 
         let sort_col = this.state.sortBy;
-        let sort_asc = this.state.sortAsc; 
+        let sort_asc = this.state.sortAsc;
         let sort_as = this.state.sortAs;
 
         sorted_results.sort(function(a, b) {
@@ -533,7 +533,7 @@ class Grid extends Component {
                 }
             }
         }
-        
+
         // render the empty string if there is nothing to show.
         if(!display_table) {
             return null;

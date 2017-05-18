@@ -26,7 +26,7 @@
  *
  */
 
-import { MAPSOURCE } from '../actionTypes'; 
+import { MAPSOURCE } from '../actionTypes';
 
 import * as util from '../util';
 
@@ -76,7 +76,7 @@ function parseParams(msXml) {
  *  @returns The action object.
  */
 export function favoriteLayer(mapSourceName, layerName, favorite) {
-    return { 
+    return {
         type: MAPSOURCE.LAYER_FAVORITE,
         mapSourceName, layerName,
         favorite
@@ -106,7 +106,7 @@ function mapServerToDestType(msXml, conf, destType) {
         urls: urls,
         params: {
             'MAP': conf.mapfile_root + mapfile
-        }, 
+        },
     };
 
     return map_source;
@@ -233,7 +233,7 @@ export function addFromXml(xml, config) {
             legend: null
         };
 
-        // user defined legend. 
+        // user defined legend.
         // two types currently supported: "html" and "img"
         let legends = layerXml.getElementsByTagName('legend');
         if(legends.length > 0) {
@@ -322,14 +322,14 @@ export function getLayer(store, layer) {
  * @return The layer from the map-source in the store.
  */
 export function getLayerByPath(store, path) {
-    const p = path.split('/'); 
+    const p = path.split('/');
     return getLayer(store, {
         mapSourceName: p[0],
         layerName: p[1]
     });
 }
 
-/** This query is common enough that it's been reduced to 
+/** This query is common enough that it's been reduced to
  *  a handy function.
  *
  */
@@ -350,7 +350,7 @@ export function isFavoriteLayer(store, layer) {
 }
 
 /** Check whether a map-source is 'active',
- *  'active' is defined as having any layers 
+ *  'active' is defined as having any layers
  *  with status='on' or being a vector type map-source
  *  with the status='on'.
  *
@@ -371,7 +371,7 @@ function isMapSourceActive(mapSource) {
     return false;
 }
 
-/** Get the list of all map-sources which have a 
+/** Get the list of all map-sources which have a
  *  layer that is on.
  */
 export function getActiveMapSources(store) {
@@ -461,7 +461,7 @@ export function getVisibleLayers(store) {
 }
 
 /** Return the list of layers that can be queried.
- * 
+ *
  *  These layers are a subset of visible layers.
  *
  */

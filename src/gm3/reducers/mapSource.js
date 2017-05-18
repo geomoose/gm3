@@ -142,7 +142,7 @@ export default function mapSource(state = [], action) {
         case MAPSOURCE.LAYER_VIS:
             return setLayerAttribute(state, action, 'on');
         case MAPSOURCE.LAYER_FAVORITE:
-            return setLayerAttribute(state, action, 'favorite'); 
+            return setLayerAttribute(state, action, 'favorite');
         case MAPSOURCE.ADD:
             const new_elem = {};
             new_elem[action.mapSource.name] = action.mapSource;

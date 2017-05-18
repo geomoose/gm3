@@ -48,7 +48,7 @@ export default class ModalDialog extends Component {
 
     renderOption(option) {
         return (
-            <button key={option.value } 
+            <button key={option.value }
                     onClick={ () => { this.close(option.value) } }>
                         { option.label }
             </button>

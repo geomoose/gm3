@@ -53,7 +53,7 @@ export default class PrintModal extends Modal {
         // If the user overrides this then they just get their
         //  layouts.
         this.layouts = props.layouts ? props.layouts : DefaultLayouts;
-       
+
         this.pxConversion = {
             'pt': 1,
             'in': 72,
@@ -63,7 +63,7 @@ export default class PrintModal extends Modal {
         this.state = this.getMapSize(this.layouts[0], 1);
     }
 
-    /* Print the PDF! Or, ya know, close the dialog. 
+    /* Print the PDF! Or, ya know, close the dialog.
      */
     close(status) {
         if(status === 'print') {
@@ -108,7 +108,7 @@ export default class PrintModal extends Modal {
 
         // set the size
         doc.setFontSize(full_def.size);
-        // the color 
+        // the color
         doc.setTextColor(full_def.color[0], full_def.color[1], full_def.color[2]);
         // and the font face.
         doc.setFont(full_def.font, full_def.fontStyle);
@@ -216,9 +216,9 @@ export default class PrintModal extends Modal {
 
     /* The Map Image size changes based on the layout used
      * and the resolution selected by the user.
-     * 
+     *
      * @param layout The layout definition.
-     * @param resolution The "map size" multiplier. 
+     * @param resolution The "map size" multiplier.
      *
      * @return An object with "width" and "height" properties.
      */
@@ -246,7 +246,7 @@ export default class PrintModal extends Modal {
      * The layout or resolutoin has changed.
      */
     updateMapLayout() {
-        // check for the first map element and then 
+        // check for the first map element and then
         //  use that as the render size.
         const layout = this.layouts[parseInt(this.refs.layout.value)];
         // convert the resoltion to a multiplier.
@@ -303,7 +303,7 @@ export default class PrintModal extends Modal {
                 </p>
                 <p>
                     <label>Page layout:</label>
-                    { this.renderLayoutSelect() } 
+                    { this.renderLayoutSelect() }
                 </p>
                 <p>
                     <label>Resolution:</label>
@@ -318,7 +318,7 @@ export default class PrintModal extends Modal {
                 </div>
             </div>
         );
-                
+
     }
 
 }

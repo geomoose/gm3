@@ -60,7 +60,7 @@ function IdentifyService(Application, options) {
 
     /** This function is called everytime there is an identify query.
      *
-     *  @param selection contains a GeoJSON feature describing the 
+     *  @param selection contains a GeoJSON feature describing the
      *                   geography to be used for the query.
      *
      *  @param fields    is an array containing any user-input
@@ -95,7 +95,7 @@ function IdentifyService(Application, options) {
             if(query.results[path] && !query.results[path].failed) {
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
                 //  and the specified template and render it. This example uses an inline
-                //  template from the mapbook. 
+                //  template from the mapbook.
                 // The layer in the mapbook should have a <template name='identify'>
                 //  child which will be rendered here..
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);

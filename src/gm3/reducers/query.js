@@ -54,7 +54,7 @@ function queryProgress(queryId, state, progress) {
 
 /** Remove specific results from a query.
  *
- *  @param state The state 
+ *  @param state The state
  *  @param queryId A query ID
  *  @param filter An object describing matching feature properties.
  *
@@ -142,7 +142,7 @@ export default function queryReducer(state = default_query, action) {
             const rendered_results = [{data: action.data, target: action.target}].concat(state[action.id].rendered);
             const rendered_query = {};
             rendered_query[action.id] = Object({}, state[action.id], {rendered: rendered_results});
-            return Object.assign({}, state, rendered_query); 
+            return Object.assign({}, state, rendered_query);
         case MAP.QUERY_RESULTS_REMOVE:
             return filterQueryResults(state, action.id, action.filter);
         case MAP.QUERY_REMOVE:

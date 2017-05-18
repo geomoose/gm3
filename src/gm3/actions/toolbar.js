@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-/** Toolbar actions and parsing 
+/** Toolbar actions and parsing
  *
  */
 

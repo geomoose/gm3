@@ -24,7 +24,7 @@
 
 
 const default_state = {
-    state: 'printed', 
+    state: 'printed',
     // populated with a png or jpeg base64 string,
     printData: '',
     request: null,
@@ -42,7 +42,7 @@ import { PRINT } from '../actionTypes';
 export default function printReducer(state = default_state, action) {
     switch(action.type) {
         // requests come in specifying the size, center, and resolution.
-        case PRINT.REQUEST: 
+        case PRINT.REQUEST:
             return Object.assign({}, state, {
                 state: 'printing',
                 request: action.request

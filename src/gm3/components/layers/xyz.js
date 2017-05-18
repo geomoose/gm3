@@ -23,7 +23,7 @@
  */
 
 /** Collection of functions for defining a XYZ layers in a GeoMoose map.
- * 
+ *
  */
 
 import * as util from '../../util';
@@ -73,4 +73,4 @@ export function updateLayer(map, layer, mapSource) {
         src.setUrls(defn.urls);
     }
 }
-    
+

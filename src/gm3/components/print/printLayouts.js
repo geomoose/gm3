@@ -34,7 +34,7 @@ const LAYOUTS = [
         units: 'in',
         elements: [
             {
-                type: 'text', 
+                type: 'text',
                 size: 18, fontStyle: 'bold',
                 x: .5, y: .70, text: '{{title}}'
             },
@@ -62,7 +62,7 @@ const LAYOUTS = [
         units: 'in',
         elements: [
             {
-                type: 'text', 
+                type: 'text',
                 size: 18, fontStyle: 'bold',
                 x: .5, y: .70, text: '{{title}}'
             },
@@ -90,7 +90,7 @@ const LAYOUTS = [
         units: 'in',
         elements: [
             {
-                type: 'text', 
+                type: 'text',
                 size: 18, fontStyle: 'bold',
                 x: .5, y: .70, text: '{{title}}'
             },

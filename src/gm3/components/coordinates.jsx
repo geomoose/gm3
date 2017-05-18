@@ -48,7 +48,7 @@ class CoordinateDisplay extends Component {
         }
     }
 
-    /** Transform the map coordinate in to a lat-lon 
+    /** Transform the map coordinate in to a lat-lon
      *  set of coordinates.
      */
     getLatLonCoords() {
@@ -73,7 +73,7 @@ class CoordinateDisplay extends Component {
         let latlon_display = '';
 
         if(this.props.usng) {
-            usng_display = ( 
+            usng_display = (
                 <span className="coordinates map-usng">
                     <label>USNG:</label> { this.usng() }
                 </span>

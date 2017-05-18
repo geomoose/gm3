@@ -23,7 +23,7 @@
  */
 
 /** Collection of functions for defining a Bing layers in a GeoMoose map.
- * 
+ *
  */
 
 /** Create the parameters for a Bing Services layer.

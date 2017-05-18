@@ -23,8 +23,8 @@
  */
 
 /** This is used to define a *vector* layer source,
- *  it does *not* link this to a data source. 
- * 
+ *  it does *not* link this to a data source.
+ *
  */
 
 import * as util from '../../util';
