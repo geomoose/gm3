@@ -162,7 +162,7 @@ export class Catalog extends Component {
     getTools(layer, enabledTools) {
         let tools = [];
         for(let tool_name of enabledTools) {
-            let key = layer.id + '_' + tool_name; 
+            let key = layer.id + '_' + tool_name;
 
             switch(tool_name) {
                 case 'up':
