@@ -99,6 +99,8 @@ module.exports = {
 
 	 'no-whitespace-before-property': 'error',
 
+     'no-trailing-spaces': 'error',
+
 	 'space-before-function-paren': ['error', { anonymous: 'never', named: 'never' }],
 
 	 'space-infix-ops': 'error',
