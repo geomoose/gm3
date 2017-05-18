@@ -342,7 +342,7 @@ class Application {
         }
     }
 
-    /** Check to see if the state has an 'action' 
+    /** Check to see if the state has an 'action'
      *  to be executed.  Run it and then clear the state.
      */
     runAction() {
@@ -410,9 +410,9 @@ class Application {
             var body = document.getElementsByTagName('body')[0];
             var modal_div = document.createElement('div');
             body.appendChild(modal_div);
-           
+
             // configure the new props.
-            const props = { 
+            const props = {
                 title: title,
                 onClose: callback,
                 options,
@@ -442,4 +442,4 @@ class Application {
 };
 
 
-export default Application; 
+export default Application;

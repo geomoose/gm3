@@ -49,7 +49,7 @@ class CatalogLegend extends Component {
 
         switch(legend.type) {
             case 'html':
-                return (<div key={key} className="legend-html" 
+                return (<div key={key} className="legend-html"
                         dangerouslySetInnerHTML={this.htmlLegend(legend.html)} />);
             case 'img':
                 const img_tags = [];
@@ -60,7 +60,7 @@ class CatalogLegend extends Component {
             case 'nolegend':
             default:
                 // no legend, no DOM'ing.
-                return false; 
+                return false;
         }
     }
 
@@ -74,7 +74,7 @@ class CatalogLegend extends Component {
         if(!isLayerOn(this.props.mapSources, layer)) {
             return false;
         }
-       
+
         // put a legend on it.
         return (<div className="catalog-legend">
             { layer.src.map(this.renderLegend) }

@@ -23,7 +23,7 @@
  */
 
 /** The big bopper of all the GeoMoose Components, the Catalog.
- * 
+ *
  *  This is the most exercised component of GeoMoose and serves
  *  as the 'dispatch' center to the map, presenting the layers
  *  of the mapbook in a nice tree format.
@@ -96,7 +96,7 @@ class Map extends Component {
                 agsLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'vector' :
-            case 'wfs' : 
+            case 'wfs' :
                 vectorLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'bing':
@@ -261,7 +261,7 @@ class Map extends Component {
         }
         const geojson_format = new ol.format.GeoJSON({
             dataProjection: 'EPSG:4326',
-            featureProjection: query_projection 
+            featureProjection: query_projection
         });
 
         let view = this.props.mapView;
@@ -277,7 +277,7 @@ class Map extends Component {
         // map the functions from OpenLayers to the internal
         //  types
         let filter_mapping = {
-            'like': ol.format.filter.like, 
+            'like': ol.format.filter.like,
             'ilike': function(name, value) {
                 return ol.format.filter.like(name, value, '*', '.', '!', false);
             },
@@ -295,16 +295,16 @@ class Map extends Component {
             // convert the geometry to the query projection
             ol_geom.transform(projection, query_projection);
             // add the intersection filter to the filter stack.
-            filters.push(ol.format.filter.intersects(geom_field, ol_geom)); 
+            filters.push(ol.format.filter.intersects(geom_field, ol_geom));
         }
-        
+
         for(let filter of query.fields) {
             // TODO: Catch "filter.type" and use internal conversion
             //       functions for specialty filters.
             filters.push(filter_mapping[filter.comparitor](filter.name, filter.value));
         }
 
-        // when multiple filters are set then they need to be 
+        // when multiple filters are set then they need to be
         //  chained together to create the compound filter.
         let chained_filters = null;
         if(filters.length > 1) {
@@ -330,12 +330,12 @@ class Map extends Component {
             featurePrefix: type_parts[0],
             featureTypes: [type_parts[1]],
             outputFormat: output_format,
-            filter: chained_filters 
+            filter: chained_filters
         });
 
         let wfs_query_xml = new XMLSerializer().serializeToString(feature_request);
 
-        // Ensure all the extra URL params are attached to the 
+        // Ensure all the extra URL params are attached to the
         //  layer.
         let wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
 
@@ -345,14 +345,14 @@ class Map extends Component {
             url: wfs_url,
             method: 'post',
             contentType: 'text/xml',
-            data: wfs_query_xml, 
+            data: wfs_query_xml,
             success: (response) => {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
                 if(response) {
                     let gml_format = new ol.format.GML2();
 
-                    let features = gml_format.readFeatures(response); 
+                    let features = gml_format.readFeatures(response);
                     for(const feature of features) {
                         feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
                     }
@@ -420,7 +420,7 @@ class Map extends Component {
     sortOlLayers() {
         let layers = [];
         for(let ms_name in this.olLayers) {
-            layers.push(this.olLayers[ms_name]); 
+            layers.push(this.olLayers[ms_name]);
         }
 
         layers.sort((a, b) => {
@@ -458,7 +458,7 @@ class Map extends Component {
                 let wms_src = this.olLayers[mapSource.name].getSource();
                 let params = wms_src.getParams();
                 // ".ck" = "cache killer"
-                params['.ck'] = (new Date()).getMilliseconds(); 
+                params['.ck'] = (new Date()).getMilliseconds();
                 wms_src.updateParams(params);
                 console.log('refreshed wms layer', mapSource.name);
                 // this.olLayers[mapSource.name].getSource().refresh();
@@ -493,14 +493,14 @@ class Map extends Component {
         // annoying O(n^2) iteration to see if the mapsource needs
         //  to be turned off.
         for(let ms_name in this.olLayers) {
-            // if the ms_name is not active, turn the entire source off. 
+            // if the ms_name is not active, turn the entire source off.
             if(active_map_sources.indexOf(ms_name) < 0) {
                 this.olLayers[ms_name].setVisible(false);
                 this.removeRefreshInterval(ms_name);
             }
         }
 
-        // for each one of the active mapsources, 
+        // for each one of the active mapsources,
         //  determine if the olSource already exists, if not
         //   create it, if it does, turn it back on.
         for(let ms_name of active_map_sources) {
@@ -516,7 +516,7 @@ class Map extends Component {
             }
 
             // if there is a refresh interval set then
-            //  create an interval which refreshes the 
+            //  create an interval which refreshes the
             //  layer.
             if(map_source.refresh !== null) {
                 // here's hoping this is an integer,
@@ -596,7 +596,7 @@ class Map extends Component {
             if(this.props.mapView.zoom) {
                 view_params.zoom = this.props.mapView.zoom;
             } else {
-                view_params.resolution = this.props.mapView.resolution; 
+                view_params.resolution = this.props.mapView.resolution;
             }
         }
 
@@ -649,7 +649,7 @@ class Map extends Component {
      *  @param type The type of drawing tool (Point,LineString,Polygon)
      *  @param path The layer on which to mark.  null = "selection", the ephemeral layer.
      *  @param oneAtATime {Boolean} When true, only one feature will be allowed to be drawn
-     *                              at a time.  
+     *                              at a time.
      *
      */
     activateDrawTool(type, path, oneAtATime) {
@@ -784,14 +784,14 @@ class Map extends Component {
                 bbox = ol.proj.transformExtent(bbox, ol.proj.get(bbox_code), map_proj);
             }
             // move the map to the new extent.
-            this.map.getView().fit(bbox, this.map.getSize()); 
+            this.map.getView().fit(bbox, this.map.getSize());
         }
 
         // check to see if the view has been altered.
         if(nextProps && nextProps.mapView) {
             const map_view = this.map.getView();
             const view = nextProps.mapView;
-            
+
             const center = map_view.getCenter();
             const resolution = map_view.getResolution();
 
@@ -803,7 +803,7 @@ class Map extends Component {
             }
         }
 
-        // ensure that the selection features have been 'cleared' 
+        // ensure that the selection features have been 'cleared'
         //  appropriately.
         if(nextProps && nextProps.mapView.selectionFeatures.length === 0) {
             if(this.selectionLayer) {
@@ -827,7 +827,7 @@ class Map extends Component {
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
                 let is_selection = (this.props.mapView.activeSource === null);
-                this.activateDrawTool(this.props.mapView.interactionType, 
+                this.activateDrawTool(this.props.mapView.interactionType,
                                       this.props.mapView.activeSource, is_selection);
             }
 

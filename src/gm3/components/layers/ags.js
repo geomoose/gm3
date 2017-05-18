@@ -23,7 +23,7 @@
  */
 
 /** Collection of functions for defining a ArcGIS Rest layers in a GeoMoose map.
- * 
+ *
  */
 
 /** Create the parameters for a ArcGIS REST Services layer.
@@ -60,4 +60,4 @@ export function updateLayer(map, layer, mapSource) {
         src.setUrl(defn.url);
     }
 }
-    
+

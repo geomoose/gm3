@@ -42,13 +42,13 @@ export class MeasureTool extends Component {
         };
     }
 
-    /* Get the bearing of a drawing.  
+    /* Get the bearing of a drawing.
      * This is directly ported from GeoMoose 2.X
      *
      * @param {Array} pointA Array of x,y
      * @param {Array} pointB Array of x,y
      *
-     * @return {string} Bearing description 
+     * @return {string} Bearing description
      */
     getBearing(pointA, pointB) {
         var bearing = '-';
@@ -143,7 +143,7 @@ export class MeasureTool extends Component {
 
             segments.push({
                 id: i,
-                len: seg_len, bearing 
+                len: seg_len, bearing
             });
         }
 
@@ -235,8 +235,8 @@ export class MeasureTool extends Component {
             );
         } else if (g.type === 'LineString') {
             return this.renderSegments(g);
-        } else if (g.type === 'Polygon') { 
-            // assume polygon 
+        } else if (g.type === 'Polygon') {
+            // assume polygon
             return this.renderArea(g);
         }
 

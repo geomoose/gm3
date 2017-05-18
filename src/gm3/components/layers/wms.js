@@ -23,7 +23,7 @@
  */
 
 /** Collection of functions for defining a WMS layers in a GeoMoose map.
- * 
+ *
  */
 
 import * as util from '../../util';
@@ -43,7 +43,7 @@ function defineSource(mapSource) {
     return {
         url: mapSource.urls[0],
         // This is a carry over from previous generations behaviour.
-        ratio: 1.0, 
+        ratio: 1.0,
         params: Object.assign({'LAYERS': layers.join(',')}, mapSource.params),
         serverType: mapSource.serverType
     }

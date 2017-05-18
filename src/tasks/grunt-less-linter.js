@@ -59,7 +59,7 @@ module.exports = function(grunt) {
         const data = grunt.file.read(filename)
 
         lintSelectors(filename, data);
-        
+
         const lines = data.split('\n');
 
         for(let line = 0, n_lines = lines.length; line < n_lines; line++) {

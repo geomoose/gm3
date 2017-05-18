@@ -50,7 +50,7 @@ class PrintPreviewImage extends Component {
             display: 'block',
             width: '100%'
         };
-        
+
         if(this.props.print.printData) {
             return (<img style={image_style} src={ this.props.print.printData }/>);
         }

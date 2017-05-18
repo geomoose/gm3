@@ -58,7 +58,7 @@ export default function mapReducer(state = default_view, action) {
             return Object.assign({}, state, {extent: {bbox: action.extent, projection: action.projection}});
         case MAP.CHANGE_TOOL:
             return Object.assign({}, state, {
-                activeSource: action.src, 
+                activeSource: action.src,
                 interactionType: action.tool
             })
         case MAP.ADD_SELECTION_FEATURE:

@@ -42,10 +42,10 @@ function SearchService(Application, options) {
     /** Name will be set by the application when the service is registered. */
     this.name = '';
 
-    /** Limit the number of selection tools available 
+    /** Limit the number of selection tools available
      *  No geo selection tools are used for search
      * */
-    this.tools = {}; 
+    this.tools = {};
 
     /** User input fields */
     this.fields = options.fields ? options.fields : [
@@ -107,7 +107,7 @@ function SearchService(Application, options) {
             if(query.results[path] && !query.results[path].failed) {
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
                 //  and the specified template and render it. This example uses an inline
-                //  template from the mapbook. 
+                //  template from the mapbook.
                 // The layer in the mapbook should have a <template name='identify'>
                 //  child which will be rendered here..
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);
@@ -125,7 +125,7 @@ function SearchService(Application, options) {
 
     /** renderQueryResults is the function called to let the service
      *                     run basically any code it needs to execute after
-     *                     the query has been set to finish.  
+     *                     the query has been set to finish.
      *
      *  WARNING! This will be called multiple times. It is best to ensure
      *           there is some sort of flag to prevent multiple renderings.
@@ -158,5 +158,5 @@ function SearchService(Application, options) {
         }
     }
 
-                        
+
 }

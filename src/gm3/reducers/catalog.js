@@ -40,7 +40,7 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
         case CATALOG.ADD_LAYER:
         case CATALOG.ADD_GROUP:
             var new_elem = {};
-            var ch = action.child; 
+            var ch = action.child;
             new_elem[ch.id] = ch;
             return Object.assign({}, state, new_elem);
         case CATALOG.ADD_CHILD:
@@ -60,7 +60,7 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
             });
 
             // then create an 'update' object which will
-            //  properly mixin the new elements with the 
+            //  properly mixin the new elements with the
             //  rest of the state.
             const mixin = {};
             mixin[p] = new_elem;
