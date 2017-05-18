@@ -101,6 +101,7 @@ export function getLegend(mapSource, mapView, layerName) {
         'VERSION': '1.1.0',
         'WIDTH': '250',
         'LAYER': layerName,
+        'FORMAT': 'image/png',
     }, mapSource.params);
 
     const images = [];
