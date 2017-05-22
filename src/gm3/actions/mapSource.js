@@ -174,7 +174,7 @@ export function addFromXml(xml, config) {
         map_source.zIndex = MS_Z_INDEX;
         MS_Z_INDEX--;
     }
-   
+
     // try to get an opacity,  if it won't parse then default to 1.0
     map_source.opacity = parseFloat(map_source.opacity);
     if(isNaN(map_source.opacity)) {
@@ -570,6 +570,6 @@ export function setOpacity(mapSourceName, opacity) {
     return {
         type: MAPSOURCE.SET_OPACITY,
         mapSourceName,
-        opacity 
+        opacity
     };
 }
