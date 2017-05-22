@@ -154,6 +154,12 @@ export default function mapSource(state = [], action) {
                                                            state[action.mapSourceName],
                                                            {zIndex: action.zIndex});
             return Object.assign({}, state, new_z_ms);
+        case MAPSOURCE.SET_OPACITY:
+            const new_opacity_ms = {};
+            new_opacity_ms[action.mapSourceName] = Object.assign({},
+                                                           state[action.mapSourceName],
+                                                           {opacity: action.opacity});
+            return Object.assign({}, state, new_opacity_ms);
         case MAPSOURCE.ADD_LAYER:
             if(state[action.mapSourceName]) {
                 const ms = {};

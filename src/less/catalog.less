@@ -213,6 +213,19 @@
         }
     }
 
+    .tool.fade {
+        opacity: .50;
+    }
+
+    .tool.fade, .tool.unfade {
+        .fa;
+
+        &:before {
+            content: @fa-var-adjust;
+        }
+    }
+
+
 }
 
 .layer.favorite {

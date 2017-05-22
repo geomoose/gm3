@@ -158,6 +158,7 @@ export function addFromXml(xml, config) {
         urls: util.getTagContents(xml, 'url', true),
         type: xml.getAttribute('type'),
         label: xml.getAttribute('title'),
+        opacity: xml.getAttribute('opacity'),
         zIndex: xml.getAttribute('z-index'),
         queryable: util.parseBoolean(xml.getAttribute('queryable'), true),
         refresh: null,
@@ -173,7 +174,12 @@ export function addFromXml(xml, config) {
         map_source.zIndex = MS_Z_INDEX;
         MS_Z_INDEX--;
     }
-
+   
+    // try to get an opacity,  if it won't parse then default to 1.0
+    map_source.opacity = parseFloat(map_source.opacity);
+    if(isNaN(map_source.opacity)) {
+        map_source.opacity = 1.0;
+    }
 
     // allow server-type hinting for hidpi displays.
     let server_type = xml.getAttribute('server-type');
@@ -550,5 +556,20 @@ export function setMapSourceZIndex(mapSourceName, zIndex) {
         type: MAPSOURCE.SET_Z,
         mapSourceName,
         zIndex
+    };
+}
+
+/* Get an action for setting the opacity of a Map Source
+ *
+ * @param mapSourceName The name of the map-source
+ * @param opacity       The new opacity (float between 0 and 1)
+ *
+ * @return action.
+ */
+export function setOpacity(mapSourceName, opacity) {
+    return {
+        type: MAPSOURCE.SET_OPACITY,
+        mapSourceName,
+        opacity 
     };
 }
