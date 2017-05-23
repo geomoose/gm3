@@ -657,14 +657,14 @@ class Map extends Component {
             Point: 'End Drawing',
             Select: 'End Selection',
         }[type];
-       
+
         // helpful default behaviour for when the description
         //  is not defined.
         if(typeof(tool_desc) === 'undefined') {
             tool_desk = 'End ' + type;
         }
 
-        // yikes this is super not-reacty.  
+        // yikes this is super not-reacty.
         // But it's necessary to bridge the gap to open layers.
         const button = document.createElement('button');
         button.innerHTML = '<i class="stop tool"></i> ' + tool_desc;
