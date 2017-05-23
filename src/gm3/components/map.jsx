@@ -676,7 +676,7 @@ class Map extends Component {
         // create a wrapper div that places the button in the map
         const elem = document.createElement('div');
         elem.className = 'stop-tool ol-unselectable ol-control';
-        elem.append(button);
+        elem.appendChild(button);
 
         // this creates the actual OL controls and adds it to the map
         this.stopTool = new ol.control.Control({
