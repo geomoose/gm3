@@ -215,6 +215,7 @@ class ServiceManager extends Component {
         //  update the service 'page' because those elements
         //  are tied to the state of the interactionType.
         if(this.props.map.interactionType !== nextProps.map.interactionType
+           && nextProps.map.interactionType !== null
            && nextProps.map.activeSource === null) {
             return true;
         }
