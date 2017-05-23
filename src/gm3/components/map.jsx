@@ -514,6 +514,7 @@ class Map extends Component {
                 this.olLayers[ms_name].setVisible(true);
             }
             this.olLayers[ms_name].setZIndex(map_source.zIndex);
+            this.olLayers[ms_name].setOpacity(map_source.opacity);
 
             // if there is a refresh interval set then
             //  create an interval which refreshes the

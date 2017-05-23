@@ -99,10 +99,9 @@ function parseLayer(store, layerXml) {
     //  for now it'll "work."
     const tools = [
         'down', 'up',
+        'fade', 'unfade',
         'zoomto',
         'upload', 'download',
-        'fade', 'unfade',
-        'up', 'down',
         'legend-toggle',
         'draw-point', 'draw-line', 'draw-polygon',
         'clear'

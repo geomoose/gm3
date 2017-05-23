@@ -40,6 +40,7 @@ import { CATALOG, MAPSOURCE } from '../actionTypes';
 import * as mapSourceActions from '../actions/mapSource';
 
 import { UpTool, DownTool, ClearTool, DrawTool, ZoomToTool, LegendToggle } from './catalog/tools';
+import { FadeTool, UnfadeTool } from './catalog/tools';
 import { UploadTool } from './catalog/tools/upload';
 import { DownloadTool } from './catalog/tools/download';
 
@@ -170,6 +171,12 @@ export class Catalog extends Component {
                     break;
                 case 'down':
                     tools.push(<DownTool store={this.props.store} key={key} layer={layer} />);
+                    break;
+                case 'fade':
+                    tools.push(<FadeTool store={this.props.store} key={key} layer={layer} />);
+                    break;
+                case 'unfade':
+                    tools.push(<UnfadeTool store={this.props.store} key={key} layer={layer} />);
                     break;
                 case 'zoomto':
                     tools.push(<ZoomToTool store={this.props.store} key={key} layer={layer} />);

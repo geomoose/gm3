@@ -199,3 +199,55 @@ export class DownTool extends UpTool {
         this.direction = 1;
     }
 }
+
+/* Tool to "fade" a layer. Aka, take away opacity.
+ */
+export class FadeTool extends Tool {
+    constructor() {
+        super();
+        this.tip = 'Fade layer';
+        this.iconClass = 'fade tool';
+        this.direction = -.10;
+    }
+
+    onClick() {
+        // get the current state and the first src.
+        const state = this.props.store.getState();
+
+        // hash the unique map sources.
+        const map_sources = {};
+
+        for(const src of this.props.layer.src) {
+            map_sources[src.mapSourceName] = true;
+        }
+
+        for(const ms_name in map_sources) {
+            console.log('setting for ', ms_name);
+            // get the current opacity
+            const ms_opacity = state.mapSources[ms_name].opacity;
+
+            // calculate the new opacity.
+            let new_opacity = ms_opacity + this.direction;
+
+            // check the bounds
+            if(new_opacity < 0) {
+                new_opacity = 0;
+            } else if(new_opacity > 1) {
+                new_opacity = 1;
+            }
+
+            this.props.store.dispatch(msActions.setOpacity(ms_name, new_opacity));
+        }
+    }
+}
+
+/* Tool to "unfade" a layer. Aka, add opacity.
+ */
+export class UnfadeTool extends FadeTool {
+    constructor() {
+        super();
+        this.tip = 'Unfade layer';
+        this.iconClass = 'unfade tool';
+        this.direction = .10;
+    }
+}
