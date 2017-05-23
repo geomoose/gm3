@@ -374,17 +374,17 @@
 		</group>
 
 		<group title="Backgrounds" expand="true" multiple="false">
-			<layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
-			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="false" unfade="false"/>
-			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="false" unfade="false"/>
-	<!--		<layer title="OpenStreetMap - Cycle Map" src="thunderforest/osm_cycle_map" legend="false" fade="false" unfade="false"/> -->
+			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
+			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
+	<!--		<layer title="OpenStreetMap - Cycle Map" src="thunderforest/osm_cycle_map" legend="false" fade="true" unfade="true"/> -->
 			
-			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="false" unfade="false"/>
-			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="false" unfade="false"/>
-			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="false" unfade="false"/>
-			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="false" unfade="false"/>
-			<layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="false" unfade="false"/>
+			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
+			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
+			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
+			<layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
 		</group>
 	</catalog>
 
