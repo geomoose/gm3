@@ -645,6 +645,59 @@ class Map extends Component {
         this.refreshMapSources();
     }
 
+    /* Add a "stop" tool to the map.
+     *
+     * @param type The type of drawing tool.
+     *
+     */
+    createStopTool(type) {
+        // "translate" a description of the tool
+        let tool_desc = {
+            Polygon: 'End Drawing',
+            LineString: 'End Drawing',
+            Point: 'End Drawing',
+            Select: 'End Selection',
+        }[type];
+
+        // helpful default behaviour for when the description
+        //  is not defined.
+        if(typeof(tool_desc) === 'undefined') {
+            tool_desk = 'End ' + type;
+        }
+
+        // yikes this is super not-reacty.
+        // But it's necessary to bridge the gap to open layers.
+        const button = document.createElement('button');
+        button.innerHTML = '<i class="stop tool"></i> ' + tool_desc;
+        // when the button is clicked, stop drawing.
+        button.onclick = () => {
+            this.props.store.dispatch(mapActions.changeTool(null));
+        };
+
+        // create a wrapper div that places the button in the map
+        const elem = document.createElement('div');
+        elem.className = 'stop-tool ol-unselectable ol-control';
+        elem.appendChild(button);
+
+        // this creates the actual OL controls and adds it to the map
+        this.stopTool = new ol.control.Control({
+            element: elem
+        });
+        this.map.addControl(this.stopTool);
+    }
+
+    /* Remove the stop tool from the map.
+     *
+     */
+    removeStopTool() {
+        if(this.stopTool) {
+            // remove it from the map
+            this.map.removeControl(this.stopTool);
+            // set it to null.
+            this.stopTool = null;
+        }
+    }
+
     /** Switch the drawing tool.
      *
      *  @param type The type of drawing tool (Point,LineString,Polygon)
@@ -667,7 +720,6 @@ class Map extends Component {
         //  else use the specified source.
         let source = this.selectionLayer.getSource();
         if(!is_selection) {
-            console.log('MAP SOURCE', map_source_name);
             source = this.olLayers[map_source_name].getSource();
         }
 
@@ -680,6 +732,10 @@ class Map extends Component {
 
         // "null" interaction mean no more drawing.
         if(type !== null) {
+            // add a "stop" button to the map, this provides
+            //  clarity to the user as to what interaction is currently active.
+            this.createStopTool(type);
+
             // switch to the new drawing tool.
             if(type === 'Select') {
                 this.drawTool = new ol.interaction.Select({
@@ -753,6 +809,9 @@ class Map extends Component {
             // null out for logic.
             this.drawTool = null;
         }
+
+        // remove the stop tool from the map
+        this.removeStopTool();
     }
 
     /** This is a hack for OpenLayers. It makes sure the map is
