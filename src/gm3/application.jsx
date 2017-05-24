@@ -373,21 +373,8 @@ class Application {
         // pass
     }
 
-    /** Bridge to a useful AJAX handler.
-     *
-     *  this is really a direct bridge to reqwest, which is the
-     *  httplib used by the application.
-     *
-     *  @param {Object} opts The options for Reqwest.
-     *
-     */
-    xhr(opts) {
-        return Request(opts);
-    }
-
     /* Show an alert type dialog
      */
-
     alert(signature, message, callback = null) {
         const options = [
             {label: 'Okay', value: 'dismiss'}

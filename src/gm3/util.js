@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import Request from 'reqwest';
+
 /** Collection of handy functions
  */
 
@@ -603,3 +605,16 @@ export function getLayersByZOrder(catalog, mapSources) {
 
     return layers;
 }
+
+/** Bridge to a useful AJAX handler.
+ *
+ *  this is really a direct bridge to reqwest, which is the
+ *  httplib used by the application.
+ *
+ *  @param {Object} opts The options for Reqwest.
+ *
+ */
+export function xhr(opts) {
+    return Request(opts);
+}
+
