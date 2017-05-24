@@ -1,4 +1,4 @@
-/** Demo test application.  
+/** Demo test application.
  *
  *  WARNING! ACHTUNG! THIS IS FOR DEVELOPMENT PURPOSES ONLY!!!
  *
@@ -83,7 +83,21 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.Grid, 'results-grid');
     app.add(gm3.components.Version, 'version');
     app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
-        usng: true, latLon: true
+        projections:  [
+            {
+                label: 'X,Y',
+                ref: 'xy'
+            },
+            {
+                label: 'USNG',
+                ref: 'usng'
+            },
+            {
+                label: 'Lat,Lon',
+                ref: 'EPSG:4326',
+                precision: 3
+            }
+        ]
     });
 
 
@@ -92,10 +106,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
     app.registerAction('print', function() {
         this.run = function() {
-           print_preview.setState({open: true}); 
+           print_preview.setState({open: true});
         }
     }, {});
-            
+
 
     tracker.startTracking();
     hash_tracker.startTracking();
