@@ -25,6 +25,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import USNG from 'usng-tools-js';
+import proj4 from 'proj4';
+
+import { addProjDef } from '../util.js';
 
 import proj from 'ol/proj';
 
@@ -33,6 +36,46 @@ class CoordinateDisplay extends Component {
     constructor(props) {
         super(props);
         this.u = new USNG();
+        this.defaultProjections = [
+            {
+                label: 'X,Y',
+                ref: 'xy'
+            },
+            {
+                label: 'Lat,Lng',
+                ref: 'EPSG:4326'
+            },
+            {
+                label: 'USNG',
+                ref: 'usng'
+            }
+        ];
+        this.namedProjections = ['xy', 'usng'];
+        this.getProjectionCoords = this.getProjectionCoords.bind(this);
+        this.getCoordinateDisplay = this.getCoordinateDisplay.bind(this);
+
+        /**
+         * Validate specified projections
+         *     - Register undefined projections with Proj4 if <projDef> property is specified
+         *     - Add special-case projections ('xy', 'usng')
+         *     - If not a special case, add if Proj definition exists
+         */
+        this.projections = [];
+        for(let projection of this.props.projections) {
+            if(typeof projection.projDef !== "undefined") {
+                addProjDef(proj4, projection.ref, projection.projDef);
+            }
+            let isNamedProjection = (this.namedProjections.indexOf(projection.ref) !== -1);
+            let isDefinedProjection = (ol.proj.get(projection.ref) !== null);
+            if(isNamedProjection || isDefinedProjection) {
+                this.projections.push(projection);
+            }
+        }
+
+        // if no projections are specified, use default projections
+        if(!this.props.projections) {
+            this.projections = this.defaultProjections;
+        }
     }
 
     mapXY() {
@@ -63,39 +106,57 @@ class CoordinateDisplay extends Component {
         return proj.transform(this.props.cursor.coords, map_proj, latlon_proj);
     }
 
-    /** This formats the lat-lon as a string.
-     */
-    latLon() {
-        let latlon = this.getLatLonCoords();
-        return latlon[1].toFixed(3) + ', ' + latlon[0].toFixed(3);
+    getProjectionCoords(projection) {
+        // TODO: The projection should be stored in the store,
+        //       and defined by the user.
+        const map_proj = new ol.proj.get('EPSG:3857');
+        const dest_proj = new ol.proj.get(projection.ref);
+
+        // transform the point
+        let coords = ol.proj.transform(this.props.cursor.coords, map_proj, dest_proj);
+        if (projection.precision) {
+            return coords.map((coord) => coord.toFixed(projection.precision))
+        }
+        return coords;
+    }
+
+    getCoordinateDisplay(projection) {
+        let display = '';
+        switch (projection.ref) {
+            case 'usng':
+                display = (
+                    <span className="coordinates map-usng" key="usng">
+                        <label>{projection.label}</label> { this.usng() }
+                    </span>
+                );
+                break;
+
+            case 'xy':
+                display = (
+                    <span className="coordinates map-xy" key="xy">
+                        <label>{projection.label}</label> { this.mapXY() }
+                    </span>
+                );
+                break;
+            default: {
+                let className = "coordinates map-" + projection.ref.replace(/:/g, "-");
+                let coords = this.getProjectionCoords(projection);
+                display = (
+                    <span className={className} key={projection.ref}>
+                        <label>{projection.label}</label> { coords[0] + ", " + coords[1] }
+                    </span>
+                )
+                break;
+            }
+        }
+        return display;
     }
 
     render() {
-        let usng_display = '';
-        let latlon_display = '';
-
-        if(this.props.usng) {
-            usng_display = (
-                <span className="coordinates map-usng">
-                    <label>USNG:</label> { this.usng() }
-                </span>
-            );
-        }
-        if(this.props.latLon) {
-            latlon_display = (
-                <span className="coordinates map-lat-lon">
-                    <label>Lat,Lon:</label> { this.latLon() }
-                </span>
-            );
-        }
-
+        let coordinateDisplays = this.projections.map(this.getCoordinateDisplay)
         return (
             <span className="coordinate-display">
-                <span className="coordinates map-xy">
-                    <label>X,Y:</label> { this.mapXY() }
-                </span>
-                { usng_display }
-                { latlon_display }
+                {coordinateDisplays}
             </span>
         );
     }
