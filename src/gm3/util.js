@@ -458,6 +458,13 @@ export function configureProjections(p4) {
 
 }
 
+/**
+ * Add Proj projection defs
+ */
+export function addProjDef(p4, code, def) {
+    p4.defs(code, def);
+}
+
 /* Determine the UTM zone for a point
  *
  * @param {Point-like} An array containing [x,y] in WGS84 or NAD83 DD
