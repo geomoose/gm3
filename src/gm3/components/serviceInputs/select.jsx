@@ -37,7 +37,7 @@ export default class SelectInput extends TextInput {
         const id = this.getId();
 
         return (
-            <div className='service-input'>
+            <div className='service-input select'>
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
                 <select id={ 'input-' + id} value={this.state.value} onChange={this.onChange}>
                 { this.props.field.options.map(this.renderOption) }
