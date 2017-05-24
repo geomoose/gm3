@@ -41,8 +41,11 @@ module.exports = {
         loaders: [{
             test: /\.(jsx|js)$/,
             loaders: ['babel'],
-            include: path.join(__dirname, 'src'),
-            exclude: /node_modules/,
+            include: [
+                path.join(__dirname, 'src'),
+                path.join(__dirname, '/node_modules/jsts'),
+            ],
+            exclude: /node_modules\/(^jsts)/,
         }]
     },
     resolve: {

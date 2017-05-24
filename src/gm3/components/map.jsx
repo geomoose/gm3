@@ -43,6 +43,7 @@ import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
 
 import * as util from '../util';
+import * as jsts from '../jsts';
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
@@ -553,6 +554,18 @@ class Map extends Component {
                             'circle-stroke-color': '#ff0000'
                         }
                     }
+                    /*
+                    ,
+                    {
+                        id: 'buffered-shapes',
+                        source: 'dummy-source',
+                        paint: {
+                            'fill-color': '#ffffff',
+                            'fill-opacity': 0.8,
+                        },
+                        filter: ['==', 'buffer', true]
+                    }
+                    */
                 ],
                 'dummy-source': [
                     {
@@ -567,9 +580,31 @@ class Map extends Component {
         src_selection.on('addfeature', (evt) => {
             let geojson = new ol.format.GeoJSON();
             let json_feature = geojson.writeFeatureObject(evt.feature);
+
+
             // assign the feature a UUID.
-            json_feature.properties = {id: uuid.v4()};
-            this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+            json_feature.properties = {
+                id: uuid.v4()
+            };
+
+            if(this.props.mapView.selectionBuffer !== 0) {
+                const buffered_geom = jsts.buffer(json_feature.geometry, this.props.mapView.selectionBuffer);
+
+                const buffered_feature = {
+                    geometry: buffered_geom,
+                    properties: {
+                        buffer: true
+                    }
+                };
+
+                this.props.store.dispatch(
+                    mapActions.addSelectionFeature(buffered_feature)
+                );
+
+                src_selection.addFeatureInternal(geojson.readFeature(buffered_feature));
+            } else {
+                this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+            }
         });
     }
 

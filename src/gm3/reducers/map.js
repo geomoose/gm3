@@ -36,7 +36,8 @@ const default_view = {
     extent: null,
     activeSource: null,
     interactionType: null,
-    selectionFeatures: []
+    selectionFeatures: [],
+    selectionBuffer: 0,
 };
 
 export default function mapReducer(state = default_view, action) {
@@ -68,6 +69,10 @@ export default function mapReducer(state = default_view, action) {
         case MAP.CLEAR_SELECTION_FEATURES:
             return Object.assign({}, state, {
                 selectionFeatures: []
+            });
+        case MAP.BUFFER_SELECTION_FEATURES:
+            return Object.assign({}, state, {
+                selectionBuffer: action.meters
             });
         default:
             return state;

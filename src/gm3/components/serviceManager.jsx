@@ -51,6 +51,36 @@ import LengthInput from './serviceInputs/length';
 
 import MeasureTool from './measure';
 
+
+/* Component to control the setting of the buffer distance
+ * for selection shapes.
+ *
+ */
+class SetSelectionBuffer extends Component {
+    /* Set the buffer in the store.
+     *
+     * This is called when the LengthInput changes.
+     *
+     */
+    setBuffer(distance) {
+        this.props.store.dispatch(mapActions.setSelectionBuffer(distance));
+    }
+
+    render() {
+        // inputs require a "field" to render their label and
+        // set their value.  This mocks that up.
+        const mock_field = {
+            label: 'Buffer', value: this.props.map.selectionBuffer
+        };
+
+        return (
+            <div>
+                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field } /> 
+            </div>
+        );
+    }
+}
+
 class ServiceManager extends Component {
 
     constructor() {
@@ -393,7 +423,7 @@ class ServiceManager extends Component {
             for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon']) {
                 const dt_key = 'draw_tool_' + gtype;
                 if(service_def.tools[gtype]) {
-                    service_tools.push(<DrawTool key={dt_key} store={this.props.store} geomType={gtype} />);
+                    service_tools.push(<DrawTool key={dt_key} store={this.props.store} buffer={true} geomType={gtype} />);
                 }
             }
 
@@ -402,12 +432,19 @@ class ServiceManager extends Component {
             for(let i = 0, ii = service_def.fields.length; i < ii; i++) {
                 const field = service_def.fields[i];
                 service_fields.push(this.getServiceField(i, field));
+                this.fieldValues[this.props.queries.service][field.name] = field.default;
+            }
+
+            let buffer_controls = false;
+            if(service_def.bufferAvailable) {
+                buffer_controls = <SetSelectionBuffer store={ this.props.store } map={ this.props.map }/>
             }
 
             return (
                 <div className="service-manager">
                     <h3>{service_def.title}</h3>
                     { service_tools }
+                    { buffer_controls }
                     { service_fields }
                     <div className="tab-controls">
                         <button className="close-button" onClick={() => { this.closeForm() }}><i className="close-icon"></i> Close</button>
