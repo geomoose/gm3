@@ -132,6 +132,39 @@ class Application {
         for(let action of toolbar_actions) {
             this.store.dispatch(action);
         }
+
+        // add the highlight layer.
+        mapSourceActions.add({
+            type: 'query-layer',
+            name: 'highlight',
+            style:  {
+                'circle-radius': 4,
+                'circle-color': '#ffff00',
+                'circle-stroke-color': '#ffff00',
+                'line-color' : '#ffff00',
+                'line-width' : 4,
+                'fill-color' : '#ffff00',
+                'fill-opacity' : 0.25
+            }
+        });
+
+        // Add the selection layer,
+        //  this is used to preview the user's selection.
+        mapSourceActions.add({
+            type: 'vector',
+            name: 'selection',
+            style: {
+                'circle-radius': 4,
+                'circle-color': '#ffff00',
+                'circle-stroke-color': '#ffff00',
+                'line-color' : '#ffff00',
+                'line-width' : 4,
+                'fill-color' : '#ffff00',
+                'fill-opacity' : 0.25
+            }
+        });
+                
+                
     }
 
     loadMapbook(options) {
