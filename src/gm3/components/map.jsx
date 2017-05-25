@@ -36,6 +36,7 @@ import Request from 'reqwest';
 import { connect } from 'react-redux';
 
 import uuid from 'uuid';
+import { createHash } from 'crypto';
 
 import * as olMapboxStyle from 'ol-mapbox-style';
 
@@ -415,6 +416,24 @@ class Map extends Component {
                 this.runQuery(queries, query_id);
             }
         }
+
+        if(queries.order.length > 0) {
+            let query_id = queries.order[0];
+            let query = queries[query_id];
+            if(query.progress === 'finished') {
+                // check the filters
+                const filter_json = JSON.stringify(query.filter);
+                const filter_md5 = createHash('md5').update(filter_json).digest('hex');
+
+                if(this.currentQueryId !== query_id 
+                   || this.currentQueryFilter !== filter_md5) {
+
+                    this.renderQueryLayer(query);
+                    this.currentQueryId = query_id;
+                    this.currentQueryFilter = filter_md5;
+                }
+            }
+        }
     }
 
     sortOlLayers() {
@@ -480,6 +499,25 @@ class Map extends Component {
                 console.log('REFRESH', mapSource.name);
                 this.refreshLayer(mapSource);
             }, mapSource.refresh * 1000);
+        }
+    }
+
+    /* Render the query as a layer.
+     *
+     */
+    renderQueryLayer(query) {
+        if(this.props.mapSources.results) {
+            // clear the features
+            this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+            // get the path to the first set of features
+            const layer_path = Object.keys(query.results)[0];
+
+            // get the features, aftre applying the query filter
+            const features = util.matchFeatures(query.results[layer_path], query.filter);
+            // render only those features.
+            this.props.store.dispatch(mapSourceActions.addFeatures('results', 'results', features));
+        } else {
+            console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }
     }
 

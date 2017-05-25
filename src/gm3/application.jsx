@@ -133,10 +133,18 @@ class Application {
             this.store.dispatch(action);
         }
 
-        // add the highlight layer.
-        mapSourceActions.add({
-            type: 'query-layer',
-            name: 'highlight',
+        // add a layer that listens for changes 
+        //  to the query results.  This hs
+        this.store.dispatch(mapSourceActions.add({
+            name: 'results',
+            urls: [],
+            type: 'vector',
+            label: 'Results',
+            opacity: 1.0,
+            queryable: false,
+            refresh: null,
+            layers: [],
+            params: {},
             style:  {
                 'circle-radius': 4,
                 'circle-color': '#ffff00',
@@ -145,11 +153,16 @@ class Application {
                 'line-width' : 4,
                 'fill-color' : '#ffff00',
                 'fill-opacity' : 0.25
-            }
-        });
+            },
+        }));
+        this.store.dispatch(mapSourceActions.addLayer('results', {
+            name: 'results',
+            on: true,
+        }));
 
         // Add the selection layer,
         //  this is used to preview the user's selection.
+        /*
         mapSourceActions.add({
             type: 'vector',
             name: 'selection',
@@ -163,6 +176,7 @@ class Application {
                 'fill-opacity' : 0.25
             }
         });
+        */
                 
                 
     }

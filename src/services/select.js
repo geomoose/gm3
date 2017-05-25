@@ -132,23 +132,5 @@ function SelectService(Application, options) {
         //  this line has not finished, this prevents an accidental
         //  double-rendering.
         this.hasRendered[queryId] = true;
-
-        // render a set of features on a layer.
-        var all_features = [];
-        for(var i = 0, ii = query.layers.length; i < ii; i++) {
-            var path = query.layers[i];
-            if(query.results[path] && !query.results[path].failed) {
-                all_features = all_features.concat(query.results[path]);
-            }
-        }
-
-        // when features have been returned, clear out the old features
-        //  and put the new features on the highlight layer.
-        if(all_features.length > 0) {
-            Application.clearFeatures(this.highlightPath);
-            Application.addFeatures(this.highlightPath, all_features);
-        }
     }
-
-
 }
