@@ -57,6 +57,11 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     tracker.restore();
     hash_tracker.restore();
 
+    app.addProjection({
+        ref: 'EPSG:26915',
+        def: '+proj=utm +zone=15 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+    });
+
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
     app.registerService('select', SelectService, {

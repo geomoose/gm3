@@ -53,6 +53,7 @@ import Modal from './components/modal';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import proj4 from 'proj4';
 
 import { getLayerFromPath, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
 
@@ -513,6 +514,10 @@ class Application {
      */
     setView(view) {
         this.store.dispatch(mapActions.setView(view));
+    }
+
+    addProjection(projDef) {
+        util.addProjDef(proj4, projDef.ref, projDef.def);
     }
 
 };
