@@ -26,6 +26,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import USNG from 'usng-tools-js';
 
+import proj from 'ol/proj';
+
 class CoordinateDisplay extends Component {
 
     constructor(props) {
@@ -54,11 +56,11 @@ class CoordinateDisplay extends Component {
     getLatLonCoords() {
         // TODO: The projection should be stored in the store,
         //       and defined by the user.
-        const map_proj = new ol.proj.get('EPSG:3857');
-        const latlon_proj = new ol.proj.get('EPSG:4326');
+        const map_proj = new proj.get('EPSG:3857');
+        const latlon_proj = new proj.get('EPSG:4326');
 
         // transform the point
-        return ol.proj.transform(this.props.cursor.coords, map_proj, latlon_proj);
+        return proj.transform(this.props.cursor.coords, map_proj, latlon_proj);
     }
 
     /** This formats the lat-lon as a string.

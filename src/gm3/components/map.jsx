@@ -37,12 +37,31 @@ import { connect } from 'react-redux';
 
 import uuid from 'uuid';
 
-import * as olMapboxStyle from 'ol-mapbox-style';
+import getStyleFunction from 'mapbox-to-ol-style';
 
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
 
 import * as util from '../util';
+
+import GeoJSONFormat from 'ol/format/geojson';
+import GML2Format from 'ol/format/gml2';
+import WFSFormat from 'ol/format/wfs';
+import WMSGetFeatureInfoFormat from 'ol/format/wmsgetfeatureinfo';
+
+import VectorSource from 'ol/source/vector';
+import VectorLayer from 'ol/layer/vector';
+import ol_filters from 'ol/format/filter';
+import proj from 'ol/proj';
+
+import olControl from 'ol/control';
+
+import olView from 'ol/view';
+import olMap from 'ol/map';
+
+import olSelectInteraction from 'ol/interaction/select';
+import olDrawInteraction from 'ol/interaction/draw';
+
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
@@ -107,20 +126,6 @@ class Map extends Component {
         }
     }
 
-    /** Adds vector feature events to a vector-type layer.
-     *
-     *  @param mapSourceName
-     *  @param layerName
-     *  @param {ol.source.Vector} source
-     *
-     */
-    addFeatureEvents(mapSourceName, layerName, source) {
-
-        // geojson -- the one true Javascript object representation.
-        source.on('addfeature', (evt) => {
-        });
-    }
-
     /** Create an OL Layers based on a GM MapSource definition
      *
      *  @param mapSource
@@ -157,7 +162,7 @@ class Map extends Component {
         //       ol3 makes a lot of web-mercator assumptions.
         let projection = 'EPSG:3857';
 
-        let geojson = new ol.format.GeoJSON();
+        let geojson = new GeoJSONFormat();
         let view = this.props.mapView;
 
         // get the map source
@@ -186,7 +191,7 @@ class Map extends Component {
                     // not all WMS services play nice and will return the
                     //  error message as a 200, so this still needs checked.
                     if(response) {
-                        let gml_format = new ol.format.WMSGetFeatureInfo();
+                        let gml_format = new WMSGetFeatureInfoFormat();
                         let features = gml_format.readFeatures(response.responseText);
                         let js_features = geojson.writeFeaturesObject(features).features;
 
@@ -257,9 +262,9 @@ class Map extends Component {
         //  reprojected on render.
         let query_projection = projection;
         if(map_source.wgs84Hack) {
-            query_projection = new ol.proj.get('EPSG:4326');
+            query_projection = new proj.get('EPSG:4326');
         }
-        const geojson_format = new ol.format.GeoJSON({
+        const geojson_format = new GeoJSONFormat({
             dataProjection: 'EPSG:4326',
             featureProjection: query_projection
         });
@@ -277,25 +282,25 @@ class Map extends Component {
         // map the functions from OpenLayers to the internal
         //  types
         let filter_mapping = {
-            'like': ol.format.filter.like,
+            'like': ol_filters.like,
             'ilike': function(name, value) {
-                return ol.format.filter.like(name, value, '*', '.', '!', false);
+                return ol_filters.like(name, value, '*', '.', '!', false);
             },
-            'eq': ol.format.filter.equalTo,
-            'ge': ol.format.filter.greaterThanOrEqualTo,
-            'gt': ol.format.filter.greaterThan,
-            'le': ol.format.filter.lessThanOrEqualTo,
-            'lt': ol.format.filter.lessThan
+            'eq': ol_filters.equalTo,
+            'ge': ol_filters.greaterThanOrEqualTo,
+            'gt': ol_filters.greaterThan,
+            'le': ol_filters.lessThanOrEqualTo,
+            'lt': ol_filters.lessThan
         };
 
         let filters = [];
         if(query.selection && query.selection.geometry) {
             // convert the geojson geometry into a ol geometry.
-            let ol_geom = (new ol.format.GeoJSON()).readGeometry(query.selection.geometry);
+            let ol_geom = (new GeoJSONFormat()).readGeometry(query.selection.geometry);
             // convert the geometry to the query projection
             ol_geom.transform(projection, query_projection);
             // add the intersection filter to the filter stack.
-            filters.push(ol.format.filter.intersects(geom_field, ol_geom));
+            filters.push(ol_filters.intersects(geom_field, ol_geom));
         }
 
         for(let filter of query.fields) {
@@ -308,9 +313,9 @@ class Map extends Component {
         //  chained together to create the compound filter.
         let chained_filters = null;
         if(filters.length > 1) {
-            chained_filters = ol.format.filter.and(filters[0], filters[1]);
+            chained_filters = ol_filters.and(filters[0], filters[1]);
             for(let i = 2, ii = filters.length; i < ii; i++) {
-                chained_filters = ol.format.filter.and(chained_filters, filters[i]);
+                chained_filters = ol_filters.and(chained_filters, filters[i]);
             }
         } else {
             chained_filters = filters[0];
@@ -325,7 +330,7 @@ class Map extends Component {
         //  only supports GML.
         let output_format = 'text/xml; subtype=gml/2.1.2';
 
-        let feature_request = new ol.format.WFS().writeGetFeature({
+        let feature_request = new WFSFormat().writeGetFeature({
             srsName: query_projection.getCode(),
             featurePrefix: type_parts[0],
             featureTypes: [type_parts[1]],
@@ -350,13 +355,13 @@ class Map extends Component {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
                 if(response) {
-                    let gml_format = new ol.format.GML2();
+                    let gml_format = new GML2Format();
 
                     let features = gml_format.readFeatures(response);
                     for(const feature of features) {
                         feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
                     }
-                    let js_features = (new ol.format.GeoJSON()).writeFeaturesObject(features).features;
+                    let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -536,10 +541,10 @@ class Map extends Component {
      *
      */
     configureSelectionLayer() {
-        let src_selection = new ol.source.Vector();
+        let src_selection = new VectorSource();
 
-        this.selectionLayer = new ol.layer.Vector({
-            style: olMapboxStyle.getStyleFunction({
+        this.selectionLayer = new VectorLayer({
+            style: getStyleFunction({
                 'version': 8,
                 'layers': [
                     {
@@ -565,7 +570,7 @@ class Map extends Component {
 
         // geojson -- the one true Javascript object representation.
         src_selection.on('addfeature', (evt) => {
-            let geojson = new ol.format.GeoJSON();
+            let geojson = new GeoJSONFormat();
             let json_feature = geojson.writeFeatureObject(evt.feature);
             // assign the feature a UUID.
             json_feature.properties = {id: uuid.v4()};
@@ -602,11 +607,11 @@ class Map extends Component {
         }
 
         // initialize the map.
-        this.map = new ol.Map({
+        this.map = new olMap({
             target: this.mapId,
             layers: [this.selectionLayer],
             logo: false,
-            view: new ol.View(view_params)
+            view: new olView(view_params)
         });
 
         // when the map moves, dispatch an action
@@ -680,7 +685,7 @@ class Map extends Component {
         elem.appendChild(button);
 
         // this creates the actual OL controls and adds it to the map
-        this.stopTool = new ol.control.Control({
+        this.stopTool = new olControl({
             element: elem
         });
         this.map.addControl(this.stopTool);
@@ -738,7 +743,7 @@ class Map extends Component {
 
             // switch to the new drawing tool.
             if(type === 'Select') {
-                this.drawTool = new ol.interaction.Select({
+                this.drawTool = new olSelectInteraction({
                     layers: [this.olLayers[map_source_name]]
                 });
 
@@ -752,7 +757,7 @@ class Map extends Component {
                     }
                 });
             } else {
-                this.drawTool = new ol.interaction.Draw({
+                this.drawTool = new olDrawIntreaction({
                     source: source,
                     type
                 });
@@ -772,7 +777,7 @@ class Map extends Component {
 
                 if(!is_selection) {
                     this.drawTool.on('drawend', (evt) => {
-                        let geojson = new ol.format.GeoJSON();
+                        let geojson = new GeoJSONFormat();
                         let json_feature = geojson.writeFeatureObject(evt.feature);
                         // assign the feature a UUID.
                         json_feature.properties = {_id: uuid.v4()};
@@ -841,7 +846,7 @@ class Map extends Component {
             const bbox_code = nextProps.mapView.extent.projection;
             if(bbox_code) {
                 const map_proj = this.map.getView().getProjection();
-                bbox = ol.proj.transformExtent(bbox, ol.proj.get(bbox_code), map_proj);
+                bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
             }
             // move the map to the new extent.
             this.map.getView().fit(bbox, this.map.getSize());

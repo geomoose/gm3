@@ -105,14 +105,6 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            ol: {
-                files: [
-                    {
-                        src: ['node_modules/openlayers/dist/ol.js'],
-                        dest: 'dist/ol.js'
-                    }
-                ]
-            },
             services: {
                 files: [
                     {
