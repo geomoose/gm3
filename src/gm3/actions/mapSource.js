@@ -162,7 +162,6 @@ export function addFromXml(xml, config) {
         zIndex: xml.getAttribute('z-index'),
         queryable: util.parseBoolean(xml.getAttribute('queryable'), true),
         refresh: null,
-        style: null,
         layers: [],
         params: {}
     }
@@ -206,18 +205,6 @@ export function addFromXml(xml, config) {
         }
     }
 
-    // check to see if there are any style definitions
-    let style = util.getTagContents(xml, 'style', false);
-    if(style && style.length > 0) {
-        // convert to JSON
-        try {
-            map_source.style = JSON.parse(style);
-        } catch(err) {
-            console.error('There was an error parsing the style for: ', map_source.name);
-            console.error('Error details', err);
-        }
-    }
-
 
     // mix in the params
     Object.assign(map_source.params, parseParams(xml));
@@ -236,7 +223,9 @@ export function addFromXml(xml, config) {
             selectable: util.parseBoolean(layerXml.getAttribute('selectable')),
             label: layer_title ? layer_title : map_source.label,
             templates: {},
-            legend: null
+            legend: null,
+            style: null,
+            filter: null,
         };
 
         // user defined legend.
@@ -270,6 +259,20 @@ export function addFromXml(xml, config) {
             }
 
             layer.templates[template_name] = template_def;
+
+
+        }
+
+        // check to see if there are any style definitions
+        let style = util.getTagContents(layerXml, 'style', false);
+        if(style && style.length > 0) {
+            // convert to JSON
+            try {
+                layer.style = JSON.parse(style);
+            } catch(err) {
+                console.error('There was an error parsing the style for: ', map_source.name);
+                console.error('Error details', err);
+            }
         }
 
         map_layers.push(addLayer(map_source.name, layer));

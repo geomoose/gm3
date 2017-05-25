@@ -89,15 +89,15 @@
 	</map-source>
 
 	<map-source name="minnesota_places" type="wfs" active="true" srs="EPSG:4326">
-        <layer name="gm:minnesota_places"/>
-
-		<style type="stylemap"><![CDATA[
-		{
-			"fill-outline-color" : "#f00",
-            "fill-color" : "#000077",
-			"label" : "${name}"
-		}
-		]]></style>
+        <layer name="gm:minnesota_places">
+            <style type="stylemap"><![CDATA[
+            {
+                "fill-outline-color" : "#f00",
+                "fill-color" : "#000077",
+                "label" : "${name}"
+            }
+            ]]></style>
+        </layer>
 
 		<url>/mapserver/cgi-bin/tinyows</url>
 
@@ -117,6 +117,12 @@
 
     <map-source name="vector-parcels" type="mapserver-wfs">
         <layer name="ms:parcels" selectable="true" title="Parcels">
+            <style><![CDATA[
+            {
+                "line-color" : "#00A138",
+                "line-width" : 2
+            }
+            ]]></style>
             <template name="identify"><![CDATA[
                 <div class="identify-result">
                     <div class="feature-class">Vector Parcel</div>
@@ -192,13 +198,7 @@
             </td>
             ]]></template>
         </layer>
-		<file>./demo/parcels/parcels.map</file>
-        <style><![CDATA[
-		{
-			"line-color" : "#00A138",
-            "line-width" : 2
-		}
-        ]]></style>
+        <file>./demo/parcels/parcels.map</file>
 
     </map-source>
 
