@@ -179,23 +179,20 @@
             ]]></template>
             <template name="gridRow"><![CDATA[
             <tr 
-              onmouseenter="app.changeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}, {'displayClass' : 'red'})"
-              onmouseleave="app.changeFeatures('highlight/highlight', {'displayClass' : 'red'}, {'displayClass' : 'blue'})"
+              onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+              onmouseleave="app.clearHighlight()"
             >
-                <td>
-                  <a onClick="app.removeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}) ; app.removeQueryResults('{{ query }}', {'PIN' : '{{ properties.PIN }}'})">
-                    <i title="Remove from results" class="fa fa-trash"></i>
-                  </a>
-                </td>
                 <td>
                   <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
                     <i class="fa fa-search"></i> 
-                    {{ properties.PIN }}
                   </a>
+                </td>
+                <td>
+                  {{ properties.PIN }}
                 </td>
                 <td>{{ properties.OWNER_NAME }}</td>
                 <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
-            </td>
+            </tr>
             ]]></template>
         </layer>
         <file>./demo/parcels/parcels.map</file>

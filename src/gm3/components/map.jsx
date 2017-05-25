@@ -874,17 +874,6 @@ class Map extends Component {
      *  cycle where the state can get modified.
      */
     componentWillUpdate(nextProps, nextState) {
-        if(nextProps && nextProps.mapView.extent) {
-            let bbox = nextProps.mapView.extent.bbox;
-            const bbox_code = nextProps.mapView.extent.projection;
-            if(bbox_code) {
-                const map_proj = this.map.getView().getProjection();
-                bbox = ol.proj.transformExtent(bbox, ol.proj.get(bbox_code), map_proj);
-            }
-            // move the map to the new extent.
-            this.map.getView().fit(bbox, this.map.getSize());
-        }
-
         // check to see if the view has been altered.
         if(nextProps && nextProps.mapView) {
             const map_view = this.map.getView();
@@ -899,6 +888,17 @@ class Map extends Component {
                 this.map.getView().setCenter(view.center);
                 this.map.getView().setResolution(view.resolution);
             }
+        }
+
+        if(nextProps && nextProps.mapView.extent) {
+            let bbox = nextProps.mapView.extent.bbox;
+            const bbox_code = nextProps.mapView.extent.projection;
+            if(bbox_code) {
+                const map_proj = this.map.getView().getProjection();
+                bbox = ol.proj.transformExtent(bbox, ol.proj.get(bbox_code), map_proj);
+            }
+            // move the map to the new extent.
+            this.map.getView().fit(bbox, this.map.getSize());
         }
 
         // ensure that the selection features have been 'cleared'

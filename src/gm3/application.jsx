@@ -387,6 +387,25 @@ class Application {
         this.store.dispatch(mapSourceActions.changeFeatures(ms_name, layer_name, filter, properties));
     }
 
+    /* Shorthand for manipulating result features.
+     */
+    changeResultFeatures(filter, properties) {
+        this.changeFeatures('results/results', filter, properties);
+    }
+
+    /* Short hand for toggling the highlight of features.
+     */
+    highlightFeatures(filter, on) {
+        const props = {displayClass: on ? 'hot': ''};
+        this.changeResultFeatures(filter, props);
+    }
+
+    /* Clear highlight features
+     */
+    clearHighlight() {
+        this.highlightFeatures({displayClass: 'hot'}, false);
+    }
+
     /** Clears the UI hint.  Used by applications to indicate
      *  that the previous "hint" has been handled.
      */
