@@ -42,6 +42,11 @@ import { changeFeatures, filterFeatures } from '../util';
 function setLayerAttribute(state, action, attr) {
     // make a copy of the layers list
     let layers = [];
+    if(!state[action.mapSourceName]) {
+        // no state changes if we can't find the mapsource.
+        return state;
+    }
+
     for(var i = 0, ii = state[action.mapSourceName].layers.length; i < ii; i++) {
         // copy each layer and update the matching one.
         let layer = Object.assign({}, state[action.mapSourceName].layers[i]);
