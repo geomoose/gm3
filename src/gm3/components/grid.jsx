@@ -67,7 +67,7 @@ class FilterModal extends ModalDialog {
         const new_filters = [];
 
         if(this.props.column.filter.type === 'list') {
-            new_filters.push(["in", property, value]);
+            new_filters.push(["in", property].concat(value));
         } else if(this.props.column.filter.type === 'range') {
             if(this.state.min !== '') {
                 new_filters.push([">=", property, this.state.min]);
