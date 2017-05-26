@@ -54,7 +54,7 @@ import VectorLayer from 'ol/layer/vector';
 import ol_filters from 'ol/format/filter';
 import proj from 'ol/proj';
 
-import olControl from 'ol/control';
+import olControl from 'ol/control/control';
 
 import olView from 'ol/view';
 import olMap from 'ol/map';
@@ -757,7 +757,7 @@ class Map extends Component {
                     }
                 });
             } else {
-                this.drawTool = new olDrawIntreaction({
+                this.drawTool = new olDrawInteraction({
                     source: source,
                     type
                 });
