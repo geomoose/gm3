@@ -362,7 +362,15 @@ class Map extends Component {
                     for(const feature of features) {
                         feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
                     }
+
+                    // features to add
                     let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
+
+                    // get the transforms for the layer
+                    const transforms = mapSourceActions.getLayerByPath(this.props.store, queryLayer).transforms;
+
+                    // apply the transforms
+                    js_features = util.transformFeatures(transforms, js_features);
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)

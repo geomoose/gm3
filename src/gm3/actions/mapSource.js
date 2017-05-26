@@ -227,6 +227,7 @@ export function addFromXml(xml, config) {
             legend: null,
             style: null,
             filter: null,
+            transforms: {},
         };
 
         // user defined legend.
@@ -263,6 +264,15 @@ export function addFromXml(xml, config) {
 
 
         }
+
+        // catalog the transforms for the layer
+        const transforms = layerXml.getElementsByTagName('transform');
+        for(const transform of transforms) {
+            layer.transforms[transform.getAttribute('attribute')] = 
+                transform.getAttribute('function');
+        }
+
+
 
         // check to see if there are any style definitions
         let style = util.getTagContents(layerXml, 'style', false);

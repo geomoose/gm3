@@ -26,6 +26,8 @@ import Request from 'reqwest';
 
 import GeoJSONFormat from 'ol/format/geojson';
 
+import createFilter from '@mapbox/mapbox-gl-style-spec/feature_filter';
+
 /** Collection of handy functions
  */
 
@@ -309,8 +311,12 @@ export function featureMatch(feature, filter) {
 export function filterFeatures(features, filter, inverse = true) {
     let new_features = [];
 
+    // the createFilter function is from mapbox! 
+    // uses the mapbox gl style filters.
+    const filter_function = createFilter(['all'].concat(filter));
+
     for(let feature of features) {
-        if(inverse !== featureMatch(feature, filter)) {
+        if(inverse !== filter_function(feature)) {
             new_features.push(feature);
         }
     }
@@ -333,6 +339,7 @@ export function matchFeatures(features, filter) {
     if(filter === null || filter === false) {
         return features;
     }
+
     return filterFeatures(features, filter, false);
 }
 
@@ -620,3 +627,35 @@ export function xhr(opts) {
     return Request(opts);
 }
 
+
+/* Convert the data type of feature properties.
+ *
+ * @param transforms Object of transforms to apply.
+ * @param features   Array of GeoJSON features.
+ *
+ * @return The array of GeoJSON features.
+ */
+export function transformFeatures(transforms, features) {
+    if(typeof(transforms) !== 'object') {
+        return features;
+    }
+
+    for(const feature of features) {
+        for(const prop in transforms) {
+            let value = feature.properties[prop];
+            switch(transforms[prop]) {
+                case 'string':
+                    value = '' + value;
+                    break
+                case 'number':
+                    value = parseFloat(value);
+                    break;
+                default:
+                    // do nothing on default.
+            }
+            feature.properties[prop] = value;
+        }
+    }
+
+    return features;
+}

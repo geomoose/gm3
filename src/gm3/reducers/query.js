@@ -105,7 +105,7 @@ export default function queryReducer(state = default_query, action) {
             const query_id = uuid.v4();
             new_query[query_id] = Object.assign({}, action.query, {
                 progress: 'new',
-                filter: null,
+                filter: [],
                 results: {},
                 rendered: {}
             });
@@ -149,12 +149,18 @@ export default function queryReducer(state = default_query, action) {
             return removeQuery(state, action.id);
         case MAP.ADD_FILTER:
             new_query[action.id] = Object.assign({}, state[action.id], {
-                filter: Object.assign({}, state[action.id].filter, action.filter)
+                filter: state[action.id].filter.concat([action.filter])
             });
             return Object.assign({}, state, new_query);
         case MAP.REMOVE_FILTER:
-            const new_filter = Object.assign({}, state[action.id].filter);
-            delete new_filter[action.field];
+            const new_filter = [];
+            // rebuild the filter array based without the
+            //  filters for a given field.
+            for(const filter in state[action.id].filter) {
+                if(filter.length > 2 && filter[1] !== action.field) {
+                    new_filter.push(filter);
+                }
+            }
 
             new_query[action.id] = Object.assign({}, state[action.id], {
                 filter: new_filter
