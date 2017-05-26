@@ -311,7 +311,7 @@ export function featureMatch(feature, filter) {
 export function filterFeatures(features, filter, inverse = true) {
     let new_features = [];
 
-    // the createFilter function is from mapbox! 
+    // the createFilter function is from mapbox!
     // uses the mapbox gl style filters.
     const filter_function = createFilter(['all'].concat(filter));
 
