@@ -30,10 +30,16 @@ import { MAPSOURCE } from '../actionTypes';
 
 import * as util from '../util';
 
+var MS_Z_INDEX = 100000;
+
 /** Add a map-source using a MapSource
  *  object.
  */
 export function add(mapSource) {
+    if(typeof(mapSource.zIndex) !== 'number') {
+        mapSource.zIndex = MS_Z_INDEX;
+        MS_Z_INDEX--;
+    }
     return {
         type: MAPSOURCE.ADD,
         mapSource
@@ -146,8 +152,6 @@ function mapServerToWFS(msXml, conf) {
     return wfs_conf;
 }
 
-var MS_Z_INDEX = 100000;
-
 /** Add a map-source from XML
  *
  */
@@ -169,9 +173,6 @@ export function addFromXml(xml, config) {
     // handle setting up the zIndex
     if(map_source.zIndex) {
         map_source.zIndex = parseInt(map_source.zIndex);
-    } else {
-        map_source.zIndex = MS_Z_INDEX;
-        MS_Z_INDEX--;
     }
 
     // try to get an opacity,  if it won't parse then default to 1.0

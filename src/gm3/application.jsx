@@ -114,7 +114,7 @@ class Application {
 
     populateMapbook(mapbookXml) {
 
-        // add a layer that listens for changes 
+        // add a layer that listens for changes
         //  to the query results.  This hs
         this.store.dispatch(mapSourceActions.add({
             name: 'results',
@@ -126,6 +126,9 @@ class Application {
             refresh: null,
             layers: [],
             params: {},
+            // stupid high z-index to ensure results are
+            //  on top of everything else.
+            zIndex: 200000,
         }));
         this.store.dispatch(mapSourceActions.addLayer('results', {
             name: 'results',
@@ -134,10 +137,11 @@ class Application {
                 'circle-radius': 4,
                 'circle-color': '#ffff00',
                 'circle-stroke-color': '#ffff00',
-                'line-color' : '#ffff00',
-                'line-width' : 4,
-                'fill-color' : '#ffff00',
-                'fill-opacity' : 0.25
+                'line-color': '#ffff00',
+                'line-width': 4,
+                'fill-color': '#ffff00',
+                'fill-opacity': 0.25,
+                'line-opacity': 0.25,
             },
         }));
         // the "hot" layer shows the features as red on the map,
@@ -149,10 +153,11 @@ class Application {
                 'circle-radius': 4,
                 'circle-color': '#ff0000',
                 'circle-stroke-color': '#ff0000',
-                'line-color' : '#ff0000',
-                'line-width' : 4,
-                'fill-color' : '#ff0000',
-                'fill-opacity' : 0.25
+                'line-color': '#ff0000',
+                'line-width': 4,
+                'fill-color': '#ff0000',
+                'fill-opacity': 0.50,
+                'line-opacity': 0.50,
             },
             filter: ['==', 'displayClass', 'hot']
         }));
@@ -194,8 +199,8 @@ class Application {
             }
         });
         */
-                
-                
+
+
     }
 
     loadMapbook(options) {
@@ -396,7 +401,7 @@ class Application {
     /* Short hand for toggling the highlight of features.
      */
     highlightFeatures(filter, on) {
-        const props = {displayClass: on ? 'hot': ''};
+        const props = {displayClass: on ? 'hot' : ''};
         this.changeResultFeatures(filter, props);
     }
 

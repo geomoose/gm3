@@ -36,7 +36,7 @@ import Request from 'reqwest';
 import { connect } from 'react-redux';
 
 import uuid from 'uuid';
-import { createHash } from 'crypto';
+import md5 from 'md5';
 
 import getStyleFunction from 'mapbox-to-ol-style';
 
@@ -428,9 +428,9 @@ class Map extends Component {
             if(query.progress === 'finished') {
                 // check the filters
                 const filter_json = JSON.stringify(query.filter);
-                const filter_md5 = createHash('md5').update(filter_json).digest('hex');
+                const filter_md5 = md5(filter_json);
 
-                if(this.currentQueryId !== query_id 
+                if(this.currentQueryId !== query_id
                    || this.currentQueryFilter !== filter_md5) {
 
                     this.renderQueryLayer(query);

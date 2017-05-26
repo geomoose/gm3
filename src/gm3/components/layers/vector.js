@@ -88,27 +88,26 @@ export function createLayer(mapSource) {
     for(const layer of mapSource.layers) {
         const layer_def = {
             id: layer.name,
-            // source is a contant that is used to dummy up 
+            // source is a contant that is used to dummy up
             //  the Mapbox styles
             source: 'dummy-source',
             paint: layer.style,
         };
 
-        // check to see if there is a filter 
-        //  set on the layer.  This uses the Mapbox GL/JS 
+        // check to see if there is a filter
+        //  set on the layer.  This uses the Mapbox GL/JS
         //  filters.
         if(layer.filter !== null) {
             layer_def.filter = layer.filter;
         }
 
-        layers.push(layer_def); 
+        layers.push(layer_def);
     }
 
     // If there are any styles defined
     //  then use them to style the layer.
     // Otherwise this will use the built-in OL styles.
     if(layers.length > 0) {
-        opts.style = olMapboxStyle.getStyleFunction({
         opts.style = getStyleFunction({
             'version': 8,
             'layers': layers,
