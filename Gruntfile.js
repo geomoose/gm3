@@ -105,14 +105,6 @@ module.exports = function(grunt) {
                     }
                 ]
             },
-            ol: {
-                files: [
-                    {
-                        src: ['node_modules/openlayers/dist/ol.js'],
-                        dest: 'dist/ol.js'
-                    }
-                ]
-            },
             services: {
                 files: [
                     {
@@ -178,7 +170,7 @@ module.exports = function(grunt) {
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
     // build everything
-    grunt.task.registerTask('build', ['lint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:ol', 'copy:services']);
+    grunt.task.registerTask('build', ['lint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:services']);
 
     // build release.zip
     grunt.task.registerTask('build-release', ['build', 'gitinfo', 'compress']);

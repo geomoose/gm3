@@ -28,6 +28,12 @@ import FileSaver from 'file-saver';
 
 import Modal from '../../modal';
 
+import KMLFormat from 'ol/format/kml';
+import GeoJSONFormat from 'ol/format/geojson';
+
+import proj from 'ol/proj';
+
+
 /* Present the user with a helpful modal dialog
  * for downloading their data to the map.
  */
@@ -56,12 +62,12 @@ class DownloadModal extends Modal {
         // TODO: Sniff the real map projection
         const map_proj = 'EPSG:3857';
 
-        const input_format = new ol.format.GeoJSON();
+        const input_format = new GeoJSONFormat();
 
-        let output_format = new ol.format.GeoJSON();
+        let output_format = new GeoJSONFormat();
         let output_mimetype = 'application/vnd.geo+json';
         if(this.state.downloadFormat === 'kml') {
-            output_format = new ol.format.KML();
+            output_format = new KMLFormat();
             output_mimetype = 'application/vnd.google-earth.kml+xml';
         }
 
@@ -87,8 +93,8 @@ class DownloadModal extends Modal {
             const parsed_features = input_format.readFeatures({
                 type: 'FeatureCollection', features: features
             }, {
-                dataProjection: ol.proj.get(map_proj),
-                featureProjection: ol.proj.get('EPSG:4326')
+                dataProjection: proj.get(map_proj),
+                featureProjection: proj.get('EPSG:4326')
             });
 
             // write the contents out

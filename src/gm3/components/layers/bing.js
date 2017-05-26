@@ -26,6 +26,9 @@
  *
  */
 
+import TileLayer from 'ol/layer/tile';
+import BingSource from 'ol/source/bingmaps';
+
 /** Create the parameters for a Bing Services layer.
  *
  */
@@ -64,8 +67,8 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    return new ol.layer.Tile({
-        source: new ol.source.BingMaps(defineSource(mapSource))
+    return new TileLayer({
+        source: new BingSource(defineSource(mapSource))
     });
 }
 
@@ -78,6 +81,6 @@ export function updateLayer(map, layer, mapSource) {
     let defn = defineSource(mapSource);
 
     if(defn.imagerySet !== src.getImagerySet()) {
-        layer.setSource(new ol.source.BingMaps(defn));
+        layer.setSource(new BingSource(defn));
     }
 }

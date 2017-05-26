@@ -52,6 +52,7 @@
                 "circle-stroke-color": "#ffff00",
                 "line-color" : "#ffff00",
                 "line-width" : 4,
+                "line-opacity": 0.25,
                 "fill-color" : "#ffff00",
                 "fill-opacity" : 0.25
             }

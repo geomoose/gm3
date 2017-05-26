@@ -29,7 +29,13 @@
 
 import * as util from '../../util';
 
-import * as olMapboxStyle from 'ol-mapbox-style';
+import GML2Format from 'ol/format/gml2';
+import GeoJSONFormat from 'ol/format/geojson';
+import LoadingStrategy from 'ol/loadingstrategy';
+import VectorSource from 'ol/source/vector';
+import VectorLayer from 'ol/layer/vector';
+
+import getStyleFunction from 'mapbox-to-ol-style';
 
 /** Create the parameters for a Vector layer.
  *
@@ -38,7 +44,7 @@ function defineSource(mapSource) {
     if(mapSource.type === 'wfs') {
         // add a wfs type source
         return {
-            format: new ol.format.GML2({}),
+            format: new GML2Format({}),
             projection: 'EPSG:4326',
             url: function(extent) {
                 // http://localhost:8080/mapserver/cgi-bin/tinyows?
@@ -56,7 +62,7 @@ function defineSource(mapSource) {
 
                 return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
             },
-            strategy: ol.loadingstrategy.bbox
+            strategy: LoadingStrategy.bbox
         };
     }
     // empty object
@@ -70,7 +76,7 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    const source = new ol.source.Vector(defineSource(mapSource));
+    const source = new VectorSource(defineSource(mapSource));
     const opts = {
         source
     };
@@ -103,6 +109,7 @@ export function createLayer(mapSource) {
     // Otherwise this will use the built-in OL styles.
     if(layers.length > 0) {
         opts.style = olMapboxStyle.getStyleFunction({
+        opts.style = getStyleFunction({
             'version': 8,
             'layers': layers,
             'dummy-source': [
@@ -113,7 +120,7 @@ export function createLayer(mapSource) {
         }, 'dummy-source');
     }
 
-    return new ol.layer.Vector(opts);
+    return new VectorLayer(opts);
 }
 
 /** Ensure that the Vector parameters all match.
@@ -130,7 +137,7 @@ export function updateLayer(map, layer, mapSource) {
             // clear the layer without setting off events.
             source.clear(true);
             // setup the JSON parser
-            const output_format = new ol.format.GeoJSON({
+            const output_format = new GeoJSONFormat({
             /*
                 dataProjection: 'EPSG:4326',
                 featureProjection: map.getView().getProjection()

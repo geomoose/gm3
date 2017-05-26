@@ -27,6 +27,8 @@
  */
 
 import * as util from '../../util';
+import Image from 'ol/layer/image';
+import ImageWMS from 'ol/source/imagewms';
 
 /** Create the parameters for a WMS layer.
  *
@@ -57,8 +59,8 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    return new ol.layer.Image({
-        source: new ol.source.ImageWMS(defineSource(mapSource))
+    return new Image({
+        source: new ImageWMS(defineSource(mapSource))
     });
 }
 
