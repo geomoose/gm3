@@ -24,6 +24,8 @@
 
 import Request from 'reqwest';
 
+import GeoJSONFormat from 'ol/format/geojson';
+
 /** Collection of handy functions
  */
 
@@ -470,7 +472,7 @@ export function getUtmZone(pt) {
     return 'UTM' + zone + north;
 }
 
-const GEOJSON_FORMAT = new ol.format.GeoJSON();
+const GEOJSON_FORMAT = new GeoJSONFormat();
 
 export function geomToJson(geom) {
     return GEOJSON_FORMAT.writeGeometryObject(geom);
