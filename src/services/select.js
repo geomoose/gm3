@@ -49,6 +49,7 @@ function SelectService(Application, options) {
         'MultiPoint': true,
         'Polygon': true,
         'LineString': true,
+        'Select': true,
         'default': 'Polygon',
         'buffer': true
     };
