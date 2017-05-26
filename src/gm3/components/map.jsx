@@ -36,6 +36,7 @@ import Request from 'reqwest';
 import { connect } from 'react-redux';
 
 import uuid from 'uuid';
+import md5 from 'md5';
 
 import getStyleFunction from 'mapbox-to-ol-style';
 
@@ -361,7 +362,15 @@ class Map extends Component {
                     for(const feature of features) {
                         feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
                     }
+
+                    // features to add
                     let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
+
+                    // get the transforms for the layer
+                    const transforms = mapSourceActions.getLayerByPath(this.props.store, queryLayer).transforms;
+
+                    // apply the transforms
+                    js_features = util.transformFeatures(transforms, js_features);
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -418,6 +427,24 @@ class Map extends Component {
                 this.props.dispatch(mapActions.startQuery(query_id));
                 // run the query.
                 this.runQuery(queries, query_id);
+            }
+        }
+
+        if(queries.order.length > 0) {
+            let query_id = queries.order[0];
+            let query = queries[query_id];
+            if(query.progress === 'finished') {
+                // check the filters
+                const filter_json = JSON.stringify(query.filter);
+                const filter_md5 = md5(filter_json);
+
+                if(this.currentQueryId !== query_id
+                   || this.currentQueryFilter !== filter_md5) {
+
+                    this.renderQueryLayer(query);
+                    this.currentQueryId = query_id;
+                    this.currentQueryFilter = filter_md5;
+                }
             }
         }
     }
@@ -485,6 +512,25 @@ class Map extends Component {
                 console.log('REFRESH', mapSource.name);
                 this.refreshLayer(mapSource);
             }, mapSource.refresh * 1000);
+        }
+    }
+
+    /* Render the query as a layer.
+     *
+     */
+    renderQueryLayer(query) {
+        if(this.props.mapSources.results) {
+            // clear the features
+            this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+            // get the path to the first set of features
+            const layer_path = Object.keys(query.results)[0];
+
+            // get the features, aftre applying the query filter
+            const features = util.matchFeatures(query.results[layer_path], query.filter);
+            // render only those features.
+            this.props.store.dispatch(mapSourceActions.addFeatures('results', 'results', features));
+        } else {
+            console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }
     }
 
