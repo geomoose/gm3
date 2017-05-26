@@ -19,6 +19,9 @@
     ]
   },
   "jest": {
+    "transformIgnorePatterns" : [
+        "node_modules/(?!ol|mapbox)"
+    ],
     "setupFiles": [
       "./tests/setup.js"
     ],
