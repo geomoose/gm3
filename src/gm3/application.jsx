@@ -113,6 +113,56 @@ class Application {
     }
 
     populateMapbook(mapbookXml) {
+
+        // add a layer that listens for changes
+        //  to the query results.  This hs
+        this.store.dispatch(mapSourceActions.add({
+            name: 'results',
+            urls: [],
+            type: 'vector',
+            label: 'Results',
+            opacity: 1.0,
+            queryable: false,
+            refresh: null,
+            layers: [],
+            params: {},
+            // stupid high z-index to ensure results are
+            //  on top of everything else.
+            zIndex: 200000,
+        }));
+        this.store.dispatch(mapSourceActions.addLayer('results', {
+            name: 'results',
+            on: true,
+            style: {
+                'circle-radius': 4,
+                'circle-color': '#ffff00',
+                'circle-stroke-color': '#ffff00',
+                'line-color': '#ffff00',
+                'line-width': 4,
+                'fill-color': '#ffff00',
+                'fill-opacity': 0.25,
+                'line-opacity': 0.25,
+            },
+            filter: []
+        }));
+        // the "hot" layer shows the features as red on the map,
+        //  namely useful for hover-over functionality.
+        this.store.dispatch(mapSourceActions.addLayer('results', {
+            name: 'results-hot',
+            on: true,
+            style: {
+                'circle-radius': 4,
+                'circle-color': '#ff0000',
+                'circle-stroke-color': '#ff0000',
+                'line-color': '#ff0000',
+                'line-width': 4,
+                'fill-color': '#ff0000',
+                'fill-opacity': 0.50,
+                'line-opacity': 0.50,
+            },
+            filter: ['==', 'displayClass', 'hot']
+        }));
+
         // load the map-sources
         let sources = mapbookXml.getElementsByTagName('map-source');
         for(let i = 0, ii = sources.length; i < ii; i++) {
@@ -132,6 +182,26 @@ class Application {
         for(let action of toolbar_actions) {
             this.store.dispatch(action);
         }
+
+        // Add the selection layer,
+        //  this is used to preview the user's selection.
+        /*
+        mapSourceActions.add({
+            type: 'vector',
+            name: 'selection',
+            style: {
+                'circle-radius': 4,
+                'circle-color': '#ffff00',
+                'circle-stroke-color': '#ffff00',
+                'line-color' : '#ffff00',
+                'line-width' : 4,
+                'fill-color' : '#ffff00',
+                'fill-opacity' : 0.25
+            }
+        });
+        */
+
+
     }
 
     loadMapbook(options) {
@@ -323,6 +393,25 @@ class Application {
         this.store.dispatch(mapSourceActions.changeFeatures(ms_name, layer_name, filter, properties));
     }
 
+    /* Shorthand for manipulating result features.
+     */
+    changeResultFeatures(filter, properties) {
+        this.changeFeatures('results/results', filter, properties);
+    }
+
+    /* Short hand for toggling the highlight of features.
+     */
+    highlightFeatures(filter, on) {
+        const props = {displayClass: on ? 'hot' : ''};
+        this.changeResultFeatures(filter, props);
+    }
+
+    /* Clear highlight features
+     */
+    clearHighlight() {
+        this.highlightFeatures({displayClass: 'hot'}, false);
+    }
+
     /** Clears the UI hint.  Used by applications to indicate
      *  that the previous "hint" has been handled.
      */
@@ -373,21 +462,8 @@ class Application {
         // pass
     }
 
-    /** Bridge to a useful AJAX handler.
-     *
-     *  this is really a direct bridge to reqwest, which is the
-     *  httplib used by the application.
-     *
-     *  @param {Object} opts The options for Reqwest.
-     *
-     */
-    xhr(opts) {
-        return Request(opts);
-    }
-
     /* Show an alert type dialog
      */
-
     alert(signature, message, callback = null) {
         const options = [
             {label: 'Okay', value: 'dismiss'}

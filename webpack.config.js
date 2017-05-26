@@ -46,9 +46,21 @@ module.exports = {
             loaders: ['babel'],
             include: [
                 path.join(__dirname, 'src'),
-                path.join(__dirname, '/node_modules/jsts'),
+                path.join(__dirname, 'node_modules/'),
             ],
-            exclude: /node_modules\/(^jsts)/,
+            exclude: function(absPath) {
+                var acceptable = ['ol', 'mapbox-to-ol-style', '@mapbox', 'jsts'];
+                if(absPath.indexOf('node_modules') < 0) {
+                    return false;
+                }
+
+                for(var i = 0, ii = acceptable.length; i < ii; i++) {
+                    if(absPath.indexOf(acceptable[i]) >= 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }]
     },
     resolve: {
@@ -81,7 +93,7 @@ module.exports = {
         ]
     },
     externals: {
-        openlayers: 'ol',
+        //openlayers: 'ol',
     },
     plugins: [
         new webpack.BannerPlugin(license_text, {raw: true}),

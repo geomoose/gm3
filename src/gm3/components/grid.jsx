@@ -63,35 +63,35 @@ class FilterModal extends ModalDialog {
     setFilter() {
         const value = this.state.value;
         const property = this.props.column.property;
-        let filter_def = '';
+
+        const new_filters = [];
 
         if(this.props.column.filter.type === 'list') {
-            filter_def = {
-                type: 'list',
-                value: value
-            }
+            new_filters.push(["in", property].concat(value));
         } else if(this.props.column.filter.type === 'range') {
-            filter_def = {
-                type: 'range'
-            }
             if(this.state.min !== '') {
-                filter_def.min = this.state.min;
+                new_filters.push([">=", property, this.state.min]);
             }
             if(this.state.max !== '') {
-                filter_def.max = this.state.max;
+                new_filters.push(["<=", property, this.state.max]);
             }
         } else {
             // straight equals...
-            filter_def = value;
+            new_filters.push(["==", property, value]);
         }
 
-        const new_filter = {};
-        new_filter[property] = filter_def;
-
-        // add/update this filter.
+        // remove the filters from the property
         this.props.store.dispatch(
-            addFilter(this.props.queryId, new_filter)
+            removeFilter(this.props.queryId, property)
         );
+
+        // add the new filtres.
+        for(const new_filter of new_filters) {
+            // add/update this filter.
+            this.props.store.dispatch(
+                addFilter(this.props.queryId, new_filter)
+            );
+        }
     }
 
     close(status) {

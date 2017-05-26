@@ -42,6 +42,7 @@
 		<attribute name="label_only" type="checkbox" default-value="false" label="Only show label in print?"/>
 	</map-source>
 
+    <!--
 	<map-source name="highlight" type="vector">
         <layer name="highlight" status="on">
             <style><![CDATA[
@@ -51,12 +52,14 @@
                 "circle-stroke-color": "#ffff00",
                 "line-color" : "#ffff00",
                 "line-width" : 4,
+                "line-opacity": 0.25,
                 "fill-color" : "#ffff00",
                 "fill-opacity" : 0.25
             }
             ]]></style>
         </layer>
 	</map-source>
+    -->
 
 	<map-source name="census_cities" type="wfs" active="true" srs="EPSG:4269"> 
 		<style><![CDATA[
@@ -87,15 +90,15 @@
 	</map-source>
 
 	<map-source name="minnesota_places" type="wfs" active="true" srs="EPSG:4326">
-        <layer name="gm:minnesota_places"/>
-
-		<style type="stylemap"><![CDATA[
-		{
-			"fill-outline-color" : "#f00",
-            "fill-color" : "#000077",
-			"label" : "${name}"
-		}
-		]]></style>
+        <layer name="gm:minnesota_places">
+            <style type="stylemap"><![CDATA[
+            {
+                "fill-outline-color" : "#f00",
+                "fill-color" : "#000077",
+                "label" : "${name}"
+            }
+            ]]></style>
+        </layer>
 
 		<url>/mapserver/cgi-bin/tinyows</url>
 
@@ -115,6 +118,12 @@
 
     <map-source name="vector-parcels" type="mapserver-wfs">
         <layer name="ms:parcels" selectable="true" title="Parcels">
+            <style><![CDATA[
+            {
+                "line-color" : "#00A138",
+                "line-width" : 2
+            }
+            ]]></style>
             <template name="identify"><![CDATA[
                 <div class="identify-result">
                     <div class="feature-class">Vector Parcel</div>
@@ -171,32 +180,25 @@
             ]]></template>
             <template name="gridRow"><![CDATA[
             <tr 
-              onmouseenter="app.changeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}, {'displayClass' : 'red'})"
-              onmouseleave="app.changeFeatures('highlight/highlight', {'displayClass' : 'red'}, {'displayClass' : 'blue'})"
+              onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+              onmouseleave="app.clearHighlight()"
             >
-                <td>
-                  <a onClick="app.removeFeatures('highlight/highlight', {'PIN' : '{{ properties.PIN }}'}) ; app.removeQueryResults('{{ query }}', {'PIN' : '{{ properties.PIN }}'})">
-                    <i title="Remove from results" class="fa fa-trash"></i>
-                  </a>
-                </td>
                 <td>
                   <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
                     <i class="fa fa-search"></i> 
-                    {{ properties.PIN }}
                   </a>
+                </td>
+                <td>
+                  {{ properties.PIN }}
                 </td>
                 <td>{{ properties.OWNER_NAME }}</td>
                 <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
-            </td>
+            </tr>
             ]]></template>
+
+            <transform attribute="EMV_TOTAL" function="number"/>
         </layer>
-		<file>./demo/parcels/parcels.map</file>
-        <style><![CDATA[
-		{
-			"line-color" : "#00A138",
-            "line-width" : 2
-		}
-        ]]></style>
+        <file>./demo/parcels/parcels.map</file>
 
     </map-source>
 

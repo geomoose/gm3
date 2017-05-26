@@ -29,13 +29,18 @@ import DrawTool from './drawTool';
 
 import * as util from '../util';
 
+import proj from 'ol/proj';
+
+import olPoint from 'ol/geom/point';
+import olLineString from 'ol/geom/linestring';
+
 export class MeasureTool extends Component {
 
     constructor(props) {
         super(props);
 
         // TODO: sniff the map for the proj.
-        this.mapProjection = ol.proj.get('EPSG:3857');
+        this.mapProjection = proj.get('EPSG:3857');
 
         this.state = {
             units: 'ft'
@@ -108,7 +113,7 @@ export class MeasureTool extends Component {
      */
     calculateLength(a, b, utmZone) {
         // create the new line
-        let line = new ol.geom.LineString([a, b]);
+        let line = new olLineString([a, b]);
         // transform into the new projection
         line = line.transform(this.mapProjection, utmZone);
         // return the measurement.
@@ -121,11 +126,11 @@ export class MeasureTool extends Component {
     getSegmentInfo(geom) {
         // convert the first point of the line to 4326
         //  so a UTM zone can be determined.
-        let point0 = new ol.geom.Point(geom.coordinates[0]);
+        let point0 = new olPoint(geom.coordinates[0]);
         point0 = point0.transform(this.mapProjection, 'EPSG:4326');
 
         // determine an appropriate utm zone for measurement.
-        const utm_zone = ol.proj.get(util.getUtmZone(point0.getCoordinates()));
+        const utm_zone = proj.get(util.getUtmZone(point0.getCoordinates()));
 
         const coords = [].concat(geom.coordinates);
 
@@ -191,11 +196,11 @@ export class MeasureTool extends Component {
      * @return JSX
      */
     renderArea(geom) {
-        let point0 = new ol.geom.Point(geom.coordinates[0][0]);
+        let point0 = new olPoint(geom.coordinates[0][0]);
         point0 = point0.transform(this.mapProjection, 'EPSG:4326');
 
         // determine an appropriate utm zone for measurement.
-        const utm_zone = ol.proj.get(util.getUtmZone(point0.getCoordinates()));
+        const utm_zone = proj.get(util.getUtmZone(point0.getCoordinates()));
 
         const utm_geom = util.jsonToGeom(geom).transform(this.mapProjection, utm_zone)
 

@@ -29,7 +29,13 @@
 
 import * as util from '../../util';
 
-import * as olMapboxStyle from 'ol-mapbox-style';
+import GML2Format from 'ol/format/gml2';
+import GeoJSONFormat from 'ol/format/geojson';
+import LoadingStrategy from 'ol/loadingstrategy';
+import VectorSource from 'ol/source/vector';
+import VectorLayer from 'ol/layer/vector';
+
+import getStyleFunction from 'mapbox-to-ol-style';
 
 /** Create the parameters for a Vector layer.
  *
@@ -38,7 +44,7 @@ function defineSource(mapSource) {
     if(mapSource.type === 'wfs') {
         // add a wfs type source
         return {
-            format: new ol.format.GML2({}),
+            format: new GML2Format({}),
             projection: 'EPSG:4326',
             url: function(extent) {
                 // http://localhost:8080/mapserver/cgi-bin/tinyows?
@@ -56,7 +62,7 @@ function defineSource(mapSource) {
 
                 return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
             },
-            strategy: ol.loadingstrategy.bbox
+            strategy: LoadingStrategy.bbox
         };
     }
     // empty object
@@ -70,32 +76,41 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    const source = new ol.source.Vector(defineSource(mapSource));
+    const source = new VectorSource(defineSource(mapSource));
     const opts = {
         source
     };
 
-    if(mapSource.style) {
-        opts.style = olMapboxStyle.getStyleFunction({
+    // with vector layers each sub-layer is a style grouping
+    // in defineSource, only the FIRST layer's name is used
+    // as the WFS type name.
+    const layers = [];
+    for(const layer of mapSource.layers) {
+        const layer_def = {
+            id: layer.name,
+            // source is a contant that is used to dummy up
+            //  the Mapbox styles
+            source: 'dummy-source',
+            paint: layer.style,
+        };
+
+        // check to see if there is a filter
+        //  set on the layer.  This uses the Mapbox GL/JS
+        //  filters.
+        if(layer.filter !== null) {
+            layer_def.filter = layer.filter;
+        }
+
+        layers.push(layer_def);
+    }
+
+    // If there are any styles defined
+    //  then use them to style the layer.
+    // Otherwise this will use the built-in OL styles.
+    if(layers.length > 0) {
+        opts.style = getStyleFunction({
             'version': 8,
-            'layers': [
-                {
-                    'id': 'red',
-                    'source': 'dummy-source',
-                    'filter': ['==', 'displayClass', 'red'],
-                    'paint': {
-                        'line-color': '#ff0000',
-                        'line-width': 2,
-                        'fill-color': '#ff0000',
-                        'fill-opacity': 0.5
-                    }
-                },
-                {
-                    'id': 'dummy',
-                    'source': 'dummy-source',
-                    'paint': mapSource.style
-                }
-            ],
+            'layers': layers,
             'dummy-source': [
                 {
                     'type': 'vector'
@@ -104,7 +119,7 @@ export function createLayer(mapSource) {
         }, 'dummy-source');
     }
 
-    return new ol.layer.Vector(opts);
+    return new VectorLayer(opts);
 }
 
 /** Ensure that the Vector parameters all match.
@@ -121,7 +136,7 @@ export function updateLayer(map, layer, mapSource) {
             // clear the layer without setting off events.
             source.clear(true);
             // setup the JSON parser
-            const output_format = new ol.format.GeoJSON({
+            const output_format = new GeoJSONFormat({
             /*
                 dataProjection: 'EPSG:4326',
                 featureProjection: map.getView().getProjection()

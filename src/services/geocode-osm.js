@@ -68,7 +68,7 @@ function OSMGeocoder(Application, options) {
         var osm_url = 'http://nominatim.openstreetmap.org/search/';
         // boom kick this off.
         var highlight_path = this.highlightPath;
-        Application.xhr({
+        gm3.util.xhr({
             url: osm_url,
             type: 'json',
             data: {
