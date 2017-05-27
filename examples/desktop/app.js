@@ -37,7 +37,7 @@ var app = new gm3.Application({
 app.uiUpdate = function(ui) {
     // when the UI hint is set for the service manager
     //  show the service manager tab.
-    if(ui.hint == 'service-manager') {
+    if(ui.hint == 'service-manager' || ui.hint == 'service-start') {
         showTabByName('service-tab');
         app.clearHint();
     }
