@@ -420,7 +420,7 @@ class ServiceManager extends Component {
             let service_def = this.props.services[service_name];
 
             const service_tools = [];
-            for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon']) {
+            for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon', 'Select']) {
                 const dt_key = 'draw_tool_' + gtype;
                 if(service_def.tools[gtype]) {
                     service_tools.push(<DrawTool key={dt_key} store={this.props.store} buffer={true} geomType={gtype} />);
