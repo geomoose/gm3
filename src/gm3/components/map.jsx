@@ -605,18 +605,6 @@ class Map extends Component {
                             'circle-stroke-color': '#ff0000'
                         }
                     }
-                    /*
-                    ,
-                    {
-                        id: 'buffered-shapes',
-                        source: 'dummy-source',
-                        paint: {
-                            'fill-color': '#ffffff',
-                            'fill-opacity': 0.8,
-                        },
-                        filter: ['==', 'buffer', true]
-                    }
-                    */
                 ],
                 'dummy-source': [
                     {
@@ -642,20 +630,25 @@ class Map extends Component {
                 const buffered_geom = jsts.buffer(json_feature.geometry, this.props.mapView.selectionBuffer);
 
                 const buffered_feature = {
+                    type: 'Feature',
                     geometry: buffered_geom,
                     properties: {
                         buffer: true
                     }
                 };
 
-                this.props.store.dispatch(
-                    mapActions.addSelectionFeature(buffered_feature)
-                );
-
-                src_selection.addFeatureInternal(geojson.readFeature(buffered_feature));
-            } else {
-                this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+                json_feature = buffered_feature;
             }
+
+            this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+
+            this.props.store.dispatch(
+                mapSourceActions.clearFeatures('selection', 'selection')
+            );
+
+            this.props.store.dispatch(
+                mapSourceActions.addFeatures('selection', 'selection', [json_feature])
+            );
         });
     }
 
@@ -748,7 +741,7 @@ class Map extends Component {
         // helpful default behaviour for when the description
         //  is not defined.
         if(typeof(tool_desc) === 'undefined') {
-            tool_desk = 'End ' + type;
+            tool_desc = 'End ' + type;
         }
 
         // yikes this is super not-reacty.

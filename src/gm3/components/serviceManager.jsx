@@ -75,7 +75,7 @@ class SetSelectionBuffer extends Component {
 
         return (
             <div>
-                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field } /> 
+                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field } />
             </div>
         );
     }
