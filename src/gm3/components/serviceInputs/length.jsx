@@ -60,17 +60,27 @@ export default class LengthInput extends TextInput {
             label: 'Chains',
             value: 'ch'
         }];
+
+        // default the units to feet, if nothing is specified.
+        let default_units = props.field.units ? props.field.units : 'ft';
+        let default_value = props.field.default ? props.field.default : 0;
+
+        // ensure that the units on display are the units that match
+        //  what will be in the drop down and not just meters.
+        default_value = convertLength(default_value, 'm', default_units)
+
         this.state = {
-            value: props.field.default ? props.field.default : 0
+            value: default_value,
+            units: default_units,
         };
+
+        this.unitsChanged = this.unitsChanged.bind(this);
+        this.valueChanged = this.valueChanged.bind(this);
     }
 
     onChange() {
-        let lengthInput = parseFloat(this.lengthInput.value);
-        let unitInput = this.unitInput.value;
-        let lengthInMeters = convertLength(lengthInput, unitInput, 'm');
-        this.setState({ value: lengthInMeters });
-        this.setValue(this.getName(), lengthInMeters);
+        const meters = convertLength(this.state.value, this.state.units, 'm');
+        this.setValue(this.getName(), meters);
     }
 
     /**
@@ -84,13 +94,27 @@ export default class LengthInput extends TextInput {
         return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
     }
 
+    /** Whenever the units change, update the units setting.
+     */
+    unitsChanged(evt) {
+        this.setState({units: evt.target.value});
+        this.onChange();
+    }
+
+    /** Whenever the input box changes, parse the value and update it.
+     */
+    valueChanged(evt) {
+        this.setState({value: parseFloat(evt.target.value)});
+        this.onChange();
+    }
+
     render() {
         const id = this.getId();
         return (
             <div className='service-input'>
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input onChange={ this.onChange } type="number" id={ 'input-' + id } ref={(input) => { this.lengthInput = input; }}></input>
-                <select onChange={ this.onChange } ref={(input) => { this.unitInput = input; }}>
+                <input onChange={ this.valueChanged } type="number" id={ 'input-' + id } value={ this.state.value }/>
+                <select onChange={ this.unitsChanged } value={ this.state.units }>
                     { this.units.map(this.renderOption) }
                 </select>
             </div>

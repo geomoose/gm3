@@ -20,7 +20,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!ol|mapbox)"
+      "node_modules/(?!ol|mapbox|jsts)"
     ],
     "setupFiles": [
       "./tests/setup.js"

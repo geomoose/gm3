@@ -75,7 +75,8 @@ class SetSelectionBuffer extends Component {
 
         return (
             <div>
-                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field } />
+                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field }
+                  default={ this.props.map.selectionBuffer } />
             </div>
         );
     }
@@ -370,10 +371,16 @@ class ServiceManager extends Component {
             if(!this.fieldValues[nextProps.queries.service]) {
                 this.fieldValues[nextProps.queries.service] = {};
             }
+
+            // when the seleciton buffer zero, and the service
+            //  does not actually support buffering, remove the buffer.
+            if(this.props.map.selectionBuffer !== 0
+               && !service_def.bufferAvailable) {
+                this.props.store.dispatch(mapActions.setSelectionBuffer(0));
+            }
         } else {
             let service_name = this.state.lastService;
             let service_def = nextProps.services[service_name];
-
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
             if(service_def && service_def.autoGo) {
@@ -419,11 +426,13 @@ class ServiceManager extends Component {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
 
+            const show_buffer = service_def.bufferAvailable;
+
             const service_tools = [];
             for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon', 'Select']) {
                 const dt_key = 'draw_tool_' + gtype;
                 if(service_def.tools[gtype]) {
-                    service_tools.push(<DrawTool key={dt_key} store={this.props.store} buffer={true} geomType={gtype} />);
+                    service_tools.push(<DrawTool key={dt_key} store={this.props.store} geomType={gtype} />);
                 }
             }
 
@@ -436,7 +445,7 @@ class ServiceManager extends Component {
             }
 
             let buffer_controls = false;
-            if(service_def.bufferAvailable) {
+            if(show_buffer) {
                 buffer_controls = <SetSelectionBuffer store={ this.props.store } map={ this.props.map }/>
             }
 
