@@ -69,18 +69,18 @@ export default class LengthInput extends TextInput {
         //  what will be in the drop down and not just meters.
         default_value = convertLength(default_value, 'm', default_units)
 
-        this.state = {
-            value: default_value,
-            units: default_units,
-        };
+        this.value = default_value;
+        this.selected_units = default_units;
 
         this.unitsChanged = this.unitsChanged.bind(this);
         this.valueChanged = this.valueChanged.bind(this);
     }
 
     onChange() {
-        const meters = convertLength(this.state.value, this.state.units, 'm');
-        this.setValue(this.getName(), meters);
+        const meters = convertLength(this.value, this.selected_units, 'm');
+        if(!isNaN(meters)) {
+            this.setValue(this.getName(), meters);
+        }
     }
 
     /**
@@ -97,14 +97,14 @@ export default class LengthInput extends TextInput {
     /** Whenever the units change, update the units setting.
      */
     unitsChanged(evt) {
-        this.setState({units: evt.target.value});
+        this.selected_units = evt.target.value;
         this.onChange();
     }
 
     /** Whenever the input box changes, parse the value and update it.
      */
     valueChanged(evt) {
-        this.setState({value: parseFloat(evt.target.value)});
+        this.value = parseFloat(evt.target.value);
         this.onChange();
     }
 
@@ -113,8 +113,8 @@ export default class LengthInput extends TextInput {
         return (
             <div className='service-input'>
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input onChange={ this.valueChanged } type="number" id={ 'input-' + id } value={ this.state.value }/>
-                <select onChange={ this.unitsChanged } value={ this.state.units }>
+                <input onChange={ this.valueChanged } type="number" id={ 'input-' + id } value={ this.value }/>
+                <select onChange={ this.unitsChanged } value={ this.selected_units }>
                     { this.units.map(this.renderOption) }
                 </select>
             </div>

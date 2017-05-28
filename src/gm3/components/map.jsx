@@ -584,6 +584,48 @@ class Map extends Component {
         // this.sortOlLayers();
     }
 
+    /** Add features to the selection layer.
+     *
+     *  @param feature  An ol.Feature
+     *  @param buffer   A buffer distance to apply.
+     *
+     */
+    addSelectionFeature(feature, buffer) {
+        let geojson = new GeoJSONFormat();
+        let json_feature = geojson.writeFeatureObject(feature);
+
+
+        // assign the feature a UUID.
+        json_feature.properties = {
+            id: uuid.v4()
+        };
+
+        if(buffer !== 0 && !isNaN(buffer)) {
+            const buffered_geom = jsts.buffer(json_feature.geometry, buffer);
+
+            const buffered_feature = {
+                type: 'Feature',
+                geometry: buffered_geom,
+                properties: {
+                    buffer: true
+                }
+            };
+
+            json_feature = buffered_feature;
+        }
+
+        this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+
+        this.props.store.dispatch(
+            mapSourceActions.clearFeatures('selection', 'selection')
+        );
+
+        this.props.store.dispatch(
+            mapSourceActions.addFeatures('selection', 'selection', [json_feature])
+        );
+
+    }
+
     /** Create a selection layer for temporary selection features.
      *
      */
@@ -617,38 +659,7 @@ class Map extends Component {
 
         // geojson -- the one true Javascript object representation.
         src_selection.on('addfeature', (evt) => {
-            let geojson = new GeoJSONFormat();
-            let json_feature = geojson.writeFeatureObject(evt.feature);
-
-
-            // assign the feature a UUID.
-            json_feature.properties = {
-                id: uuid.v4()
-            };
-
-            if(this.props.mapView.selectionBuffer !== 0) {
-                const buffered_geom = jsts.buffer(json_feature.geometry, this.props.mapView.selectionBuffer);
-
-                const buffered_feature = {
-                    type: 'Feature',
-                    geometry: buffered_geom,
-                    properties: {
-                        buffer: true
-                    }
-                };
-
-                json_feature = buffered_feature;
-            }
-
-            this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
-
-            this.props.store.dispatch(
-                mapSourceActions.clearFeatures('selection', 'selection')
-            );
-
-            this.props.store.dispatch(
-                mapSourceActions.addFeatures('selection', 'selection', [json_feature])
-            );
+            this.addSelectionFeature(evt.feature, this.props.mapView.selectionBuffer);
         });
     }
 
@@ -947,6 +958,18 @@ class Map extends Component {
         if(nextProps && nextProps.mapView.selectionFeatures.length === 0) {
             if(this.selectionLayer) {
                 this.selectionLayer.getSource().clear();
+            }
+        }
+
+        // handle out of loop buffer distance changes
+        if(nextProps && nextProps.mapView.selectionBuffer !== this.props.mapView.selectionBuffer) {
+            if(this.selectionLayer && !isNaN(nextProps.mapView.selectionBuffer)) {
+                const buffer = nextProps.mapView.selectionBuffer;
+                const selection_src = this.selectionLayer.getSource();
+
+                for(const feature of selection_src.getFeatures()) {
+                    this.addSelectionFeature(feature, buffer);
+                }
             }
         }
 
