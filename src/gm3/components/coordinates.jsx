@@ -31,6 +31,32 @@ import { addProjDef } from '../util.js';
 
 import proj from 'ol/proj';
 
+/**
+ * CoordinateDisplay options
+ * - These options can be passed when adding the coordinate display to the app
+ *
+ * @param {Object[]} projections - an array of projections
+ * @param {string} projections[].label - The label appearing next to displayed coordinates
+ * @param {string} projections[].ref - an ID referring to the projection being used
+ * @param {number} projections[].precision - integer referring to the number of decimal places
+ *     to display for this projection
+ *
+ * Named Projections (do not need to be defined by the user):
+ *     - USNG
+ *        ref: 'usng'
+ *     - XY
+ *        ref: 'xy'
+ *
+ * Predefined Projections
+ *     - Lat/Lng
+ *        ref: 'EPSG:4326'
+ *     - Web Mercator
+ *        ref: 'EPSG:3857'
+ *
+ * Default Projections - displayed when user fails to configure component
+ *     - XY, Lat/Lng, USNG
+ */
+
 class CoordinateDisplay extends Component {
 
     constructor(props) {
