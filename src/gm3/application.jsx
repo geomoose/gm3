@@ -53,6 +53,7 @@ import Modal from './components/modal';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import proj4 from 'proj4';
 
 import { getLayerFromPath, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
 
@@ -513,6 +514,20 @@ class Application {
      */
     setView(view) {
         this.store.dispatch(mapActions.setView(view));
+    }
+
+    /**
+     * addProjection
+     * - A function that can be called by the user to add a custom projection.
+     * - Facade for adding a projection to the proj4 registry, which then allows its use
+     *     when calling the proj4 or OpenLayers libraries.
+     *
+     * @param {Object} projDef - an object containing an ID and a definition for a projection
+     * @param {string} projDef.ref - a string ID that will be used to refer to defined projection
+     * @param {string} projDef.def - a string definition of the projection, in WKT/Proj format
+     */
+    addProjection(projDef) {
+        util.addProjDef(proj4, projDef.ref, projDef.def);
     }
 
 };

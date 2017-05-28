@@ -458,6 +458,18 @@ export function configureProjections(p4) {
 
 }
 
+/**
+ * addProjDef
+ * Add a projection definition
+ *
+ * @param {object} p4 - the proj4js library
+ * @param {string} code - an ID used to refer to the defined projection
+ * @param {string} def - a proj4/wkt string used to define a projection
+ */
+export function addProjDef(p4, code, def) {
+    p4.defs(code, def);
+}
+
 /* Determine the UTM zone for a point
  *
  * @param {Point-like} An array containing [x,y] in WGS84 or NAD83 DD
