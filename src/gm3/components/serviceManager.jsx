@@ -349,19 +349,17 @@ class ServiceManager extends Component {
         //  tab.
         this.props.store.dispatch(setUiHint('service-manager'));
 
-        // if the measure tool has been triggered, quiet the
-        //  rest of hte noise.
-        if(nextProps.queries.service === 'measure') {
-
-
-        // when the service changes, then clear out the previous
-        //  selection features
-        } else if(this.state.lastService !== nextProps.queries.service
+        if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
             let service_def = nextProps.services[nextProps.queries.service];
-            // clear out the previous drawing tool when
-            //  changing services.
-            this.drawTool(service_def.tools.default);
+
+            // some "internal" services won't have a bespoke service_def,
+            //  e.g. measure.
+            if(service_def) {
+                // clear out the previous drawing tool when
+                //  changing services.
+                this.drawTool(service_def.tools.default);
+            }
             // 'rotate' the current servie to the next services.
             this.setState({lastService: nextProps.queries.service, lastFeature: ''});
             // clear out the previous selection feaures.
