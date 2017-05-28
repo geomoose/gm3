@@ -51,6 +51,37 @@ import LengthInput from './serviceInputs/length';
 
 import MeasureTool from './measure';
 
+
+/* Component to control the setting of the buffer distance
+ * for selection shapes.
+ *
+ */
+class SetSelectionBuffer extends Component {
+    /* Set the buffer in the store.
+     *
+     * This is called when the LengthInput changes.
+     *
+     */
+    setBuffer(distance) {
+        this.props.store.dispatch(mapActions.setSelectionBuffer(distance));
+    }
+
+    render() {
+        // inputs require a "field" to render their label and
+        // set their value.  This mocks that up.
+        const mock_field = {
+            label: 'Buffer', value: this.props.map.selectionBuffer
+        };
+
+        return (
+            <div>
+                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field }
+                  default={ this.props.map.selectionBuffer } />
+            </div>
+        );
+    }
+}
+
 class ServiceManager extends Component {
 
     constructor() {
@@ -338,10 +369,16 @@ class ServiceManager extends Component {
             if(!this.fieldValues[nextProps.queries.service]) {
                 this.fieldValues[nextProps.queries.service] = {};
             }
+
+            // when the seleciton buffer zero, and the service
+            //  does not actually support buffering, remove the buffer.
+            if(this.props.map.selectionBuffer !== 0
+               && (!service_def || !service_def.bufferAvailable)) {
+                this.props.store.dispatch(mapActions.setSelectionBuffer(0));
+            }
         } else {
             let service_name = this.state.lastService;
             let service_def = nextProps.services[service_name];
-
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
             if(service_def && service_def.autoGo) {
@@ -387,6 +424,8 @@ class ServiceManager extends Component {
             let service_name = this.props.queries.service;
             let service_def = this.props.services[service_name];
 
+            const show_buffer = service_def.bufferAvailable;
+
             const service_tools = [];
             for(let gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon', 'Select']) {
                 const dt_key = 'draw_tool_' + gtype;
@@ -400,12 +439,19 @@ class ServiceManager extends Component {
             for(let i = 0, ii = service_def.fields.length; i < ii; i++) {
                 const field = service_def.fields[i];
                 service_fields.push(this.getServiceField(i, field));
+                this.fieldValues[this.props.queries.service][field.name] = field.default;
+            }
+
+            let buffer_controls = false;
+            if(show_buffer) {
+                buffer_controls = <SetSelectionBuffer store={ this.props.store } map={ this.props.map }/>
             }
 
             return (
                 <div className="service-manager">
                     <h3>{service_def.title}</h3>
                     { service_tools }
+                    { buffer_controls }
                     { service_fields }
                     <div className="tab-controls">
                         <button className="close-button" onClick={() => { this.closeForm() }}><i className="close-icon"></i> Close</button>

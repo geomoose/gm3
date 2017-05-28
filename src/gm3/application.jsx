@@ -113,8 +113,13 @@ class Application {
         this.actions[actionName] = new actionClass(this, options);
     }
 
-    populateMapbook(mapbookXml) {
-
+    /** Configure the default results layer.
+     *
+     *  This layer needs to exist so the map will properly render
+     *  query reuslts.
+     *
+     */
+    configureResultsLayer() {
         // add a layer that listens for changes
         //  to the query results.  This hs
         this.store.dispatch(mapSourceActions.add({
@@ -129,7 +134,7 @@ class Application {
             params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
-            zIndex: 200000,
+            zIndex: 200001,
         }));
         this.store.dispatch(mapSourceActions.addLayer('results', {
             name: 'results',
@@ -163,6 +168,46 @@ class Application {
             },
             filter: ['==', 'displayClass', 'hot']
         }));
+
+    }
+
+    configureSelectionLayer() {
+        // add a layer that listens for changes
+        //  to the query results.  This hs
+        this.store.dispatch(mapSourceActions.add({
+            name: 'selection',
+            urls: [],
+            type: 'vector',
+            label: 'Selection',
+            opacity: 1.0,
+            queryable: false,
+            refresh: null,
+            layers: [],
+            params: {},
+            // stupid high z-index to ensure results are
+            //  on top of everything else.
+            zIndex: 200002,
+        }));
+        this.store.dispatch(mapSourceActions.addLayer('selection', {
+            name: 'selection',
+            on: true,
+            style: {
+                'circle-radius': 4,
+                'circle-color': '#8470ff',
+                'circle-stroke-color': '#8470ff',
+                'line-color': '#8470ff',
+                'line-width': 4,
+                'fill-color': '#8470ff',
+                'fill-opacity': 0.50,
+                'line-opacity': 0.50,
+            },
+            filter: []
+        }));
+    }
+
+    populateMapbook(mapbookXml) {
+        this.configureSelectionLayer();
+        this.configureResultsLayer();
 
         // load the map-sources
         let sources = mapbookXml.getElementsByTagName('map-source');

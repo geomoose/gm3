@@ -73,6 +73,9 @@ function SelectService(Application, options) {
         options: options.queryLayers ? options.queryLayers : []
     }];
 
+    /** Alow shapes to be buffered. */
+    this.bufferAvailable = true;
+
     /** This function is called everytime there is an select query.
      *
      *  @param selection contains a GeoJSON feature describing the

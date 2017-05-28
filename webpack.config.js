@@ -49,7 +49,7 @@ module.exports = {
                 path.join(__dirname, 'node_modules/'),
             ],
             exclude: function(absPath) {
-                var acceptable = ['ol', 'mapbox-to-ol-style', '@mapbox'];
+                var acceptable = ['ol', 'mapbox-to-ol-style', '@mapbox', 'jsts'];
                 if(absPath.indexOf('node_modules') < 0) {
                     return false;
                 }
@@ -61,7 +61,6 @@ module.exports = {
                 }
                 return true;
             }
-
         }]
     },
     resolve: {

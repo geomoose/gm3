@@ -171,3 +171,16 @@ export function setView(view) {
         type: MAP.MOVE
     }, view);
 }
+
+/* Set a buffer for selection features.
+ *
+ * @param meters {Float} Distance in meters to buffer the features.
+ *
+ * @return action definition
+ */
+export function setSelectionBuffer(meters) {
+    return {
+        type: MAP.BUFFER_SELECTION_FEATURES,
+        meters
+    };
+}

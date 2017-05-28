@@ -36,8 +36,6 @@ export default class TextInput extends Component {
         };
 
         this.onChange = this.onChange.bind(this);
-
-        this.setValue(this.getName(), this.state.value);
     }
 
     getId() {
