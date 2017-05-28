@@ -92,7 +92,7 @@ class CoordinateDisplay extends Component {
                 addProjDef(proj4, projection.ref, projection.projDef);
             }
             let isNamedProjection = (this.namedProjections.indexOf(projection.ref) !== -1);
-            let isDefinedProjection = (ol.proj.get(projection.ref) !== null);
+            let isDefinedProjection = (proj.get(projection.ref) !== null);
             if(isNamedProjection || isDefinedProjection) {
                 this.projections.push(projection);
             }
@@ -135,11 +135,11 @@ class CoordinateDisplay extends Component {
     getProjectionCoords(projection) {
         // TODO: The projection should be stored in the store,
         //       and defined by the user.
-        const map_proj = new ol.proj.get('EPSG:3857');
-        const dest_proj = new ol.proj.get(projection.ref);
+        const map_proj = new proj.get('EPSG:3857');
+        const dest_proj = new proj.get(projection.ref);
 
         // transform the point
-        let coords = ol.proj.transform(this.props.cursor.coords, map_proj, dest_proj);
+        let coords = proj.transform(this.props.cursor.coords, map_proj, dest_proj);
         if (projection.precision) {
             return coords.map((coord) => coord.toFixed(projection.precision))
         }

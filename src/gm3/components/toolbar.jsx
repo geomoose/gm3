@@ -32,7 +32,7 @@ import { connect } from 'react-redux';
 import { startTool } from '../actions/toolbar';
 
 import { startService } from '../actions/service';
-import { runAction } from '../actions/ui';
+import { runAction, setUiHint } from '../actions/ui';
 
 class Toolbar extends Component {
 
@@ -43,10 +43,11 @@ class Toolbar extends Component {
     }
 
     handleToolAction(tool) {
-        console.log('handleToolAction', tool);
         if(tool.actionType === 'service') {
-            console.log('dispatching startService...');
+            // start the service
             this.props.store.dispatch(startService(tool.name));
+            // give an indication that a new service has been started
+            this.props.store.dispatch(setUiHint('service-start'));
         } else if(tool.actionType === 'action') {
             this.props.store.dispatch(runAction(tool.name));
         }
