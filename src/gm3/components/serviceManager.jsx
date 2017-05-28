@@ -373,7 +373,7 @@ class ServiceManager extends Component {
             // when the seleciton buffer zero, and the service
             //  does not actually support buffering, remove the buffer.
             if(this.props.map.selectionBuffer !== 0
-               && !service_def.bufferAvailable) {
+               && (!service_def || !service_def.bufferAvailable)) {
                 this.props.store.dispatch(mapActions.setSelectionBuffer(0));
             }
         } else {
