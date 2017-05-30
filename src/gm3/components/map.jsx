@@ -665,7 +665,6 @@ class Map extends Component {
             this.addSelectionFeature(evt.feature, this.props.mapView.selectionBuffer);
         };
         src_selection.on('addfeature', feature_change_fn);
-        src_selection.on('changefeature', feature_change_fn);
     }
 
     /** This is called after the first render.
@@ -870,6 +869,28 @@ class Map extends Component {
                 this.drawTool = new olModifyInteraction({
                     features: new olCollection(features),
                 });
+
+                if(is_selection) {
+                    this.drawTool.on('modifyend', (evt) => {
+                        const features = evt.features.getArray();
+                        this.addSelectionFeature(features[0], this.props.mapView.selectionBuffer);
+                    });
+                } else {
+                    this.drawTool.on('modifyend', (evt) => {
+                        const id_prop = '_uuid';
+                        const features = evt.features.getArray();
+                        for(const feature of features) {
+                            const geometry = util.geomToJson(feature.getGeometry());
+                            const id = feature.getProperties()[id_prop];
+
+                            if(id) {
+                                this.props.store.dispatch(
+                                    mapSourceActions.modifyFeatureGeometry(map_source_name, layer_name, id, geometry)
+                                );
+                            }
+                        }
+                    });
+                }
             } else {
                 this.drawTool = new olDrawInteraction({
                     source: source,
@@ -893,8 +914,6 @@ class Map extends Component {
                     this.drawTool.on('drawend', (evt) => {
                         let geojson = new GeoJSONFormat();
                         let json_feature = geojson.writeFeatureObject(evt.feature);
-                        // assign the feature a UUID.
-                        json_feature.properties = {_id: uuid.v4()};
 
                         this.props.store.dispatch(mapSourceActions.addFeatures(
                                                      map_source_name, layer_name, [json_feature]));

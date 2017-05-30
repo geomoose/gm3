@@ -543,6 +543,15 @@ export function removeFeature(mapSourceName, layerName, id) {
     };
 }
 
+/* Modify a feature's geomtery
+ */
+export function modifyFeatureGeometry(mapSourceName, layerName, id, geometry) {
+    return {
+        type: MAPSOURCE.MODIFY_GEOMETRY,
+        mapSourceName, layerName, id, geometry
+    };
+}
+
 export function changeFeatures(mapSourceName, layerName, filter, properties) {
     return {
         type: MAPSOURCE.CHANGE_FEATURES,

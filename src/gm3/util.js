@@ -348,16 +348,23 @@ export function matchFeatures(features, filter) {
  *  @param {Array} features The list of features
  *  @param {Object} filter key-value pairs of filter for the features.
  *  @param {Object} properties The new values for the features.
+ *  @param {Object} geometry  An Object definition of the geometry
  *
  * @returns New list of features.
  */
-export function changeFeatures(features, filter, properties) {
+export function changeFeatures(features, filter, properties, geometry) {
     let new_features = [];
 
     for(let feature of features) {
         if(featureMatch(feature, filter)) {
-            let new_props = Object.assign({}, feature.properties, properties);
-            new_features.push(Object.assign({}, feature, {properties: new_props}));
+            const new_feature = Object.assign({}, feature);
+            if(properties) {
+                new_feature.properties = Object.assign({}, feature.properties, properties);
+            }
+            if(geometry) {
+                new_feature.geometry = Object.assign({}, geometry);
+            }
+            new_features.push(new_feature);
         } else {
             new_features.push(feature);
         }
