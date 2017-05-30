@@ -91,6 +91,8 @@ class DrawTool extends Component {
                 { this.getSelectOptions() }
               </select>
             );
+        } else if(gtype === 'Modify') {
+            tool_label = 'Modify Feature';
         } else if(gtype === 'LineString') {
             tool_label = 'Draw Line';
         } else if(gtype === 'MultiPoint') {

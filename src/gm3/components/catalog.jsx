@@ -194,6 +194,8 @@ export class Catalog extends Component {
                 case 'draw-point':
                 case 'draw-polygon':
                 case 'draw-line':
+                case 'draw-modify':
+                case 'draw-remove':
                     const draw_type = tool_name.split('-')[1];
                     tools.push(<DrawTool store={this.props.store} drawType={draw_type} key={key} layer={layer} />);
                     break;

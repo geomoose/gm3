@@ -534,6 +534,15 @@ export function removeFeatures(mapSourceName, layerName, filter) {
     };
 }
 
+/* Remove a specific feature from the layer.
+ */
+export function removeFeature(mapSourceName, layerName, id) {
+    return {
+        type: MAPSOURCE.REMOVE_FEATURE,
+        mapSourceName, layerName, id
+    };
+}
+
 export function changeFeatures(mapSourceName, layerName, filter, properties) {
     return {
         type: MAPSOURCE.CHANGE_FEATURES,

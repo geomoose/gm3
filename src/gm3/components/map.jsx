@@ -61,8 +61,10 @@ import olControl from 'ol/control/control';
 import olView from 'ol/view';
 import olMap from 'ol/map';
 
+import olCollection from 'ol/collection';
 import olSelectInteraction from 'ol/interaction/select';
 import olDrawInteraction from 'ol/interaction/draw';
+import olModifyInteraction from 'ol/interaction/modify';
 
 
 /* Import the various layer types */
@@ -657,10 +659,13 @@ class Map extends Component {
             source: src_selection
         });
 
-        // geojson -- the one true Javascript object representation.
-        src_selection.on('addfeature', (evt) => {
+        // whenever a feature has been added or changed on the selection layer,
+        //  reflect that in the selection.
+        const feature_change_fn = (evt) => {
             this.addSelectionFeature(evt.feature, this.props.mapView.selectionBuffer);
-        });
+        };
+        src_selection.on('addfeature', feature_change_fn);
+        src_selection.on('changefeature', feature_change_fn);
     }
 
     /** This is called after the first render.
@@ -840,6 +845,30 @@ class Map extends Component {
                     if(evt.selected.length > 0) {
                         selection_src.addFeature(evt.selected[0]);
                     }
+                });
+            } else if(type === 'Remove') {
+                // setup the select tool to allow the user
+                //  to pick a feature from the layer.
+                this.drawTool = new olSelectInteraction({
+                    layers: [this.olLayers[map_source_name]]
+                });
+
+                this.drawTool.on('select', (evt) => {
+                    // "_uuid" is the internal GeoMoose ID property added to
+                    //  all features that go through the state.
+                    const id_prop = '_uuid';
+                    const fid = evt.selected[0].getProperties()[id_prop];
+                    // send the remove feature event to remove it.
+                    this.props.store.dispatch(
+                        mapSourceActions.removeFeature(map_source_name, layer_name, fid)
+                    );
+                    // clear the selected features from the tool.
+                    this.drawTool.getFeatures().clear();
+                });
+            } else if(type === 'Modify') {
+                const features = source.getFeatures();
+                this.drawTool = new olModifyInteraction({
+                    features: new olCollection(features),
                 });
             } else {
                 this.drawTool = new olDrawInteraction({

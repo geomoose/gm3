@@ -80,8 +80,17 @@ export class DrawTool extends Tool {
         super(props);
 
         this.tip = 'Add a ' + props.drawType + ' to the layer';
+
+        if(props.drawType === 'modify') {
+            this.tip = 'Modify a drawn feature';
+        } else if (props.drawType === 'remove') {
+            this.tip = 'Remove a feature from the layer';
+        }
+
         this.iconClass = props.drawType + ' tool';
         this.drawType = {
+            'remove': 'Remove',
+            'modify': 'Modify',
             'point': 'Point',
             'line': 'LineString',
             'polygon': 'Polygon'

@@ -97,7 +97,12 @@ function changeLayerFeatures(state, action) {
             if(action.type === MAPSOURCE.ADD_FEATURES) {
                 // add an ID to the features
                 for(var x = 0, xx = action.features.length; x < xx; x++) {
-                    action.features[x][id_prop] = uuid();
+                    const id_mixin = {};
+                    id_mixin[id_prop] = uuid();
+                    action.features[x].properties = Object.assign({},
+                        action.features[x].properties,
+                        id_mixin
+                    );
                 }
                 layer.features = layer.features.concat(action.features);
                 layer.featuresVersion += 1;
