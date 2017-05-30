@@ -935,7 +935,7 @@ class Map extends Component {
                 bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
             }
             // move the map to the new extent.
-            this.map.getView().fit(bbox, this.map.getSize());
+            this.map.getView().fit(bbox, {size: this.map.getSize()});
 
         // check to see if the view has been altered.
         } else if(nextProps && nextProps.mapView) {
