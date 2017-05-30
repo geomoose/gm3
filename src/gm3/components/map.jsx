@@ -926,6 +926,7 @@ class Map extends Component {
      *  cycle where the state can get modified.
      */
     componentWillUpdate(nextProps, nextState) {
+        // extent takes precendent over the regular map-view,
         if(nextProps && nextProps.mapView.extent) {
             let bbox = nextProps.mapView.extent.bbox;
             const bbox_code = nextProps.mapView.extent.projection;
@@ -935,10 +936,9 @@ class Map extends Component {
             }
             // move the map to the new extent.
             this.map.getView().fit(bbox, this.map.getSize());
-        }
 
         // check to see if the view has been altered.
-        if(nextProps && nextProps.mapView) {
+        } else if(nextProps && nextProps.mapView) {
             const map_view = this.map.getView();
             const view = nextProps.mapView;
 
