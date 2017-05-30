@@ -105,6 +105,14 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         ]
     });
 
+    app.add(gm3.components.JumpToExtent, 'jump-to-extent', {
+        locations:  [
+            {
+                label: 'Parcel Boundaries',
+                extent: [-10384071.6,5538681.6,-10356783.6,5563600.1]
+            }
+        ]
+    });
 
     app.add(gm3.components.Map, 'map', {});
 
