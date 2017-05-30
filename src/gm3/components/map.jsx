@@ -961,6 +961,13 @@ class Map extends Component {
             }
         }
 
+        // this will cause the active drawing tool to *stop*
+        //  when the service changes.
+        if(nextProps.queries.service !== null
+           && nextProps.queries.service !== this.props.queries.service) {
+            this.stopDrawing();
+        }
+
         // handle out of loop buffer distance changes
         if(nextProps && nextProps.mapView.selectionBuffer !== this.props.mapView.selectionBuffer) {
             if(this.selectionLayer && !isNaN(nextProps.mapView.selectionBuffer)) {
