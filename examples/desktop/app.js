@@ -67,6 +67,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('select', SelectService, {
         queryLayers: [
             {value: 'ags-vector/0', label: 'Parcel Points (AGS)'},
+            {value: 'ags-vector/20', label: 'Dakota Streets'},
             {value: 'vector-parcels/ms:parcels', label: 'Parcels'}
         ]
     });
