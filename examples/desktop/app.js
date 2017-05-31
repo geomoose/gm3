@@ -66,6 +66,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('search', SearchService);
     app.registerService('select', SelectService, {
         queryLayers: [
+            {value: 'ags-vector/0', label: 'Parcel Points (AGS)'},
             {value: 'vector-parcels/ms:parcels', label: 'Parcels'}
         ]
     });

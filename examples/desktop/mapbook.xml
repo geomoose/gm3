@@ -303,6 +303,12 @@
             }
             ]]></style>
 
+            <template name="select"><![CDATA[
+            <div>
+                {{ properties.owner_name }}
+            </div>
+            ]]></template>
+
         </layer>
     </map-source>
 
