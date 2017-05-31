@@ -453,25 +453,25 @@ class Map extends Component {
         //  types
         let filter_mapping = {
             'like': function(field, value) {
-                return field + ' like ' + fix_like(value); 
+                return field + ' like ' + fix_like(value);
             },
             'ilike': function(name, value) {
                 return field + ' like upper(' + fix_like + ')'
             },
             'eq': function(name, value) {
-                return simple_op('=', name, value); 
+                return simple_op('=', name, value);
             },
             'ge': function(name, value) {
-                return simple_op('>=', name, value); 
+                return simple_op('>=', name, value);
             },
             'gt': function(name, value) {
-                return simple_op('>', name, value); 
+                return simple_op('>', name, value);
             },
             'le': function(name, value) {
-                return simple_op('<=', name, value); 
+                return simple_op('<=', name, value);
             },
             'lt': function(name, value) {
-                return simple_op('<', name, value); 
+                return simple_op('<', name, value);
             },
         };
 
@@ -506,7 +506,7 @@ class Map extends Component {
 
             // setup the spatial filter.
             query_params.geometryType = geom_type_lookup[query.selection.geometry.type];
-            query_params.geometry = esri_format.writeGeometry(ol_geom); 
+            query_params.geometry = esri_format.writeGeometry(ol_geom);
             query_params.spatialRel = 'esriSpatialRelIntersects';
         }
 

@@ -66,7 +66,7 @@ function defineSource(mapSource) {
             strategy: LoadingStrategy.bbox
         };
     } else if(mapSource.type === 'ags-vector') {
-        // Add an A**GIS FeatureService layer.  
+        // Add an A**GIS FeatureService layer.
         // This performs a basic query based on the bounding box.
         return {
             loader: function(extent, resolution, proj) {
@@ -74,7 +74,7 @@ function defineSource(mapSource) {
                 //  GeoMoose/GeoMooseMap/FeatureServer/0
                 let url = mapSource.urls[0] + mapSource.layers[0].name + '/query/';
 
-                // the E**I language can get a bit complicated but 
+                // the E**I language can get a bit complicated but
                 //  this is the format for a basic BBOX query.
                 const params = {
                     f: 'json',
@@ -99,11 +99,11 @@ function defineSource(mapSource) {
                     type: 'jsonp',
                     success: (response) => {
                         if(response.error) {
-                            console.error('Error loading features for '+mapSource.label);
+                            console.error('Error loading features for ' + mapSource.label);
                         } else {
                             const esri_format = new EsriJsonFormat();
                             this.addFeatures(esri_format.readFeatures(response, {
-                                //featureProjection: proj,
+                                // featureProjection: proj,
                             }));
                         }
                     }
