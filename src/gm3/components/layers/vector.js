@@ -31,6 +31,7 @@ import * as util from '../../util';
 
 import GML2Format from 'ol/format/gml2';
 import GeoJSONFormat from 'ol/format/geojson';
+import EsriJsonFormat from 'ol/format/esrijson';
 import LoadingStrategy from 'ol/loadingstrategy';
 import VectorSource from 'ol/source/vector';
 import VectorLayer from 'ol/layer/vector';
@@ -64,6 +65,52 @@ function defineSource(mapSource) {
             },
             strategy: LoadingStrategy.bbox
         };
+    } else if(mapSource.type === 'ags-vector') {
+        // Add an A**GIS FeatureService layer.  
+        // This performs a basic query based on the bounding box.
+        return {
+            loader: function(extent, resolution, proj) {
+                // https://heigeo.houstoneng.com/arcgis/rest/services/
+                //  GeoMoose/GeoMooseMap/FeatureServer/0
+                let url = mapSource.urls[0] + mapSource.layers[0].name + '/query/';
+
+                // the E**I language can get a bit complicated but 
+                //  this is the format for a basic BBOX query.
+                const params = {
+                    f: 'json',
+                    returnGeometry: 'true',
+                    spatialRel: 'esriSpatialRelIntersects',
+                    geometry: JSON.stringify({
+                        xmin: extent[0], ymin: extent[1],
+                        xmax: extent[2], ymax: extent[3],
+                    }),
+                    spatialReference: JSON.stringify({
+                        wkid: 102100
+                    }),
+                    geometryType: 'esriGeometryEnvelope',
+                    inSR: 102100, outSR: 102100,
+                    outFields: '*',
+                };
+
+                // use JSONP to fetch the features.
+                util.xhr({
+                    url: url,
+                    data: params,
+                    type: 'jsonp',
+                    success: (response) => {
+                        if(response.error) {
+                            console.error('Error loading features for '+mapSource.label);
+                        } else {
+                            const esri_format = new EsriJsonFormat();
+                            this.addFeatures(esri_format.readFeatures(response, {
+                                //featureProjection: proj,
+                            }));
+                        }
+                    }
+                });
+            },
+            strategy: LoadingStrategy.bbox
+        }
     }
     // empty object
     return {}

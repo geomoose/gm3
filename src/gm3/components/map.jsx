@@ -120,6 +120,7 @@ class Map extends Component {
                 break;
             case 'vector' :
             case 'wfs' :
+            case 'ags-vector':
                 vectorLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'bing':
@@ -146,6 +147,7 @@ class Map extends Component {
                 return agsLayer.createLayer(mapSource);
             case 'vector':
             case 'wfs':
+            case 'ags-vector':
                 return vectorLayer.createLayer(mapSource);
             case 'bing':
                 return bingLayer.createLayer(mapSource);
@@ -412,6 +414,8 @@ class Map extends Component {
             } else if(map_source.type === 'wfs') {
                 // Query the WFS layer.
                 this.wfsGetFeatureQuery(queryId, query, query_layer);
+            } else if(map_source.type === 'ags-vector') {
+                console.info('QUERY AGS LAYER');
             }
         }
     }

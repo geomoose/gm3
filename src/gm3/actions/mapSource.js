@@ -424,6 +424,7 @@ function isQueryable(mapSource) {
     switch(mapSource.type) {
         case 'wms':
         case 'wfs':
+        case 'ags-vector':
             return true;
         default:
             return false;
@@ -442,6 +443,7 @@ function isSelectable(mapSource, layer) {
     switch(mapSource.type) {
         case 'wfs':
         case 'vector':
+        case 'ags-vector':
             return (layer.selectable === true);
         default:
             return false

@@ -292,6 +292,20 @@
 		<param name="FORMAT" value="png"/>
 	</map-source>
 
+    <map-source name="ags-vector" type="ags-vector">
+        <url>https://heigeo.houstoneng.com/arcgis/rest/services/GeoMoose/GeoMooseMap/FeatureServer/</url>
+        <layer name="0" selectable="true" title="Parcel Points">
+            <style><![CDATA[
+            {
+                "circle-radius": 10,
+                "circle-color": "#007700",
+                "circle-stroke-color": "#007700"
+            }
+            ]]></style>
+
+        </layer>
+    </map-source>
+
 	<map-source name="openstreetmap" type="xyz">
 		<layer name="osm_mapnik" />
 		<url>http://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
@@ -368,7 +382,12 @@
 
 			<layer src="pipelines/pipelines"></layer>
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
+
 		</group>
+
+        <group title="AGS REST Testing Layers" expand="true">
+            <layer src="ags-vector/0" title="AGS Parcel Points"/>
+        </group>
 
 		<group title="Scalebars" expand="false">
 			<layer src="scalebar_miles/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
