@@ -81,7 +81,7 @@ class ClearDialog extends ModalDialog {
         }
         this.setState({open: false});
     }
-    
+
     getOptions() {
         return [
             {label: 'Cancel', value: 'dismiss'},
