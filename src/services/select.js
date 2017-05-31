@@ -50,6 +50,7 @@ function SelectService(Application, options) {
         'Polygon': true,
         'LineString': true,
         'Select': true,
+        'Modify': true,
         'default': 'Polygon',
         'buffer': true
     };

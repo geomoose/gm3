@@ -133,7 +133,7 @@
         }
     }
 
-    .tool.upload, .tool.clear, .tool.download {
+    .tool.upload, .tool.clear, .tool.download, .tool.remove {
         .fa;
     }
 
@@ -152,6 +152,12 @@
     .tool.clear {
         &:before {
             content: @fa-var-trash;
+        }
+    }
+
+    .tool.remove {
+        &:before {
+            content: @fa-var-minus-circle;
         }
     }
 
@@ -177,7 +183,7 @@
         }
     }
 
-    .tool.edit {
+    .tool.modify {
         &:before {
             content: "\e09e";
         }

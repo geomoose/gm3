@@ -104,6 +104,7 @@ function parseLayer(store, layerXml) {
         'upload', 'download',
         'legend-toggle',
         'draw-point', 'draw-line', 'draw-polygon',
+        'draw-modify', 'draw-remove',
         'clear'
     ];
 

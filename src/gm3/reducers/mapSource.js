@@ -97,7 +97,12 @@ function changeLayerFeatures(state, action) {
             if(action.type === MAPSOURCE.ADD_FEATURES) {
                 // add an ID to the features
                 for(var x = 0, xx = action.features.length; x < xx; x++) {
-                    action.features[x][id_prop] = uuid();
+                    const id_mixin = {};
+                    id_mixin[id_prop] = uuid();
+                    action.features[x].properties = Object.assign({},
+                        action.features[x].properties,
+                        id_mixin
+                    );
                 }
                 layer.features = layer.features.concat(action.features);
                 layer.featuresVersion += 1;
@@ -120,6 +125,9 @@ function changeLayerFeatures(state, action) {
                 layer.featuresVersion += 1;
             } else if(action.type === MAPSOURCE.CHANGE_FEATURES) {
                 layer.features = changeFeatures(layer.features, action.filter, action.properties);
+                layer.featuresVersion += 1;
+            } else if(action.type === MAPSOURCE.MODIFY_GEOMETRY) {
+                layer.features = changeFeatures(layer.features, {'_uuid': action.id}, null, action.geometry);
                 layer.featuresVersion += 1;
             }
             layers.push(layer);
@@ -193,6 +201,7 @@ export default function mapSource(state = [], action) {
         case MAPSOURCE.REMOVE_FEATURE:
         case MAPSOURCE.REMOVE_FEATURES:
         case MAPSOURCE.CHANGE_FEATURES:
+        case MAPSOURCE.MODIFY_GEOMETRY:
             if(state[action.mapSourceName]) {
                 return changeLayerFeatures(state, action);
             }
