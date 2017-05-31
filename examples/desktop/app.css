@@ -49,7 +49,7 @@ body {
     border-bottom: solid 1px black;
 
     background-color: #eee;
-    
+
     height: 75px;
 }
 
@@ -82,8 +82,12 @@ body {
 
 #footer {
     position: absolute;
-    bottom: 0; 
+    bottom: 0;
     height: 20px;
     left: 0; width: 100%;
     border-top: solid 1px black;
+}
+
+#jump-to-extent {
+    float: right;
 }
