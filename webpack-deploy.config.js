@@ -26,6 +26,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var package = require('./package.json');
+var HappyPack = require('happypack');
 
 var fs = require('fs');
 var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
@@ -40,7 +41,7 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.(jsx|js)$/,
-            loaders: ['babel'],
+            loaders: ['happypack/loader'],
             include: [
                 path.join(__dirname, 'src'),
                 path.join(__dirname, 'node_modules/'),
@@ -74,13 +75,22 @@ module.exports = {
         openlayers: 'ol',
     },
     plugins: [
+        new HappyPack({
+            loaders: ['babel']
+        }),
         new webpack.DefinePlugin({
             GM_VERSION: JSON.stringify(package.version),
             'process.env': {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
-        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: false,
+            compress: {
+                warnings: false
+            }
+        }),
         new webpack.BannerPlugin(license_text, {raw: true})
     ]
 };

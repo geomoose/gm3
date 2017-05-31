@@ -25,6 +25,7 @@
  */
 var path = require('path');
 var webpack = require('webpack');
+var HappyPack = require('happypack');
     
 var package = require('./package.json');
 
@@ -43,7 +44,7 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.(jsx|js)$/,
-            loaders: ['babel'],
+            loaders: ['happypack/loader'],
             include: [
                 path.join(__dirname, 'src'),
                 path.join(__dirname, 'node_modules/'),
@@ -96,6 +97,9 @@ module.exports = {
         //openlayers: 'ol',
     },
     plugins: [
+        new HappyPack({
+            loaders: ['babel']
+        }),
         new webpack.BannerPlugin(license_text, {raw: true}),
         new webpack.DefinePlugin({
             GM_VERSION: JSON.stringify(package.version)
