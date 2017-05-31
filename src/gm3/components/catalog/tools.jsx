@@ -31,6 +31,7 @@ import * as mapActions from '../../actions/map';
 import { setLegendVisibility } from '../../actions/catalog';
 
 import * as util from '../../util';
+import ModalDialog from '../modal';
 
 /** Generic class for basic "click this, do this" tools.
  */
@@ -55,6 +56,40 @@ export class Tool extends Component {
     }
 }
 
+/* Confirmation dialog for clearing a layer.
+ *
+ */
+class ClearDialog extends ModalDialog {
+
+    getTitle() {
+        return 'Clear features';
+    }
+
+    renderBody() {
+        return (
+            <div>
+                Remove all features from the selected layer?
+            </div>
+        );
+    }
+
+    close(status) {
+        if(status === 'clear') {
+            let src = this.props.layer.src[0];
+            this.props.store.dispatch(
+                msActions.clearFeatures(src.mapSourceName, src.layerName));
+        }
+        this.setState({open: false});
+    }
+    
+    getOptions() {
+        return [
+            {label: 'Cancel', value: 'dismiss'},
+            {label: 'Clear', value: 'clear'},
+        ];
+    }
+}
+
 /** Clears features from a vector layer.
  *
  */
@@ -66,9 +101,16 @@ export class ClearTool extends Tool {
     }
 
     onClick() {
-        let src = this.props.layer.src[0];
-        this.props.store.dispatch(
-            msActions.clearFeatures(src.mapSourceName, src.layerName));
+        this.refs.modal.setState({open: true});
+    }
+
+    render() {
+        return (
+            <span>
+                <i className={this.iconClass} onClick={this.onClick} title={this.tip}></i>
+                <ClearDialog ref='modal' store={this.props.store} layer={this.props.layer} />
+            </span>
+        );
     }
 }
 
