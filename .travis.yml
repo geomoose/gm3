@@ -1,6 +1,7 @@
 #
 # (c) 2017 Dan "Ducky" Little
 #
+dist: trusty
 language: node_js
 node_js:
     - "node"
