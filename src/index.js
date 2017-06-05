@@ -45,6 +45,7 @@ import Version from './gm3/components/version';
 import CoordinateDisplay from './gm3/components/coordinates';
 import MeasureTool from './gm3/components/measure';
 import PrintModal from './gm3/components/print/printModal';
+import JumpToExtent from './gm3/components/jumpToExtent';
 
 import LocalStorageTracker from './gm3/trackers/localStorage';
 import HashTracker from './gm3/trackers/hash';
@@ -73,6 +74,7 @@ var components = {
     CoordinateDisplay: CoordinateDisplay,
     MeasureTool: MeasureTool,
     PrintModal: PrintModal,
+    JumpToExtent: JumpToExtent
 };
 
 var trackers = {
