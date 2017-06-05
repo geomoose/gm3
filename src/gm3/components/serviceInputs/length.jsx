@@ -74,6 +74,10 @@ export default class LengthInput extends TextInput {
 
         this.unitsChanged = this.unitsChanged.bind(this);
         this.valueChanged = this.valueChanged.bind(this);
+
+        this.state = {
+            value: default_value
+        };
     }
 
     onChange() {
@@ -104,16 +108,19 @@ export default class LengthInput extends TextInput {
     /** Whenever the input box changes, parse the value and update it.
      */
     valueChanged(evt) {
-        this.value = parseFloat(evt.target.value);
+        const new_value = parseFloat(evt.target.value);
+        this.setState({value: new_value});
+        this.value = new_value;
         this.onChange();
     }
 
     render() {
         const id = this.getId();
+
         return (
             <div className='service-input'>
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input onChange={ this.valueChanged } type="number" id={ 'input-' + id } value={ this.value }/>
+                <input onChange={ this.valueChanged } type="number" id={ 'input-' + id } value={ this.state.value }/>
                 <select onChange={ this.unitsChanged } value={ this.selected_units }>
                     { this.units.map(this.renderOption) }
                 </select>

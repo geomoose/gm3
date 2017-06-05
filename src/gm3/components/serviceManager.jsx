@@ -67,16 +67,19 @@ class SetSelectionBuffer extends Component {
     }
 
     render() {
+        const d = this.props.store.getState().map.selectionBuffer;
+
         // inputs require a "field" to render their label and
         // set their value.  This mocks that up.
         const mock_field = {
-            label: 'Buffer', value: this.props.map.selectionBuffer
+            label: 'Buffer',
+            value: d,
+            default: d,
         };
 
         return (
             <div>
-                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field }
-                  default={ this.props.map.selectionBuffer } />
+                <LengthInput setValue={ (name, value) => { this.setBuffer(value); } } field={ mock_field } />
             </div>
         );
     }
