@@ -35,6 +35,7 @@ import EsriJsonFormat from 'ol/format/esrijson';
 import LoadingStrategy from 'ol/loadingstrategy';
 import VectorSource from 'ol/source/vector';
 import VectorLayer from 'ol/layer/vector';
+import TileGrid from 'ol/tilegrid';
 
 import getStyleFunction from 'mapbox-to-ol-style';
 
@@ -109,7 +110,9 @@ function defineSource(mapSource) {
                     }
                 });
             },
-            strategy: LoadingStrategy.bbox
+            strategy: LoadingStrategy.tile(TileGrid.createXYZ({
+                tileSize: 512
+            }))
         }
     }
     // empty object
