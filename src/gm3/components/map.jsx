@@ -536,15 +536,21 @@ class Map extends Component {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
                 if(response) {
+                    // convert the esri features to OL features.
                     let features = esri_format.readFeatures(response);
-                    /*
-                    for(const feature of features) {
-                        feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
-                    }
-                    */
+                    // be ready with some json.
+                    let json_format = new GeoJSONFormat();
 
-                    // features to add
-                    let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
+                    // create the features array.
+                    let js_features = [];
+                    for(const feature of features) {
+                        // feature to JSON.
+                        const js_feature = json_format.writeFeatureObject(feature);
+                        // ensure that every feature has a "boundedBy" attribute.
+                        js_feature.properties.boundedBy = feature.getGeometry().getExtent();
+                        // add it to the stack.
+                        js_features.push(js_feature);
+                    }
 
                     // get the transforms for the layer
                     const transforms = mapSourceActions.getLayerByPath(this.props.store, queryLayer).transforms;

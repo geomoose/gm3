@@ -344,7 +344,7 @@
                     </div>
                     <div class="search-action">
                         <div style="padding: 2px">
-                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
                                 <i class="fa fa-search"></i>
                             </a>
                         </div>
@@ -388,7 +388,7 @@
               onmouseleave="app.clearHighlight()"
             >
                 <td>
-                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
                     <i class="fa fa-search"></i>
                   </a>
                 </td>
