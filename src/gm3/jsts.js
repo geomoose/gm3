@@ -61,7 +61,7 @@ export function bufferAndUnion(features, meters) {
         //  then buffer it.
         const g = BufferOp.bufferOp(parser.read(features[i].geometry), meters);
 
-        // if the output geometry is still null, then set the 
+        // if the output geometry is still null, then set the
         //  first member to the new geometry
         if(geometry === null) {
             geometry = g;
