@@ -91,7 +91,10 @@ function defineSource(mapSource) {
                     geometryType: 'esriGeometryEnvelope',
                     inSR: 102100, outSR: 102100,
                     outFields: '*',
+                    returnIdsOnly: true,
                 };
+
+                const batch_size = 500;
 
                 // use JSONP to fetch the features.
                 util.xhr({
@@ -100,18 +103,39 @@ function defineSource(mapSource) {
                     type: 'jsonp',
                     success: (response) => {
                         if(response.error) {
-                            console.error('Error loading features for ' + mapSource.label);
+                            console.error('Error loading object IDs for ' + mapSource.label);
                         } else {
                             const esri_format = new EsriJsonFormat();
-                            this.addFeatures(esri_format.readFeatures(response, {
-                                // featureProjection: proj,
-                            }));
+
+                            const object_ids = response.objectIds;
+                            if(object_ids !== null) {
+                                const n_objects = object_ids.length;
+                                for(let batch = 0; batch < n_objects; batch += batch_size) {
+                                    util.xhr({
+                                        url: url,
+                                        data: Object.assign({}, params, {
+                                            returnIdsOnly: false,
+                                            objectIds: object_ids.slice(batch, batch + batch_size).join(','),
+                                        }),
+                                        type: 'jsonp',
+                                        success: (response) => {
+                                            if(response.error) {
+                                                console.error('Error loading feature batch for ' + mapSource.label);
+                                            } else {
+                                                this.addFeatures(esri_format.readFeatures(response, {
+                                                    // featureProjection: proj,
+                                                }));
+                                            }
+                                        }
+                                    });
+                                }
+                            }
                         }
                     }
                 });
             },
             strategy: LoadingStrategy.tile(TileGrid.createXYZ({
-                tileSize: 512
+                tileSize: 512 
             }))
         }
     }
