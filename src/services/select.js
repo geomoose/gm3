@@ -89,7 +89,7 @@ function SelectService(Application, options) {
         // get the query layer.
         var query_layer = fields[0].value;
         // dispatch the query against on the query layer!
-        Application.dispatchQuery(this.name, selection, [], [query_layer]);
+        Application.dispatchQuery(this.name, selection, [], [query_layer], [this.template]);
     }
 
 

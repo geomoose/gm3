@@ -247,12 +247,18 @@ export function addFromXml(xml, config) {
             let template_xml = templates[x];
             let template_name = template_xml.getAttribute('name');
 
+            let template_src = template_xml.getAttribute('src');
             let template_alias = template_xml.getAttribute('alias');
             if(template_alias) {
                 template_def = {
                     type: 'alias',
                     alias: template_alias
                 };
+            } else if(template_src) {
+                template_def = {
+                    type: 'remote',
+                    src: template_src
+                }
             } else {
                 template_def = {
                     type: 'local',
@@ -603,5 +609,20 @@ export function setOpacity(mapSourceName, opacity) {
         type: MAPSOURCE.SET_OPACITY,
         mapSourceName,
         opacity
+    };
+}
+
+/** Definition for a change of template action.
+ *
+ * @param mapSourceName The name of the map-source
+ * @param layerName     The name of the layer
+ * @param name          The template name.
+ * @param template      A new template definition
+ */
+export function setLayerTemplate(mapSourceName, layerName, name, template) {
+    return {
+        type: MAPSOURCE.SET_TEMPLATE,
+        mapSourceName, layerName,
+        name, template
     };
 }
