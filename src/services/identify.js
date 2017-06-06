@@ -76,7 +76,7 @@ function IdentifyService(Application, options) {
         //  it would be necessary to put that code here and then manually tell
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
-        Application.dispatchQuery(this.name, selection, fields, visible_layers);
+        Application.dispatchQuery(this.name, selection, fields, visible_layers, this.template);
     }
 
 
