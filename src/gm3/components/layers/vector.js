@@ -135,7 +135,7 @@ function defineSource(mapSource) {
                 });
             },
             strategy: LoadingStrategy.tile(TileGrid.createXYZ({
-                tileSize: 512 
+                tileSize: 512
             }))
         }
     }
