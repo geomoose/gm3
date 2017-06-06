@@ -294,11 +294,87 @@ class Application {
      *  @param selection A GeoMoose selection description
      *  @param fields    Array of {name:, value:, operation: } of fields to query.
      *  @param layers    Array of layer paths to query against.
+     *  @param templatesIn Template name or Array of template names that should be ready.
      *
      */
-    dispatchQuery(service, selection, fields, layers) {
+    dispatchQuery(service, selection, fields, layers, templatesIn = []) {
         const single_query = this.config.multipleQuery ? false : true;
-        this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query));
+        const template_promises = [];
+
+        // convert the "templatesIn" to an array.
+        let templates = templatesIn;
+        if(typeof(templatesIn) === 'string') {
+            templates = [templatesIn];
+        }
+
+        // iterate through the layer and the templates.
+        for(const layer of layers) {
+            for(const template of templates) {
+                // gang the promises together.
+                template_promises.push(this.getTemplate(layer, template));
+            }
+        }
+
+        // require all the promises complete,
+        //  then dispatch the store.
+        Promise.all(template_promises).then(() => {
+            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query));
+        });
+    }
+
+    /** Get a template's contents on promise.
+     *
+     *  @param path     The layer path.
+     *  @param template The name of the template.
+     *
+     * @returns A promise for when the contents of the template is resolved.
+     */
+    getTemplate(path, template) {
+        const template_promise = new Promise((resolve, reject) => {
+            if(template.substring(0, 1) === '@') {
+                let template_name = template.substring(1);
+                let layer = getLayerFromPath(this.store, path);
+                let layer_template = layer.templates[template_name];
+
+                if(layer_template) {
+                    if(layer_template.type === 'alias') {
+                        // TODO: Someone is likely to think it's funny to do multiple
+                        //       levels of aliasing, this should probably look through that
+                        //       possibility.
+                        resolve(layer.templates[layer_template.alias].contents);
+                    } else if(layer_template.type === 'remote') {
+                        const ms_name = util.getMapSourceName(path);
+                        const layer_name = util.getLayerName(path);
+
+                        // fetch the contents of the template
+                        util.xhr({
+                            url: layer_template.src,
+                            success: (content) => {
+                                // convert the "remote" template to a local one
+                                this.store.dispatch(
+                                    mapSourceActions.setLayerTemplate(
+                                        ms_name, layer_name,
+                                        template_name, {
+                                            type: 'local',
+                                            contents: content
+                                        }
+                                    )
+                                );
+                                // resolve this promise with the content
+                                resolve(content);
+                            }
+                        });
+                    } else {
+                        resolve(layer.templates[template_name].contents);
+                    }
+                } else {
+                    console.info('Failed to find template.', path, template_name);
+                    reject('Failed to find template. ' + path + '@' + template_name);
+                }
+            }
+        });
+
+        return template_promise;
     }
 
     /** Render feeatures from a query using a specified template.

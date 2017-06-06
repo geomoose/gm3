@@ -51,7 +51,11 @@ function setLayerAttribute(state, action, attr) {
         // copy each layer and update the matching one.
         let layer = Object.assign({}, state[action.mapSourceName].layers[i]);
         if(layer.name === action.layerName) {
-            layer[attr] = action[attr];
+            if(action.type === MAPSOURCE.SET_TEMPLATE) {
+                layer.templates[action.name] = action.template;
+            } else {
+                layer[attr] = action[attr];
+            }
         }
         layers.push(layer);
     }
@@ -65,7 +69,6 @@ function setLayerAttribute(state, action, attr) {
 
     return Object.assign({}, state, mix);
 }
-
 
 /** Change the features in a layer.
  *
@@ -154,10 +157,14 @@ export default function mapSource(state = [], action) {
     const new_elem = {};
 
     switch(action.type) {
+        case MAPSOURCE.SET_ATTRIBUTE:
+            return setLayerAttribute(state, action);
         case MAPSOURCE.LAYER_VIS:
             return setLayerAttribute(state, action, 'on');
         case MAPSOURCE.LAYER_FAVORITE:
             return setLayerAttribute(state, action, 'favorite');
+        case MAPSOURCE.SET_TEMPLATE:
+            return setLayerAttribute(state, action);
         case MAPSOURCE.ADD:
             new_elem[action.mapSource.name] = action.mapSource;
             return Object.assign({}, state, new_elem);
