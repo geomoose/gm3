@@ -586,6 +586,15 @@ class Map extends Component {
         // this.sortOlLayers();
     }
 
+    /** Add a buffer to the features in the selection set.
+     *
+     *  @param buffer Buffer distance to apply.
+     *
+     *  @returns a GeoJSON feature of the union of the above features.
+     */
+    bufferSelectionFeatures(buffer) {
+    }
+
     /** Add features to the selection layer.
      *
      *  @param feature  An ol.Feature
@@ -594,16 +603,20 @@ class Map extends Component {
      */
     addSelectionFeature(feature, buffer) {
         let geojson = new GeoJSONFormat();
+
         let json_feature = geojson.writeFeatureObject(feature);
 
-
-        // assign the feature a UUID.
-        json_feature.properties = {
-            id: uuid.v4()
-        };
-
         if(buffer !== 0 && !isNaN(buffer)) {
-            const buffered_geom = jsts.buffer(json_feature.geometry, buffer);
+            // create an array of the drawn features.
+            const selection_src = this.selectionLayer.getSource();
+            const drawn_features = selection_src.getFeatures();
+            const json_features = [];
+            for(let i = 0, ii = drawn_features.length; i < ii; i++) {
+                json_features.push(geojson.writeFeatureObject(drawn_features[i]));
+            }
+
+            // buffer those features.
+            const buffered_geom = jsts.bufferAndUnion(json_features, buffer)
 
             const buffered_feature = {
                 type: 'Feature',
@@ -615,6 +628,12 @@ class Map extends Component {
 
             json_feature = buffered_feature;
         }
+
+
+        // assign the feature a UUID.
+        json_feature.properties = Object.assign({
+            id: uuid.v4()
+        }, json_feature.properties);
 
         this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
 

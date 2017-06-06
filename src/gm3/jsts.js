@@ -31,6 +31,7 @@
  */
 
 import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp';
+import UnionOp from 'jsts/org/locationtech/jts/operation/union/UnionOp';
 import GeoJSONParser from 'jsts/org/locationtech/jts/io/GeoJSONParser';
 
 export function buffer(feature, meters) {
@@ -40,4 +41,35 @@ export function buffer(feature, meters) {
     const buffer_feature = BufferOp.bufferOp(jsts_geom, meters);
 
     return parser.write(buffer_feature);
+}
+
+
+/** Takes in an array of GeoJSON features, buffers them
+ *  and returns a GeoJSON feature.
+ *
+ *  @param features Array of GeoJSON features.
+ *  @param meters   Distance in meters to buffer the features.
+ *
+ * @returns GeoJSON feature.
+ */
+export function bufferAndUnion(features, meters) {
+    const parser = new GeoJSONParser();
+    let geometry = null;
+
+    for(let i = 0, ii = features.length; i < ii; i++) {
+        // convert the geometry to the JSTS representation,
+        //  then buffer it.
+        const g = BufferOp.bufferOp(parser.read(features[i].geometry), meters);
+
+        // if the output geometry is still null, then set the
+        //  first member to the new geometry
+        if(geometry === null) {
+            geometry = g;
+        // otherwise buffer it.
+        } else {
+            geometry = UnionOp.union(geometry, g);
+        }
+    }
+
+    return parser.write(geometry);
 }
