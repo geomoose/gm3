@@ -94,8 +94,6 @@ function defineSource(mapSource) {
                     returnIdsOnly: true,
                 };
 
-                const batch_size = 500;
-
                 // use JSONP to fetch the features.
                 util.xhr({
                     url: url,
@@ -109,13 +107,50 @@ function defineSource(mapSource) {
 
                             const object_ids = response.objectIds;
                             if(object_ids !== null) {
+                                // E**I FeatureServer appears to have a limitation of
+                                // roughly 2048 bytes past the "?" in the GET call.
+                                //  this ensure that the batches are small enough to prevent
+                                //  404 errors.
                                 const n_objects = object_ids.length;
-                                for(let batch = 0; batch < n_objects; batch += batch_size) {
+                                const current_object = 0;
+
+                                // dummy "request" that can be used to estimate the
+                                //  overall length of the query.
+                                const sniff_r = Object.assign({}, params, {
+                                    returnIdsOnly: false
+                                });
+
+                                // the ID's need to get "batched" into groups
+                                //  which will reliably be shorter than the
+                                //  maximum request length.
+                                const batches = [];
+
+                                // current batch is "rotated" whenever it gets too long
+                                let current_batch = [];
+                                for(let i = 0; i < n_objects; i++) {
+                                    // estimate the request size
+                                    const requestimate = util.requEstimator(Object.assign(sniff_r, {
+                                        objectIds: current_batch.concat([object_ids[i]]).join(',')
+                                    }));
+                                    // if it's too long "rotate" the batches.
+                                    if(requestimate > 2000) {
+                                        batches.push(current_batch.slice());
+                                        current_batch = [];
+                                    }
+                                    current_batch.push(object_ids[i]);
+                                }
+                                // ensure the remainder gets pushed to a batch
+                                if(current_batch.length > 0) {
+                                    batches.push(current_batch);
+                                }
+
+                                // make the feature requests based on the batches.
+                                for(const batch of batches) {
                                     util.xhr({
                                         url: url,
                                         data: Object.assign({}, params, {
                                             returnIdsOnly: false,
-                                            objectIds: object_ids.slice(batch, batch + batch_size).join(','),
+                                            objectIds: batch.join(','),
                                         }),
                                         type: 'jsonp',
                                         success: (response) => {
