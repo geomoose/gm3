@@ -312,7 +312,7 @@
         </layer>
     </map-source>
 
-    <map-source name="ags-vector-dc" type="ags-vector">
+    <map-source name="ags-vector-dc16" type="ags-vector">
         <url>http://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
         <layer name="16" selectable="true" title="Railroads">
             <style><![CDATA[
@@ -322,6 +322,10 @@
             }
             ]]></style>
         </layer>
+    </map-source>
+
+    <map-source name="ags-vector-dc" type="ags-vector">
+        <url>http://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
         <layer name="20" selectable="true" title="Streets">
             <style><![CDATA[
             {
@@ -484,7 +488,7 @@
 
         <group title="AGS REST Testing Layers" expand="true">
             <layer src="ags-vector/0" title="AGS Parcel Points"/>
-            <layer src="ags-vector-dc/16" title="AGS Dakota County Rail"/>
+            <layer src="ags-vector-dc16/16" title="AGS Dakota County Rail"/>
             <layer src="ags-vector-dc/20" title="AGS Dakota County Streets"/>
         </group>
 
