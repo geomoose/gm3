@@ -33,7 +33,6 @@ body {
     position: absolute;
     overflow: auto;
     top: 75px; left: 0;
-    right: 60%;
 }
 
 #map {
@@ -62,10 +61,6 @@ body {
     border-top: solid 1px black;
 }
 
-#map, #results-grid {
-    left: 40%;
-    right: 0;
-}
 
 #map .map {
     position: absolute;
@@ -90,4 +85,36 @@ body {
 
 #jump-to-extent {
     float: right;
+}
+
+#map, #results-grid {
+    right: 0;
+}
+
+/* This is the main "layout" code that handles the split
+ * between the map, grid, and tabs.
+ */
+
+@media screen and (max-width: 500px) {
+    body {
+        font-size: 60%;
+    }
+
+    #tabs {
+        width: 220px;
+    }
+
+    #map, #results-grid {
+        left: 220px;
+    }
+}
+
+@media screen and (min-width: 500px) {
+    #tabs {
+        width: 350px;
+    }
+
+    #map, #results-grid {
+        left: 350px;
+    }
 }
