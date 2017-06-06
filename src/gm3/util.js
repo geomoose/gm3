@@ -678,3 +678,13 @@ export function transformFeatures(transforms, features) {
 
     return features;
 }
+
+/** Calculate the length of a GET query.
+ *
+ *  @param data An object of KVP.
+ *
+ * @returns An integer.
+ */
+export function requEstimator(data) {
+    return formatUrlParameters(data).length;
+}
