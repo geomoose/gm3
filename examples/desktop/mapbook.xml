@@ -262,9 +262,7 @@
 
 	<map-source name="borders" type="mapserver" title="City and County Borders">
 		<file>./demo/statedata/basemap.map</file>
-		<layer name="city_poly" status="off">
-            <template name="identify" src="./city.html"/>
-        </layer>
+		<layer name="city_poly" status="off"/>
 		<layer name="county_borders" status="off"/>
 	</map-source>
 

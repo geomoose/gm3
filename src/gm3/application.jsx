@@ -368,8 +368,20 @@ class Application {
                         resolve(layer.templates[template_name].contents);
                     }
                 } else {
-                    console.info('Failed to find template.', path, template_name);
-                    reject('Failed to find template. ' + path + '@' + template_name);
+                    // TODO: It may be wiser to allow services to specify
+                    //       how failure to find a template should be handled.
+                    //       - Identify will simply not render features.
+                    //       - Select could have a critical failure without
+                    //          an appropriate template.
+
+                    // commented this out because it was causing identify on layers
+                    //  without an identify template to fail the entire query.
+
+                    // console.info('Failed to find template.', path, template_name);
+                    // reject('Failed to find template. ' + path + '@' + template_name);
+
+                    // resolve this as an empty template.
+                    resolve('');
                 }
             }
         });
