@@ -61,7 +61,7 @@
 	</map-source>
     -->
 
-	<map-source name="census_cities" type="wfs" active="true" srs="EPSG:4269"> 
+	<map-source name="census_cities" type="wfs" active="true" srs="EPSG:4269">
 		<style><![CDATA[
 		{
 			"strokeColor" : "#00ff00",
@@ -133,7 +133,7 @@
                     <div class="search-action">
                         <div style="padding: 2px">
                             <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
-                                <i class="fa fa-search"></i> 
+                                <i class="fa fa-search"></i>
                                 {{ properties.PIN }}
                             </a>
                         </div>
@@ -169,13 +169,13 @@
             ]
             ]]></template>
             <template name="gridRow"><![CDATA[
-            <tr 
+            <tr
               onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
               onmouseleave="app.clearHighlight()"
             >
                 <td>
                   <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
-                    <i class="fa fa-search"></i> 
+                    <i class="fa fa-search"></i>
                   </a>
                 </td>
                 <td>
@@ -251,8 +251,8 @@
 		<layer name="all"/>
 	</map-source>
 
-	<!-- 
-	 * This map-source is used solely for testing geomose 
+	<!--
+	 * This map-source is used solely for testing geomose
 	 * with international characters.
 	 -->
 	<map-source name="international" type="mapserver">
@@ -260,7 +260,7 @@
 		<layer name="testing"/>
 	</map-source>
 
-	<map-source name="borders" type="mapserver" title="City and County Borders"> 
+	<map-source name="borders" type="mapserver" title="City and County Borders">
 		<file>./demo/statedata/basemap.map</file>
 		<layer name="city_poly" status="off">
             <template name="identify" src="./city.html"/>
@@ -282,14 +282,163 @@
 		<param name="FORMAT" value="png"/>
 	</map-source>
 
-	<map-source name="openstreetmap" type="xyz">
+    <map-source name="ags-vector-dc16" type="ags-vector">
+        <url>http://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
+        <layer name="16" selectable="true" title="Railroads">
+            <style><![CDATA[
+            {
+                "line-color" : "#010138",
+                "line-width" : 2
+            }
+            ]]></style>
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Dakota County Rail</div>
+                    <div class="item"><label>Name:</label> {{ properties.FEAT_NM1 }}</div>
+                </div>
+            ]]></template>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.FEAT_NM1 }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select" alias="search"/>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "Name",
+                    "property" : "FEAT_NM1",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr
+              onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
+              onmouseleave="app.clearHighlight()"
+            >
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </td>
+                <td>
+                  {{ properties.FEAT_NM1 }}
+                </td>
+            </tr>
+            ]]></template>
+
+        </layer>
+    </map-source>
+
+    <!-- This layer is very large.  It will take awhile to load, will slow down the browser
+         once it is loaded.  Thus, it is not "in" the demo, but it is left here because it
+         a good complex example and is a great stress test for the ags-vector driver. -->
+    <!--map-source name="ags-vector-dc20" type="ags-vector">
+        <url>http://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
+        <layer name="20" selectable="true" title="Streets">
+            <style><![CDATA[
+            {
+                "line-color" : "#A1A138",
+                "line-width" : 2
+            }
+            ]]></style>
+
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Dakota County Streets</div>
+                    <div class="item"><label>Street Name:</label> {{ properties.STREET_NAME }}</div>
+                    <div class="item"><label>City:</label> {{ properties.CITY_L }}</div>
+                </div>
+            ]]></template>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.STREET_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select" alias="search"/>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "Street Name",
+                    "property" : "STREET_NAME",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
+                    "title" : "City Left",
+                    "property" : "CITY_L",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
+                    "title" : "City Right",
+                    "property" : "CITY_R",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr
+              onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
+              onmouseleave="app.clearHighlight()"
+            >
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </td>
+                <td>
+                  {{ properties.STREET_NAME}}
+                </td>
+                <td>{{ properties.CITY_L }}</td>
+                <td>{{ properties.CITY_R }}</td>
+            </tr>
+            ]]></template>
+
+        </layer>
+    </map-source-->
+
+    <map-source name="openstreetmap" type="xyz">
 		<layer name="osm_mapnik" />
 		<url>http://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<url>http://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<url>http://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<param name="attribution" value="Data and tiles by OpenStreetMap contributors"/>
 	</map-source>
-	
+
 	<map-source name="wmflabs" type="xyz">
 		<layer name="osm_black_n_white" />
 		<url>http://a.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
@@ -297,7 +446,7 @@
 		<url>http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
 		<param name="attribution" value="Data by OpenStreetMap contributors, Tiles by Wikimedia Foundation Labs"/>
 	</map-source>
-	
+
 <!--	<map-source name="thunderforest" type="xyz">
 		<layer name="osm_cycle_map" />
 		<url>http://a.tile.thunderforest.com/cycle/${z}/${x}/${y}.png</url>
@@ -325,18 +474,18 @@
         <param name="key" value="'Your Key Here'"/>
     </map-source>
 
-	<!-- 
+	<!--
 		The catalog defines how the layers will be displayed in the catalog tab.
 	-->
 	<catalog>
-		<!-- Layer for testing international character support. 
+		<!-- Layer for testing international character support.
 		<layer title="Test International Characters" src="international/testing"/>
 		-->
-		<layer src="sketch/default" 
-               zoomto="true" upload="true" download="true" clear="true" 
-               draw-point="true" draw-line="true" draw-polygon="true" 
+		<layer src="sketch/default"
+               zoomto="true" upload="true" download="true" clear="true"
+               draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" />
-		
+
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<!--
@@ -345,7 +494,7 @@
 		<group title="Overlays">
 			<group title="County Layers" expand="false">
 
-				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" popups="true" refresh="10"> 
+				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" popups="true" refresh="10">
 					<metadata>http://www.geomoose.org/docs/</metadata>
 					<!--
 					<legend>images/logo_mini.gif</legend>
@@ -354,8 +503,9 @@
 				<layer title="Parcel Points" src="parcels/parcels_points" popups="true" minscale="6000" maxscale="20000" status="off">
 				</layer>
 				<layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
+				<layer title="AGS Dakota County Rail" src="ags-vector-dc16/16"/>
+				<!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/20"/-->
 			</group>
-
 			<layer src="pipelines/pipelines"></layer>
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
 		</group>
@@ -372,7 +522,7 @@
 			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
 			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
 	<!--		<layer title="OpenStreetMap - Cycle Map" src="thunderforest/osm_cycle_map" legend="false" fade="true" unfade="true"/> -->
-			
+
 			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
@@ -405,7 +555,7 @@
 		  -  The Geocoder will not work until google_api_key has been defined
 		  -   in local_settings.ini.
 		-->
-		<tool name="geocode" title="Geocode Address" type="service"/> 
+		<tool name="geocode" title="Geocode Address" type="service"/>
 		<tool name="select" title="Select Features" type="service"/>
 		<tool name="search" title="Search Parcels" type="service"/>
 

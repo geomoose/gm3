@@ -47,6 +47,7 @@ import * as util from '../util';
 import * as jsts from '../jsts';
 
 import GeoJSONFormat from 'ol/format/geojson';
+import EsriJSONFormat from 'ol/format/esrijson';
 import GML2Format from 'ol/format/gml2';
 import WFSFormat from 'ol/format/wfs';
 import WMSGetFeatureInfoFormat from 'ol/format/wmsgetfeatureinfo';
@@ -120,6 +121,7 @@ class Map extends Component {
                 break;
             case 'vector' :
             case 'wfs' :
+            case 'ags-vector':
                 vectorLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'bing':
@@ -146,6 +148,7 @@ class Map extends Component {
                 return agsLayer.createLayer(mapSource);
             case 'vector':
             case 'wfs':
+            case 'ags-vector':
                 return vectorLayer.createLayer(mapSource);
             case 'bing':
                 return bingLayer.createLayer(mapSource);
@@ -394,6 +397,187 @@ class Map extends Component {
 
     }
 
+
+    /** Create a FeatureService formatted query and send it
+     *
+     *  @param queryId
+     *  @param query
+     *
+     */
+    agsFeatureQuery(queryId, query, queryLayer) {
+        // TODO: This should come from the store or the map.
+        //       ol3 makes a lot of web-mercator assumptions.
+        let projection = this.map.getView().getProjection();
+        let geom_field = 'geom';
+
+        // get the map source
+        let ms_name = util.getMapSourceName(queryLayer);
+        let layer_name = util.getLayerName(queryLayer);
+
+        let map_source = this.props.mapSources[ms_name];
+
+        // the internal storage mechanism requires features
+        //  returned from the query be stored in 4326 and then
+        //  reprojected on render.
+        let query_projection = projection;
+        if(map_source.wgs84Hack) {
+            query_projection = new proj.get('EPSG:4326');
+        }
+
+        let view = this.props.mapView;
+
+        // if the openlayers layer is not on, this fakes
+        //  one for use in the query.
+        let ol_layer = this.olLayers[ms_name];
+        if(!ol_layer) {
+            ol_layer = this.createLayer(map_source);
+        }
+
+        // get the src
+        let src = ol_layer.getSource();
+
+        const fix_like = function(value) {
+            let new_value = value.replace('*', '%');
+            return new_value;
+        };
+
+        const simple_op = function(op, name, value) {
+            if(typeof(value) === 'number') {
+                return name + ' ' + op + ' ' + value;
+            } else {
+                return name + ' ' + op + " '" + value + "'";
+            }
+        };
+
+        // map the functions from OpenLayers to the internal
+        //  types
+        let filter_mapping = {
+            'like': function(field, value) {
+                return field + ' like ' + fix_like(value);
+            },
+            'ilike': function(name, value) {
+                return field + ' like upper(' + fix_like + ')'
+            },
+            'eq': function(name, value) {
+                return simple_op('=', name, value);
+            },
+            'ge': function(name, value) {
+                return simple_op('>=', name, value);
+            },
+            'gt': function(name, value) {
+                return simple_op('>', name, value);
+            },
+            'le': function(name, value) {
+                return simple_op('<=', name, value);
+            },
+            'lt': function(name, value) {
+                return simple_op('<', name, value);
+            },
+        };
+
+        // setup the necessary format converters.
+        const esri_format = new EsriJSONFormat();
+        const geojson_format = new GeoJSONFormat();
+
+        const query_params = {
+            f: 'json',
+            returnGeometry: 'true',
+            spatialReference: JSON.stringify({
+                wkid: 102100
+            }),
+            inSR: 102100, outSR: 102100,
+            outFields: '*',
+        };
+
+        let geometry_filter = null;
+        if(query.selection && query.selection.geometry) {
+            // make this an E**I geometry.
+            let ol_geom = geojson_format.readGeometry(query.selection.geometry);
+            // convert the geometry to the query projection
+            ol_geom.transform(projection, query_projection);
+
+            // translate the geometry to E**I-ish
+            const geom_type_lookup = {
+                'Point': 'esriGeometryPoint',
+                'MultiPoint': 'esriGeometryMultipoint',
+                'LineString': 'esriGeometryPolyline',
+                'Polygon': 'esriGeometryPolygon',
+            };
+
+            // setup the spatial filter.
+            query_params.geometryType = geom_type_lookup[query.selection.geometry.type];
+            query_params.geometry = esri_format.writeGeometry(ol_geom);
+            query_params.spatialRel = 'esriSpatialRelIntersects';
+        }
+
+        // build the filter fields.
+        const where_statements = [];
+        for(let filter of query.fields) {
+            where_statements.push(filter_mapping[filter.comparitor](filter.name, filter.value));
+        }
+
+        const where_str = where_statements.join(' and ');
+
+        query_params.layers = JSON.stringify([{
+            layerId: layer_name,
+            'where': where_str,
+        }]);
+
+        const map = this.map;
+
+        // get the query service url.
+        const query_url = map_source.urls[0] + layer_name + '/query/';
+        util.xhr({
+            url: query_url,
+            method: 'get',
+            type: 'jsonp',
+            data: query_params,
+            success: (response) => {
+                // not all WMS services play nice and will return the
+                //  error message as a 200, so this still needs checked.
+                if(response) {
+                    // convert the esri features to OL features.
+                    let features = esri_format.readFeatures(response);
+                    // be ready with some json.
+                    let json_format = new GeoJSONFormat();
+
+                    // create the features array.
+                    let js_features = [];
+                    for(const feature of features) {
+                        // feature to JSON.
+                        const js_feature = json_format.writeFeatureObject(feature);
+                        // ensure that every feature has a "boundedBy" attribute.
+                        js_feature.properties.boundedBy = feature.getGeometry().getExtent();
+                        // add it to the stack.
+                        js_features.push(js_feature);
+                    }
+
+                    // get the transforms for the layer
+                    const transforms = mapSourceActions.getLayerByPath(this.props.store, queryLayer).transforms;
+
+                    // apply the transforms
+                    js_features = util.transformFeatures(transforms, js_features);
+
+                    this.props.store.dispatch(
+                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
+                    );
+                }
+            },
+            error: () => {
+                // dispatch a message that the query has failed.
+                this.props.store.dispatch(
+                    // true for 'failed', empty array to prevent looping side-effects.
+                    mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                );
+            },
+            complete: () => {
+                this.checkQueryForCompleteness(queryId, queryLayer);
+            }
+        });
+
+    }
+
+
     /** Execute a query
      *
      *  @param query
@@ -412,6 +596,8 @@ class Map extends Component {
             } else if(map_source.type === 'wfs') {
                 // Query the WFS layer.
                 this.wfsGetFeatureQuery(queryId, query, query_layer);
+            } else if(map_source.type === 'ags-vector') {
+                this.agsFeatureQuery(queryId, query, query_layer);
             }
         }
     }
