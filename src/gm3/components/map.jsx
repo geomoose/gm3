@@ -1151,6 +1151,9 @@ class Map extends Component {
             this.map.removeInteraction(this.drawTool);
             // null out for logic.
             this.drawTool = null;
+
+            // and the current interaction
+            this.currentInteraction = null;
         }
 
         // remove the stop tool from the map

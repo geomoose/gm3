@@ -362,6 +362,10 @@ class ServiceManager extends Component {
                 // clear out the previous drawing tool when
                 //  changing services.
                 this.drawTool(service_def.tools.default);
+            } else if(nextProps.queries.service === 'measure') {
+                // handle the measure tool special case and default
+                //  it to Lines...
+                this.drawTool('LineString');
             }
             // 'rotate' the current servie to the next services.
             this.setState({lastService: nextProps.queries.service, lastFeature: ''});
