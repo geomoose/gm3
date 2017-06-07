@@ -417,7 +417,7 @@ class ServiceManager extends Component {
             case 'length':
                 return (<LengthInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
             case 'text':
-            value:
+            default:
                 return (<TextInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
         }
     }
