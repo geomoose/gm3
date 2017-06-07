@@ -112,6 +112,14 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             {
                 label: 'Parcel Boundaries',
                 extent: [-10384071.6,5538681.6,-10356783.6,5563600.1]
+            },
+            {
+                label: 'Dakota County',
+                extent: [-10381354,5545268,-10328765,5608252]
+            },
+            {
+                label: 'Minnesota',
+                extent: [-10807000,5440700,-9985100,6345700]
             }
         ]
     });
