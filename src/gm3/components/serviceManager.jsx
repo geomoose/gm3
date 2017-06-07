@@ -422,6 +422,37 @@ class ServiceManager extends Component {
         }
     }
 
+    /** Function to handle bashing "Enter" and causing
+     *  the service form to submit.
+     *
+     *  @param evt The event from the div.
+     *
+     */
+    handleKeyboardShortcuts(serviceName, evt) {
+        const code = evt.which;
+        if(code === 13) {
+            this.startQuery(serviceName);
+        } else if(code === 27) {
+            this.closeForm();
+        }
+    }
+
+    /** Implement a small post-render hack to focus on the first
+     *  input element of a service form.
+     */
+    componentDidUpdate() {
+        if(this.props.queries.service !== null) {
+            // look for an input in the service form and then
+            //  focus on the first one, as available.
+            if(this.refs.serviceForm) {
+                const inputs = this.refs.serviceForm.getElementsByTagName('input');
+                if(inputs.length > 0) {
+                    inputs[0].focus();
+                }
+            }
+        }
+    }
+
     render() {
         if(this.props.queries.service === 'measure') {
             return (
@@ -455,7 +486,10 @@ class ServiceManager extends Component {
             }
 
             return (
-                <div className="service-manager">
+                <div className="service-manager"
+                    ref='serviceForm'
+                    onKeyUp={ (evt) => { this.handleKeyboardShortcuts(service_name, evt); } } >
+
                     <h3>{service_def.title}</h3>
                     { service_tools }
                     { buffer_controls }
