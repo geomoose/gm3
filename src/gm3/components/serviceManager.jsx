@@ -410,15 +410,15 @@ class ServiceManager extends Component {
         this.fieldValues[this.props.queries.service][name] = value;
     }
 
-    getServiceField(i, field) {
+    getServiceField(i, field, value) {
         switch(field.type) {
             case 'select':
-                return (<SelectInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
+                return (<SelectInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
             case 'length':
-                return (<LengthInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
+                return (<LengthInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
             case 'text':
             default:
-                return (<TextInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field}/>);
+                return (<TextInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
         }
     }
 
@@ -476,8 +476,15 @@ class ServiceManager extends Component {
 
             for(let i = 0, ii = service_def.fields.length; i < ii; i++) {
                 const field = service_def.fields[i];
-                service_fields.push(this.getServiceField(i, field));
-                this.fieldValues[this.props.queries.service][field.name] = field.default;
+                let value = field.default;
+                if(this.fieldValues[this.props.queries.service][field.name]) {
+                    value = this.fieldValues[this.props.queries.service][field.name];
+                } else {
+                    this.fieldValues[this.props.queries.service][field.name] = value;
+                }
+
+                service_fields.push(this.getServiceField(i, field, value));
+
             }
 
             let buffer_controls = false;
