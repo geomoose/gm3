@@ -32,7 +32,7 @@ export default class TextInput extends Component {
         super(props);
 
         this.state = {
-            value: props.field.default ? props.field.default : ''
+            value: props.value ? props.value : props.field.default ? props.field.default : ''
         };
 
         this.onChange = this.onChange.bind(this);
