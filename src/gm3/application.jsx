@@ -362,7 +362,12 @@ class Application {
                                 );
                                 // resolve this promise with the content
                                 resolve(content);
-                            }
+                            },
+                            // when there is an error fetching the template,
+                            // 404 or whatever, return a blank template.
+                            error: function() {
+                                resolve('');
+                            },
                         });
                     } else {
                         resolve(layer.templates[template_name].contents);
