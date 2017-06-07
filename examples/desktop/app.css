@@ -31,8 +31,11 @@ body {
 
 #tabs, #map, #results-grid{
     position: absolute;
-    overflow: auto;
     top: 75px; left: 0;
+}
+
+#map, #results-grid {
+    overflow: auto;
 }
 
 #map {

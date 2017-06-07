@@ -1,3 +1,6 @@
+.tab-parent {
+    overflow: hidden;
+}
 
 .tab {
     border: solid 1px black;
@@ -30,4 +33,6 @@
 
 .tab-content.show {
     display: block;
+    height: 100%;
+    overflow: auto;
 }
