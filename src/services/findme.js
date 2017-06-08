@@ -83,7 +83,7 @@ function FindMeAction(Application, options) {
         Application.addFeatures(this.targetLayer, map_feature);
 
         var b = this.buffer;
-        var x = map_feature.geometry.coordinates[0], 
+        var x = map_feature.geometry.coordinates[0],
             y = map_feature.geometry.coordinates[1];
 
         Application.zoomToExtent([x - b, y - b, x + b, y + b], this.mapProjection);
