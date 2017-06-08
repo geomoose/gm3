@@ -56,3 +56,32 @@ describe('Filter Tests (matchFeatures)', () => {
     });
 
 });
+
+describe('Test repojection', () => {
+    var features = null;
+
+    test('Simple point reprojection', () => {
+        var feature_def = {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [-10371011.9, 5623372.6]
+            },
+            properties: {
+                label: 'test-point'
+            }
+        };
+       
+        // project the feature from 3857 to 4326
+        var wgs_features = util.projectFeatures([feature_def], 'EPSG:3857', 'EPSG:4326');
+
+        // floating point conversion isn't perfect so this test
+        // ensures that the conversion is "good enough"
+        var close_enough = [-93.165, 45.011];
+        var coords = wgs_features[0].geometry.coordinates;
+
+        expect(Math.floor(coords[0] * 1000)).toBe(close_enough[0] * 1000);
+        expect(Math.floor(coords[1] * 1000)).toBe(close_enough[1] * 1000);
+    });
+
+});

@@ -688,3 +688,26 @@ export function transformFeatures(transforms, features) {
 export function requEstimator(data) {
     return formatUrlParameters(data).length;
 }
+
+/** Reproject a set of GeoJSON features.
+ *
+ *  @param features An array of GeoJSON features.
+ *  @param srcProj  The source projection.
+ *  @param destProj The destination projection.
+ *
+ *  @returns an Array of features in destProj.
+ */
+export function projectFeatures(features, srcProj, destProj) {
+    // fake the array of features as a feature collection.
+    const new_features = GEOJSON_FORMAT.readFeatures({
+        type: 'FeatureCollection',
+        features: features
+    }, {
+        dataProjection: srcProj,
+        featureProjection: destProj
+    });
+
+    // the output will be a feature collection,
+    //  the ".features" ensures an array is returned.
+    return (GEOJSON_FORMAT.writeFeaturesObject(new_features)).features;
+}
