@@ -90,6 +90,7 @@ function parseLayer(store, layerXml) {
         favorite: false,
         refreshEnabled: false,
         refresh: null,
+        metadata_url: null,
         tools: []
     };
 
@@ -160,6 +161,12 @@ function parseLayer(store, layerXml) {
             }
 
         }
+    }
+
+    // check to see if the layer has any metadata
+    const metadata = util.getTagContents(layerXml, 'metadata', true)[0];
+    if(metadata) {
+        new_layer.metadata_url = metadata;
     }
 
     // set the new layer state based on the src.
