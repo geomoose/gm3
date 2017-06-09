@@ -88,7 +88,6 @@ function SelectService(Application, options) {
     this.query = function(selection, fields) {
         if(typeof(selection) === 'undefined') {
             // throw up this handy dialog.
-            //alert(signature, message, callback = null) {
             var msg = 'A selection geometry is required for this query.';
             var service_name = this.name;
             var on_close = function() {
