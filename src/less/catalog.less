@@ -23,10 +23,10 @@
  */
 
 @folder-color: #FFDC29;
-@favorite-star-color: #29B2FF; 
+@favorite-star-color: #29B2FF;
 
 @refresh-icon-disabled-color: #82A984;
-@refresh-icon-enabled-color: #5DF265; 
+@refresh-icon-enabled-color: #5DF265;
 
 .group {
 
@@ -172,7 +172,7 @@
 
     .tool.polygon {
         &:before {
-            content: "\e01d"; 
+            content: "\e01d";
         }
     }
 
@@ -231,6 +231,14 @@
         }
     }
 
+    .tool.metadata {
+        .fa;
+
+        &:before {
+            content: @fa-var-address-card-o;
+        }
+    }
+
 
 }
 
@@ -271,13 +279,18 @@
             height: 20px;
         }
     }
+
+    a.metadata {
+        color: black;
+        padding-left: .5em;
+    }
 }
 
 .catalog.searchable {
     padding-top: 40px;
 }
 
-/*** 
+/***
  ***  Flat Catalog
  ***/
 
