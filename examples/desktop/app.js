@@ -85,26 +85,34 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.Catalog, 'catalog');
     app.add(gm3.components.Favorites, 'favorites');
     app.add(gm3.components.VisibleLayers, 'visible-layers');
-    app.add(gm3.components.ServiceManager, 'service-tab', {services: true});
     app.add(gm3.components.Toolbar, 'toolbar');
     app.add(gm3.components.Grid, 'results-grid');
     app.add(gm3.components.Version, 'version');
+
+    var point_projections = [
+        {
+            label: 'X,Y',
+            ref: 'xy'
+        },
+        {
+            label: 'USNG',
+            ref: 'usng'
+        },
+        {
+            label: 'Lat,Lon',
+            ref: 'EPSG:4326',
+            precision: 3
+        }
+    ];
+
     app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
-        projections:  [
-            {
-                label: 'X,Y',
-                ref: 'xy'
-            },
-            {
-                label: 'USNG',
-                ref: 'usng'
-            },
-            {
-                label: 'Lat,Lon',
-                ref: 'EPSG:4326',
-                precision: 3
-            }
-        ]
+        projections:  point_projections
+    });
+    app.add(gm3.components.ServiceManager, 'service-tab', {
+        services: true,
+        measureToolOptions: {
+            pointProjections: point_projections
+        }
     });
 
     app.add(gm3.components.JumpToExtent, 'jump-to-extent', {

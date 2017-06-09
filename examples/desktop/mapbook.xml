@@ -267,7 +267,7 @@
 	</map-source>
 
 	<map-source name="iastate" type="wms">
-		<url>http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
+		<url>https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
 		<layer name="nexrad-n0r"/>
 		<param name="FORMAT" value="image/png"/>
 		<param name="TRANSPARENT" value="TRUE"/>
@@ -275,13 +275,13 @@
 
 
 	<map-source name="ags" type="ags">
-		<url>http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
+		<url>https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
 		<layer name="NatGeo_World_Map"/>
 		<param name="FORMAT" value="png"/>
 	</map-source>
 
     <map-source name="ags-vector-dc16" type="ags-vector">
-        <url>http://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
         <layer name="16" selectable="true" title="Railroads">
             <style><![CDATA[
             {
@@ -347,7 +347,7 @@
          once it is loaded.  Thus, it is not "in" the demo, but it is left here because it
          a good complex example and is a great stress test for the ags-vector driver. -->
     <!--map-source name="ags-vector-dc20" type="ags-vector">
-        <url>http://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
         <layer name="20" selectable="true" title="Streets">
             <style><![CDATA[
             {
@@ -431,9 +431,9 @@
 
     <map-source name="openstreetmap" type="xyz">
 		<layer name="osm_mapnik" />
-		<url>http://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<url>http://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<url>http://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+		<url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+		<url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+		<url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<param name="attribution" value="Data and tiles by OpenStreetMap contributors"/>
 	</map-source>
 
@@ -485,7 +485,9 @@
                draw-modify="true" draw-remove="true" />
 
 		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
-		<layer title="Vector Parcels"  activate="true" src="vector-parcels/ms:parcels" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
+		<layer title="Vector Parcels" src="vector-parcels/ms:parcels">
+            <metadata>http://google.com</metadata>
+        </layer>
 		<!--
 		<layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		-->
