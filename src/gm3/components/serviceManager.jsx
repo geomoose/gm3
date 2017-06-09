@@ -455,8 +455,12 @@ class ServiceManager extends Component {
 
     render() {
         if(this.props.queries.service === 'measure') {
+            var m_tool_props = Object.assign({}, {store: this.props.store}, this.props.measureToolOptions);
+            // this is the Javascript spread operator, it will transform the
+            //  object constructed above into a useful set of "props"
+            //  for measure tool.
             return (
-                <MeasureTool store={this.props.store} />
+                <MeasureTool {...m_tool_props} />
             );
         } else if(this.props.queries.service != null) {
             let service_name = this.props.queries.service;

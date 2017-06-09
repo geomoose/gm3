@@ -34,6 +34,8 @@ import proj from 'ol/proj';
 import olPoint from 'ol/geom/point';
 import olLineString from 'ol/geom/linestring';
 
+import { CoordinateDisplay } from './coordinates';
+
 export class MeasureTool extends Component {
 
     constructor(props) {
@@ -164,9 +166,13 @@ export class MeasureTool extends Component {
     renderSegments(geom) {
         const segments = this.getSegmentInfo(geom);
 
+        let total_length = 0;
+
         const segment_html = [];
         for(let i = 0, ii = segments.length; i < ii; i++) {
             const seg = segments[i];
+            total_length += seg.len;
+
             segment_html.push((
                 <tr key={ 'segment' + i}>
                     <td>{ seg.id }</td>
@@ -175,6 +181,15 @@ export class MeasureTool extends Component {
                 </tr>
             ));
         }
+
+
+        segment_html.unshift((
+            <tr key="line_total">
+                    <td>&#931;</td>
+                    <td>{ total_length.toFixed(2) }</td>
+                    <td>&nbsp;</td>
+            </tr>
+        ));
 
         return (
             <table className="measured-segments">
@@ -238,6 +253,8 @@ export class MeasureTool extends Component {
                     Please draw a feature on the map to measure.
                 </div>
             );
+        } else if (g.type === 'Point') {
+            return ( <CoordinateDisplay coords={ g.coordinates } projections={ this.props.pointProjections } /> );
         } else if (g.type === 'LineString') {
             return this.renderSegments(g);
         } else if (g.type === 'Polygon') {
@@ -302,11 +319,12 @@ export class MeasureTool extends Component {
     render() {
         // TODO: These events can happen when measuring is not happening!!!
         return (
-            <div>
+            <div className="measure-tool">
                 <div>
                     Use <b>Draw line</b> to measure distances and <b>Draw Polygon</b> to measure areas.
                 </div>
                 <div className="draw-tools">
+                    <DrawTool key="measure-point" store={this.props.store} geomType="Point"/>
                     <DrawTool key="measure-line" store={this.props.store} geomType="LineString"/>
                     <DrawTool key="measure-poly" store={this.props.store} geomType="Polygon"/>
                     <DrawTool key="measure-select" store={this.props.store} geomType="Select"/>

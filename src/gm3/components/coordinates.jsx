@@ -57,7 +57,7 @@ import proj from 'ol/proj';
  *     - XY, Lat/Lng, USNG
  */
 
-class CoordinateDisplay extends Component {
+export class CoordinateDisplay extends Component {
 
     constructor(props) {
         super(props);
@@ -86,26 +86,26 @@ class CoordinateDisplay extends Component {
          *     - Add special-case projections ('xy', 'usng')
          *     - If not a special case, add if Proj definition exists
          */
-        this.projections = [];
-        for(let projection of this.props.projections) {
-            if(typeof projection.projDef !== "undefined") {
-                addProjDef(proj4, projection.ref, projection.projDef);
-            }
-            let isNamedProjection = (this.namedProjections.indexOf(projection.ref) !== -1);
-            let isDefinedProjection = (proj.get(projection.ref) !== null);
-            if(isNamedProjection || isDefinedProjection) {
-                this.projections.push(projection);
-            }
-        }
 
-        // if no projections are specified, use default projections
-        if(!this.props.projections) {
+        if(this.props.projections) {
+            this.projections = [];
+            for(let projection of this.props.projections) {
+                if(typeof projection.projDef !== "undefined") {
+                    addProjDef(proj4, projection.ref, projection.projDef);
+                }
+                let isNamedProjection = (this.namedProjections.indexOf(projection.ref) !== -1);
+                let isDefinedProjection = (proj.get(projection.ref) !== null);
+                if(isNamedProjection || isDefinedProjection) {
+                    this.projections.push(projection);
+                }
+            }
+        } else {
             this.projections = this.defaultProjections;
         }
     }
 
     mapXY() {
-        const coords = this.props.cursor.coords;
+        const coords = this.props.coords;
         return coords[0].toFixed(1) + ', ' + coords[1].toFixed(1);
     }
 
@@ -129,7 +129,7 @@ class CoordinateDisplay extends Component {
         const latlon_proj = new proj.get('EPSG:4326');
 
         // transform the point
-        return proj.transform(this.props.cursor.coords, map_proj, latlon_proj);
+        return proj.transform(this.props.coords, map_proj, latlon_proj);
     }
 
     getProjectionCoords(projection) {
@@ -139,7 +139,7 @@ class CoordinateDisplay extends Component {
         const dest_proj = new proj.get(projection.ref);
 
         // transform the point
-        let coords = proj.transform(this.props.cursor.coords, map_proj, dest_proj);
+        let coords = proj.transform(this.props.coords, map_proj, dest_proj);
         if (projection.precision) {
             return coords.map((coord) => coord.toFixed(projection.precision))
         }
@@ -188,10 +188,17 @@ class CoordinateDisplay extends Component {
     }
 }
 
+class MouseCoordinates extends Component {
+
+    render() {
+        return ( <CoordinateDisplay projections={ this.props.projections } coords={ this.props.cursor.coords } /> );
+    }
+}
+
 const mapToProps = function(store) {
     return {
         cursor: store.cursor
     }
 }
 
-export default connect(mapToProps)(CoordinateDisplay);
+export default connect(mapToProps)(MouseCoordinates);
