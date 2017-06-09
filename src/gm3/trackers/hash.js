@@ -79,7 +79,11 @@ export default class HashTracker {
      *
      */
     isAlwaysOn(map_source) {
-        return (map_source && map_source.params['always-on'] === true);
+        if(map_source) {
+            const always_on = map_source.params['always-on'];
+            return (always_on === true || util.parseBoolean(always_on));
+        }
+        return false;
     }
 
     /* Batch and issue commands to handle the restoration of layers.
