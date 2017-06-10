@@ -131,9 +131,10 @@ class Application {
             queryable: false,
             refresh: null,
             layers: [],
-            params: {
-                'always-on': true,
+            options: {
+                'always-on' : true,
             },
+            params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
             zIndex: 200001,
@@ -185,9 +186,10 @@ class Application {
             queryable: false,
             refresh: null,
             layers: [],
-            params: {
+            options: {
                 'always-on': true,
             },
+            params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
             zIndex: 200002,

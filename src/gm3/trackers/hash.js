@@ -79,8 +79,8 @@ export default class HashTracker {
      *
      */
     isAlwaysOn(map_source) {
-        if(map_source) {
-            const always_on = map_source.params['always-on'];
+        if(map_source && map_source.options) {
+            const always_on = map_source.options['always-on'];
             return (always_on === true || util.parseBoolean(always_on));
         }
         return false;
