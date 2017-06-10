@@ -132,7 +132,7 @@ class Application {
             refresh: null,
             layers: [],
             options: {
-                'always-on' : true,
+                'always-on': true,
             },
             params: {},
             // stupid high z-index to ensure results are
