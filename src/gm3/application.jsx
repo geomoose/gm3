@@ -131,6 +131,9 @@ class Application {
             queryable: false,
             refresh: null,
             layers: [],
+            options: {
+                'always-on': true,
+            },
             params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
@@ -183,6 +186,9 @@ class Application {
             queryable: false,
             refresh: null,
             layers: [],
+            options: {
+                'always-on': true,
+            },
             params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
