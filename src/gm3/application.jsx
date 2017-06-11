@@ -142,6 +142,8 @@ class Application {
         this.store.dispatch(mapSourceActions.addLayer('results', {
             name: 'results',
             on: true,
+            label: 'Results',
+            selectable: true,
             style: {
                 'circle-radius': 4,
                 'circle-color': '#ffff00',
