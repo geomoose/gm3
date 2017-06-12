@@ -28,7 +28,7 @@
 
 import { TOOLBAR } from '../actionTypes';
 
-export function addTool(root, tool, order='last') {
+export function addTool(root, tool, order = 'last') {
     return {
         type: TOOLBAR.ADD,
         order,
@@ -37,7 +37,7 @@ export function addTool(root, tool, order='last') {
     }
 }
 
-export function addDrawer(root, drawer, order='last') {
+export function addDrawer(root, drawer, order = 'last') {
     return {
         type: TOOLBAR.ADD,
         order,
