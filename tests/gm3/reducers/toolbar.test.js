@@ -34,13 +34,13 @@ import * as actions from 'gm3/actions/toolbar';
 
 
 describe('Toolbar reducer tests', () => {
-    let store = createStore(combineReducers({
-        'toolbar': toolbarReducer
-    }));
+    let store = null;
 
     // before each test refresh the store.
     beforeEach(() => {
-        // pass for now
+        store = createStore(combineReducers({
+            'toolbar': toolbarReducer
+        }));
     });
 
     test('Add a tool to the toolbar', () => {
@@ -67,23 +67,38 @@ describe('Toolbar reducer tests', () => {
         const tb = store.getState();
         // ensure both the drawer and the tool made it on to
         //  the toolbar "stack"
-        expect(tb.toolbar.root.length).toBe(2);
+        expect(tb.toolbar.root.length).toBe(1);
         // ensure the tool "sample1" made it into drawer0.
         expect(tb.toolbar.drawer0.length).toBe(1);
         expect(tb.toolbar.drawer0[0].name).toBe('sample1');
     });
 
     test('Remove a tool from the toolbar', () => {
+        // create five tools, remove the third one.
+        for(let i = 0; i < 5; i++) {
+            store.dispatch(actions.addTool('root', {
+                name: 'tool' + i, label: 'Tool ' + i,
+                actionType: 'service', actionDetail: '',
+            }));
+        }
+        // add a drawer
+        store.dispatch(actions.addDrawer('root', {
+            name: 'drawer0', label: 'Drawer 0',
+        }));
+        store.dispatch(actions.addTool('drawer0', {
+            name: 'sample1', label: 'Sample 1',
+            actionType: 'service', actionDetail: 'sample2'
+        }));
         // test removing a tool
-        store.dispatch(actions.remove('sample'));
+        store.dispatch(actions.remove('tool3'));
         let tb = store.getState();
-        expect(tb.toolbar.root.length).toBe(1);
+        expect(tb.toolbar.root.length).toBe(5);
 
         // test removing a drawer
         store.dispatch(actions.remove('drawer0'));
 
         tb = store.getState();
-        expect(tb.toolbar.root.length).toBe(0);
+        expect(tb.toolbar.root.length).toBe(4);
     });
 
     test('Adding a tool to the "front" of the toolbar', () => {

@@ -535,29 +535,18 @@
 		The toolbar defines which services are referneces in the toolbar
 	-->
 	<toolbar>
-        <!--
-		<tool name="previous" title="Previous Extent" type="internal" action="previous" selectable="false"/>
-		<tool name="next" title="Next Extent" type="internal" action="next" selectable="false"/>
-        -->
-
 		<tool name="fullextent" title="Zoom to Full Extent" type="action"/>
 		<tool name="measure" title="Measure" type="service"/>
 		<tool name="print" title="Print" type="action"/>
 
 		<tool name="identify" title="Identify" type="service" service="identify"/>
 
-<!--		<tool name="select" title="Select" type="service" service="select"/> -->
-<!--
-		<tool name="birdseye" title="Bird's Eye View" type="service" selectable="true" service="birdseye"/>
-		<tool name="streetview" title="Google Street View" type="service" service="streetview" selectable="true"/>
--->
-		<!--
-		  -  The Geocoder will not work until google_api_key has been defined
-		  -   in local_settings.ini.
-		-->
-		<tool name="geocode" title="Geocode Address" type="service"/>
 		<tool name="select" title="Select Features" type="service"/>
-		<tool name="search" title="Search Parcels" type="service"/>
+
+        <drawer name="searches" title="Search">
+            <tool name="search" title="Search by Owner" type="service"/>
+            <tool name="geocode" title="Search by Address" type="service"/>
+        </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>
 	</toolbar>

@@ -46,11 +46,9 @@ import * as util from '../util';
  *
  */
 
-const default_state = {
-    'root': []
-};
+const default_state = {};
 
-export default function mapReducer(state = default_state, action) {
+export default function toolbarReducer(state = default_state, action) {
     switch(action.type) {
         case TOOLBAR.ADD:
             // tools in drawers will have a different "root",

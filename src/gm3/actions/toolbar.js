@@ -40,8 +40,8 @@ export function addTool(root, tool, order='last') {
 export function addDrawer(root, drawer, order='last') {
     return {
         type: TOOLBAR.ADD,
-        root,
         order,
+        root,
         tool: {
             name: drawer.name, label: drawer.label,
             actionType: 'drawer', actionDetail: '',
@@ -65,7 +65,7 @@ function parseTool(toolXml) {
     }
 }
 
-function parserDrawer(drawerXml) {
+function parseDrawer(drawerXml) {
     return {
         name: drawerXml.getAttribute('name'),
         label: drawerXml.getAttribute('title'),
@@ -77,10 +77,10 @@ function parseChildren(rootName, node) {
     for(const child of node.childNodes) {
         if(child.tagName === 'drawer') {
             const drawer = parseDrawer(child)
-            actions.push(addDrawer(rootName, child));
+            actions.push(addDrawer(rootName, drawer));
             actions = actions.concat(parseChildren(drawer.name, child));
         } else if(child.tagName === 'tool') {
-            actions.push(addTool(parseTool(child)));
+            actions.push(addTool(rootName, parseTool(child)));
         }
     }
     return actions;
