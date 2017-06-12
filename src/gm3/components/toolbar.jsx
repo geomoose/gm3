@@ -77,7 +77,7 @@ export class ToolbarDrawer extends Component {
 
         return (
             <div className="drawer tool">
-                <span className="icon"></span><span className="label">{drawer.label}</span>
+                <span className="drawer icon"></span><span className="label">{drawer.label}</span>
                 <div className="drawer-contents">
                 {
                     this.props.toolbar[drawer.name].map((tool, i ) => {

@@ -1,12 +1,14 @@
-.tool {
-    height: 22px;
-    padding: 0 7px;
-    font-size: 14px;
-    border: none;
-    background: none;
-    &:hover {
-        cursor: pointer;
-        text-decoration: underline;
+.toolbar {
+    .tool {
+        height: 22px;
+        padding: 0 7px;
+        font-size: 14px;
+        border: none;
+        background: none;
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
     }
 }
 
@@ -88,7 +90,7 @@
 }
 
 .tool.drawer {
-    .icon {
+    .icon.drawer {
         .fa;
         &:before {
             content: @fa-var-chevron-circle-down;
