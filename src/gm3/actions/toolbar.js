@@ -28,17 +28,31 @@
 
 import { TOOLBAR } from '../actionTypes';
 
-export function addTool(tool) {
+export function addTool(root, tool, order = 'last') {
     return {
         type: TOOLBAR.ADD,
+        order,
+        root,
         tool
     }
 }
 
-export function removeTool(tool) {
+export function addDrawer(root, drawer, order = 'last') {
+    return {
+        type: TOOLBAR.ADD,
+        order,
+        root,
+        tool: {
+            name: drawer.name, label: drawer.label,
+            actionType: 'drawer', actionDetail: '',
+        }
+    }
+}
+
+export function remove(name) {
     return {
         type: TOOLBAR.REMOVE,
-        tool
+        name
     }
 }
 
@@ -51,16 +65,28 @@ function parseTool(toolXml) {
     }
 }
 
+function parseDrawer(drawerXml) {
+    return {
+        name: drawerXml.getAttribute('name'),
+        label: drawerXml.getAttribute('title'),
+    }
+}
+
+function parseChildren(rootName, node) {
+    let actions = [];
+    for(const child of node.childNodes) {
+        if(child.tagName === 'drawer') {
+            const drawer = parseDrawer(child)
+            actions.push(addDrawer(rootName, drawer));
+            actions = actions.concat(parseChildren(drawer.name, child));
+        } else if(child.tagName === 'tool') {
+            actions.push(addTool(rootName, parseTool(child)));
+        }
+    }
+    return actions;
+}
+
 export function parseToolbar(toolbarXml) {
     if(!toolbarXml) { return []; }
-
-    var tool_actions = [];
-
-    let tools = toolbarXml.getElementsByTagName('tool');
-    for(let i = 0, ii = tools.length; i < ii; i++) {
-        let tool = tools[i];
-        tool_actions.push(addTool(parseTool(tool)));
-    }
-
-    return tool_actions;
+    return parseChildren('root', toolbarXml);
 }

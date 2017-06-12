@@ -34,15 +34,16 @@ import { startTool } from '../actions/toolbar';
 import { startService } from '../actions/service';
 import { runAction, setUiHint } from '../actions/ui';
 
-class Toolbar extends Component {
+
+export class ToolbarButton extends Component {
 
     constructor() {
         super();
         this.handleToolAction = this.handleToolAction.bind(this);
-        this.renderTool = this.renderTool.bind(this);
     }
 
-    handleToolAction(tool) {
+    handleToolAction() {
+        const tool = this.props.tool;
         if(tool.actionType === 'service') {
             // start the service
             this.props.store.dispatch(startService(tool.name));
@@ -53,9 +54,11 @@ class Toolbar extends Component {
         }
     }
 
-    renderTool(tool) {
-        let tool_click = () => {
-            this.handleToolAction(tool);
+    render() {
+        const tool = this.props.tool;
+
+        const tool_click = () => {
+            this.handleToolAction();
         };
 
         return (
@@ -64,18 +67,48 @@ class Toolbar extends Component {
             </button>
         );
     }
+}
+
+
+export class ToolbarDrawer extends Component {
+
+    render() {
+        const drawer = this.props.drawer;
+
+        return (
+            <div className="drawer tool">
+                <span className="drawer icon"></span><span className="label">{drawer.label}</span>
+                <div className="drawer-contents">
+                {
+                    this.props.toolbar[drawer.name].map((tool, i ) => {
+                        return (<ToolbarButton store={this.props.store} key={'btn' + i} tool={ tool } />);
+                    })
+                }
+                </div>
+            </div>
+        );
+    }
+}
+
+
+export class Toolbar extends Component {
 
     render() {
         return (
             <div className="toolbar">
                 {
-                    this.props.toolbar.map(this.renderTool)
+                    this.props.toolbar.root.map((tool, i ) => {
+                        if(tool.actionType === 'drawer') {
+                            return (<ToolbarDrawer store={this.props.store} drawer={ tool } toolbar={ this.props.toolbar } key={'drawer' + i} />);
+                        } else {
+                            return (<ToolbarButton store={this.props.store} key={'btn' + i} tool={ tool } />);
+                        }
+                    })
                 }
             </div>
         );
     }
-
-};
+}
 
 
 const mapToolbarToProps = function(store) {

@@ -24,7 +24,7 @@ describe('Filter Tests (matchFeatures)', () => {
 
     test('Simple expression equals search {prop: value}', () => {
         var pin = '350010001050';
-        var filter = [['==', 'pin', '350010001050']]; 
+        var filter = [['==', 'pin', '350010001050']];
         expect(util.matchFeatures(features, filter)[0].properties.pin).toBe(pin);
     });
     test('Simple list filter', () => {
@@ -71,7 +71,7 @@ describe('Test repojection', () => {
                 label: 'test-point'
             }
         };
-       
+
         // project the feature from 3857 to 4326
         var wgs_features = util.projectFeatures([feature_def], 'EPSG:3857', 'EPSG:4326');
 

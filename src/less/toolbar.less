@@ -1,12 +1,14 @@
-button.tool {
-    height: 22px;
-    padding: 0 7px;
-    font-size: 14px;
-    border: none;
-    background: none;
-    &:hover {
-        cursor: pointer;
-        text-decoration: underline;
+.toolbar {
+    .tool {
+        height: 22px;
+        padding: 0 7px;
+        font-size: 14px;
+        border: none;
+        background: none;
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
     }
 }
 
@@ -86,3 +88,48 @@ button.tool {
         }
     }
 }
+
+.tool.drawer {
+    .icon.drawer {
+        .fa;
+        &:before {
+            content: @fa-var-chevron-circle-down;
+        }
+    }
+}
+
+/* CSS needed to supprot the "drawer" functionality
+ * of the toolbar.
+ */
+.toolbar {
+    .drawer {
+        position: relative;
+        display: inline-block;
+    }
+
+    .drawer:hover {
+        .drawer-contents {
+            display: block;
+        }
+    }
+
+    .drawer-contents {
+        display: none;
+        position: absolute;
+        padding: 3px;
+        border: solid 1px black;
+        z-index: 100;
+        background-color: #eee;
+
+        .tool {
+            display: block;
+            white-space: nowrap;
+        }
+
+    }
+
+    .drawer-item {
+        cursor: pointer;
+    }
+}
+

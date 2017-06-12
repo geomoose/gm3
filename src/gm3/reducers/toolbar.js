@@ -46,24 +46,44 @@ import * as util from '../util';
  *
  */
 
-export default function mapReducer(state = [], action) {
+const default_state = {};
+
+export default function toolbarReducer(state = default_state, action) {
     switch(action.type) {
         case TOOLBAR.ADD:
+            // tools in drawers will have a different "root",
+            //  the  base "root" is what is shown in the toolbar itself
+            const root = action.root ? action.root : 'root';
+
             // get the 'order' placement, should be first or last
-            var order = action.order ? action.order : 'last';
+            const order = action.order ? action.order : 'last';
+
+            // fresh bake a state
+            const new_state = Object.assign({}, state);
+
+            // add a so-fresh-so-clean drawer node
+            //  if it doesn't exist.
+            if(!new_state[root]) {
+                new_state[root] = [];
+            }
 
             if(order === 'first') {
-                return [].concat([action.tool]).concat(state);
+                new_state[root].unshift(action.tool);
             } else {
-                return [].concat(state).concat([action.tool]);
+                new_state[root].push(action.tool);
             }
+
+            return new_state;
         case TOOLBAR.REMOVE:
             // make a copy of the tools list but do not include
             //  the tool to be removed.
-            const st = [];
-            for(const tool in state) {
-                if(tool.name !== action.tool.name) {
-                    st.push(tool);
+            const st = {};
+            for(const root in state) {
+                st[root] = [];
+                for(const item of state[root]) {
+                    if(item.name !== action.name) {
+                        st[root].push(item);
+                    }
                 }
             }
             return st;
