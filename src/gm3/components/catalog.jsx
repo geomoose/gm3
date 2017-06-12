@@ -278,8 +278,6 @@ export class Catalog extends Component {
         if(layer.metadata_url) {
             metadata_tool = <MetadataTool href={layer.metadata_url} />
         }
-        console.log('LAYER', layer, layer.metadata_url);
-
         // check to see if the layer is on or not.
         const is_on = isLayerOn(this.props.mapSources, layer);
 

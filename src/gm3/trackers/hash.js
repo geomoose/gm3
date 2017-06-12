@@ -75,6 +75,17 @@ export default class HashTracker {
         this.tracking = false;
     }
 
+    /* Test to see if a map-source is "always-on"
+     *
+     */
+    isAlwaysOn(map_source) {
+        if(map_source && map_source.options) {
+            const always_on = map_source.options['always-on'];
+            return (always_on === true || util.parseBoolean(always_on));
+        }
+        return false;
+    }
+
     /* Batch and issue commands to handle the restoration of layers.
      */
     restoreLayers(layersOn) {
@@ -110,35 +121,20 @@ export default class HashTracker {
             })
         }
 
+        // get the mapsources from the current state
+        const map_sources = this.store.getState().mapSources;
 
         for(var layer of turn_off) {
-            this.store.dispatch({
-                type: MAPSOURCE.LAYER_VIS,
-                mapSourceName: util.getMapSourceName(layer),
-                layerName: util.getLayerName(layer),
-                on: false
-            })
-        }
-
-        /*
-        // get the favorites list
-        let faves = localStorage.getItem('favorites');
-
-        if(faves) {
-            // convert the 'faves' into a list of objects.
-            faves = faves.split(';');
-
-            // if there were favorites saved, for each one,
-            //  issue a 'FAVORITES' command for the mapsource.
-            if(faves && faves.length) {
-                for(const fave of faves) {
-                    let ms_name = util.getMapSourceName(fave);
-                    let layer_name = util.getLayerName(fave);
-                    this.store.dispatch(favoriteLayer(ms_name, layer_name, true));
-                }
+            const ms_name = util.getMapSourceName(layer);
+            if(!this.isAlwaysOn(map_sources[ms_name])) {
+                this.store.dispatch({
+                    type: MAPSOURCE.LAYER_VIS,
+                    mapSourceName: ms_name,
+                    layerName: util.getLayerName(layer),
+                    on: false
+                });
             }
         }
-        */
 
     }
 
@@ -181,7 +177,16 @@ export default class HashTracker {
     /* Track which layers are on in the hash.
      */
     trackLayers() {
-        return getVisibleLayers(this.store);
+        const visible_layers = getVisibleLayers(this.store);
+        const trackable_layers = [];
+        const map_sources = this.store.getState().mapSources;
+        for(const layer of visible_layers) {
+            const ms_name = util.getMapSourceName(layer);
+            if(!this.isAlwaysOn(map_sources[ms_name])) {
+                trackable_layers.push(layer);
+            }
+        }
+        return trackable_layers;
     }
 
     /* Get the location.

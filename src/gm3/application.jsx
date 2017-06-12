@@ -131,6 +131,9 @@ class Application {
             queryable: false,
             refresh: null,
             layers: [],
+            options: {
+                'always-on': true,
+            },
             params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
@@ -139,6 +142,8 @@ class Application {
         this.store.dispatch(mapSourceActions.addLayer('results', {
             name: 'results',
             on: true,
+            label: 'Results',
+            selectable: true,
             style: {
                 'circle-radius': 4,
                 'circle-color': '#ffff00',
@@ -183,6 +188,9 @@ class Application {
             queryable: false,
             refresh: null,
             layers: [],
+            options: {
+                'always-on': true,
+            },
             params: {},
             // stupid high z-index to ensure results are
             //  on top of everything else.
