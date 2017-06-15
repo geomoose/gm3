@@ -273,9 +273,10 @@ export function addFromXml(xml, config) {
 
         // catalog the transforms for the layer
         const transforms = layerXml.getElementsByTagName('transform');
-        for(const transform of transforms) {
+        for(let x = 0, xx = transforms.length; x < xx; x++) {
+            const transform = transforms[x];
             layer.transforms[transform.getAttribute('attribute')] =
-                transform.getAttribute('function');
+            transform.getAttribute('function');
         }
 
 
