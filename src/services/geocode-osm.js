@@ -118,3 +118,5 @@ function OSMGeocoder(Application, options) {
         Application.dispatchQuery(this.name, selection, fields, []);
     };
 }
+
+var exports = module.exports = OSMGeocoder;

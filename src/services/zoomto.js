@@ -44,3 +44,5 @@ function ZoomToAction(Application, options) {
     }
 
 }
+
+var exports = module.exports = ZoomToAction;
