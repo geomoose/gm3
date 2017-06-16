@@ -37,8 +37,8 @@ import { runAction, setUiHint } from '../actions/ui';
 
 export class ToolbarButton extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.handleToolAction = this.handleToolAction.bind(this);
     }
 
@@ -56,13 +56,8 @@ export class ToolbarButton extends Component {
 
     render() {
         const tool = this.props.tool;
-
-        const tool_click = () => {
-            this.handleToolAction();
-        };
-
         return (
-            <button onClick={tool_click} key={tool.name} className={"tool tool-" + tool.name}>
+            <button onClick={this.handleToolAction} key={tool.name} className={"tool tool-" + tool.name}>
                 <span className="icon"></span><span className="label">{tool.label}</span>
             </button>
         );
