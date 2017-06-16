@@ -34,7 +34,7 @@ var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
 module.exports = {
     devtool: 'eval-source-map',
     entry: [
-        'webpack-dev-server/client?http://0.0.0.0:4000',
+        'webpack-dev-server/client?http://localhost:4000',
         'babel-polyfill',
         //'webpack/hot/only-dev-server',
         './src/' //index.jsx'
@@ -86,7 +86,7 @@ module.exports = {
                 // point the example "geomoose" directories back
                 //  at the geomoose repository.
                 context: ['/examples/geomoose/'],
-                target: 'http://0.0.0.0:4000/',
+                target: 'http://localhost:4000/',
                 pathRewrite: {'^/examples/geomoose' : '' },
                 secure: false
             },
