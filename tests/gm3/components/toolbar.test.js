@@ -25,6 +25,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { shallow } from 'enzyme';
+
 import { createStore, combineReducers } from 'redux';
 
 import { Toolbar, ToolbarButton, ToolbarDrawer } from 'gm3/components/toolbar';
@@ -32,6 +34,7 @@ import { Toolbar, ToolbarButton, ToolbarDrawer } from 'gm3/components/toolbar';
 import SmartToolbar from 'gm3/components/toolbar';
 
 import toolbarReducer from 'gm3/reducers/toolbar';
+import queryReducer from 'gm3/reducers/query';
 import * as actions from 'gm3/actions/toolbar';
 
 
@@ -46,8 +49,7 @@ describe('Toolbar component tests', () => {
             actionType: 'service', actionDetail: 'sample'
         };
 
-
-        ReactDOM.render(<ToolbarButton tool={tool} />, div);
+        const btn = shallow(<ToolbarButton tool={tool} />);
     });
 
     it('renders a drawer', () => {
@@ -139,6 +141,39 @@ describe('Toolbar component tests', () => {
         const div = document.createElement('div');
         ReactDOM.render(<SmartToolbar store={store}/>, div);
     });
+
+    it('changes the active service when clicked.', function() {
+        const store = createStore(combineReducers({
+            toolbar: toolbarReducer,
+            query: queryReducer,
+        }));
+
+        const tool = {
+            name: 'sample0',
+            label: 'Sample Zero',
+            actionType: 'service'
+        };
+
+        const btn = shallow(<ToolbarButton tool={tool} store={store} />);
+        btn.find('button').simulate('click');
+
+        const state = store.getState();
+        expect(state.query.service).toBe('sample0');
+    });
+
+    it('triggers an action when clicked.', function() {
+        const store = createStore(combineReducers({
+            toolbar: toolbarReducer,
+            query: queryReducer,
+        }));
+
+        const tool = {
+            name: 'sample0',
+            label: 'Sample Zero',
+            actionType: 'action'
+        };
+
+        const btn = shallow(<ToolbarButton tool={tool} store={store} />);
+        btn.find('button').simulate('click');
+    });
 });
-
-
