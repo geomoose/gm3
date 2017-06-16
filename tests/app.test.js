@@ -29,6 +29,8 @@ import Map from 'gm3/components/map';
 
 import ZoomToAction from 'services/zoomto';
 
+import { runAction } from 'gm3/actions/ui';
+
 /* This is a bit of a hacky polyfill for requestAnimationFrame
  * which is needed by the openlayers map to drawer but is not
  * simulated by the jsdom/enzyme combination.
@@ -80,5 +82,9 @@ describe('real lyfe test', () => {
         app.registerAction('zoomto', ZoomToAction, {
             extent: [-10, -10, 10, 10]
         });
+    });
+
+    it('triggers the action', () => {
+        app.store.dispatch(runAction('zoomto'));
     });
 });
