@@ -25,7 +25,7 @@
  */
 var path = require('path');
 var webpack = require('webpack');
-    
+
 var package = require('./package.json');
 
 var fs = require('fs');

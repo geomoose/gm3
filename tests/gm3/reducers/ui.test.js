@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,40 @@
  * SOFTWARE.
  */
 
-/** Zoom To Action
- *
- *  When a user clicks on this it will zoom them to a given
- *  extent. The extent is expected to be in map coordinates.
- *
- */
-function ZoomToAction(Application, options) {
+import { createStore, combineReducers } from 'redux';
 
-    // The extent to which the action should zoom to.
-    this.extent = options.extent ? options.extent : null;
+import reducer from 'gm3/reducers/ui'
+import * as actions from 'gm3/actions/ui'
 
-    // Called every time the action is started.
-    this.run = function() {
-        if(options.extent) {
-            Application.zoomToExtent(options.extent);
-        } else {
-            alert('An extent was not defined for this action');
-        }
+describe('test the `ui` reducer', () => {
+    let store = null;
 
-    }
+    // before each test refresh the store.
+    beforeEach(() => {
+        store = createStore(combineReducers({
+            'ui': reducer
+        }));
+    });
 
-}
+    it('sets and clears the ui hint', () => {
+        // set the hint ot test-hint and verify the change in the state
+        store.dispatch(actions.setUiHint('test-hint'));
+        expect(store.getState().ui.hint).toBe('test-hint');
 
-var exports = module.exports = ZoomToAction;
+        // clear the hint and see if it is null
+        store.dispatch(actions.clearUiHint());
+        expect(store.getState().ui.hint).toBe(null);
+    });
+
+    it('sets a run action', () => {
+        store.dispatch(actions.runAction('test-action'));
+        expect(store.getState().ui.action).toBe('test-action');
+
+        store.dispatch(actions.clearAction());
+        expect(store.getState().ui.action).toBe(null);
+
+    });
+
+
+
+});

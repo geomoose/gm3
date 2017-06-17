@@ -150,3 +150,5 @@ function SelectService(Application, options) {
         this.hasRendered[queryId] = true;
     }
 }
+
+var exports = module.exports = SelectService;

@@ -89,3 +89,5 @@ function FindMeAction(Application, options) {
         Application.zoomToExtent([x - b, y - b, x + b, y + b], this.mapProjection);
     }
 }
+
+var exports = module.exports = FindMeAction;

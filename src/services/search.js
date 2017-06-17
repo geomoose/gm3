@@ -160,3 +160,5 @@ function SearchService(Application, options) {
 
 
 }
+
+var exports = module.exports = SearchService;

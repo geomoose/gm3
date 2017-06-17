@@ -106,3 +106,5 @@ function IdentifyService(Application, options) {
         return html;
     }
 }
+
+var exports = module.exports = IdentifyService;
