@@ -136,12 +136,18 @@ module.exports = function(grunt) {
 
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch']);
 
-    // only build the non-minified version.
-    grunt.task.registerTask('build-dev', ['lint', 'copy:services', 'webpack:build-dev']);
-
     // update the css and fonts.
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
+    // only build the non-minified version.
+    grunt.task.registerTask('build-dev', ['lint', 'copy:services', 'webpack:build-dev']);
+
+    // only build the minified version.
+    grunt.task.registerTask('build-deploy', ['lint', 'build-css', 'copy:services', 'webpack:build-deploy']);
+
     // build everything
-    grunt.task.registerTask('build', ['lint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:services']);
+    // grunt.task.registerTask('build', ['build-dev', 'build-deploy']);
+    // You'd think the above would be OK as you'd think grunt had a dependency solver, but no,
+    // it runs duplicate tasks so, sigh, solve it manually.
+    grunt.task.registerTask('build', ['lint', 'build-css', 'copy:services', 'webpack:build-dev', 'webpack:build-deploy']);
 };
