@@ -1,14 +1,15 @@
 # gitignore/npmignore file for GeoMoose
 #
-# Please keep both these files in sync when making changes.  It is 
-# very likely a change to one should be made to both.  The exception 
-# is any build artifacts that are needed at runtime should be included 
+# Please keep both these files in sync when making changes.  It is
+# very likely a change to one should be made to both.  The exception
+# is any build artifacts that are needed at runtime should be included
 # in npm but excluded from git.
 
 
 # GeoMOOSE demo site specific config file
 examples/desktop/config.js
 examples/mobile/config.js
+examples/geomoose
 
 # Editor backup files
 *~
@@ -27,7 +28,6 @@ coverage/
 
 # Results of packaging
 geomoose*.tgz
-gm3*.zip
 
 # Results of building
 # Note: this should be ignored by git but by not npm

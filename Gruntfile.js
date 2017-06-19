@@ -29,11 +29,9 @@ var webpackDeployConfig = require('./webpack-deploy.config');
 
 module.exports = function(grunt) {
     grunt.loadNpmTasks('gruntify-eslint');
-    grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-gitinfo');
     grunt.loadNpmTasks('grunt-webpack');
     // load our custom tasks
     grunt.loadTasks('./src/tasks');
@@ -57,31 +55,6 @@ module.exports = function(grunt) {
             }
         },
 
-
-        // makes a compressed archive of the SDK release
-        compress: {
-             main: {
-                 options: {
-                     archive: 'gm3-sdk-<%= gitinfo.local.branch.current.shortSHA %>.zip'
-                 },
-                 files: [
-                     { src: [
-                           'demo/**',
-                           'dist/**',
-                           'docs/**',
-                           'eslint.config.js',
-                           'Gruntfile.js',
-                           'LICENSE',
-                           'package.json',
-                           'README.md',
-                           'src/**',
-                           'tests/**',
-                           'webpack.config.js',
-                           'webpack-deploy.config.js'
-                       ], dest: 'geomoose' }
-                 ]
-             }
-        },
         // copies useful files places.
         copy: {
             // this will copy the "test" files into dist,
@@ -163,15 +136,18 @@ module.exports = function(grunt) {
 
     grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch']);
 
-    // only build the non-minified version.
-    grunt.task.registerTask('build-dev', ['lint', 'copy:services', 'webpack:build-dev']);
-
     // update the css and fonts.
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
 
-    // build everything
-    grunt.task.registerTask('build', ['lint', 'webpack:build-dev', 'webpack:build-deploy', 'build-css', 'copy:services']);
+    // only build the non-minified version.
+    grunt.task.registerTask('build-dev', ['lint', 'copy:services', 'webpack:build-dev']);
 
-    // build release.zip
-    grunt.task.registerTask('build-release', ['build', 'gitinfo', 'compress']);
+    // only build the minified version.
+    grunt.task.registerTask('build-deploy', ['lint', 'build-css', 'copy:services', 'webpack:build-deploy']);
+
+    // build everything
+    // grunt.task.registerTask('build', ['build-dev', 'build-deploy']);
+    // You'd think the above would be OK as you'd think grunt had a dependency solver, but no,
+    // it runs duplicate tasks so, sigh, solve it manually.
+    grunt.task.registerTask('build', ['lint', 'build-css', 'copy:services', 'webpack:build-dev', 'webpack:build-deploy']);
 };
