@@ -151,4 +151,4 @@ function SelectService(Application, options) {
     }
 }
 
-var exports = module.exports = SelectService;
+if(typeof(module) !== 'undefined') { module.exports = SelectService; }

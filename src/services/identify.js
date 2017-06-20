@@ -107,4 +107,4 @@ function IdentifyService(Application, options) {
     }
 }
 
-var exports = module.exports = IdentifyService;
+if(typeof(module) !== 'undefined') { module.exports = IdentifyService; }

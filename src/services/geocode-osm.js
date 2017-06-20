@@ -119,4 +119,4 @@ function OSMGeocoder(Application, options) {
     };
 }
 
-var exports = module.exports = OSMGeocoder;
+if(typeof(module) !== 'undefined') { module.exports = OSMGeocoder; }

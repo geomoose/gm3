@@ -161,4 +161,4 @@ function SearchService(Application, options) {
 
 }
 
-var exports = module.exports = SearchService;
+if(typeof(module) !== 'undefined') { module.exports = SearchService; }
