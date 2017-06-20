@@ -1171,7 +1171,7 @@ class Map extends Component {
         if(this.map) {
             this.map.updateSize();
 
-            let map_div = document.getElementById(this.mapId);
+            let map_div = this.refs.map;
             let canvas = map_div.getElementsByTagName('canvas');
             if(canvas[0] && canvas[0].style.display !== 'none') {
                 return true;
@@ -1275,7 +1275,7 @@ class Map extends Component {
         }
 
         return (
-            <div className="map" id={this.mapId}>
+            <div className="map" ref='map' id={this.mapId}>
             </div>
         )
     }
