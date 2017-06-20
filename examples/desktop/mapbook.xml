@@ -23,97 +23,6 @@
             to the map.
             ]]></legend>
         </layer>
-
-		<attribute name="title" type="user" default-value="" label="Feature Label:"/>
-		<attribute name="line_color" type="color" default-value="#ff0000" label="Stroke Color:"/>
-		<attribute name="fill_color" type="color" default-value="#ff0000" label="Fill Color:"/>
-		<attribute name="test_ajax_select" type="ajax_select" default_value="0" label="Ajax Select:">
-			<url>php/optionsList.php</url>
-		</attribute>
-		<!--
-		<attribute name="opacity" type="select" default-value="100" label="Opacity (%):"/>
-		<attribute name="line_opacity" type="select" default-value="100" label="Stroke Opacity (%):"/>
-		<attribute name="test_select" type="select" label="Test Select">
-			<option value="A">A</option>
-			<option value="B">B</option>
-			<option value="C">C</option>
-		</attribute>
-		-->
-		<attribute name="label_only" type="checkbox" default-value="false" label="Only show label in print?"/>
-	</map-source>
-
-    <!--
-	<map-source name="highlight" type="vector">
-        <layer name="highlight" status="on">
-            <style><![CDATA[
-            {
-                "circle-radius": 4,
-                "circle-color": "#ffff00",
-                "circle-stroke-color": "#ffff00",
-                "line-color" : "#ffff00",
-                "line-width" : 4,
-                "line-opacity": 0.25,
-                "fill-color" : "#ffff00",
-                "fill-opacity" : 0.25
-            }
-            ]]></style>
-        </layer>
-	</map-source>
-    -->
-
-	<map-source name="census_cities" type="wfs" active="true" srs="EPSG:4269">
-		<style><![CDATA[
-		{
-			"strokeColor" : "#00ff00",
-			"label" : "${namelsad10}"
-		}
-		]]></style>
-
-		<url>/mapserver/cgi-bin/tinyows</url>
-
-		<attribute name="geoid10" type="user" label="ID:" default-value="27999"/>
-		<attribute name="namelsad10" type="user" label="Name:"/>
-
-
-		<feature-namespace>http://localhost/geomoose/census_places</feature-namespace>
-		<feature-type>census_places</feature-type>
-		<geometry-name>wkb_geometry</geometry-name>
-		<schema><![CDATA[http://localhost/mapserver/cgi-bin/tinyows?service=WFS&version=1.1.0&request=DescribeFeatureType&typename=census:census_places]]></schema>
-
-                <popup-template><![CDATA[
-                <div style="font-size: 1.5em">${namelsad}</div>
-                Area of Land: ${aland}<br>
-                Area of Water: ${awater}<br>
-                <br>
-                <a href="https://www.census.gov/2010census/popmap/ipmtext.php?fl=${statefp}:${geoid}" target="_blank">Census Info Page</a>
-                ]]></popup-template>
-	</map-source>
-
-	<map-source name="minnesota_places" type="wfs" active="true" srs="EPSG:4326">
-        <layer name="gm:minnesota_places">
-            <style type="stylemap"><![CDATA[
-            {
-                "fill-outline-color" : "#f00",
-                "fill-color" : "#000077",
-                "label" : "${name}"
-            }
-            ]]></style>
-        </layer>
-
-		<url>/mapserver/cgi-bin/tinyows</url>
-
-		<attribute name="geoid" type="user" label="ID:" default-value="27999"/>
-		<attribute name="name" type="user" label="Name:"/>
-		<attribute name="lsad" type="ajax_select" label="Place Type:">
-			<url>php/getFeatureTypes.php</url>
-		</attribute>
-
-		<feature-namespace>http://geomoose.org/</feature-namespace>
-		<feature-type>minnesota_places</feature-type>
-		<geometry-name>geom</geometry-name>
-		<schema><![CDATA[http://localhost/mapserver/cgi-bin/tinyows?service=WFS&version=1.1.0&request=DescribeFeatureType&typename=census:census_places]]></schema>
-
-		<filter type="cql"><![CDATA[geoid = 2746924]]></filter>
 	</map-source>
 
     <map-source name="vector-parcels" type="mapserver-wfs">
@@ -194,21 +103,21 @@
 
 	<map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
 		<file>./demo/scalebars/scalebar_miles.map</file>
-		<layer name="scalebar"/>
+		<layer name="scalebar_mi"/>
 		<param name="FORMAT" value="image/png"/>
 	</map-source>
 
 
 	<map-source name="scalebar_feet" type="mapserver" title="Scalebar Feet">
 		<file>./demo/scalebars/scalebar_feet.map</file>
-		<layer name="scalebar"/>
+		<layer name="scalebar_feet"/>
 		<param name="FORMAT" value="image/png"/>
 	</map-source>
 
 
 	<map-source name="scalebar_kilometers" type="mapserver" title="Scalebar Kilometers">
 		<file>./demo/scalebars/scalebar_kilometers.map</file>
-		<layer name="scalebar"/>
+		<layer name="scalebar_km"/>
 		<param name="FORMAT" value="image/png"/>
 	</map-source>
 
@@ -484,9 +393,8 @@
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" />
 
-		<layer title="Minnesota Places"  activate="true" src="minnesota_places/gm:minnesota_places" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
 		<layer title="Vector Parcels" src="vector-parcels/ms:parcels">
-            <metadata>http://google.com</metadata>
+            <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
         </layer>
 		<!--
 		<layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
@@ -495,7 +403,7 @@
 			<group title="County Layers" expand="false">
 
 				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" popups="true" refresh="10">
-					<metadata>http://www.geomoose.org/docs/</metadata>
+					<metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
 					<!--
 					<legend>images/logo_mini.gif</legend>
 					-->
@@ -511,9 +419,9 @@
 		</group>
 
 		<group title="Scalebars" expand="false">
-			<layer src="scalebar_miles/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
-			<layer src="scalebar_feet/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
-			<layer src="scalebar_kilometers/scalebar" legend="false" show-legend="false" fade="false" unfade="false"/>
+			<layer src="scalebar_miles/scalebar_mi" legend="false" show-legend="false" fade="false" unfade="false"/>
+			<layer src="scalebar_feet/scalebar_feet" legend="false" show-legend="false" fade="false" unfade="false"/>
+			<layer src="scalebar_kilometers/scalebar_km" legend="false" show-legend="false" fade="false" unfade="false"/>
 		</group>
 
 		<group title="Backgrounds" expand="true" multiple="false">
