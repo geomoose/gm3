@@ -38,7 +38,10 @@ function OSMGeocoder(Application, options) {
     }];
 
     /** Define the highlight layer */
-    this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
+    this.targetLayer = options.targetLayer ? options.targetLayer : 'results/results';
+
+    // default the map projection to web-mercator
+    this.mapProjection = options.mapProjection ? options.mapProjection : 'EPSG:3857';
 
     /** This template is specified in HTML instead of referring to a
      *  layer's set of named templates.  This also makes an assumption about the name
@@ -46,9 +49,9 @@ function OSMGeocoder(Application, options) {
      *  other than the demo application.
      */
     this.template = '<div class="search-result">' +
-                    '<a onClick="app.zoomToExtent([{{ boundingbox.2 }}, {{ boundingbox.0 }}, {{ boundingbox.3 }}, {{ boundingbox.1 }}], \'EPSG:4326\')" class="zoomto-link">' +
+                    '<a onClick="app.zoomToExtent([{{ properties.boundingbox.2 }}, {{ properties.boundingbox.0 }}, {{ properties.boundingbox.3 }}, {{ properties.boundingbox.1 }}], \'EPSG:4326\')" class="zoomto-link">' +
                         '<i class="fa fa-search"></i>' +
-                        '{{ display_name }}' +
+                        '{{ properties.display_name }}' +
                     '</a>' +
                     '</div>';
 
@@ -67,7 +70,8 @@ function OSMGeocoder(Application, options) {
     this.runQuery = function(queryId, query) {
         var osm_url = 'http://nominatim.openstreetmap.org/search/';
         // boom kick this off.
-        var highlight_path = this.highlightPath;
+        var target_layer = this.targetLayer;
+        var map_proj = this.mapProjection;
         gm3.util.xhr({
             url: osm_url,
             type: 'json',
@@ -76,12 +80,30 @@ function OSMGeocoder(Application, options) {
                 q: query.fields[0].value
             },
             success: function(results) {
+                // convert the results into GeoJSON features
+                var features = [];
+                for(var i = 0, ii = results.length; i < ii; i++) {
+                    var r = results[i];
+                    features.push({
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [parseFloat(r.lon), parseFloat(r.lat)]
+                        },
+                        properties: r
+                    });
+                }
+
+                // put the feature in map projection.
+                features = gm3.util.projectFeatures(features, 'EPSG:4326', map_proj);
+
                 // populate the reuslts
                 Application.dispatch({
                     id: queryId,
                     type: 'MAP_QUERY_RESULTS',
+                    failed: false,
                     // this is a bit of a cheat.
-                    layer: 'geocoder', features: results,
+                    layer: 'geocoder', features: features
                 });
                 // mark this as finished.
                 Application.dispatch({
@@ -89,24 +111,10 @@ function OSMGeocoder(Application, options) {
                     type: 'MAP_QUERY_FINISHED'
                 });
 
-                let features = [];
-                for(var i = 0, ii = results.length; i < ii; i++) {
-                    var r = results[i];
-                    features.push({
-                        type: 'Feature',
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [r.lon, r.lat]
-                        },
-                        properties: {
-                            id: 'address' + i
-                        }
-                    });
-                }
+                Application.clearFeatures(target_layer);
 
                 if(features.length > 0) {
-                    Application.clearFeatures(highlight_path);
-                    Application.addFeatures(highlight_path, features);
+                    Application.addFeatures(target_layer, features);
                 }
             }
         });
@@ -115,6 +123,6 @@ function OSMGeocoder(Application, options) {
     /** Query the OSM Geocoder Service/.
      */
     this.query = function(selection, fields) {
-        Application.dispatchQuery(this.name, selection, fields, []);
+        Application.dispatchQuery(this.name, selection, fields, ['geocoder']);
     };
 }
