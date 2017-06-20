@@ -359,7 +359,8 @@ class Grid extends Component {
         this.state = {
             sortBy: null,
             sortAs: 'string',
-            sortAsc: true
+            sortAsc: true,
+            minimized: false,
         };
 
         this.nextSort = this.nextSort.bind(this);
@@ -539,12 +540,27 @@ class Grid extends Component {
             return null;
         }
 
+        // when minimized, show the maximize button.
+        const min_btn_class = this.state.minimized ? 'maximize' : 'minimize';
+        const grid_class = this.state.minimized ? 'hide' : '';
+        const toggle_grid = () => {
+            this.setState({minimized: !this.state.minimized});
+        };
+
         return (
             <div className="gm-grid">
                 <div className="toolbar">
-                    <i onClick={ () => { this.resultsAsCSV(grid_cols, features) } }className="results-download-icon" title="Download results as CSV"></i>
+                    <button onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
+                      className={'tool download'}
+                      title="Download results as CSV">
+                        <span className='icon'></span>
+                    </button>
+                    <button onClick={ toggle_grid } className={'tool ' + min_btn_class}
+                      title='Min/Maximize Grid'>
+                        <span className='icon'></span>
+                    </button>
                 </div>
-                <div className="grid-display">
+                <div className={'grid-display ' + grid_class}>
                     <table>
                         <thead>
                             <tr>
