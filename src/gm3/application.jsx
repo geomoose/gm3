@@ -646,7 +646,7 @@ class Application {
     /* Short hand for toggling the highlight of features.
      */
     highlightFeatures(filter, on) {
-        const props = {displayClass: on ? 'hot': ''};
+        const props = {displayClass: on ? 'hot' : ''};
         this.changeResultFeatures(filter, props);
     }
 
