@@ -90,4 +90,4 @@ function FindMeAction(Application, options) {
     }
 }
 
-var exports = module.exports = FindMeAction;
+if(typeof(module) !== 'undefined') { module.exports = FindMeAction; }

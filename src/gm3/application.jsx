@@ -643,6 +643,18 @@ class Application {
         util.addProjDef(proj4, projDef.ref, projDef.def);
     }
 
+    /* Short hand for toggling the highlight of features.
+     */
+    highlightFeatures(filter, on) {
+        const props = {displayClass: on ? 'hot' : ''};
+        this.changeResultFeatures(filter, props);
+    }
+
+    /* Clear highlight features
+     */
+    clearHighlight() {
+        this.highlightFeatures({displayClass: 'hot'}, false);
+    }
 };
 
 

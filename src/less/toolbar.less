@@ -17,7 +17,7 @@
     display: none;
 }
 
-.tool-fullextent {
+.tool.fullextent {
     .icon {
         .fa;
         &:before {
@@ -26,7 +26,7 @@
     }
 }
 
-.tool-measure {
+.tool.measure {
     .icon {
         .fa;
         &:before {
@@ -35,7 +35,7 @@
     }
 }
 
-.tool-print {
+.tool.print {
     .icon {
         .fa;
         &:before {
@@ -44,7 +44,7 @@
     }
 }
 
-.tool-identify {
+.tool.identify {
     .icon {
         .fa;
         &:before {
@@ -53,7 +53,7 @@
     }
 }
 
-.tool-geocode {
+.tool.geocode {
     .icon {
         .fa;
         &:before {
@@ -62,7 +62,7 @@
     }
 }
 
-.tool-select {
+.tool.select {
     .icon {
         .fa;
         &:before {
@@ -71,7 +71,7 @@
     }
 }
 
-.tool-search {
+.tool.search {
     .icon {
         .fa;
         &:before {
@@ -80,7 +80,7 @@
     }
 }
 
-.tool-findme {
+.tool.findme {
     .icon {
         .fa;
         &:before {
@@ -94,6 +94,33 @@
         .fa;
         &:before {
             content: @fa-var-chevron-circle-down;
+        }
+    }
+}
+
+.tool.download {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-download;
+        }
+    }
+}
+
+.tool.minimize {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-window-minimize;
+        }
+    }
+}
+
+.tool.maximize {
+    .icon {
+        .fa;
+        &:before {
+            content: @fa-var-window-maximize;
         }
     }
 }

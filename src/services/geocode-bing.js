@@ -126,4 +126,4 @@ function BingGeocoder(Application, options) {
     };
 }
 
-var exports = module.exports = BingGeocoder;
+if(typeof(module) !== 'undefined') { module.exports = BingGeocoder; }
