@@ -68,7 +68,7 @@ function OSMGeocoder(Application, options) {
     };
 
     this.runQuery = function(queryId, query) {
-        var osm_url = 'http://nominatim.openstreetmap.org/search/';
+        var osm_url = 'https://nominatim.openstreetmap.org/search/';
         // boom kick this off.
         var target_layer = this.targetLayer;
         var map_proj = this.mapProjection;
