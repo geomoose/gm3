@@ -36,6 +36,7 @@ import TileLayer from 'ol/layer/tile';
  */
 function defineSource(mapSource) {
     return {
+        crossOrigin: 'anonymous',
         urls: mapSource.urls
     }
 }
