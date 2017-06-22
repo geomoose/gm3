@@ -332,7 +332,7 @@ class Map extends Component {
         // the OL formatter requires that the typename and the schema be
         //  broken apart in order to properly format the request.
         // TODO: If this gets used elsewhere, push to a util function.
-        let type_parts = layer_name.split(':');
+        let type_parts = map_source.params.typename.split(':');
 
         // TinyOWS and GeoServer support GeoJSON, but MapServer
         //  only supports GML.
@@ -373,11 +373,8 @@ class Map extends Component {
                     // features to add
                     let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
 
-                    // get the transforms for the layer
-                    const transforms = mapSourceActions.getLayerByPath(this.props.store, queryLayer).transforms;
-
                     // apply the transforms
-                    js_features = util.transformFeatures(transforms, js_features);
+                    js_features = util.transformFeatures(map_source.transforms, js_features);
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -527,7 +524,7 @@ class Map extends Component {
         const map = this.map;
 
         // get the query service url.
-        const query_url = map_source.urls[0] + layer_name + '/query/';
+        const query_url = map_source.urls[0] + '/query/';
         util.xhr({
             url: query_url,
             method: 'get',
@@ -553,11 +550,8 @@ class Map extends Component {
                         js_features.push(js_feature);
                     }
 
-                    // get the transforms for the layer
-                    const transforms = mapSourceActions.getLayerByPath(this.props.store, queryLayer).transforms;
-
                     // apply the transforms
-                    js_features = util.transformFeatures(transforms, js_features);
+                    js_features = util.transformFeatures(map_source.transforms, js_features);
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)

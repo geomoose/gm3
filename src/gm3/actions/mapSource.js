@@ -167,6 +167,7 @@ export function addFromXml(xml, config) {
         queryable: util.parseBoolean(xml.getAttribute('queryable'), true),
         refresh: null,
         layers: [],
+        transforms: {},
         params: {}
     }
 
@@ -206,6 +207,13 @@ export function addFromXml(xml, config) {
         }
     }
 
+    // catalog the transforms for the layer
+    const transforms = xml.getElementsByTagName('transform');
+    for(let x = 0, xx = transforms.length; x < xx; x++) {
+        const transform = transforms[x];
+        map_source.transforms[transform.getAttribute('attribute')] =
+        transform.getAttribute('function');
+    }
 
     // mix in the params
     Object.assign(map_source.params, parseParams(xml));
@@ -227,7 +235,6 @@ export function addFromXml(xml, config) {
             legend: null,
             style: null,
             filter: null,
-            transforms: {},
         };
 
         // user defined legend.
@@ -271,16 +278,6 @@ export function addFromXml(xml, config) {
 
         }
 
-        // catalog the transforms for the layer
-        const transforms = layerXml.getElementsByTagName('transform');
-        for(let x = 0, xx = transforms.length; x < xx; x++) {
-            const transform = transforms[x];
-            layer.transforms[transform.getAttribute('attribute')] =
-            transform.getAttribute('function');
-        }
-
-
-
         // check to see if there are any style definitions
         let style = util.getTagContents(layerXml, 'style', false);
         if(style && style.length > 0) {
@@ -289,6 +286,18 @@ export function addFromXml(xml, config) {
                 layer.style = JSON.parse(style);
             } catch(err) {
                 console.error('There was an error parsing the style for: ', map_source.name);
+                console.error('Error details', err);
+            }
+        }
+
+        // check to see if there are any filter definitions
+        let filter = util.getTagContents(layerXml, 'filter', false);
+        if(filter && filter.length > 0) {
+            // convert to JSON
+            try {
+                layer.filter = JSON.parse(filter);
+            } catch(err) {
+                console.error('There was an error parsing the filter for: ', map_source.name);
                 console.error('Error details', err);
             }
         }

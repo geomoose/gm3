@@ -49,18 +49,18 @@ function defineSource(mapSource) {
             format: new GML2Format({}),
             projection: 'EPSG:4326',
             url: function(extent) {
-                // http://localhost:8080/mapserver/cgi-bin/tinyows?
-                // service=WFS&version=1.1.0&request=GetFeature&typename=gm:minnesota_places
+                if(typeof(mapSource.params.typename) === 'undefined') {
+                    console.error('No "typename" param defined for a WFS layer. This will fail.');
+                }
 
-                let url_params = Object.assign({}, mapSource.params,
-                    {typename: mapSource.layers[0].name}, {
-                        'srsname': 'EPSG:3857',
-                        'outputFormat': 'text/xml; subtype=gml/2.1.2',
-                        'service': 'WFS',
-                        'version': '1.1.0',
-                        'request': 'GetFeature',
-                        'bbox': extent.concat('EPSG:3857').join(',')
-                    });
+                let url_params = Object.assign({}, mapSource.params, {
+                    'srsname': 'EPSG:3857',
+                    'outputFormat': 'text/xml; subtype=gml/2.1.2',
+                    'service': 'WFS',
+                    'version': '1.1.0',
+                    'request': 'GetFeature',
+                    'bbox': extent.concat('EPSG:3857').join(',')
+                });
 
                 return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
             },
@@ -71,9 +71,7 @@ function defineSource(mapSource) {
         // This performs a basic query based on the bounding box.
         return {
             loader: function(extent, resolution, proj) {
-                // https://heigeo.houstoneng.com/arcgis/rest/services/
-                //  GeoMoose/GeoMooseMap/FeatureServer/0
-                let url = mapSource.urls[0] + mapSource.layers[0].name + '/query/';
+                let url = mapSource.urls[0] + '/query/';
 
                 // the E**I language can get a bit complicated but
                 //  this is the format for a basic BBOX query.
@@ -178,6 +176,43 @@ function defineSource(mapSource) {
     return {}
 }
 
+/** Return a style function for the layer.
+ *
+ */
+function defineStyle(mapSource) {
+    const layers = [];
+    for(const layer of mapSource.layers) {
+        if(layer.on === true) {
+            const layer_def = {
+                id: layer.name,
+                // source is a contant that is used to dummy up
+                //  the Mapbox styles
+                source: 'dummy-source',
+                paint: layer.style,
+            };
+
+            // check to see if there is a filter
+            //  set on the layer.  This uses the Mapbox GL/JS
+            //  filters.
+            if(layer.filter !== null) {
+                layer_def.filter = layer.filter;
+            }
+
+            layers.push(layer_def);
+        }
+    }
+
+    return getStyleFunction({
+        'version': 8,
+        'layers': layers,
+        'dummy-source': [
+            {
+                'type': 'vector'
+            }
+        ]
+    }, 'dummy-source');
+}
+
 /** Return an OpenLayers Layer for the Vector source.
  *
  *  @param mapSource The MapSource definition from the store.
@@ -186,48 +221,21 @@ function defineSource(mapSource) {
  */
 export function createLayer(mapSource) {
     const source = new VectorSource(defineSource(mapSource));
+
+    const layer = new VectorLayer(opts);
+
+    // get the transforms for the layer
+    if(mapSource.transforms) {
+        source.on('addfeature', function(evt) {
+            const f = evt.feature;
+            f.setProperties(util.transformProperties(mapSource.transforms, f.getProperties()));
+        });
+    }
+
     const opts = {
-        source
+        source,
+        style: defineStyle(mapSource)
     };
-
-    // with vector layers each sub-layer is a style grouping
-    // in defineSource, only the FIRST layer's name is used
-    // as the WFS type name.
-    const layers = [];
-    for(const layer of mapSource.layers) {
-        const layer_def = {
-            id: layer.name,
-            // source is a contant that is used to dummy up
-            //  the Mapbox styles
-            source: 'dummy-source',
-            paint: layer.style,
-        };
-
-        // check to see if there is a filter
-        //  set on the layer.  This uses the Mapbox GL/JS
-        //  filters.
-        if(layer.filter !== null) {
-            layer_def.filter = layer.filter;
-        }
-
-        layers.push(layer_def);
-    }
-
-    // If there are any styles defined
-    //  then use them to style the layer.
-    // Otherwise this will use the built-in OL styles.
-    if(layers.length > 0) {
-        opts.style = getStyleFunction({
-            'version': 8,
-            'layers': layers,
-            'dummy-source': [
-                {
-                    'type': 'vector'
-                }
-            ]
-        }, 'dummy-source');
-    }
-
     return new VectorLayer(opts);
 }
 
@@ -259,7 +267,10 @@ export function updateLayer(map, layer, mapSource) {
 
             // update the version number
             layer.set('featuresVersion', mapSource.layers[0].featuresVersion);
-
         }
     }
+
+    // update the style effectively turns "layers"
+    // on and off on vector layers.
+    layer.setStyle(defineStyle(mapSource));
 }
