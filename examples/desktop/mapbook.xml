@@ -340,23 +340,26 @@
 
     <map-source name="openstreetmap" type="xyz">
 		<layer name="osm_mapnik">
-            <legend type="html"><![CDATA[
-            &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
-            <br><br>
-            ]]></legend>
-        </layer>
+			<legend type="html"><![CDATA[
+			&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
+			<br><br>
+			]]></legend>
+		</layer>
 		<url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<param name="attribution" value="Data and tiles by OpenStreetMap contributors"/>
 	</map-source>
 
 	<map-source name="wmflabs" type="xyz">
-		<layer name="osm_black_n_white" />
+		<layer name="osm_black_n_white">
+			<legend type="html"><![CDATA[
+			Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
+			<br><br>
+			]]></legend>
+		</layer>
 		<url>http://a.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
 		<url>http://b.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
 		<url>http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-		<param name="attribution" value="Data by OpenStreetMap contributors, Tiles by Wikimedia Foundation Labs"/>
 	</map-source>
 
 <!--	<map-source name="thunderforest" type="xyz">
