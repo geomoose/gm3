@@ -123,7 +123,20 @@
 
 	<map-source name="pipelines" type="mapserver" title="Pipelines">
 		<file>./demo/pipelines/pipelines.map</file>
-		<layer name="pipelines" status="off"/>
+		<layer name="pipelines" status="off">
+            <template name="identify"><![CDATA[
+            <div>
+                Pipeline<br>
+                <div>
+                    <b>Name:</b> {{ properties.name }}
+                </div>
+                <div>
+                    <b>Owner:</b> {{ properties.owner }}
+                </div>
+            </div>
+            <br>
+            ]]></template>
+        </layer>
 		<param name="FORMAT" value="image/png"/>
 	</map-source>
 
