@@ -247,7 +247,7 @@ export function updateLayer(map, layer, mapSource) {
         // is stored in mapSource.features
         const layer_version = layer.get('featuresVersion');
         // check to see if there was an update to the features
-        if(layer_version !== mapSource.layers[0].featuresVersion) {
+        if(layer_version !== mapSource.featuresVersion) {
             // this is a bit heavy-handed strategy.
             const source = layer.getSource();
             // clear the layer without setting off events.
@@ -261,12 +261,12 @@ export function updateLayer(map, layer, mapSource) {
             });
             // bring in the new features.
             const features = output_format.readFeatures({
-                type: 'FeatureCollection', features: mapSource.layers[0].features
+                type: 'FeatureCollection', features: mapSource.features
             });
             source.addFeatures(features);
 
             // update the version number
-            layer.set('featuresVersion', mapSource.layers[0].featuresVersion);
+            layer.set('featuresVersion', mapSource.featuresVersion);
         }
     }
 

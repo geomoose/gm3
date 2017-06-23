@@ -484,16 +484,14 @@ class Application {
      */
     clearFeatures(path) {
         const ms_name = util.getMapSourceName(path);
-        const layer_name = util.getLayerName(path);
-        this.store.dispatch(mapSourceActions.clearFeatures(ms_name, layer_name));
+        this.store.dispatch(mapSourceActions.clearFeatures(ms_name));
     }
 
     /** Add features to a vector layer.
      */
     addFeatures(path, features) {
         const ms_name = util.getMapSourceName(path);
-        const layer_name = util.getLayerName(path);
-        this.store.dispatch(mapSourceActions.addFeatures(ms_name, layer_name, features));
+        this.store.dispatch(mapSourceActions.addFeatures(ms_name, features));
     }
 
     /** Removes features from a query.
@@ -508,16 +506,14 @@ class Application {
      */
     removeFeatures(path, filter) {
         const ms_name = util.getMapSourceName(path);
-        const layer_name = util.getLayerName(path);
-        this.store.dispatch(mapSourceActions.removeFeatures(ms_name, layer_name, filter));
+        this.store.dispatch(mapSourceActions.removeFeatures(ms_name, filter));
     }
 
     /** Change the features on a vectory layer with a filter.
      */
     changeFeatures(path, filter, properties) {
         const ms_name = util.getMapSourceName(path);
-        const layer_name = util.getLayerName(path);
-        this.store.dispatch(mapSourceActions.changeFeatures(ms_name, layer_name, filter, properties));
+        this.store.dispatch(mapSourceActions.changeFeatures(ms_name, filter, properties));
     }
 
     /* Shorthand for manipulating result features.

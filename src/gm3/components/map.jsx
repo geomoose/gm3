@@ -712,7 +712,7 @@ class Map extends Component {
             // get the features, aftre applying the query filter
             const features = util.matchFeatures(query.results[layer_path], query.filter);
             // render only those features.
-            this.props.store.dispatch(mapSourceActions.addFeatures('results', 'results', features));
+            this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
         } else {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }
@@ -819,11 +819,11 @@ class Map extends Component {
         this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
 
         this.props.store.dispatch(
-            mapSourceActions.clearFeatures('selection', 'selection')
+            mapSourceActions.clearFeatures('selection')
         );
 
         this.props.store.dispatch(
-            mapSourceActions.addFeatures('selection', 'selection', [json_feature])
+            mapSourceActions.addFeatures('selection', [json_feature])
         );
 
     }
@@ -1060,7 +1060,7 @@ class Map extends Component {
                     const fid = evt.selected[0].getProperties()[id_prop];
                     // send the remove feature event to remove it.
                     this.props.store.dispatch(
-                        mapSourceActions.removeFeature(map_source_name, layer_name, fid)
+                        mapSourceActions.removeFeature(map_source_name, fid)
                     );
                     // clear the selected features from the tool.
                     this.drawTool.getFeatures().clear();
@@ -1086,7 +1086,7 @@ class Map extends Component {
 
                             if(id) {
                                 this.props.store.dispatch(
-                                    mapSourceActions.modifyFeatureGeometry(map_source_name, layer_name, id, geometry)
+                                    mapSourceActions.modifyFeatureGeometry(map_source_name, id, geometry)
                                 );
                             }
                         }
@@ -1117,7 +1117,7 @@ class Map extends Component {
                         let json_feature = geojson.writeFeatureObject(evt.feature);
 
                         this.props.store.dispatch(mapSourceActions.addFeatures(
-                                                     map_source_name, layer_name, [json_feature]));
+                                                     map_source_name, [json_feature]));
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;

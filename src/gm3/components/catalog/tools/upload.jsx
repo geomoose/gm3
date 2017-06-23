@@ -117,7 +117,7 @@ class UploadModal extends Modal {
                         let src = self.props.layer.src[0];
                         // kick off the event
                         self.props.store.dispatch(msActions.addFeatures(
-                            src.mapSourceName, src.layerName, collection.features));
+                            src.mapSourceName, collection.features));
 
                         // TODO: Notify the user that n-number of features
                         //       were added to the layer.

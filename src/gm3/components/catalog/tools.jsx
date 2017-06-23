@@ -77,7 +77,7 @@ class ClearDialog extends ModalDialog {
         if(status === 'clear') {
             let src = this.props.layer.src[0];
             this.props.store.dispatch(
-                msActions.clearFeatures(src.mapSourceName, src.layerName));
+                msActions.clearFeatures(src.mapSourceName));
         }
         this.setState({open: false});
     }

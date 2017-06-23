@@ -530,50 +530,50 @@ export function setRefresh(mapSourceName, refreshSeconds) {
     }
 }
 
-export function addFeatures(mapSourceName, layerName, features) {
+export function addFeatures(mapSourceName, features) {
     return {
         type: MAPSOURCE.ADD_FEATURES,
-        mapSourceName, layerName, features
+        mapSourceName, features
     };
 }
 
-export function clearFeatures(mapSourceName, layerName) {
+export function clearFeatures(mapSourceName) {
     return {
         type: MAPSOURCE.CLEAR_FEATURES,
-        mapSourceName, layerName
+        mapSourceName
     };
 }
 
 
-export function removeFeatures(mapSourceName, layerName, filter) {
+export function removeFeatures(mapSourceName, filter) {
     return {
         type: MAPSOURCE.REMOVE_FEATURES,
-        mapSourceName, layerName, filter
+        mapSourceName, filter
     };
 }
 
 /* Remove a specific feature from the layer.
  */
-export function removeFeature(mapSourceName, layerName, id) {
+export function removeFeature(mapSourceName, id) {
     return {
         type: MAPSOURCE.REMOVE_FEATURE,
-        mapSourceName, layerName, id
+        mapSourceName, id
     };
 }
 
 /* Modify a feature's geomtery
  */
-export function modifyFeatureGeometry(mapSourceName, layerName, id, geometry) {
+export function modifyFeatureGeometry(mapSourceName, id, geometry) {
     return {
         type: MAPSOURCE.MODIFY_GEOMETRY,
-        mapSourceName, layerName, id, geometry
+        mapSourceName, id, geometry
     };
 }
 
-export function changeFeatures(mapSourceName, layerName, filter, properties) {
+export function changeFeatures(mapSourceName, filter, properties) {
     return {
         type: MAPSOURCE.CHANGE_FEATURES,
-        mapSourceName, layerName, filter, properties
+        mapSourceName, filter, properties
     };
 }
 
