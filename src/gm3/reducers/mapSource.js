@@ -166,7 +166,11 @@ export default function mapSource(state = [], action) {
         case MAPSOURCE.SET_TEMPLATE:
             return setLayerAttribute(state, action);
         case MAPSOURCE.ADD:
-            new_elem[action.mapSource.name] = action.mapSource;
+            new_elem[action.mapSource.name] = Object.assign({
+                params: {},
+                printable: true,
+                queryable: false
+            }, action.mapSource);
             return Object.assign({}, state, new_elem);
         case MAPSOURCE.SET_Z:
             const new_z_ms = {};
