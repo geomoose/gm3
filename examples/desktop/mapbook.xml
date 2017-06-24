@@ -200,6 +200,7 @@
 		<url>https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
 		<layer name="NatGeo_World_Map"/>
 		<param name="FORMAT" value="png"/>
+        <param name="cross-origin" value="anonymous"/>
 	</map-source>
 
     <map-source name="ags-vector-dc16" type="ags-vector">

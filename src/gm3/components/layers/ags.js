@@ -33,7 +33,13 @@ import ArcRestSource from 'ol/source/tilearcgisrest';
  *
  */
 function defineSource(mapSource) {
+    let cx_origin = null;
+    if(mapSource.params['cross-origin']) {
+        cx_origin = mapSource.params['cross-origin'];
+    }
+
     return {
+        crossOrigin: cx_origin,
         url: mapSource.urls[0]
     }
 }
