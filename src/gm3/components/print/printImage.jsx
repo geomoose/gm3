@@ -55,7 +55,11 @@ class PrintImage extends Component {
             if(canvas.length > 0) {
                 // other options:
                 // canvas.toDataURL('image/jpeg', quality)
-                return canvas[0].toDataURL('image/png');
+                try {
+                    return canvas[0].toDataURL('image/png');
+                } catch(error) {
+                    return 'err';
+                }
             }
         }
         return '';

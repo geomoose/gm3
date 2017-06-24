@@ -51,8 +51,25 @@ class PrintPreviewImage extends Component {
             width: '100%'
         };
 
-        if(this.props.print.printData) {
-            return (<img style={image_style} src={ this.props.print.printData }/>);
+        const print_data = this.props.print.printData;
+
+        if(print_data) {
+            if(print_data.substring(0, 3) === 'err') {
+                return (<div className='error-message'>
+                    There was an error generating the print image.<br/>
+                    This is likely due to a cross-origin/CORS error with a map-source
+                    which is being served from an external server. Check:
+                    <ol>
+                     <li>The server supports cross-origin requests.</li>
+                     <li>That the cross-origin param is set in the mapbook.</li>
+                     <li>If the server does not support cross-origin requests, set the map-source's printable
+                         attribute to false.</li>
+                    </ol>
+                </div>);
+            } else {
+                return (<img style={image_style} src={print_data}/>);
+            }
+
         }
         return false;
     }
