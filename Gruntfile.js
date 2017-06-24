@@ -125,16 +125,15 @@ module.exports = function(grunt) {
 
         'webpack-dev-server': {
             options: {
-                webpack: webpackConfig,
-                publicPath: "./"
+                webpack: webpackConfig
             },
-            start: Object.assign({}, webpackConfig.devServer)
+            start: Object.assign({keepAlive: true}, webpackConfig.devServer)
         }
     });
 
     grunt.task.registerTask('lint', ['lintless', 'eslint']);
 
-    grunt.task.registerTask('serve', ['webpack-dev-server:start', 'watch']);
+    grunt.task.registerTask('serve', ['webpack-dev-server:start']);
 
     // update the css and fonts.
     grunt.task.registerTask('build-css', ['less:build', 'copy:fonts']);
