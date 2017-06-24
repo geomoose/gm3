@@ -165,6 +165,8 @@ export function addFromXml(xml, config) {
         opacity: xml.getAttribute('opacity'),
         zIndex: xml.getAttribute('z-index'),
         queryable: util.parseBoolean(xml.getAttribute('queryable'), true),
+        // assume layers are printable
+        printable: util.parseBoolean(xml.getAttribute('printable'), true),
         refresh: null,
         layers: [],
         params: {}
@@ -401,12 +403,15 @@ function isMapSourceActive(mapSource) {
 /** Get the list of all map-sources which have a
  *  layer that is on.
  */
-export function getActiveMapSources(store) {
+export function getActiveMapSources(store, onlyPrintable = false) {
     let map_sources = store.getState().mapSources;
     let active = [];
+    const all_maps = !onlyPrintable;
     for(let ms in map_sources) {
         if(isMapSourceActive(map_sources[ms])) {
-            active.push(ms);
+            if(all_maps || map_sources[ms].printable) {
+                active.push(ms);
+            }
         }
     }
     return active;

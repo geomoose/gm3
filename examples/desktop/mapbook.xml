@@ -361,18 +361,18 @@
 		<url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 		<url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+
+        <param name="cross-origin" value="anonymous"/>
 	</map-source>
 
-	<map-source name="wmflabs" type="xyz">
+	<map-source name="wmflabs" type="xyz" printable="false">
 		<layer name="osm_black_n_white">
 			<legend type="html"><![CDATA[
 			Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
 			<br><br>
 			]]></legend>
 		</layer>
-		<url>http://a.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-		<url>http://b.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-		<url>http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
+		<url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
 	</map-source>
 
 <!--	<map-source name="thunderforest" type="xyz">
@@ -455,8 +455,11 @@
 			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <!-- These layres are commented out until a user enabled bing
+              -  with an appropriate key.
 			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
+            -->
 		</group>
 	</catalog>
 
