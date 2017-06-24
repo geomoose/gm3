@@ -2,4 +2,4 @@
 
 These are intended to be quick helpers for enhancing a GeoMoose application.
 
-* [How-to add a disclaimer](./disclaimer.html)
+* [How-to add a disclaimer](./disclaimer.md)
