@@ -168,7 +168,7 @@ export class UploadTool extends Component {
         let tip = 'Add features from file';
         return (
             <span>
-                <i className='upload tool' onClick={this.showModal} title={tip}>
+                <i className='upload icon' onClick={this.showModal} title={tip}>
                     <input ref='fileInput' className='hide' type='file'/>
                 </i>
                 <UploadModal store={this.props.store} layer={this.props.layer} ref='upload_modal' />
