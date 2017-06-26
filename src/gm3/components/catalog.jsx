@@ -318,7 +318,7 @@ export class Catalog extends Component {
 
         return (
             <div key={group.id} className={classes}>
-                <div onClick={toggle} className="group-label"><i className={'folder icon '+is_open}></i>{group.label}</div>
+                <div onClick={toggle} className="group-label"><i className={'folder icon ' + is_open}></i>{group.label}</div>
                 <div className="children">
                 {group.children.map(this.renderTreeNode)}
                 </div>
