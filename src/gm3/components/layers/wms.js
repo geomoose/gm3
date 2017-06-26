@@ -46,7 +46,10 @@ function defineSource(mapSource) {
         url: mapSource.urls[0],
         // This is a carry over from previous generations behaviour.
         ratio: 1.0,
-        params: Object.assign({'LAYERS': layers.join(',')}, mapSource.params),
+        params: Object.assign({
+            'VERSION': '1.1.0',
+            'LAYERS': layers.join(',')
+        }, mapSource.params),
         serverType: mapSource.serverType
     }
 }

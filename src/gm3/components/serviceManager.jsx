@@ -26,7 +26,7 @@ import React, {Component, PropTypes } from 'react';
 
 import { connect } from 'react-redux';
 
-import { removeQuery, createQuery, changeTool, renderedResultsForQuery} from '../actions/map';
+import { removeQuery, createQuery, changeTool, renderedResultsForQuery, zoomToExtent } from '../actions/map';
 
 import { startService, finishService } from '../actions/service';
 
@@ -200,6 +200,38 @@ class ServiceManager extends Component {
         this.props.store.dispatch(removeQuery(queryId));
     }
 
+    /** Get the extent of a query's results.
+     *  All features must have a boundedBy property.
+     */
+    getExtentForQuery(results) {
+        let extent = null;
+
+        for(const path in results) {
+            const features = results[path];
+            if(features.length > 0) {
+                if(extent === null) {
+                    extent = features[0].properties.boundedBy.slice();
+                }
+                for(let i = 1, ii = features.length; i < ii; i++) {
+                    const e = features[i].properties.boundedBy;
+                    extent[0] = Math.min(extent[0], e[0]);
+                    extent[1] = Math.min(extent[1], e[1]);
+                    extent[2] = Math.max(extent[2], e[2]);
+                    extent[3] = Math.max(extent[3], e[3]);
+                }
+            }
+        }
+        return extent;
+    }
+
+    zoomToResults(queryId) {
+        const query = this.props.queries[queryId];
+        const extent = this.getExtentForQuery(query.results);
+
+        // results are normalized to 4326 on injest.
+        this.props.dispatch(zoomToExtent(extent, 'EPSG:4326'));
+    }
+
 
     /** Render queries as they are coming in.
      *
@@ -216,6 +248,31 @@ class ServiceManager extends Component {
             service_title = this.props.services[query.service].title + ' Results';
         }
 
+        let layer_count = 0, feature_count = 0;
+        for(const path in query.results) {
+            layer_count += 1;
+            feature_count += query.results[path].length;
+        }
+
+        const info_header = (
+           <div className='results-info'>
+                <div className='results-info-item features-count'>
+                    <div className="label">Features</div>
+                    <div className="value">{ feature_count }</div>
+                </div>
+
+                <div className='results-info-item layers-count'>
+                    <div className="label">Layers</div>
+                    <div className="value">{ layer_count }</div>
+                </div>
+
+                <div className='results-info-item zoomto'>
+                    <div className="label">Zoom to results</div>
+                    <div className="value icon zoomto" onClick={() => { this.zoomToResults(queryId); }}></div>
+                </div>
+            </div>
+        );
+
         return (
             <div key={queryId}>
                 <div className='results-header'>
@@ -225,6 +282,7 @@ class ServiceManager extends Component {
                     </div>
                 </div>
                 <div className='results-query-id'>{ queryId }</div>
+                { info_header }
                 <div dangerouslySetInnerHTML={this.renderQueryResults(queryId, query)}/>
             </div>
         );
