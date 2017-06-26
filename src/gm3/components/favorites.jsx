@@ -61,6 +61,11 @@ export class FavoriteLayers extends Catalog {
 
         return (
             <div className="catalog favorites flat">
+                <div className="info-box">
+                This tab lists all layers marked as "Favorites".  Favorite layers
+                can be selected by clicking the <i className="icon favorite"></i> icon
+                next to the layer name.
+                </div>
                 { favorites }
             </div>
         );

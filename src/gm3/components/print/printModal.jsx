@@ -40,6 +40,7 @@ import Modal from '../modal';
 import PrintImage from './printImage';
 import PrintPreviewImage from './printPreviewImage';
 
+import { getActiveMapSources } from '../../actions/mapSource';
 import { printed } from '../../actions/print';
 
 import DefaultLayouts from './printLayouts';
@@ -295,8 +296,29 @@ export default class PrintModal extends Modal {
             top: 0, left: 0
         };
 
+        // get the number of all map-sources.
+        const all_ms = getActiveMapSources(this.props.store).length;
+        // not get the number of printable map-sources.
+        const printable_ms = getActiveMapSources(this.props.store, true).length;
+
+        // if there are fewer printable map-sources than there
+        //  are active map-sources then inform the user they will lose some
+        //  layers in the print.
+        let print_warning = false;
+        if(printable_ms < all_ms) {
+            print_warning = (
+                <div className='info-box'>
+                Some of the map layers cannot be printed. The map image
+                in the resulting PDF may differ from what is seen in the
+                map viewer.
+                </div>
+            );
+        }
+
         return (
             <div>
+                {print_warning}
+
                 <p>
                     <label>Map title:</label>
                     <input ref='map_title' placeholder="Map title"/>
