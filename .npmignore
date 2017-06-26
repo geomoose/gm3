@@ -32,3 +32,7 @@ geomoose*.tgz
 # Results of building
 # Note: this should be ignored by git but by not npm
 # dist/
+
+# Don't package useless source map (the source URLs are all webpack relative
+# which can't resolve to anything in production.)
+dist/geomoose.min.js.map
