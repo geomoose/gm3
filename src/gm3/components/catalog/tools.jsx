@@ -97,7 +97,7 @@ export class ClearTool extends Tool {
     constructor() {
         super();
         this.tip = 'Clear all features from layer';
-        this.iconClass = 'clear';
+        this.iconClass = 'icon clear';
     }
 
     onClick() {

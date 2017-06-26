@@ -338,7 +338,7 @@ class ColumnFilter extends Component {
         return (
             <span>
                 <i title={ filter_title}
-                   onClick={ () => { this.showFilterDialog() } } className="results-filter-icon"></i>
+                   onClick={ () => { this.showFilterDialog() } } className="filter icon"></i>
                 { modal }
             </span>
         );
@@ -392,7 +392,7 @@ class Grid extends Component {
 
         for(let column_def of headerConf) {
             let sort_tool = null;
-            let sort_classes = 'results-sort-icon';
+            let sort_classes = 'icon sort';
             let sort_title = 'Click to sort';
 
             if(column_def.sortAs) {
@@ -553,11 +553,11 @@ class Grid extends Component {
                     <button onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
                       className={'tool download'}
                       title="Download results as CSV">
-                        <span className='icon'></span>
+                        <i className="icon download"></i>
                     </button>
                     <button onClick={ toggle_grid } className={'tool ' + min_btn_class}
                       title='Min/Maximize Grid'>
-                        <span className='icon'></span>
+                        <i className={'icon ' + min_btn_class}></i>
                     </button>
                 </div>
                 <div className={'grid-display ' + grid_class}>

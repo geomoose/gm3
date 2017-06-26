@@ -278,7 +278,7 @@ class ServiceManager extends Component {
                 <div className='results-header'>
                     { service_title }
                     <div className='results-tools'>
-                        <i className='results-remove-icon' onClick={() => { this.removeQuery(queryId); }}></i>
+                        <i className='icon clear' onClick={() => { this.removeQuery(queryId); }}></i>
                     </div>
                 </div>
                 <div className='results-query-id'>{ queryId }</div>

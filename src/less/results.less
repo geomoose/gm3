@@ -82,17 +82,6 @@
         float: right;
     }
 
-    .results-remove-icon {
-        .fa;
-        cursor: pointer;
-    }
-
-    .results-remove-icon {
-        &:before {
-            content: @fa-var-trash;
-        }
-    }
-
     .results-info {
         display: flex;
 
@@ -120,30 +109,3 @@
     }
 }
 
-.results-sort-icon, .results-filter-icon {
-    .fa;
-    cursor: pointer;
-
-    &:before {
-        content: @fa-var-sort;
-    }
-}
-
-.results-sort-icon.asc {
-    &:before {
-        content: @fa-var-sort-amount-asc;
-    }
-}
-
-
-.results-sort-icon.desc {
-    &:before {
-        content: @fa-var-sort-amount-desc;
-    }
-}
-
-.results-filter-icon {
-    &:before {
-        content: @fa-var-filter;
-    }
-}
