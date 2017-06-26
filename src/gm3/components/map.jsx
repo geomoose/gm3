@@ -723,7 +723,8 @@ class Map extends Component {
      */
     refreshMapSources() {
         // get the list of current active map-sources
-        let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store);
+        const print_only = (this.props.printOnly === true);
+        let active_map_sources = mapSourceActions.getActiveMapSources(this.props.store, print_only);
 
         // annoying O(n^2) iteration to see if the mapsource needs
         //  to be turned off.
