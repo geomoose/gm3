@@ -115,44 +115,6 @@ describe('map compnent tests', () => {
 
         });
 
-        it('adds a vector layer', () => {
-            // these are lifted directly from gm3.Application :)
-            store.dispatch(msActions.add({
-                name: 'results',
-                urls: [],
-                type: 'vector',
-                label: 'Results',
-                opacity: 1.0,
-                queryable: false,
-                refresh: null,
-                layers: [],
-                options: {
-                    'always-on': true,
-                },
-                params: {},
-                // stupid high z-index to ensure results are
-                //  on top of everything else.
-                zIndex: 200001,
-            }));
-            store.dispatch(msActions.addLayer('results', {
-                name: 'results',
-                on: true,
-                label: 'Results',
-                selectable: true,
-                style: {
-                    'circle-radius': 4,
-                    'circle-color': '#ffff00',
-                    'circle-stroke-color': '#ffff00',
-                    'line-color': '#ffff00',
-                    'line-width': 4,
-                    'fill-color': '#ffff00',
-                    'fill-opacity': 0.25,
-                    'line-opacity': 0.25,
-                },
-                filter: []
-            }));
-        });
-
         it('adds an XYZ layer', () => {
             store.dispatch(msActions.add({
                 name: 'osm',

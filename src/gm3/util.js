@@ -647,6 +647,27 @@ export function xhr(opts) {
 }
 
 
+export function transformProperties(transforms, properties) {
+    const new_properties = Object.assign({}, properties);
+
+    for(const prop in transforms) {
+        let value = properties[prop];
+        switch(transforms[prop]) {
+            case 'string':
+                value = '' + value;
+                break
+            case 'number':
+                value = parseFloat(value);
+                break;
+            default:
+                // do nothing on default.
+        }
+        new_properties[prop] = value;
+    }
+
+    return new_properties;
+}
+
 /* Convert the data type of feature properties.
  *
  * @param transforms Object of transforms to apply.
@@ -660,20 +681,7 @@ export function transformFeatures(transforms, features) {
     }
 
     for(const feature of features) {
-        for(const prop in transforms) {
-            let value = feature.properties[prop];
-            switch(transforms[prop]) {
-                case 'string':
-                    value = '' + value;
-                    break
-                case 'number':
-                    value = parseFloat(value);
-                    break;
-                default:
-                    // do nothing on default.
-            }
-            feature.properties[prop] = value;
-        }
+        feature.properties = transformProperties(transforms, feature.properties);
     }
 
     return features;

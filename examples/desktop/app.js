@@ -66,9 +66,9 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('search', SearchService);
     app.registerService('select', SelectService, {
         queryLayers: [
-            {value: 'vector-parcels/ms:parcels', label: 'Parcels'},
-            //{value: 'ags-vector-dc20/20', label: 'Dakota County Streets'},
-            {value: 'ags-vector-dc16/16', label: 'Dakota County Rail'}
+            {value: 'vector-parcels/parcels', label: 'Parcels'},
+            //{value: 'ags-vector-dc20/roads', label: 'Dakota County Streets'},
+            {value: 'ags-vector-dc16/railroads', label: 'Dakota County Rail'}
         ]
     });
 

@@ -167,6 +167,7 @@ export function addFromXml(xml, config) {
         queryable: util.parseBoolean(xml.getAttribute('queryable'), true),
         refresh: null,
         layers: [],
+        transforms: {},
         params: {}
     }
 
@@ -206,6 +207,13 @@ export function addFromXml(xml, config) {
         }
     }
 
+    // catalog the transforms for the layer
+    const transforms = xml.getElementsByTagName('transform');
+    for(let x = 0, xx = transforms.length; x < xx; x++) {
+        const transform = transforms[x];
+        map_source.transforms[transform.getAttribute('attribute')] =
+        transform.getAttribute('function');
+    }
 
     // mix in the params
     Object.assign(map_source.params, parseParams(xml));
@@ -227,7 +235,6 @@ export function addFromXml(xml, config) {
             legend: null,
             style: null,
             filter: null,
-            transforms: {},
         };
 
         // user defined legend.
@@ -271,16 +278,6 @@ export function addFromXml(xml, config) {
 
         }
 
-        // catalog the transforms for the layer
-        const transforms = layerXml.getElementsByTagName('transform');
-        for(let x = 0, xx = transforms.length; x < xx; x++) {
-            const transform = transforms[x];
-            layer.transforms[transform.getAttribute('attribute')] =
-            transform.getAttribute('function');
-        }
-
-
-
         // check to see if there are any style definitions
         let style = util.getTagContents(layerXml, 'style', false);
         if(style && style.length > 0) {
@@ -289,6 +286,18 @@ export function addFromXml(xml, config) {
                 layer.style = JSON.parse(style);
             } catch(err) {
                 console.error('There was an error parsing the style for: ', map_source.name);
+                console.error('Error details', err);
+            }
+        }
+
+        // check to see if there are any filter definitions
+        let filter = util.getTagContents(layerXml, 'filter', false);
+        if(filter && filter.length > 0) {
+            // convert to JSON
+            try {
+                layer.filter = JSON.parse(filter);
+            } catch(err) {
+                console.error('There was an error parsing the filter for: ', map_source.name);
                 console.error('Error details', err);
             }
         }
@@ -521,50 +530,50 @@ export function setRefresh(mapSourceName, refreshSeconds) {
     }
 }
 
-export function addFeatures(mapSourceName, layerName, features) {
+export function addFeatures(mapSourceName, features) {
     return {
         type: MAPSOURCE.ADD_FEATURES,
-        mapSourceName, layerName, features
+        mapSourceName, features
     };
 }
 
-export function clearFeatures(mapSourceName, layerName) {
+export function clearFeatures(mapSourceName) {
     return {
         type: MAPSOURCE.CLEAR_FEATURES,
-        mapSourceName, layerName
+        mapSourceName
     };
 }
 
 
-export function removeFeatures(mapSourceName, layerName, filter) {
+export function removeFeatures(mapSourceName, filter) {
     return {
         type: MAPSOURCE.REMOVE_FEATURES,
-        mapSourceName, layerName, filter
+        mapSourceName, filter
     };
 }
 
 /* Remove a specific feature from the layer.
  */
-export function removeFeature(mapSourceName, layerName, id) {
+export function removeFeature(mapSourceName, id) {
     return {
         type: MAPSOURCE.REMOVE_FEATURE,
-        mapSourceName, layerName, id
+        mapSourceName, id
     };
 }
 
 /* Modify a feature's geomtery
  */
-export function modifyFeatureGeometry(mapSourceName, layerName, id, geometry) {
+export function modifyFeatureGeometry(mapSourceName, id, geometry) {
     return {
         type: MAPSOURCE.MODIFY_GEOMETRY,
-        mapSourceName, layerName, id, geometry
+        mapSourceName, id, geometry
     };
 }
 
-export function changeFeatures(mapSourceName, layerName, filter, properties) {
+export function changeFeatures(mapSourceName, filter, properties) {
     return {
         type: MAPSOURCE.CHANGE_FEATURES,
-        mapSourceName, layerName, filter, properties
+        mapSourceName, filter, properties
     };
 }
 

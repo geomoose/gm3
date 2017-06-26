@@ -26,7 +26,23 @@
 	</map-source>
 
     <map-source name="vector-parcels" type="mapserver-wfs">
-        <layer name="ms:parcels" selectable="true" title="Parcels">
+        <file>./demo/parcels/parcels.map</file>
+        <param name="typename" value="ms:parcels"/>
+        <transform attribute="EMV_TOTAL" function="number"/>
+
+        <layer name="big-money">
+            <style><![CDATA[
+            {
+                "fill-color": "#ffa500"
+            }
+            ]]></style>
+            <filter><![CDATA[
+            [">", "EMV_TOTAL", 500000]
+            ]]></filter>
+
+        </layer>
+
+        <layer name="parcels" selectable="true" title="Parcels">
             <style><![CDATA[
             {
                 "line-color" : "#00A138",
@@ -95,9 +111,7 @@
             </tr>
             ]]></template>
 
-            <transform attribute="EMV_TOTAL" function="number"/>
         </layer>
-        <file>./demo/parcels/parcels.map</file>
 
     </map-source>
 
@@ -203,8 +217,8 @@
 	</map-source>
 
     <map-source name="ags-vector-dc16" type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
-        <layer name="16" selectable="true" title="Railroads">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/16</url>
+        <layer name="railroads" selectable="true" title="Railroads">
             <style><![CDATA[
             {
                 "line-color" : "#010138",
@@ -269,8 +283,8 @@
          once it is loaded.  Thus, it is not "in" the demo, but it is left here because it
          a good complex example and is a great stress test for the ags-vector driver. -->
     <!--map-source name="ags-vector-dc20" type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/</url>
-        <layer name="20" selectable="true" title="Streets">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/20</url>
+        <layer name="roads" selectable="true" title="Streets">
             <style><![CDATA[
             {
                 "line-color" : "#A1A138",
@@ -414,7 +428,7 @@
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" />
 
-		<layer title="Vector Parcels" src="vector-parcels/ms:parcels">
+		<layer title="Vector Parcels" src="vector-parcels/parcels">
             <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
         </layer>
 		<!--
@@ -423,17 +437,17 @@
 		<group title="Overlays">
 			<group title="County Layers" expand="false">
 
-				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" popups="true" refresh="10">
+				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
 					<metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
 					<!--
 					<legend>images/logo_mini.gif</legend>
 					-->
 				</layer>
-				<layer title="Parcel Points" src="parcels/parcels_points" popups="true" minscale="6000" maxscale="20000" status="off">
-				</layer>
+				<layer title="Parcel Points" src="parcels/parcels_points" minscale="6000" maxscale="20000" status="off"/>
+                <layer title="Expensive Parcels" src="vector-parcels/big-money"/>
 				<layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
-				<layer title="AGS Dakota County Rail" src="ags-vector-dc16/16"/>
-				<!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/20"/-->
+				<layer title="AGS Dakota County Rail" src="ags-vector-dc16/railroads"/>
+				<!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
 			</group>
 			<layer src="pipelines/pipelines"></layer>
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
