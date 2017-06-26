@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+@folder-color: #FFDC29;
+@refresh-icon-disabled-color: #82A984;
+@refresh-icon-enabled-color: #5DF265;
+
 .icon {
     font: normal normal normal 14px/1 mapskin;
     cursor: pointer;
@@ -165,4 +169,45 @@
     &:before {
         content: @fa-var-filter;
     }
+}
+
+.icon.favorite {
+    .fa;
+
+    color: @favorite-star-color;
+
+    &:before {
+        content: @fa-var-star;
+    }
+}
+
+.icon.favorite.not {
+    &:before {
+        content: @fa-var-star-o;
+    }
+}
+
+.icon.folder {
+    .fa;
+    color: @folder-color;
+    &:before {
+        content: @fa-var-folder;
+    }
+}
+
+.icon.folder.open {
+    &:before {
+        content: @fa-var-folder-open;
+    }
+}
+
+.icon.refresh {
+    color: @refresh-icon-disabled-color;
+    &:before {
+        content: @fa-var-refresh;
+    }
+}
+
+.icon.refresh.on {
+    color: @refresh-icon-enabled-color;
 }
