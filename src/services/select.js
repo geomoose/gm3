@@ -122,12 +122,16 @@ function SelectService(Application, options) {
         for(var i = 0, ii = query.layers.length; i < ii; i++) {
             // short-handing the item in the loop.
             var path = query.layers[i];
-                html += Application.renderTemplate(path, this.headerTemplate, query);
+
+            // add the header contents
+            html += Application.renderTemplate(path, this.headerTemplate, query);
 
             // check to see that the layer has results and features were returned.
             if(query.results[path] && !query.results[path].failed) {
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);
             }
+
+            // and footer contents.
             html += Application.renderTemplate(path, this.footerTemplate, query);
         }
 
