@@ -74,6 +74,7 @@ module.exports = {
         libraryTarget: 'umd'
     },
     devServer: {
+        publicPath: '/examples/geomoose/dist',
         contentBase: './',
         port: 4000,
         proxy: [
