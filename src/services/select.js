@@ -34,8 +34,14 @@ function SelectService(Application, options) {
     /** Title to show at the top of the results. */
     this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Select Results';
 
+    /** Header template for rendering before features. */
+    this.headerTemplate = options.headerTemplate ? options.headerTemplate : '@select-header';
+
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@select';
+
+    /** Footer template for rendering before features. */
+    this.footerTemplate = options.footerTemplate ? options.footerTemplate : '@select-footer';
 
     /** Name will be set by the application when the service is registered. */
     this.name = '';
@@ -110,16 +116,21 @@ function SelectService(Application, options) {
     this.resultsAsHtml = function(queryId, query) {
         // initialize empty html content.
         var html = '';
+
+
         // iterate through each layer that was queried by the service.
         for(var i = 0, ii = query.layers.length; i < ii; i++) {
             // short-handing the item in the loop.
             var path = query.layers[i];
+                html += Application.renderTemplate(path, this.headerTemplate, query);
 
             // check to see that the layer has results and features were returned.
             if(query.results[path] && !query.results[path].failed) {
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);
             }
+            html += Application.renderTemplate(path, this.footerTemplate, query);
         }
+
 
         // return the html for rendering.
         return html;
