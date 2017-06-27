@@ -84,6 +84,10 @@ describe('Catalog component tests', () => {
             on: false,
             label: 'Test 1',
             legend: false,
+            legend: {
+                type: 'img',
+                images: ['https://geomoose.org/_static/logo_2011.png',],
+            },
         }));
 
         const xml= `
