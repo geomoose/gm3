@@ -145,15 +145,16 @@
 		<layer name="pipelines" status="off">
             <template name="identify"><![CDATA[
             <div>
-                Pipeline<br>
-                <div>
-                    <b>Name:</b> {{ properties.name }}
+                <div class="feature-class pipelines">
+                Pipeline
                 </div>
-                <div>
-                    <b>Owner:</b> {{ properties.owner }}
+                <div class="item">
+                    <label>Name:</label> {{ properties.name }}
+                </div>
+                <div class="item">
+                    <label>Owner:</label> {{ properties.owner }}
                 </div>
             </div>
-            <br>
             ]]></template>
         </layer>
 		<param name="FORMAT" value="image/png"/>
