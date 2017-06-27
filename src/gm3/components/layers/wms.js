@@ -103,7 +103,7 @@ export function getLegend(mapSource, mapView, layerName) {
         // 'SCALE': TODO: get a scale hint from the map.
         'SERVICE': 'WMS',
         // TODO: Does this need to be passed in? Check by server-type?
-        'VERSION': 'e.1.1',
+        'VERSION': '1.1.1',
         'WIDTH': '250',
         'LAYER': layerName,
         'FORMAT': 'image/png',
