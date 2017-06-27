@@ -72,6 +72,11 @@ class VisibleLayers extends FavoriteLayers {
 
         return (
             <div className="catalog visble-layers flat">
+                <div className="info-box">
+                This tab lists all of the visible layers. Checking a layer
+                from the Catalog will cause the layer to appear here. Unchecking a
+                layer's checkbox will cause it to disappear from this list.
+                </div>
                 { no_layers_error }
                 { layer_objects }
             </div>

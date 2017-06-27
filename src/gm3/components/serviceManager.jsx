@@ -521,7 +521,7 @@ class ServiceManager extends Component {
             } else {
                 return (
                     <div className="service-manager">
-                        <div className="help">
+                        <div className="info-box">
                             Nothing available to view. Please click a service to start in the toolbar.
                         </div>
                     </div>
