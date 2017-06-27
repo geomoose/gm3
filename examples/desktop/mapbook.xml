@@ -9,18 +9,23 @@
             <style><![CDATA[
             {
                 "circle-radius": 4,
-                "circle-color": "#ff0000",
-                "circle-stroke-color": "#ff0000",
-                "line-color" : "#ff0000",
-                "line-width" : 4,
-                "fill-color" : "#ff0000",
-                "fill-opacity" : 0.25
+                "circle-color": "#fec44f",
+                "fill-color": "#fec44f",
+                "circle-stroke-color": "#d95f0e",
+                "line-color": "#d95f0e",
+                "line-width": 4,
+                "fill-opacity": 0.60,
+                "line-opacity": 0.80
             }
             ]]></style>
 
             <legend type="html"><![CDATA[
             The <b>Drawing and Markup</b> layer can be used to add user defined shapes
-            to the map.
+            to the map.<br>
+            <div style='padding-top: 3px; padding-bottom: 5px;'>
+                <div style='vertical-align: middle; display: inline-block; width: 2em; height: 1em; background-color: #fec44f; border: solid 2px #d95f0e;'></div>
+                <b>Drawing</b>
+            </div>
             ]]></legend>
         </layer>
 	</map-source>
