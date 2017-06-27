@@ -390,8 +390,6 @@ export function getVersion() {
  * @returns Array containing [minx,miny,maxx,maxy]
  */
 export function getFeaturesExtent(mapSource) {
-    let layer = mapSource.layers[0];
-
     let bounds = [null, null, null, null];
 
     let min = function(x, y) {
@@ -411,8 +409,8 @@ export function getFeaturesExtent(mapSource) {
         bounds[3] = max(bounds[3], y);
     };
 
-    if(layer.features) {
-        for(let feature of layer.features) {
+    if(mapSource.features) {
+        for(let feature of mapSource.features) {
             let geom = feature.geometry;
             if(geom.type === 'Point') {
                 update_bounds(geom.coordinates[0], geom.coordinates[1]);
