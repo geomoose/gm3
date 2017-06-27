@@ -47,7 +47,7 @@ function defineSource(mapSource) {
         // This is a carry over from previous generations behaviour.
         ratio: 1.0,
         params: Object.assign({
-            'VERSION': '1.1.0',
+            'VERSION': '1.1.1',
             'LAYERS': layers.join(',')
         }, mapSource.params),
         serverType: mapSource.serverType
@@ -103,7 +103,7 @@ export function getLegend(mapSource, mapView, layerName) {
         // 'SCALE': TODO: get a scale hint from the map.
         'SERVICE': 'WMS',
         // TODO: Does this need to be passed in? Check by server-type?
-        'VERSION': '1.1.0',
+        'VERSION': 'e.1.1',
         'WIDTH': '250',
         'LAYER': layerName,
         'FORMAT': 'image/png',
