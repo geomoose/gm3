@@ -429,6 +429,36 @@ class Application {
         return html_contents;
     }
 
+    /** Render a template from a layer.
+     *
+     *  WARNING! This does not check to ensure the template has been loaded.
+     *  Templates are loaded as a part of the query cycle.  A remote template
+     *  may not be fully hydrated if calling this function BEFORE the layer
+     *  has been queried against.
+     *
+     */
+    renderTemplate(path, template, params) {
+        if(template.substring(0, 1) === '@') {
+            let template_name = template.substring(1);
+            let layer = getLayerFromPath(this.store, path);
+            let layer_template = layer.templates[template_name];
+            let template_contents = '';
+
+            if(layer_template) {
+                if(layer_template.type === 'alias') {
+                    // TODO: Someone is likely to think it's funny to do multiple
+                    //       levels of aliasing, this should probably look through that
+                    //       possibility.
+                    template_contents = layer.templates[layer_template.alias].contents;
+                } else {
+                    template_contents = layer.templates[template_name].contents;
+                }
+                return Mark.up(template_contents, params, util.FORMAT_OPTIONS);
+            }
+        }
+        return '';
+    }
+
 
     /** Map the active map-source function to the application.
      *

@@ -54,7 +54,7 @@ function SearchService(Application, options) {
 
     /** Define the layer(s) to be searched. */
     this.searchLayers = options.searchLayers ? options.searchLayers : [
-        'vector-parcels/ms:parcels'
+        'vector-parcels/parcels'
     ];
 
     /** Field transfomation function. */
@@ -70,8 +70,8 @@ function SearchService(Application, options) {
         ];
     };
 
-    /** Define the highlight layer */
-    this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
+    /** Define the results layer */
+    this.resultsPath = options.resultsPath ? options.resultsPath : 'results/results';
 
     /** This function is called everytime a search is executed.
      *
@@ -151,10 +151,10 @@ function SearchService(Application, options) {
         }
 
         // when features have been returned, clear out the old features
-        //  and put the new features on the highlight layer.
+        //  and put the new features on the results layer.
         if(all_features.length > 0) {
-            Application.clearFeatures(this.highlightPath);
-            Application.addFeatures(this.highlightPath, all_features);
+            Application.clearFeatures(this.resultsPath);
+            Application.addFeatures(this.resultsPath, all_features);
         }
     }
 

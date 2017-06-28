@@ -31,7 +31,6 @@
 
 import React, {Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import Request from 'reqwest';
 
 import { connect } from 'react-redux';
 
@@ -168,7 +167,7 @@ class Map extends Component {
      *
      */
     wmsGetFeatureInfoQuery(queryId, selection, queryLayer) {
-        let projection = this.map.getView().getProjection();
+        let map_projection = this.map.getView().getProjection();
 
         let geojson = new GeoJSONFormat();
         let view = this.props.mapView;
@@ -181,8 +180,7 @@ class Map extends Component {
         let feature_type = selection.geometry.type;
 
         if(feature_type === 'Point') {
-            const q_geometry = (new olPoint(selection.geometry.coordinates)).transform(projection, 'EPSG:4326');
-            const coords = q_geometry.getCoordinates();
+            const coords = selection.geometry.coordinates;
             let src = this.olLayers[ms_name].getSource();
 
             // TODO: Allow the configuration to specify GML vs GeoJSON,
@@ -192,9 +190,9 @@ class Map extends Component {
                 'INFO_FORMAT': 'application/vnd.ogc.gml'
             };
 
-            let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, 'EPSG:4326', params);
+            let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
 
-            Request({
+            util.xhr({
                 url: info_url,
                 success: (response) => {
                     // not all WMS services play nice and will return the
@@ -203,13 +201,6 @@ class Map extends Component {
                         let gml_format = new WMSGetFeatureInfoFormat();
                         let features = gml_format.readFeatures(response.responseText);
                         let js_features = geojson.writeFeaturesObject(features).features;
-                        // the XY get swapped by openlayers, this fixes it.
-                        for(const feature of js_features) {
-                            const bbox = feature.properties.boundedBy
-                            feature.properties.boundedBy = [
-                                bbox[1], bbox[0], bbox[3], bbox[2]
-                            ];
-                        }
 
                         this.props.store.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -262,9 +253,7 @@ class Map extends Component {
      *
      */
     wfsGetFeatureQuery(queryId, query, queryLayer) {
-        // TODO: This should come from the store or the map.
-        //       ol3 makes a lot of web-mercator assumptions.
-        let projection = this.map.getView().getProjection();
+        let map_projection = this.map.getView().getProjection();
         let geom_field = 'geom';
 
         // get the map source
@@ -276,14 +265,11 @@ class Map extends Component {
         // the internal storage mechanism requires features
         //  returned from the query be stored in 4326 and then
         //  reprojected on render.
-        let query_projection = projection;
+        let query_projection = map_projection;
         if(map_source.wgs84Hack) {
             query_projection = new proj.get('EPSG:4326');
         }
-        const geojson_format = new GeoJSONFormat({
-            dataProjection: 'EPSG:4326',
-            featureProjection: query_projection
-        });
+        const geojson_format = new GeoJSONFormat();
 
         let view = this.props.mapView;
 
@@ -314,7 +300,7 @@ class Map extends Component {
             // convert the geojson geometry into a ol geometry.
             let ol_geom = (new GeoJSONFormat()).readGeometry(query.selection.geometry);
             // convert the geometry to the query projection
-            ol_geom.transform(projection, query_projection);
+            ol_geom.transform(map_projection, query_projection);
             // add the intersection filter to the filter stack.
             filters.push(ol_filters.intersects(geom_field, ol_geom));
         }
@@ -362,7 +348,7 @@ class Map extends Component {
 
         const map = this.map;
 
-        Request({
+        util.xhr({
             url: wfs_url,
             method: 'post',
             contentType: 'text/xml',
@@ -373,10 +359,10 @@ class Map extends Component {
                 if(response) {
                     let gml_format = new GML2Format();
 
-                    let features = gml_format.readFeatures(response);
-                    for(const feature of features) {
-                        feature.setGeometry(feature.getGeometry().transform(query_projection, projection));
-                    }
+                    let features = gml_format.readFeatures(response, {
+                        featureProjection: map_projection,
+                        dataProjection: query_projection
+                    });
 
                     // features to add
                     let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
@@ -411,9 +397,7 @@ class Map extends Component {
      *
      */
     agsFeatureQuery(queryId, query, queryLayer) {
-        // TODO: This should come from the store or the map.
-        //       ol3 makes a lot of web-mercator assumptions.
-        let projection = this.map.getView().getProjection();
+        let map_projection = this.map.getView().getProjection();
         let geom_field = 'geom';
 
         // get the map source
@@ -421,14 +405,6 @@ class Map extends Component {
         let layer_name = util.getLayerName(queryLayer);
 
         let map_source = this.props.mapSources[ms_name];
-
-        // the internal storage mechanism requires features
-        //  returned from the query be stored in 4326 and then
-        //  reprojected on render.
-        let query_projection = projection;
-        if(map_source.wgs84Hack) {
-            query_projection = new proj.get('EPSG:4326');
-        }
 
         let view = this.props.mapView;
 
@@ -499,8 +475,6 @@ class Map extends Component {
         if(query.selection && query.selection.geometry) {
             // make this an E**I geometry.
             let ol_geom = geojson_format.readGeometry(query.selection.geometry);
-            // convert the geometry to the query projection
-            ol_geom.transform(projection, query_projection);
 
             // translate the geometry to E**I-ish
             const geom_type_lookup = {

@@ -227,9 +227,7 @@ class ServiceManager extends Component {
     zoomToResults(queryId) {
         const query = this.props.queries[queryId];
         const extent = this.getExtentForQuery(query.results);
-
-        // results are normalized to 4326 on injest.
-        this.props.dispatch(zoomToExtent(extent, 'EPSG:4326'));
+        this.props.dispatch(zoomToExtent(extent));
     }
 
 

@@ -62,7 +62,7 @@
                     </div>
                     <div class="search-action">
                         <div style="padding: 2px">
-                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
                                 <i class="fa fa-search"></i>
                                 {{ properties.PIN }}
                             </a>
@@ -70,7 +70,13 @@
                     </div>
                 </div>
             ]]></template>
-            <template name="select" alias="search"/>
+
+            <template name="select-header"><![CDATA[
+            <div class="info">
+            Parcel selection results are shown in the results grid.
+            </div>
+            ]]></template>
+
             <template name="gridColumns"><![CDATA[
             [
                 {
@@ -104,7 +110,7 @@
               onmouseleave="app.clearHighlight()"
             >
                 <td>
-                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:4326')" class="zoomto-link">
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
                     <i class="fa fa-search"></i>
                   </a>
                 </td>
