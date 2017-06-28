@@ -46,6 +46,7 @@ class CatalogLegend extends Component {
         const legend = getLegend(this.props.mapSources[src.mapSourceName], this.props.mapView, src.layerName);
 
         const key = 'legend_' + src.mapSourceName + '_' + src.layerName;
+        let legend_idx = 0;
 
         switch(legend.type) {
             case 'html':
@@ -53,8 +54,10 @@ class CatalogLegend extends Component {
                         dangerouslySetInnerHTML={this.htmlLegend(legend.html)} />);
             case 'img':
                 const img_tags = [];
+                legend_idx = 0;
                 for(let img_src of legend.images) {
-                    img_tags.push((<img key={img_src} className="legend-image" src={img_src}/>));
+                    img_tags.push((<img key={key + legend_idx} className="legend-image" src={img_src}/>));
+                    legend_idx += 1;
                 }
                 return (<div key={key} className="legend-images"> { img_tags } </div>);
             case 'nolegend':

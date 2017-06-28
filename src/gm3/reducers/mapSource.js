@@ -159,6 +159,7 @@ export default function mapSource(state = [], action) {
             return setLayerAttribute(state, action);
         case MAPSOURCE.ADD:
             new_elem[action.mapSource.name] = Object.assign({
+                layers: [],
                 params: {},
                 printable: true,
                 queryable: false

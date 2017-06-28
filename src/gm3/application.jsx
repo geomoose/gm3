@@ -130,7 +130,6 @@ class Application {
             opacity: 1.0,
             queryable: false,
             refresh: null,
-            layers: [],
             options: {
                 'always-on': true,
             },
