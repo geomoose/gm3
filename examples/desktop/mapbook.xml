@@ -402,14 +402,6 @@
 		<url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
 	</map-source>
 
-<!--	<map-source name="thunderforest" type="xyz">
-		<layer name="osm_cycle_map" />
-		<url>http://a.tile.thunderforest.com/cycle/${z}/${x}/${y}.png</url>
-		<url>http://b.tile.thunderforest.com/cycle/${z}/${x}/${y}.png</url>
-		<url>http://c.tile.thunderforest.com/cycle/${z}/${x}/${y}.png</url>
-		<param name="attribution" value="Data by OpenStreetMap contributors, Tiles by Thunderforest"/>
-	</map-source> -->
-
 	<map-source name="usgs" type="mapserver">
 		<file>./demo/wms/wms_proxy.map</file>
 		<layer name="usgs_imagery"/>
@@ -477,11 +469,14 @@
 
 			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
 			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
-	<!--		<layer title="OpenStreetMap - Cycle Map" src="thunderforest/osm_cycle_map" legend="false" fade="true" unfade="true"/> -->
 
+            <!-- These layers can be *very* slow, they are left here
+              -  for demonstration purposes.
 			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
 			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+            -->
+
             <!-- These layres are commented out until a user enabled bing
               -  with an appropriate key.
 			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
