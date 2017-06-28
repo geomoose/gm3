@@ -187,6 +187,7 @@ class Map extends Component {
             // TODO: Allow the configuration to specify GML vs GeoJSON,
             //       but GeoMoose needs a real feature returned.
             let params = {
+                'FEATURE_COUNT': 1000,
                 'QUERY_LAYERS': util.getLayerName(queryLayer),
                 'INFO_FORMAT': 'application/vnd.ogc.gml'
             };
