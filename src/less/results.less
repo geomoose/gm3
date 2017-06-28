@@ -61,6 +61,9 @@
     }
 
     .results-query-id {
+        /* hiding this now that querying is more stable. */
+        display: none;
+
         font-style: italic;
         font-size: 10px;
         padding: 4px;
@@ -79,59 +82,29 @@
         float: right;
     }
 
-    .results-remove-icon {
-        .fa;
-        cursor: pointer;
-    }
+    .results-info {
+        display: flex;
 
-    .results-remove-icon {
-        &:before {
-            content: @fa-var-trash;
+        .results-info-item {
+            height: 3em;
+            width: 30%;
+
+            padding: .25em;
+            margin: 5px;
+            text-align: center;
+
+            border: solid 1px #ccc;
+
+            .label {
+                width: 100%;
+                font-size: .75em;
+            }
+
+            .value {
+                height: 2em;
+                font-size: 2em;
+            }
+
         }
     }
-}
-
-
-.results-sort-icon, .results-filter-icon {
-    .fa;
-    cursor: pointer;
-
-    &:before {
-        content: @fa-var-sort;
-    }
-}
-
-.results-sort-icon.asc {
-    &:before {
-        content: @fa-var-sort-amount-asc;
-    }
-}
-
-
-.results-sort-icon.desc {
-    &:before {
-        content: @fa-var-sort-amount-desc;
-    }
-}
-
-.results-filter-icon {
-    &:before {
-        content: @fa-var-filter;
-    }
-}
-
-.feature-class {
-    background-color: #6dbe45;
-    font-weight: bold;
-    margin-top: 3px;
-    padding: 2px;
-}
-
-.item {
-    padding: 1px;
-}
-
-.item label {
-    display: inline-block;
-    margin-top: 2px;
 }

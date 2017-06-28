@@ -244,14 +244,12 @@ export class Catalog extends Component {
 
         let layer_classes = ['layer'];
 
-        if(this.isFavoriteLayer(layer)) {
-            layer_classes.push('favorite');
+        let is_favorite = 'favorite icon';
+        if(!this.isFavoriteLayer(layer)) {
+            is_favorite += ' not';
         }
         if(layer.on) {
             layer_classes.push('on');
-        }
-        if(layer.refreshEnabled) {
-            layer_classes.push('refresh');
         }
 
         // TODO: Check layer for minscale/maxscale against
@@ -264,7 +262,8 @@ export class Catalog extends Component {
         //  with the ability to do auto-refresh.
         let refresh_tool = '';
         if(layer.refresh !== null && layer.refresh > 0) {
-            refresh_tool = (<i className="refresh-icon" onClick={toggleRefresh}/>);
+            const refresh_on = layer.refreshEnabled ? 'on' : '';
+            refresh_tool = (<i className={'refresh icon ' + refresh_on} onClick={toggleRefresh}/>);
         }
 
         let tools = this.getToolsForLayer(layer);
@@ -287,7 +286,7 @@ export class Catalog extends Component {
                     <input className="checkbox" type="checkbox"
                        onChange={doNothing} onClick={toggle} checked={is_on} />
 
-                    <i className="favorite-icon" onClick={toggleFavorite}/>
+                    <i className={ is_favorite } onClick={toggleFavorite}/>
                     <span onClick={toggle}>
                         {layer.label}
                     </span>
@@ -305,8 +304,10 @@ export class Catalog extends Component {
 
     renderGroup(group) {
         let classes = 'group';
+        let is_open = '';
         if(group.expand) {
             classes += ' expand';
+            is_open = 'open';
         } else {
             classes += ' collapse';
         }
@@ -317,7 +318,7 @@ export class Catalog extends Component {
 
         return (
             <div key={group.id} className={classes}>
-                <div onClick={toggle} className="group-label"><i className="group-icon"></i>{group.label}</div>
+                <div onClick={toggle} className="group-label"><i className={'folder icon ' + is_open}></i>{group.label}</div>
                 <div className="children">
                 {group.children.map(this.renderTreeNode)}
                 </div>

@@ -22,11 +22,7 @@
  * SOFTWARE.
  */
 
-@folder-color: #FFDC29;
 @favorite-star-color: #29B2FF;
-
-@refresh-icon-disabled-color: #82A984;
-@refresh-icon-enabled-color: #5DF265;
 
 .group {
 
@@ -96,169 +92,12 @@
         padding-left: (@checkbox-width + @checkbox-margin * 2);
     }
 
-    .favorite-icon, .refresh-icon {
-        .fa;
-        margin-right: 0.25em;
+    .favorite.icon,.refresh.icon {
         font-size: 110%;
-        cursor: pointer;
     }
 
-
-    .favorite-icon {
-        color: @favorite-star-color;
-
-        &:before {
-            content: @fa-var-star-o;
-        }
-    }
-
-    .refresh-icon {
-        display: none;
-
-        color: @refresh-icon-disabled-color;
-        margin-left: 0.25em;
-
-        &:before {
-            content: @fa-var-refresh;
-        }
-    }
-
-    .tool {
-        font: normal normal normal 14px/1 mapskin;
-        cursor: pointer;
-        margin-right: 0.25em;
-
-        &:before {
-            content: "\e031";
-        }
-    }
-
-    .tool.upload, .tool.clear, .tool.download, .tool.remove {
-        .fa;
-    }
-
-    .tool.upload {
-        &:before {
-            content: @fa-var-upload;
-        }
-    }
-
-    .tool.download {
-        &:before {
-            content: @fa-var-download;
-        }
-    }
-
-    .tool.clear {
-        &:before {
-            content: @fa-var-trash;
-        }
-    }
-
-    .tool.remove {
-        &:before {
-            content: @fa-var-minus-circle;
-        }
-    }
-
-    .tool.point,.tool.line,.tool.polygon,.tool.edit {
-    }
-
-    .tool.point {
-        &:before {
-            content: "\e01b";
-        }
-    }
-
-    .tool.polygon {
-        &:before {
-            content: "\e01d";
-        }
-    }
-
-
-    .tool.line {
-        &:before {
-            content: "\e01c";
-        }
-    }
-
-    .tool.modify {
-        &:before {
-            content: "\e09e";
-        }
-    }
-
-    .tool.zoomto {
-        &:before {
-            content: "\e008";
-        }
-    }
-
-    .tool.legend {
-        .fa;
-
-        &:before {
-            content: @fa-var-list-alt;
-        }
-    }
-
-    .tool.up {
-        .fa;
-
-        &:before {
-            content: @fa-var-arrow-up;
-        }
-    }
-
-    .tool.down {
-        .fa;
-
-        &:before {
-            content: @fa-var-arrow-down;
-        }
-    }
-
-    .tool.fade {
-        opacity: .50;
-    }
-
-    .tool.fade, .tool.unfade {
-        .fa;
-
-        &:before {
-            content: @fa-var-adjust;
-        }
-    }
-
-    .tool.metadata {
-        .fa;
-
-        &:before {
-            content: @fa-var-address-card-o;
-        }
-    }
-
-
-}
-
-.layer.favorite {
-    .favorite-icon {
-        &:before {
-            content: @fa-var-star;
-        }
-    }
-}
-
-.layer.refresh {
-    .refresh-icon {
-        color: @refresh-icon-enabled-color;
-    }
-}
-
-.layer.has-refresh {
-    .refresh-icon {
-        display: inline-block;
+    .refresh.icon {
+        margin-left: .25em;
     }
 }
 

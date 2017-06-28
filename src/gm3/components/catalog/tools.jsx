@@ -43,7 +43,7 @@ export class Tool extends Component {
 
         this.tip = 'Unset tooltop';
 
-        this.iconClass = 'tool';
+        this.iconClass = '';
     }
 
     onClick() {
@@ -51,7 +51,7 @@ export class Tool extends Component {
 
     render() {
         return (
-            <i className={this.iconClass} onClick={this.onClick} title={this.tip}></i>
+            <i className={'icon ' + this.iconClass} onClick={this.onClick} title={this.tip}></i>
         );
     }
 }
@@ -97,7 +97,7 @@ export class ClearTool extends Tool {
     constructor() {
         super();
         this.tip = 'Clear all features from layer';
-        this.iconClass = 'clear tool';
+        this.iconClass = 'icon clear';
     }
 
     onClick() {
@@ -129,7 +129,7 @@ export class DrawTool extends Tool {
             this.tip = 'Remove a feature from the layer';
         }
 
-        this.iconClass = props.drawType + ' tool';
+        this.iconClass = props.drawType;
         this.drawType = {
             'remove': 'Remove',
             'modify': 'Modify',
@@ -156,7 +156,7 @@ class dumb_ZoomToTool extends Tool {
     constructor() {
         super();
         this.tip = 'Zoom to layer extents.';
-        this.iconClass = 'zoomto tool';
+        this.iconClass = 'zoomto';
     }
 
     onClick() {
@@ -190,7 +190,7 @@ export class LegendToggle extends Tool {
     constructor(props) {
         super(props);
         this.tip = 'Toggle legend visibility.';
-        this.iconClass = 'legend tool';
+        this.iconClass = 'legend';
     }
 
     onClick() {
@@ -206,7 +206,7 @@ export class UpTool extends Tool {
     constructor() {
         super();
         this.tip = 'Move layer up in the order'
-        this.iconClass = 'up tool';
+        this.iconClass = 'up';
 
         this.direction = -1;
     }
@@ -246,7 +246,7 @@ export class DownTool extends UpTool {
     constructor() {
         super();
         this.tip = 'Move layer down in the order';
-        this.iconClass = 'down tool';
+        this.iconClass = 'down';
         this.direction = 1;
     }
 }
@@ -257,7 +257,7 @@ export class FadeTool extends Tool {
     constructor() {
         super();
         this.tip = 'Fade layer';
-        this.iconClass = 'fade tool';
+        this.iconClass = 'fade';
         this.direction = -.10;
     }
 
@@ -298,7 +298,7 @@ export class UnfadeTool extends FadeTool {
     constructor() {
         super();
         this.tip = 'Unfade layer';
-        this.iconClass = 'unfade tool';
+        this.iconClass = 'unfade';
         this.direction = .10;
     }
 }

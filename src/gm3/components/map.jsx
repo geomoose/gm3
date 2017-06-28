@@ -68,6 +68,8 @@ import olDrawInteraction from 'ol/interaction/draw';
 import olModifyInteraction from 'ol/interaction/modify';
 import olEventConditions from 'ol/events/condition';
 
+import olPoint from 'ol/geom/point';
+
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
@@ -166,9 +168,7 @@ class Map extends Component {
      *
      */
     wmsGetFeatureInfoQuery(queryId, selection, queryLayer) {
-        // TODO: This should come from the store or the map.
-        //       ol3 makes a lot of web-mercator assumptions.
-        let projection = 'EPSG:3857';
+        let projection = this.map.getView().getProjection();
 
         let geojson = new GeoJSONFormat();
         let view = this.props.mapView;
@@ -181,7 +181,8 @@ class Map extends Component {
         let feature_type = selection.geometry.type;
 
         if(feature_type === 'Point') {
-            let coords = selection.geometry.coordinates;
+            const q_geometry = (new olPoint(selection.geometry.coordinates)).transform(projection, 'EPSG:4326');
+            const coords = q_geometry.getCoordinates();
             let src = this.olLayers[ms_name].getSource();
 
             // TODO: Allow the configuration to specify GML vs GeoJSON,
@@ -191,7 +192,7 @@ class Map extends Component {
                 'INFO_FORMAT': 'application/vnd.ogc.gml'
             };
 
-            let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, projection, params);
+            let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, 'EPSG:4326', params);
 
             Request({
                 url: info_url,
@@ -202,6 +203,13 @@ class Map extends Component {
                         let gml_format = new WMSGetFeatureInfoFormat();
                         let features = gml_format.readFeatures(response.responseText);
                         let js_features = geojson.writeFeaturesObject(features).features;
+                        // the XY get swapped by openlayers, this fixes it.
+                        for(const feature of js_features) {
+                            const bbox = feature.properties.boundedBy
+                            feature.properties.boundedBy = [
+                                bbox[1], bbox[0], bbox[3], bbox[2]
+                            ];
+                        }
 
                         this.props.store.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, false, js_features)

@@ -164,7 +164,7 @@ export class DownloadTool extends Component {
         let tip = 'Download features to a file';
         return (
             <span>
-                <i className='download tool' onClick={this.showModal} title={tip}>
+                <i className='download icon' onClick={this.showModal} title={tip}>
                     <input ref='fileInput' className='hide' type='file'/>
                 </i>
                 <DownloadModal store={this.props.store} layer={this.props.layer} ref='download_modal' />
