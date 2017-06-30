@@ -57,7 +57,7 @@ export class ToolbarButton extends Component {
     render() {
         const tool = this.props.tool;
         return (
-            <button onClick={this.handleToolAction} key={tool.name} className={"tool " + tool.name}>
+            <button onClick={this.handleToolAction} key={tool.name} className={"tool " + tool.name} title={tool.label}>
                 <span className="icon"></span><span className="label">{tool.label}</span>
             </button>
         );
