@@ -95,35 +95,35 @@ test('getLayerName', () => {
 });
 
 test('formatUrlParameters', () => {
-    const params = {a:'a', b:'b'};
+    const params = {a: 'a', b: 'b'};
     expect(util.formatUrlParameters(params)).toBe('a=a&b=b');
 });
 
 test('getUtmZone', () => {
-    expect(util.getUtmZone([-93,45])).toBe('UTM15N');
+    expect(util.getUtmZone([-93, 45])).toBe('UTM15N');
 });
 
-test ('metersLengthToUnits', () => {
-    expect(util.metersLengthToUnits(1,'ft')).toBe(1/.3048);
-    expect(util.metersLengthToUnits(1,'mi')).toBe(1/1609.347);
-    expect(util.metersLengthToUnits(1,'ch')).toBe(1/20.11684);
-    expect(util.metersLengthToUnits(1,'km')).toBe(1/1000);
-    expect(util.metersLengthToUnits(1,'m')).toBe(1);
+test('metersLengthToUnits', () => {
+    expect(util.metersLengthToUnits(1, 'ft')).toBe(1 / .3048);
+    expect(util.metersLengthToUnits(1, 'mi')).toBe(1 / 1609.347);
+    expect(util.metersLengthToUnits(1, 'ch')).toBe(1 / 20.11684);
+    expect(util.metersLengthToUnits(1, 'km')).toBe(1 / 1000);
+    expect(util.metersLengthToUnits(1, 'm')).toBe(1);
 });
 
-test ('metersAreaToUnits', () => {
-    expect(util.metersAreaToUnits(1,'ft')).toBe(1/Math.pow(.3048,2));
+test('metersAreaToUnits', () => {
+    expect(util.metersAreaToUnits(1, 'ft')).toBe(1 / Math.pow(.3048, 2));
 });
 
-test ('convertArea', () => {
-    expect(util.convertArea(1,'m','ft')).toBe(1/Math.pow(.3048,2));
+test('convertArea', () => {
+    expect(util.convertArea(1, 'm', 'ft')).toBe(1 / Math.pow(.3048, 2));
 });
 
-test ('convertLength', () => {
-    expect(util.convertLength(1,'m','ft')).toBe(1/.3048);
-    expect(util.convertLength(1,'m','mi')).toBe(1/1609.347);
-    expect(util.convertLength(1,'m','ch')).toBe(1/20.11684);
-    expect(util.convertLength(1,'m','km')).toBe(1/1000);
-    expect(util.convertLength(1,'m','m')).toBe(1);
-    expect(util.convertLength(1,'yd','ft')).toBe(3);
+test('convertLength', () => {
+    expect(util.convertLength(1, 'm', 'ft')).toBe(1 / .3048);
+    expect(util.convertLength(1, 'm', 'mi')).toBe(1 / 1609.347);
+    expect(util.convertLength(1, 'm', 'ch')).toBe(1 / 20.11684);
+    expect(util.convertLength(1, 'm', 'km')).toBe(1 / 1000);
+    expect(util.convertLength(1, 'm', 'm')).toBe(1);
+    expect(util.convertLength(1, 'yd', 'ft')).toBe(3);
 });
