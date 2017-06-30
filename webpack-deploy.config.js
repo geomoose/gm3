@@ -34,7 +34,7 @@ module.exports = {
     devtool: 'source-map',
     entry: [
         'babel-polyfill',
-        './src/' 
+        './src/'
     ],
 
     module: {

@@ -493,7 +493,7 @@
 		<tool name="measure" title="Measure" type="service"/>
 		<tool name="print" title="Print" type="action"/>
 
-		<tool name="identify" title="Identify" type="service" service="identify"/>
+		<tool name="identify" title="Identify" type="service"/>
 
 		<tool name="select" title="Select Features" type="service"/>
 
