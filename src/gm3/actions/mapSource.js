@@ -508,9 +508,15 @@ export function getVisibleLayers(store) {
  *  These layers are a subset of visible layers.
  *
  */
-export function getQueryableLayers(store) {
+export function getQueryableLayers(store, filter) {
     const match_fn = function(ms, layer) {
-        return (isQueryable(ms, layer) && isVisible(ms, layer));
+        let template_filter_pass = true;
+        if(filter && filter.withTemplate) {
+            const tpl_name = filter.withTemplate;
+            const templates = layer.templates;
+            template_filter_pass = (templates && typeof templates[tpl_name] !== 'undefined');
+        }
+        return (template_filter_pass && isQueryable(ms, layer) && isVisible(ms, layer));
     }
     return matchLayers(store, match_fn);
 }

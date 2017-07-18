@@ -480,8 +480,8 @@ class Application {
      *
      *  @returns an array of layer paths.
      */
-    getQueryableLayers() {
-        return getQueryableLayers(this.store);
+    getQueryableLayers(filter) {
+        return getQueryableLayers(this.store, filter);
     }
 
     /** zoom to an extent

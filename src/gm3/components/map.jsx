@@ -193,31 +193,36 @@ class Map extends Component {
 
             let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
 
+            const fail_layer = () => {
+                // dispatch a message that the query has failed.
+                this.props.store.dispatch(
+                    // true for 'failed', empty array to prevent looping side-effects.
+                    mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                );
+            };
+
             util.xhr({
                 url: info_url,
-                success: (response) => {
-                    // not all WMS services play nice and will return the
-                    //  error message as a 200, so this still needs checked.
-                    if(response) {
-                        let gml_format = new WMSGetFeatureInfoFormat();
-                        let features = gml_format.readFeatures(response.responseText);
-                        let js_features = geojson.writeFeaturesObject(features).features;
+            }).then((response) => {
+                // not all WMS services play nice and will return the
+                //  error message as a 200, so this still needs checked.
+                if(response) {
+                    let gml_format = new WMSGetFeatureInfoFormat();
+                    let features = gml_format.readFeatures(response.responseText);
+                    let js_features = geojson.writeFeaturesObject(features).features;
 
-                        this.props.store.dispatch(
-                            mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                        );
-                    }
-                },
-                error: () => {
-                    // dispatch a message that the query has failed.
                     this.props.store.dispatch(
-                        // true for 'failed', empty array to prevent looping side-effects.
-                        mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                     );
-                },
-                complete: () => {
-                    this.checkQueryForCompleteness(queryId, queryLayer);
+                } else {
+                    fail_layer();
                 }
+            })
+            .fail((err, msg) => {
+                fail_layer();
+            })
+            .always(() => {
+                this.checkQueryForCompleteness(queryId, queryLayer);
             });
         }
     }
