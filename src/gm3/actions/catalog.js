@@ -85,7 +85,7 @@ function parseLayer(store, layerXml) {
     let new_layer = {
         id: layerXml.getAttribute('uuid'),
         label: layerXml.getAttribute('title'),
-        legend: true,
+        legend: util.parseBoolean(layerXml.getAttribute('show-legend'), true),
         src: [],
         favorite: false,
         refreshEnabled: false,
