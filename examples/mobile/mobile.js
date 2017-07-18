@@ -1,4 +1,4 @@
-/** Demo mobile application.  
+/** Demo mobile application.
  *
  */
 
@@ -46,6 +46,12 @@ app.uiUpdate = function(ui) {
 }
 
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
+    // set the default view.
+    app.setView({
+        center: [ -10370351.141856, 5550949.728470501 ],
+        zoom: 12
+    });
+
     app.registerService('identify', IdentifyService);
     app.registerAction('findme', FindMeAction);
 
@@ -56,7 +62,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     changeTab('map');
 
- 
+
     // setup the Find Me button to find the user and
     //  go there on the map.
     $('#findme-btn').on('click', function() {
