@@ -97,20 +97,23 @@ function OSMGeocoder(Application, options) {
                 // put the feature in map projection.
                 features = gm3.util.projectFeatures(features, 'EPSG:4326', map_proj);
 
-                // populate the reuslts
+                // populate the results
                 Application.dispatch({
                     id: queryId,
                     type: 'MAP_QUERY_RESULTS',
                     failed: false,
-                    // this is a bit of a cheat.
+                    // this is a bit of a cheat as there is no real 'geocoder' layer.
+                    // However, 'geocoder' is the path used to render the results.
                     layer: 'geocoder', features: features
                 });
-                // mark this as finished.
+
+                // mark the query as finished.
                 Application.dispatch({
                     id: queryId,
                     type: 'MAP_QUERY_FINISHED'
                 });
 
+                // remove features from the target_layer
                 Application.clearFeatures(target_layer);
 
                 if(features.length > 0) {
