@@ -8,7 +8,7 @@ on services.  Each section describes a type of field and provides an example.
 
 All inputs require a `type` and a `name` field. The `type` provides the specific
 control that needs to be rendered for the user and the `name` is how it will be
-referrered to in subsequent queries.
+referred to in subsequent queries.
 
 ## type: text
 Used to provide free-form text input from the user.
@@ -51,7 +51,7 @@ make that value useful.
 
 ## type: layers-list
 
-Provide a list of layers matching a set of critereon.
+Provide a list of layers matching a set of criterion.
 
 *Example, all layers with either a select or select-header template:*
 

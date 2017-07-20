@@ -88,12 +88,12 @@ Unlike an action, services require defining more members for them to function pr
 
 ### Writing a custom query
 
-The default behaviour for a service is to query the chosen layer(s) for features.
+The default behavior for a service is to query the chosen layer(s) for features.
 For example, if a layer is on a WFS-type map-source, GeoMoose will dispatch a WFS 
 GetFeatures query with the appropriate filters to get the relevant features
-back ot the user. However, there are time where this functionality is not desired.
+back to the user. However, there are time where this functionality is not desired.
 The example included in GeoMoose's example desktop application is geocoding. When
-running a geocode query the user will not query the underlaying layers but call
+running a geocode query the user will not query the underlying layers but call
 a different script which will return features.  This requires defining
 a different `runQuery` method. E.G.:
 
