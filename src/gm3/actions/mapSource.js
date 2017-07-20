@@ -508,7 +508,7 @@ export function getVisibleLayers(store) {
  *  These layers are a subset of visible layers.
  *
  */
-export function getQueryableLayers(store, filter, options = {}) {
+export function getQueryableLayers(store, filter = {}, options = {}) {
     // when visible is set to true, then any visibility will
     //  be false and the isVisible call will be evaluated.
     const req_visible = (typeof filter.requireVisible === 'undefined') ? true : filter.requireVisible;
@@ -518,7 +518,7 @@ export function getQueryableLayers(store, filter, options = {}) {
             let template_names = filter.withTemplate;
             // coerce the templates into an array
             if(typeof template_names === 'string') {
-                template_names = [template_names,];
+                template_names = [template_names, ];
             }
 
             template_filter_pass = false;

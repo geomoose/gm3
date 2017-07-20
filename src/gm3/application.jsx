@@ -65,7 +65,7 @@ import Map from './components/map';
 
 class Application {
 
-    constructor(config) {
+    constructor(config = {}) {
         this.elements = [];
 
         this.services = {};
