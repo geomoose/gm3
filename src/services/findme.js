@@ -60,7 +60,6 @@ function FindMeAction(Application, options) {
         var lat = loc.coords.latitude;
         var lon = loc.coords.longitude;
         var coord = [lon, lat];
-        // console.info('lat', lat, 'lon', lon, this.targetLayer, this);
 
         // turn the coordinate into a fake feature
         var fake_feature = {
