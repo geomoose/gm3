@@ -48,6 +48,7 @@ import DrawTool from './drawTool';
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
 import LengthInput from './serviceInputs/length';
+import LayersInput from './serviceInputs/layersList';
 
 import MeasureTool from './measure';
 
@@ -467,14 +468,17 @@ class ServiceManager extends Component {
     }
 
     getServiceField(i, field, value) {
+        const key = `field-${i}`;
         switch(field.type) {
             case 'select':
-                return (<SelectInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
+                return (<SelectInput setValue={this.onServiceFieldChange} key={key} field={field} value={value}/>);
             case 'length':
-                return (<LengthInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
+                return (<LengthInput setValue={this.onServiceFieldChange} key={key} field={field} value={value}/>);
+            case 'layers-list':
+                return (<LayersInput setValue={this.onServiceFieldChange} store={this.props.store} key={key} field={field} value={value}/>);
             case 'text':
             default:
-                return (<TextInput setValue={this.onServiceFieldChange} key={'field-' + i} field={field} value={value}/>);
+                return (<TextInput setValue={this.onServiceFieldChange} key={key} field={field} value={value}/>);
         }
     }
 

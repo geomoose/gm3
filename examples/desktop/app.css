@@ -142,6 +142,13 @@ body {
     }
 }
 
+.feature-class {
+    background-color: #CFE7B3;
+    padding: 2px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
 /* Example of how to add CSS for a specific layer's
  * identify results.
  */

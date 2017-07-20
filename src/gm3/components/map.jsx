@@ -664,7 +664,6 @@ class Map extends Component {
                 // ".ck" = "cache killer"
                 params['.ck'] = (new Date()).getMilliseconds();
                 wms_src.updateParams(params);
-                console.log('refreshed wms layer', mapSource.name);
                 // this.olLayers[mapSource.name].getSource().refresh();
                 break;
             default:
@@ -681,7 +680,6 @@ class Map extends Component {
             // refresh is stored in seconds, multiplying by 1000
             //  converts ito the milliseconds expected by setInterval.
             this.intervals[mapSource.name] = setInterval(() => {
-                console.log('REFRESH', mapSource.name);
                 this.refreshLayer(mapSource);
             }, mapSource.refresh * 1000);
         }

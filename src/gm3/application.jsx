@@ -91,6 +91,8 @@ class Application {
         this.store.subscribe(() => { this.shouldUiUpdate(); });
 
         this.dialogs = {};
+
+        this.showWarnings = (config.showWarnings === true);
     }
 
     registerService(serviceName, serviceClass, options) {
@@ -411,7 +413,11 @@ class Application {
                     }
                 } else {
                     template_contents = null;
-                    console.info('Failed to find template.', path, template_name);
+                    // only show warnings when the application is
+                    //  configured to do so.
+                    if(this.showWarnings) {
+                        console.info('Failed to find template.', path, template_name);
+                    }
                 }
             }
 
