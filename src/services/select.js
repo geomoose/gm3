@@ -73,11 +73,16 @@ function SelectService(Application, options) {
 
     /** User input fields, select allows choosing a layer */
     this.fields = [{
-        type: 'select',
+        type: 'layers-list',
         name: 'layer',
         label: 'Query Layer',
-        default: options.queryLayers ? options.queryLayers[0].value : '',
-        options: options.queryLayers ? options.queryLayers : []
+        default: options.defaultLayer,
+        filter: {
+            // do not require the layer be visible to select it.
+            requireVisible: false,
+            // but require it have a select template.
+            withTemplate: ['select', 'select-header']
+        }
     }];
 
     /** Alow shapes to be buffered. */

@@ -508,15 +508,27 @@ export function getVisibleLayers(store) {
  *  These layers are a subset of visible layers.
  *
  */
-export function getQueryableLayers(store, filter) {
+export function getQueryableLayers(store, filter = {}, options = {}) {
+    // when visible is set to true, then any visibility will
+    //  be false and the isVisible call will be evaluated.
+    const req_visible = (typeof filter.requireVisible === 'undefined') ? true : filter.requireVisible;
     const match_fn = function(ms, layer) {
         let template_filter_pass = true;
         if(filter && filter.withTemplate) {
-            const tpl_name = filter.withTemplate;
+            let template_names = filter.withTemplate;
+            // coerce the templates into an array
+            if(typeof template_names === 'string') {
+                template_names = [template_names, ];
+            }
+
+            template_filter_pass = false;
             const templates = layer.templates;
-            template_filter_pass = (templates && typeof templates[tpl_name] !== 'undefined');
+            for (let x = 0, xx = template_names.length; x < xx && !template_filter_pass; x++) {
+                const tpl_name = template_names[x];
+                template_filter_pass = (templates && typeof templates[tpl_name] !== 'undefined');
+            }
         }
-        return (template_filter_pass && isQueryable(ms, layer) && isVisible(ms, layer));
+        return (template_filter_pass && isQueryable(ms, layer) && (!req_visible || isVisible(ms, layer)));
     }
     return matchLayers(store, match_fn);
 }

@@ -65,11 +65,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
     app.registerService('select', SelectService, {
-        queryLayers: [
-            {value: 'vector-parcels/parcels', label: 'Parcels'},
-            //{value: 'ags-vector-dc20/roads', label: 'Dakota County Streets'},
-            {value: 'ags-vector-dc16/railroads', label: 'Dakota County Rail'}
-        ]
+        defaultLayer: 'vector-parcels/parcels'
     });
 
     // This uses the OpenStreetMap Nominatim geocoder,

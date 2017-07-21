@@ -23,34 +23,33 @@
  */
 
 import React from 'react';
-import TextInput from './text';
+import SelectInput from './select';
+
+import { getQueryableLayers, getLayerByPath } from '../../actions/mapSource';
 
 
-export default class SelectInput extends TextInput {
-
-
-    renderOption(opt) {
-        return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
-    }
-
+export default class LayersListInput extends SelectInput {
     getOptions() {
-        return this.props.field.options;
-    }
-
-    render() {
-        const id = this.getId();
-        const options = this.getOptions();
-        if(typeof this.props.field.default === 'undefined') {
-            this.onChange({target: {value: options[0].value}});
+        // default to an empty layers list.
+        let layers = [];
+        // if layers are specified in a list then just use
+        //   that list of paths.
+        if(this.props.field.filter.layers) {
+            layers = this.props.field.filter.layers;
+        // otherwise assume this is used for querying and get the list of
+        //  queryable layers that match the filter.
+        } else {
+            layers = getQueryableLayers(this.props.store, this.props.field.filter);
         }
 
-        return (
-            <div className='service-input select'>
-                <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <select id={ 'input-' + id} value={this.state.value} onChange={this.onChange}>
-                { options.map(this.renderOption) }
-                </select>
-            </div>
-        );
+        const options = [];
+        for(let i = 0, ii = layers.length; i < ii; i++) {
+            const layer = getLayerByPath(this.props.store, layers[i]);
+            options.push({
+                value: layers[i],
+                label: layer.label,
+            });
+        }
+        return options;
     }
 }
