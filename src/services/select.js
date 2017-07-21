@@ -139,31 +139,6 @@ function SelectService(Application, options) {
         // return the html for rendering.
         return html;
     }
-
-
-    /** hasRendered is an object which tells renderQueryResults to ignore
-     *              queries which have already been rendered.
-     */
-    this.hasRendered = {};
-
-    /** renderQueryResults is the function called to let the service
-     *                     run basically any code it needs to execute after
-     *                     the query has been set to finish.
-     *
-     *  WARNING! This will be called multiple times. It is best to ensure
-     *           there is some sort of flag to prevent multiple renderings.
-     */
-    this.renderQueryResults = function(queryId, query) {
-        // This is an ugly short circuit.
-        if(this.hasRendered[queryId]) {
-            // do nothing.
-            return;
-        }
-        // flag the query as rendered even though code below
-        //  this line has not finished, this prevents an accidental
-        //  double-rendering.
-        this.hasRendered[queryId] = true;
-    }
 }
 
 if(typeof(module) !== 'undefined') { module.exports = SelectService; }

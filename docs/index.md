@@ -6,6 +6,8 @@
     * [For developers on *nix-systems](./quickstart.md)
 * [How-tos!](./howto/index.md) - Lots of great documentation-by-example!
 * [Understanding GeoMoose templates](./templates.md)
+* [Actions and services](./actions-and-services.md)
+  How to extend GeoMoose's capabilities!
 * Important information for contributors:
     * [Style guide](./style_guide.md)
 
