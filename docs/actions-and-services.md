@@ -48,7 +48,7 @@ of config.message which was set to `'Hello, World'`.
 ## Services
 
 Services are more complex. A service is used to collect information from the user and the map then
-use that information to generate a query.  After the query has been execute, the results are then rendered
+use that information to generate a query.  After the query has executed, the results are then rendered
 into HTML.
 
 Unlike an action, services require defining more members for them to function properly:
