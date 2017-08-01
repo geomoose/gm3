@@ -45,8 +45,18 @@ import getStyleFunction from 'mapbox-to-ol-style';
 function defineSource(mapSource) {
     if(mapSource.type === 'wfs') {
         // add a wfs type source
+        let format = GML2Format;
+        let output_format = 'text/xml; subtype=gml/2.1.2';
+
+        if(mapSource.params.outputFormat
+          && mapSource.params.outputFormat.indexOf('json') >= 0) {
+
+            format = GeoJSONFormat;
+            output_format = 'application/json';
+        }
+
         return {
-            format: new GML2Format({}),
+            format: new format({}),
             projection: 'EPSG:4326',
             url: function(extent) {
                 if(typeof(mapSource.params.typename) === 'undefined') {
@@ -55,7 +65,7 @@ function defineSource(mapSource) {
 
                 let url_params = Object.assign({}, mapSource.params, {
                     'srsname': 'EPSG:3857',
-                    'outputFormat': 'text/xml; subtype=gml/2.1.2',
+                    'outputFormat': output_format,
                     'service': 'WFS',
                     'version': '1.1.0',
                     'request': 'GetFeature',
