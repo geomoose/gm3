@@ -45,7 +45,7 @@ export class MeasureTool extends Component {
         this.mapProjection = proj.get('EPSG:3857');
 
         this.state = {
-            units: 'ft'
+            units: this.props.initialUnits ? this.props.initialUnits : 'ft'
         };
     }
 
