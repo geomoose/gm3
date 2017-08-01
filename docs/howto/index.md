@@ -2,7 +2,7 @@
 
 These are intended to be quick helpers for enhancing a GeoMoose application.
 
-* [How-to add Bing layers](./bing.md)
+* [How-to add Bing layers](./bing-layers.md)
 * [How-to configure Jump-to-Extent](./configure-jump-to.md)
 * [How-to configure the Measure tool](./configure-measure-tool.md)
 * [How-to customize the Coordinate Display](./coordinate-display.md)
