@@ -62,8 +62,14 @@ var custom_layouts = [
  });
 ```
 
-The following elements are available on the map:
-**All units are in the units specified in `units` unless expressly stated.**
+`custom_layouts` contains:
+* `label` - The name of this layout presented to the user in the Print Preview dialog.
+* `orientation` - Page orientation.  One of `'landscape'` or `'portrait`'.
+* `page` - The page size (as supported by [usejsdoc.org]).  e.g. `'letter'`, `'a4'`, ...
+* `units` - The units used to specify the position of elements (e.g. for `x`,`y`,`width`,`height`,`strokeWidth`,...).  Can any units supported by jsDoc including: `'in'`, `'mm'`, `'pt'`.
+* `elements` - An array of elements, described below.
+
+The following elements are available:
 
 * `text` - Puts text on the map.
   * `text` - The content to put on the map.
