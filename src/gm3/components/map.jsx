@@ -334,9 +334,11 @@ class Map extends Component {
         // TODO: If this gets used elsewhere, push to a util function.
         let type_parts = map_source.params.typename.split(':');
 
-        // TinyOWS and GeoServer support GeoJSON, but MapServer
-        //  only supports GML.
+        // check for the output_format based on the params
         let output_format = 'text/xml; subtype=gml/2.1.2';
+        if(map_source.params.outputFormat) {
+            output_format = map_source.params.outputFormat;
+        }
 
         let feature_request = new WFSFormat().writeGetFeature({
             srsName: query_projection.getCode(),
@@ -353,25 +355,31 @@ class Map extends Component {
         let wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
 
         const map = this.map;
+        const is_json_like = (output_format.toLowerCase().indexOf('json'));
 
         util.xhr({
             url: wfs_url,
             method: 'post',
-            contentType: 'text/xml',
+            contentType: is_json_like ? 'json' : 'text/xml',
             data: wfs_query_xml,
             success: (response) => {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
                 if(response) {
-                    let gml_format = new GML2Format();
+                    // place holder for features to be added.
+                    let js_features = [];
+                    if(is_json_like) {
+                        js_features = response.features;
+                    } else {
+                        let features = [];
+                        let gml_format = new GML2Format();
+                        gml_format.readFeatures(response, {
+                            featureProjection: map_projection,
+                            dataProjection: query_projection
+                        });
+                        js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
+                    }
 
-                    let features = gml_format.readFeatures(response, {
-                        featureProjection: map_projection,
-                        dataProjection: query_projection
-                    });
-
-                    // features to add
-                    let js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
 
                     // apply the transforms
                     js_features = util.transformFeatures(map_source.transforms, js_features);
