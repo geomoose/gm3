@@ -1,8 +1,8 @@
 # Creating a custom print layout
 
 GeoMoose uses jsPDF to perform client-side generation of PDF printouts.
-It has four built-in template but they all feature the GeoMoose logo
-and may not be appropriate for everyone.
+It has four built-in templates but they are relatively plain and may
+not be for everyone.
 
 ## What is in a print layout
 
@@ -76,13 +76,13 @@ The following elements are available on the map:
   * `x` - The left-most side of the map.
   * `y` - The top most side of the map.
   * `width` - The width of the map.
-  * `height` - The height of hte map.
+  * `height` - The height of the map.
 * `rect`, `ellipse` - Either shape can be drawn on the PDF.
   * `x`, `y` - Define the upper left corner of the shape.
   * `fill` - Array of 0-255 of `[red, green, blue]`. Filled color of the shape.
   * `stroke` - Array of 0-255 of `[red, green, blue]`. Outline color of the shape.
   * `width`, `height` - `rect`-only the width and height of the rectangle.
-  * `rx`, `ry` - `ellipse`-only, specifys the x and y radii of the ellipse.
+  * `rx`, `ry` - `ellipse`-only, specifies the x and y radii of the ellipse.
 * `image` - Add an image to the map.
   * `data` - The bytes defining the image.
   * `x`, `y` - Define the upper left corner of the image.

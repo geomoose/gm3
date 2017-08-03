@@ -1,6 +1,6 @@
 # How-to configure the Coordinate Display
 
-The CoordinateDisplay component shows the moust position in various
+The CoordinateDisplay component shows the mouse position in various
 projections as it moves across the map. This handy little function
 can help users orient themselves to locations and assist in locating
 features on the map.
@@ -25,12 +25,19 @@ app.addProjection({
 });
 ```
 
-`ref` refers to the reference of the projection. In this case, UTM-15N which is
+* `ref` refers to the reference of the projection. In this case, UTM-15N which is
 EPSG:26915.  
-`def` if the proj4 definition string.
-Any projection can be added in this way and 
-[SpatialReference.org](http://spatialreference.org/) can assist in finding
-the proj definition string for many different projections.
+  Note: EPSG references a catalog of projection definitions 
+  maintained by [www.epsg.org]. This catalog is significant 
+  because of its use in the OGC WMS and WFS specifications 
+  as a preferred way to communicate projection information. 
+  Internally, GeoMoose just uses ref and an identifier and so could be 
+  anything unique, but when talking to external servers `ref` matching
+   what the server expects might matter.
+* `def` is the [proj4](http://proj4.org/) definition string.
+  Any projection can be added in this way and 
+  [epsg.io](http://epsg.io/) can assist in finding
+  the proj definition string for many different projections.
 
 ## Built-in custom projections
 
@@ -44,7 +51,7 @@ GeoMoose also honors two custom internal projections:
   
 ## Specifying the projections
 
-When adding the CoordinateDisplay component ot the application, it will
+When adding the CoordinateDisplay component to the application, it will
 accept an array of objects which have a `ref` and a `label` member.
 The `label` member will be the text prefixed before the coordinates.
 The `ref` defines which output projection should be used whether a custom 

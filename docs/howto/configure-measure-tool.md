@@ -17,7 +17,8 @@ Here's the example from the demo:
 
 * `pointProjections` is an array of projection and label definitions,
   that is defined the same as with the [Coordinate Display](coordinate-display.md).
-  When a user clicks on a point then 
+  When a user clicks on a point on the map, the point will be shown in all of the defined
+  projections.
 * `initialUnits` is one of:
   * `m` for meters.
   * `km` for kilometers.
