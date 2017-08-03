@@ -336,10 +336,8 @@ class Map extends Component {
 
         // check for the output_format based on the params
         let output_format = 'text/xml; subtype=gml/2.1.2';
-        if(map_source.params.outputFormat
-           && map_source.params.outputFormat.toLowerCase().indexOf('json') >= 0) {
-            // ask for JSON instead.
-            output_format = 'application/json';
+        if(map_source.params.outputFormat) {
+            output_format = map_source.params.outputFormat;
         }
 
         let feature_request = new WFSFormat().writeGetFeature({
@@ -357,11 +355,12 @@ class Map extends Component {
         let wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
 
         const map = this.map;
+        const is_json_like = (output_format.toLowerCase().indexOf('json'));
 
         util.xhr({
             url: wfs_url,
             method: 'post',
-            contentType: output_format === 'application/json' ? 'json' : 'text/xml',
+            contentType: is_json_like ? 'json' : 'text/xml',
             data: wfs_query_xml,
             success: (response) => {
                 // not all WMS services play nice and will return the
@@ -369,7 +368,7 @@ class Map extends Component {
                 if(response) {
                     // place holder for features to be added.
                     let js_features = [];
-                    if(output_format === 'application/json') {
+                    if(is_json_like) {
                         js_features = response.features;
                     } else {
                         let features = [];

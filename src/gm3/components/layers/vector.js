@@ -48,11 +48,12 @@ function defineSource(mapSource) {
         let format = GML2Format;
         let output_format = 'text/xml; subtype=gml/2.1.2';
 
-        if(mapSource.params.outputFormat
-          && mapSource.params.outputFormat.indexOf('json') >= 0) {
+        if(mapSource.params.outputFormat) {
+            output_format = mapSource.params.outputFormat;
+        }
 
+        if(output_format.toLowerCase().indexOf('json') >= 0) {
             format = GeoJSONFormat;
-            output_format = 'application/json';
         }
 
         return {
