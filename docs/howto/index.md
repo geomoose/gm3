@@ -2,6 +2,13 @@
 
 These are intended to be quick helpers for enhancing a GeoMoose application.
 
+* [How-to add Bing layers](./bing-layers.md)
+* [How-to configure Jump-to-Extent](./configure-jump-to.md)
+* [How-to configure the Measure tool](./configure-measure-tool.md)
+* [How-to customize the Coordinate Display](./coordinate-display.md)
+* [How-to customize tabs](./customize-tabs.md)
 * [How-to add a disclaimer](./disclaimer.md)
+* [How-to add custom print layouts](./print-layouts.md)
+* [How-to start a service (incl. at startup)](./start-a-service.md)
 * [How-to style the toolbar](./style-the-toolbar.md)
 * [How-to style the header](./style-the-header.md)
