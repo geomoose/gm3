@@ -6,7 +6,7 @@ not be for everyone.
 
 ## What is in a print layout
 
-A print layout is comprised of a label, orientation, page size, 
+A print layout is comprised of a label, orientation, page size,
 unit specification, and a list of page elements. These are defined
 as a Javascript object which can be passed to the PrintModal component.
 
@@ -18,12 +18,12 @@ layouts but is defined in this way:
 ```javascript
  var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
 ```
- 
+
 ## Adding a custom layout
- 
+
 To override the default layouts the layouts need to be configured
 for the PrintModal:
- 
+
  ```javascript
 
 var custom_layouts = [
@@ -52,7 +52,7 @@ var custom_layouts = [
         {
             type: 'text',
             x: .5, y: 8, text: 'Printed on {{month}} / {{day}} / {{year}}'
-        }     
+        }
     ]
   }
 ];
@@ -63,6 +63,7 @@ var custom_layouts = [
 ```
 
 The following elements are available on the map:
+**All units are in the units specified in `units` unless expressly stated.**
 
 * `text` - Puts text on the map.
   * `text` - The content to put on the map.
