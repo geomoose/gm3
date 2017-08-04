@@ -91,9 +91,9 @@ Once extracted, restart the Apache MS4W Service.
 
 ![restart windows apache service](../ms4w-quickstart/geomoose-setup-2.png)
 
----
+## Back to the browser
 
-GeoMoose will now show up on the MS4W localhost page under applications
+GeoMoose will now show up on the MS4W (localhost)[http://localhost/] page under applications
 
 ![geomoose listing](../ms4w-quickstart/geomoose-success-1.png)
 
@@ -103,5 +103,44 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
 
 ![geomoose desktop](../ms4w-quickstart/geomoose-success-2.png)
 
+
+# Time to play
+
+# Learning the insides of GeoMoose
+
+## GeoMoose vocabulary
+
+* GeoMoose - Javascript SDK
+* Mapbook XML - Main configuration file.
+    * Has `map-source` entries.
+    * Defines the catalog and toolbar.
+* Mapfile - OSGeo MapServer configuration files.
+* 'Application JS' or `app.js` - File that defines the actual application behaviour.
+* 'Application HTML' - Usually `index.html`, defines the look and feel of the application, includes all the Javascript files.
+
+## Visual of GeoMoose app structure
+
+![GeoMoose Application Structure](./gm3_structure.png)
+
+*Darker shading indicates the degree of afffect for files during a GeoMoose 3 upgrade.*
+
+## How does identify work?
+
+1. It's included in the `index.html` file:
+    ```html
+    <script type="text/javascript" src="../geomoose/dist/services/identify.js"></script>
+    ```
+
+2. The registered in the `app.js` file:
+    ```javascript
+    app.registerService('identify', IdentifyService);
+    ```
+
+3. Put on the toolbar in the `mapbook.xml` file.
+    ```xml
+    <tool name="identify" title="Identify" type="service"/>
+    ```
+
+## Let's add a layer
 
 
