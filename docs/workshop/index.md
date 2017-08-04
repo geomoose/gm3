@@ -406,3 +406,5 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
     background: linear-gradient(to right, lightgreen, grey);
 }
 ```
+
+# Thank you and happy Moose-ing!
