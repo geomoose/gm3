@@ -244,7 +244,7 @@ END # End of Map
 ## More information on templates
 
 * GeoMoose has a rich template system provided by Mark.up.
-  [More infoformation on GeoMoose templates here.](../templates.md)
+  [More infoformation on GeoMoose templates here.](http://geomoose.github.io/gm3/templates.html)
 * Features in GeoMoose are processed through the templates as
   [GeoJSON](http://geojson.org). For example:
 
@@ -397,7 +397,7 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 }
 ```
 
-* More info is available in the GeoMoose [How-to style the toolbar guide.](../howto/style-the-toolbar.md)
+* More info is available in the GeoMoose [How-to style the toolbar guide.](http://geomoose.github.io/gm3/howto/style-the-toolbar.html)
 
 ## Put a sweet gradiant on the header
 
