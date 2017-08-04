@@ -124,6 +124,134 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
 
 *Darker shading indicates the degree of afffect for files during a GeoMoose 3 upgrade.*
 
+## Adding a MapServer source
+
+* What is MapServer?
+  Lightweight, OGC standards compliant, CGI-based map rendering engine.
+* Configured with "Mapfiles"
+* *GeoMoose provides shortcuts for working with MapServer as a WMS using its type="mapserver"
+  map-sources*.
+
+## Batteries are included with Firestations
+
+* The firestations layer is included with the GeoMoose 3 Demo Data.
+* Open `C:\ms4w\apps\gm3\htdocs\examples\desktop\mapbook.xml`
+* Add the following after line 5:
+    ```xml
+    <map-source name="firestations" type="mapserver">
+        <file>./demo/firestations/firestations.map</file>
+        <layer name="fire_stations"/>
+    </map-source>
+    ```
+* This will add the `firestations` source with a `fire_stations` layer.
+
+## The firestations.map file {.allowframebreaks}
+
+```
+MAP
+    # Include commonly re-used GeoMoose parameters
+    INCLUDE '../../geomoose_globals.map'
+
+    # The web section defines more metadata for the map
+    # that can be used with OGC services.
+    WEB
+        METADATA
+            'ows_title' 'County Firestations'
+            INCLUDE '../../common_metadata.map'
+        END
+    END
+    LAYER
+        NAME 'fire_stations'
+        STATUS ON
+        METADATA
+            'ows_title' 'Fire Stations'
+            'ows_include_items' 'all'
+            'gml_include_items' 'all'
+            'ows_exclude_items' 'SHAPE_area,SHAPE_len'
+            'gml_exclude_items' 'SHAPE_area,SHAPE_len'
+        END
+        TYPE POINT
+        DATA 'firestations'
+        PROJECTION
+            'init=epsg:26915'
+        END
+        CLASS
+            NAME 'Fire Stations'
+            STYLE
+                COLOR 254 0 0
+                SYMBOL 'star'
+                SIZE 8
+            END
+        END
+        TEMPLATE 'dummy'
+    END # End of Layer
+END # End of Map
+```
+
+## Add Firestations to the catalog
+
+* GeoMoose separates the difference between the source-data with
+  `<map-source />` es and presentation with the use of the `<catalog>`.
+* In `mapbook.xml` goto line 427 and add the following on the next line:
+    ```xml
+    <layer src="firestations/fire_stations" title="Firestations"/>
+    ```
+* This will add the `fire_stations` layer of the `firestations` source
+  to the catalog with the label "Firestations".
+
+---
+
+* "Hard" Reload the Browser or clear-the-cache and reload.
+  *Pro tip: Chrome can be very aggressive at caching AJAX loaded XML.*
+
+* The catalog show now have a 'Firestations' layer at the top!
+
+![Firestations in the catalog](./images/firestations-in-catalog.png)
+
+## Adding identify to Firestations
+
+* WMS has the GetFeatureInfo request which GeoMoose will use to fetch feature data.
+* For a layer to work with identify it needs to have a `<template>` named `identify`
+* In the `mapbook.xml` file update the `firstations` `<map-source>` definition:
+
+```xml
+<map-source name="firestations" type="mapserver">
+    <file>./demo/firestations/firestations.map</file>
+    <layer name="fire_stations">
+        <template name="identify"><![CDATA[
+        <div class="result-item">
+            <div class="result-title">
+            Firestation
+            </div>
+            <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
+            <b>Station Number:</b> {{ properties.Dak_GIS__5 }}<br>
+        </div>
+        ]]></template>
+    </layer>
+</map-source>
+```
+
+## More information on templates
+
+* GeoMoose has a rich template system provided by Mark.up.
+  [More infoformation on GeoMoose templates here.](../templates.md)
+* Features in GeoMoose are processed through the templates as
+  [GeoJSON](http://geojson.org). For example:
+
+```javascript
+  {
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [0, 0]
+    },
+    "properties": {
+        "label": "Null Island",
+        "partyScope": 555
+    }
+  }
+```
+
 ## How does identify work?
 
 1. It's included in the `index.html` file:
@@ -131,16 +259,58 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
     <script type="text/javascript" src="../geomoose/dist/services/identify.js"></script>
     ```
 
-2. The registered in the `app.js` file:
+2. Then registered in the `app.js` file:
     ```javascript
     app.registerService('identify', IdentifyService);
     ```
 
-3. Put on the toolbar in the `mapbook.xml` file.
+3. And finally, put on the toolbar in the `mapbook.xml` file.
     ```xml
     <tool name="identify" title="Identify" type="service"/>
     ```
 
-## Let's add a layer
+## Learning more about identify and services
+
+* Open `geomoose/dist/services/identify.js` in an editor.
+
+* From the GeoMoose website, services are defined as:
+> A service is used to collect information from the user and the map then
+use that information to generate a query.  After the query has executed, the results are then rendered
+into HTML.
+
+* Not all `<map-source>`es are equal!
+Previous versions of GeoMoose used PHP to query data.  Now, GeoMoose uses WMS, WFS,
+and ArcGIS FeatureServices to perform those queries. To get full querying capabilities
+from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
+
+## Adding select
+
+* To be able to select features from a layer it needs to be configured as WFS.
+* The following needs added after line 5 in `mapbook.xml`:
+
+```xml
+<map-source name="firestations-wfs" type="mapserver-wfs">
+    <file>./demo/firestations/firestations.map</file>
+    <param name="typename" value="ms:fire_stations" />
+    <layer name="fire_stations" selectable="true" title="Firestations">
+        <template name="select"><![CDATA[
+        <div class="result-item">
+            <div class="result-title">
+            Firestation
+            </div>
+            <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
+            <b>Station Number:</b> {{ properties.Dak_GIS__5 }}<br>
+        <div>
+        ]]></template>
+    </layer>
+</map-source>
+```
+
+## Reload and select Firestations
+
+* Back in the browser, reload the page, and click 'Select' from the toolbar.
+* Use the dropdown to select "Firestations", draw a Polygon on the map, and click "Go".
+
+![Selecting firestations](./images/firestations-select.png)
 
 
