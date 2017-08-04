@@ -124,10 +124,20 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
 
 *Darker shading indicates the degree of afffect for files during a GeoMoose 3 upgrade.*
 
+## What does the app look like?
+
+![GeoMoose Application Directory](./images/desktop-directory-listing.png)
+
+## Starting a fresh GeoMoose Application
+
+* Goto `C:\ms4w\apps\gm3\htdocs`.
+* Copy `desktop/` to `workshop/`.
+* Open the new [http://localhost/gm3/workshop/](http://localhost/gm3/workshop/)
+
 ## Adding a MapServer source
 
-* What is MapServer?
-  Lightweight, OGC standards compliant, CGI-based map rendering engine.
+### What is MapServer?
+* Lightweight, OGC standards compliant, CGI-based map rendering engine.
 * Configured with "Mapfiles"
 * *GeoMoose provides shortcuts for working with MapServer as a WMS using its type="mapserver"
   map-sources*.
@@ -313,4 +323,86 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 
 ![Selecting firestations](./images/firestations-select.png)
 
+## More on vector layers
 
+* GeoMoose 3 has been designed with a "vector first" philosophy.
+* MapBox GL Styles can be used to style vector layers for rendering in the browser.
+* There are additional examples in the example `mapbook.xml`.
+
+# Customizing the GeoMoose application
+
+## Configuring GeoMoose components
+
+* Open `app.js` in an editor.
+* The gm3.Application's `add` function accepts three paramters:
+  1. The component class.
+  2. The DOM element ID where the component.
+  3. The optinal properties for the component.
+
+## Configure Coordinate Display
+
+* The coordinate display shows the mouse position as the user moves
+  the cursor across the map.
+* This X,Y is in the map's configured coordinate system. As the
+  examples are configured to use the Google Maps projection, that is
+  not going to be useful.
+* In `app.js` on line 60, you can see the definition of the UTM-15 projection:
+    ```
+    app.addProjection({
+        ref: 'EPSG:26915',
+        def: '+proj=utm +zone=15 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+    });
+    ```
+* To use UTM-15 make the following change:
+    ```
+            ref: 'xy'
+    ```
+    to:
+    ```
+            ref: 'EPSG:26915'
+    ```
+
+
+## GeoMoose is very HTML, such CSS.
+
+* Chrome and Firefox both have excellent DOM/CSS Inspection tools.
+* The GeoMoose example `index.html` includes a file it won't find `site.css`.
+
+## Let's tweak the toolbar!
+
+* Let's assume 'Find Me' does not need a label.
+* In `C:\ms4w\apps\gm3\htdocs\workshop\ create a new `site.css` file.
+* Add the follwowing:
+
+```css
+.toolbar .tool.findme .label {
+    display: none;
+}
+```
+
+## And change the icon!
+
+```css
+/* Remove the webfont icon */
+.toolbar .tool.findme .icon:before {
+    content: '';
+}
+
+/* Add the moose! */
+.toolbar .tool.findme .icon {
+    width: 1em;
+    height: 1em;
+    box-sizing: border-box;
+    background-image: url(./logo-mini.png);
+}
+```
+
+* More info is available in the GeoMoose [How-to style the toolbar guide.](../howto/style-the-toolbar.md)
+
+## Put a sweet gradiant on the header
+
+```css
+.header {
+    background: linear-gradient(to right, lightgreen, grey);
+}
+```
