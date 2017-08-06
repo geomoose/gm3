@@ -160,7 +160,7 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
     ```
 * This will add the `firestations` source with a `fire_stations` layer.
 
-## The firestations.map file {.allowframebreaks}
+## The firestations.map file # {.allowframebreaks}
 
 ```
 MAP
@@ -374,7 +374,7 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 * Chrome and Firefox both have excellent DOM/CSS Inspection tools.
 * GeoMoose's desktop example will try to load `site.css` from `index.html`.
   This file is intentionally not included.  `site.css` provides a place
-  for custom CSS themes that will not ever be written over during upgrades.
+  for custom CSS themes that will not ever be overwritten during upgrades.
 
 ## Let's tweak the toolbar!
 
