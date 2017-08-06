@@ -160,8 +160,11 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
     ```
 * This will add the `firestations` source with a `fire_stations` layer.
 
-## The firestations.map file # {.allowframebreaks}
+## The firestations.map file
 
+`firestations.map` can be found installed on `C:\ms4w\apps\gm3-demo-data\demo\firestations\firestations.map.`
+
+### Mapfile "preamble"
 ```
 MAP
     # Include commonly re-used GeoMoose parameters
@@ -175,6 +178,11 @@ MAP
             INCLUDE '../../common_metadata.map'
         END
     END
+```
+
+## firstations.map - Layer definition
+
+```
     LAYER
         NAME 'fire_stations'
         STATUS ON
@@ -200,6 +208,10 @@ MAP
         END
         TEMPLATE 'dummy'
     END # End of Layer
+```
+
+## firestations.map - End of the map!
+```
 END # End of Map
 ```
 
