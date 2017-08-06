@@ -32,7 +32,10 @@ fontsize: 8pt
 
 ## Getting started with MS4W
 
-MapServer for Windows (MS4W) will install the base files required by GeoMoose along with an Apache service to actually serve GeoMoose. Once installed, navigate to localhost for more detail  Also, full description of optional packages in the installer are found on ms4w.com.
+MapServer for Windows (MS4W) will install the base files required by GeoMoose
+along with an Apache service to actually serve GeoMoose. Once installed,
+navigate to localhost for more detail
+Also, full description of optional packages in the installer are found on ms4w.com.
 
 Requirements:
 
@@ -47,7 +50,9 @@ Requirements:
 **Double click the ms4w-3.2.2-setup.exe icon.**
 
 
-MapServer for Windows does come with an older version of GeoMoose, but it is recommended to skip that and install the latest and greatest version for the full Moose experience.
+MapServer for Windows does come with an older version of GeoMoose,
+but it is recommended to skip that and install the latest and greatest version
+for the full Moose experience.
 
 ![ms4w setup screen 1](../ms4w-quickstart/ms4w-setup-1.png)
 
@@ -74,14 +79,14 @@ You can validate the ms4w installation by navigating to [localhost](http://local
 
 ## Install the GeoMoose Demo Data
 
-Extract the `gm3-demo-data-3.0.0-ms4w.zip` to the `C:\\` directory. This will unzip mapfiles and shapefiles used to power the GeoMoose examples.
+Extract the `gm3-demo-data-3.0.0-ms4w.zip` to the `C:\` directory. This will unzip mapfiles and shapefiles used to power the GeoMoose examples.
 
 ![geomoose extract zip](../ms4w-quickstart/geomoose-setup-1.png)
 
 
 ## Install the GeoMoose SDK and examples
 
-Extract the `gm3-examples-3.0.0-ms4w.zip` to the `C:\\` directory. Everything in it is already set to install where needed within the ms4w subdirectories including Apache, Apps, and httpd.d.
+Extract the `gm3-examples-3.0.0-ms4w.zip` to the `C:\` directory. Everything in it is already set to install where needed within the ms4w subdirectories including Apache, Apps, and httpd.d.
 
 ![geomoose extract zip](../ms4w-quickstart/geomoose-setup-1.png)
 
@@ -284,9 +289,10 @@ END # End of Map
 * Open `geomoose/dist/services/identify.js` in an editor.
 
 * From the GeoMoose website, services are defined as:
-> A service is used to collect information from the user and the map then
-use that information to generate a query.  After the query has executed, the results are then rendered
-into HTML.
+
+    > A service is used to collect information from the user and the map then
+    use that information to generate a query.  After the query has executed, the results are then rendered
+    into HTML.
 
 * Not all `<map-source>`es are equal!
 Previous versions of GeoMoose used PHP to query data.  Now, GeoMoose uses WMS, WFS,
@@ -366,7 +372,9 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 ## GeoMoose is very HTML, such CSS.
 
 * Chrome and Firefox both have excellent DOM/CSS Inspection tools.
-* The GeoMoose example `index.html` includes a file it won't find `site.css`.
+* GeoMoose's desktop example will try to load `site.css` from `index.html`.
+  This file is intentionally not included.  `site.css` provides a place
+  for custom CSS themes that will not ever be written over during upgrades.
 
 ## Let's tweak the toolbar!
 
