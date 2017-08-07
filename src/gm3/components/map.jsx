@@ -124,6 +124,7 @@ class Map extends Component {
             case 'vector' :
             case 'wfs' :
             case 'ags-vector':
+            case 'geojson':
                 vectorLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
             case 'bing':
@@ -151,6 +152,7 @@ class Map extends Component {
             case 'vector':
             case 'wfs':
             case 'ags-vector':
+            case 'geojson':
                 return vectorLayer.createLayer(mapSource);
             case 'bing':
                 return bingLayer.createLayer(mapSource);
