@@ -77,6 +77,12 @@ function defineSource(mapSource) {
             },
             strategy: LoadingStrategy.bbox
         };
+    } else if(mapSource.type === 'geojson') {
+        return {
+            format: new GeoJSONFormat(),
+            projection: mapSource.params.crs ? mapSource.params.crs : 'EPSG:4326',
+            url: mapSource.urls[0],
+        };
     } else if(mapSource.type === 'ags-vector') {
         // Add an A**GIS FeatureService layer.
         // This performs a basic query based on the bounding box.
