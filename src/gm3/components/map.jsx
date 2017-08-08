@@ -355,7 +355,7 @@ class Map extends Component {
         let wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
 
         const map = this.map;
-        const is_json_like = (output_format.toLowerCase().indexOf('json'));
+        const is_json_like = (output_format.toLowerCase().indexOf('json') > 0);
 
         util.xhr({
             url: wfs_url,
@@ -371,9 +371,8 @@ class Map extends Component {
                     if(is_json_like) {
                         js_features = response.features;
                     } else {
-                        let features = [];
                         let gml_format = new GML2Format();
-                        gml_format.readFeatures(response, {
+                        let features = gml_format.readFeatures(response, {
                             featureProjection: map_projection,
                             dataProjection: query_projection
                         });
