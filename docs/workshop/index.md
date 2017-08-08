@@ -231,7 +231,7 @@ END # End of Map
 * "Hard" Reload the Browser or clear-the-cache and reload.
   *Pro tip: Chrome can be very aggressive at caching AJAX loaded XML.*
 
-* The catalog show now have a 'Firestations' layer at the top!
+* The catalog should now have a 'Firestations' layer at the top!
 
 ![Firestations in the catalog](./images/firestations-in-catalog.png)
 
