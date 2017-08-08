@@ -2,6 +2,12 @@
 
 These are intended to be quick helpers for enhancing a GeoMoose application.
 
+* [How-to add a layer](./add-a-layer.md)
+
+    * [How-to add identify to a layer](./add-identify.md)
+    * [How-to add a layer search](./add-search.md)
+    * [How-to add a layer to select](./add-select.md)
+
 * [How-to add Bing layers](./bing-layers.md)
 * [How-to configure Jump-to-Extent](./configure-jump-to.md)
 * [How-to configure the Measure tool](./configure-measure-tool.md)

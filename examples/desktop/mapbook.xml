@@ -4,6 +4,33 @@
 		The mapping services define the source of the mapping data.
 	-->
 
+    <map-source name="firestations" type="mapserver-wfs">
+        <file>./demo/firestations/firestations.map</file>
+        <param name="typename" value="ms:fire_stations" />
+        <layer name="fire_stations" selectable="true" title="Firestations">
+            <template name="select"><![CDATA[
+            <div class="result-item">
+                <div class="result-title">
+                Firestation
+                </div>
+                <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
+                <b>Station Number:</b> {{ properties.Dak_GIS__5 }}<br>
+            <div>
+            ]]></template>
+            <template name="search"><![CDATA[
+            <div class="result-item">
+                <div class="result-title">
+                Firestation # {{ properties.Dak_GIS__5 }}
+                </div>
+                <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
+                <br><br>
+            <div>
+            ]]></template>
+
+
+        </layer>
+    </map-source>
+
 	<map-source name="sketch" type="vector" title="Drawing and Markup">
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
@@ -29,6 +56,24 @@
             ]]></legend>
         </layer>
 	</map-source>
+
+<!--
+    <map-source name="cities" type="geojson">
+        <url>./cities.geojson</url>
+        <layer name="all-cities">
+            <style><![CDATA[
+            {
+                "circle-radius" : 5,
+                "circle-color": "blue",
+                "text-font": ["Arial", "Open Sans Regular"],
+                "text-field": "{city}",
+                "text-jusitfy": "right",
+                "text-anchor": "right"
+            }
+            ]]></style>
+        </layer>
+    </map-source>
+-->
 
     <map-source name="vector-parcels" type="mapserver-wfs">
         <file>./demo/parcels/parcels.map</file>
@@ -428,6 +473,7 @@
 		<!-- Layer for testing international character support.
 		<layer title="Test International Characters" src="international/testing"/>
 		-->
+        <layer src="firestations/fire_stations" />
 		<layer src="sketch/default"
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
@@ -500,6 +546,7 @@
         <drawer name="searches" title="Search">
             <tool name="search" title="Search by Owner" type="service"/>
             <tool name="geocode" title="Search by Address" type="service"/>
+            <tool name="search-firestations" title="Search Firestations" type="service"/>
         </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>
