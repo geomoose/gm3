@@ -50,8 +50,8 @@ app.registerService('search-firestations', SearchService, {
 
 In the `mapbook.xml`:
 
-1. Find the <toolbar>
-2. Add the follow entry for the new search service:
+1. Find the `<toolbar>` element.
+2. Inside the `<toolbar>` element, add the follow entry for the new search service:
 
     ```xml
     <tool name="search-firestations" title="Search Firestations" type="service"/>
