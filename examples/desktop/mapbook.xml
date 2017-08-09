@@ -4,33 +4,6 @@
         The mapping services define the source of the mapping data.
     -->
 
-    <map-source name="firestations" type="mapserver-wfs">
-        <file>./demo/firestations/firestations.map</file>
-        <param name="typename" value="ms:fire_stations" />
-        <layer name="fire_stations" selectable="true" title="Firestations">
-            <template name="select"><![CDATA[
-            <div class="result-item">
-                <div class="result-title">
-                Firestation
-                </div>
-                <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
-                <b>Station Number:</b> {{ properties.Dak_GIS__5 }}<br>
-            <div>
-            ]]></template>
-            <template name="search"><![CDATA[
-            <div class="result-item">
-                <div class="result-title">
-                Firestation # {{ properties.Dak_GIS__5 }}
-                </div>
-                <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
-                <br><br>
-            <div>
-            ]]></template>
-
-
-        </layer>
-    </map-source>
-
     <map-source name="sketch" type="vector" title="Drawing and Markup">
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
@@ -479,14 +452,12 @@
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" />
 
-        <layer title="Vector Parcels" src="vector-parcels/parcels">
-            <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
-        </layer>
-        <!--
-        <layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
-        -->
-        <group title="Overlays">
-            <group title="County Layers" expand="false">
+        <group title="Overlays" expand="true">
+            <group title="County Layers">
+
+                <layer title="Vector Parcels" src="vector-parcels/parcels">
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                </layer>
 
                 <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
