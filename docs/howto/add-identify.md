@@ -13,11 +13,12 @@ For more information on setting those up in your local demo, read the
 ## Adding identify to Firestations
 
 * WMS has the GetFeatureInfo request which GeoMoose will use to fetch feature data.
-* GeoMoose will also use WFS and AGS FeatureServer for identfiy if a `<map-source>` is 
+* GeoMoose will also use WFS and AGS FeatureServer for identfiy if a `<map-source>` is
   configured with `wfs`, `mapserver-wfs`, or `ags-vector`.
 * For a layer to work with identify it needs to have a `<template>` named `identify`
 * In the `mapbook.xml` file update the `firstations` `<map-source>` definition:
 
+<!-- {% raw %} -->
 ```xml
 <map-source name="firestations" type="mapserver">
     <file>./demo/firestations/firestations.map</file>
@@ -34,6 +35,7 @@ For more information on setting those up in your local demo, read the
     </layer>
 </map-source>
 ```
+<!-- {% endraw %} -->
 
 * This example uses GeoMoose's template system.  GeoMoose has a rich template system provided by Mark.up.
   [More infoformation on GeoMoose templates here.](http://geomoose.github.io/gm3/templates.html)

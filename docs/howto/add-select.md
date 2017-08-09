@@ -1,6 +1,6 @@
 # How-to add Select to a layer
 
-Select operations are only supported on `vector`, `geojson`, `ags-vector`, `wfs`, 
+Select operations are only supported on `vector`, `geojson`, `ags-vector`, `wfs`,
 and `mapserver-wfs` map-source types.
 
 ## Add a supported vector map-source
@@ -12,7 +12,8 @@ for the Firestations layer.
 
 Add the following to `mapbook.xml`:
 
-```
+<!-- {% raw %} -->
+```xml
 <map-source name="firestations-wfs" type="mapserver-wfs">
     <file>./demo/firestations/firestations.map</file>
     <param name="typename" value="ms:fire_stations" />
@@ -28,14 +29,14 @@ Add the following to `mapbook.xml`:
         ]]></template>
     </layer>
 </map-source>
-```
+<!-- {% endraw %} -->
 
 ## The important bits
 
 The above defines the entire map-source but the following is what enables
 the layer to be used for select:
 
-1. In `<map-source ...> `, `type="mapserver-wfs"`: WFS is the OGC Web Feature Serice. 
+1. In `<map-source ...> `, `type="mapserver-wfs"`: WFS is the OGC Web Feature Serice.
 
    WFS servers emit actual vector features definitions and not rendered maps.
 

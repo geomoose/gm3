@@ -242,22 +242,24 @@ END # End of Map
 * For a layer to work with identify it needs to have a `<template>` named `identify`
 * In the `mapbook.xml` file update the `firestations` `<map-source>` definition:
 
+<!-- {% raw %} -->
 ```xml
-<map-source name="firestations" type="mapserver">
-    <file>./demo/firestations/firestations.map</file>
-    <layer name="fire_stations">
-        <template name="identify"><![CDATA[
-        <div class="result-item">
-            <div class="result-title">
-            Firestation
+    <map-source name="firestations" type="mapserver">
+        <file>./demo/firestations/firestations.map</file>
+        <layer name="fire_stations">
+            <template name="identify"><![CDATA[
+            <div class="result-item">
+                <div class="result-title">
+                Firestation
+                </div>
+                <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
+                <b>Station Number:</b> {{ properties.Dak_GIS__5 }}<br>
             </div>
-            <b>Station City:</b> {{ properties.Dak_GIS__4 }}<br>
-            <b>Station Number:</b> {{ properties.Dak_GIS__5 }}<br>
-        </div>
-        ]]></template>
-    </layer>
-</map-source>
+            ]]></template>
+        </layer>
+    </map-source>
 ```
+<!-- {% endraw %} -->
 
 ## More information on templates
 
@@ -317,6 +319,7 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 * To be able to select features from a layer it needs to be configured as WFS.
 * The following needs added after line 5 in `mapbook.xml`:
 
+<!-- {% raw %} -->
 ```xml
 <map-source name="firestations-wfs" type="mapserver-wfs">
     <file>./demo/firestations/firestations.map</file>
@@ -334,6 +337,7 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
     </layer>
 </map-source>
 ```
+<!-- {% endraw %} -->
 
 ## Reload and select Firestations
 
