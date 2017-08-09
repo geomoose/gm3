@@ -98,7 +98,7 @@ Once extracted, restart the Apache MS4W Service.
 
 ## Back to the browser
 
-GeoMoose will now show up on the MS4W (localhost)[http://localhost/] page under applications
+GeoMoose will now show up on the MS4W [localhost](http://localhost/) page under applications
 
 ![geomoose listing](../ms4w-quickstart/geomoose-success-1.png)
 
@@ -150,7 +150,7 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
 ## Batteries are included with Firestations
 
 * The firestations layer is included with the GeoMoose 3 Demo Data.
-* Open `C:\ms4w\apps\gm3\htdocs\examples\desktop\mapbook.xml`
+* Open `C:\ms4w\apps\gm3\htdocs\workshop\mapbook.xml`
 * Add the following after line 5:
     ```xml
     <map-source name="firestations" type="mapserver">
@@ -206,6 +206,7 @@ MAP
                 SIZE 8
             END
         END
+        TOLERANCE 10
         TEMPLATE 'dummy'
     END # End of Layer
 ```
@@ -219,7 +220,7 @@ END # End of Map
 
 * GeoMoose separates the difference between the source-data with
   `<map-source />` es and presentation with the use of the `<catalog>`.
-* In `mapbook.xml` goto line 427 and add the following on the next line:
+* In `mapbook.xml` goto line 445 and add the following on the next line:
     ```xml
     <layer src="firestations/fire_stations" title="Firestations"/>
     ```
