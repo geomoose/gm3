@@ -127,7 +127,7 @@ Click a link to launch the Desktop or Mobile version of GeoMoose.
 
 ![GeoMoose Application Structure](./gm3_structure.png)
 
-*Darker shading indicates the degree of afffect for files during a GeoMoose 3 upgrade.*
+*Darker shading indicates the degree of affect for files during a GeoMoose 3 upgrade.*
 
 ## What does the app look like?
 
@@ -180,7 +180,7 @@ MAP
     END
 ```
 
-## firstations.map - Layer definition
+## firestations.map - Layer definition
 
 ```
     LAYER
@@ -239,7 +239,7 @@ END # End of Map
 
 * WMS has the GetFeatureInfo request which GeoMoose will use to fetch feature data.
 * For a layer to work with identify it needs to have a `<template>` named `identify`
-* In the `mapbook.xml` file update the `firstations` `<map-source>` definition:
+* In the `mapbook.xml` file update the `firestations` `<map-source>` definition:
 
 ```xml
 <map-source name="firestations" type="mapserver">
@@ -261,7 +261,7 @@ END # End of Map
 ## More information on templates
 
 * GeoMoose has a rich template system provided by Mark.up.
-  [More infoformation on GeoMoose templates here.](http://geomoose.github.io/gm3/templates.html)
+  [More information on GeoMoose templates here.](http://geomoose.github.io/gm3/templates.html)
 * Features in GeoMoose are processed through the templates as
   [GeoJSON](http://geojson.org). For example:
 
@@ -352,10 +352,10 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 ## Configuring GeoMoose components
 
 * Open `app.js` in an editor.
-* The gm3.Application's `add` function accepts three paramters:
+* The gm3.Application's `add` function accepts three parameters:
   1. The component class.
   2. The DOM element ID where the component.
-  3. The optinal properties for the component.
+  3. The optional properties for the component.
 
 ## Configure Coordinate Display
 
@@ -392,7 +392,7 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 
 * Let's assume 'Find Me' does not need a label.
 * In `C:\ms4w\apps\gm3\htdocs\workshop\ create a new `site.css` file.
-* Add the follwowing:
+* Add the following:
 
 ```css
 .toolbar .tool.findme .label {
@@ -419,7 +419,7 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 
 * More info is available in the GeoMoose [How-to style the toolbar guide.](http://geomoose.github.io/gm3/howto/style-the-toolbar.html)
 
-## Put a sweet gradiant on the header
+## Put a sweet gradient on the header
 
 ```css
 .header {
