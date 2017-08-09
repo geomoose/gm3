@@ -22,7 +22,7 @@ The default background is an attractive medium grey but its not everyone's prefe
 }
 ```
 
-`darksteelblue` can be changed with any CSS definition.  
+`darksteelblue` can be changed with any CSS definition.
 
 ### With a background image
 A color could easily be substituted with an image, such as this desirable granite pattern:

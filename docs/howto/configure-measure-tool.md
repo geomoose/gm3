@@ -1,6 +1,6 @@
-# How to configure the Measure tool
+# How-to configure the Measure tool
 
-The measure tool is managed as a part of the ServiceManager component. 
+The measure tool is managed as a part of the ServiceManager component.
 Therefore, all the options for the measure tool are passed in as options
 to the ServiceManger component when it's added to the application.
 
