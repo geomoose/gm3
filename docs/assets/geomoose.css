@@ -1,0 +1,50 @@
+/* dark green: #277b3c */
+
+body {
+	background-color: #dddddd;
+	padding-top: 100px;
+	margin: 0px 10px 0px 10px;
+}
+
+.site-header .logo {
+	height: 75px;
+}
+
+.header-links {
+	padding-top: 5px;
+}
+
+a {
+	color: #6dbe45;
+}
+
+.header-links a {
+	color: black;
+	font-size: 15px;
+	padding-left: .5em;
+	cursor: pointer;
+}
+
+.header-links a:hover {
+	color: #277b3c;
+	text-decoration: underline;
+}
+
+.site-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+    border-top: none;
+	border-bottom: solid 1px black;
+	text-align: left;
+
+	background-color: white;
+	background-image: url(parcel_bg.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+}
+
+main, footer {
+    background-color: white;
+}

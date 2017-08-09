@@ -64,6 +64,12 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('identify', IdentifyService);
     app.registerService('search', SearchService);
+    app.registerService('search-firestations', SearchService, {
+        searchLayers: ['firestations/fire_stations'],
+        fields: [
+            {type: 'text', label: 'Station city', name: 'Dak_GIS__4'}
+        ]
+    });
     app.registerService('select', SelectService, {
         defaultLayer: 'vector-parcels/parcels'
     });

@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Welcome to the GeoMoose Documentation
 
 * Quickstarts:

@@ -24,6 +24,7 @@ layouts but is defined in this way:
 To override the default layouts the layouts need to be configured
 for the PrintModal:
 
+<!-- {% raw %} -->
  ```javascript
 
 var custom_layouts = [
@@ -61,6 +62,7 @@ var custom_layouts = [
    layouts: custom_layouts
  });
 ```
+<!-- {% endraw %} -->
 
 `custom_layouts` contains:
 * `label` - The name of this layout presented to the user in the Print Preview dialog.

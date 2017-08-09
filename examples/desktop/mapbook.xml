@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <mapbook version="3.0">
-	<!--
-		The mapping services define the source of the mapping data.
-	-->
+    <!--
+        The mapping services define the source of the mapping data.
+    -->
 
-	<map-source name="sketch" type="vector" title="Drawing and Markup">
+    <map-source name="sketch" type="vector" title="Drawing and Markup">
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
             {
@@ -28,7 +28,7 @@
             </div>
             ]]></legend>
         </layer>
-	</map-source>
+    </map-source>
 
     <map-source name="vector-parcels" type="mapserver-wfs">
         <file>./demo/parcels/parcels.map</file>
@@ -126,29 +126,29 @@
 
     </map-source>
 
-	<map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
-		<file>./demo/scalebars/scalebar_miles.map</file>
-		<layer name="scalebar_mi"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
+    <map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
+        <file>./demo/scalebars/scalebar_miles.map</file>
+        <layer name="scalebar_mi"/>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
 
 
-	<map-source name="scalebar_feet" type="mapserver" title="Scalebar Feet">
-		<file>./demo/scalebars/scalebar_feet.map</file>
-		<layer name="scalebar_feet"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
+    <map-source name="scalebar_feet" type="mapserver" title="Scalebar Feet">
+        <file>./demo/scalebars/scalebar_feet.map</file>
+        <layer name="scalebar_feet"/>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
 
 
-	<map-source name="scalebar_kilometers" type="mapserver" title="Scalebar Kilometers">
-		<file>./demo/scalebars/scalebar_kilometers.map</file>
-		<layer name="scalebar_km"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
+    <map-source name="scalebar_kilometers" type="mapserver" title="Scalebar Kilometers">
+        <file>./demo/scalebars/scalebar_kilometers.map</file>
+        <layer name="scalebar_km"/>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
 
-	<map-source name="pipelines" type="mapserver" title="Pipelines">
-		<file>./demo/pipelines/pipelines.map</file>
-		<layer name="pipelines" status="off">
+    <map-source name="pipelines" type="mapserver" title="Pipelines">
+        <file>./demo/pipelines/pipelines.map</file>
+        <layer name="pipelines" status="off">
             <template name="identify"><![CDATA[
             <div>
                 <div class="feature-class pipelines">
@@ -163,21 +163,21 @@
             </div>
             ]]></template>
         </layer>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
 
-	<!-- Demo of parcels as points. -->
+    <!-- Demo of parcels as points. -->
     <!--
-	<map-source name="parcel_points" type="mapserver" up="true" down="true" title="Parcel Points">
-		<file>./demo/parcels/parcels.map</file>
-		<layer name="parcel_points"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
+    <map-source name="parcel_points" type="mapserver" up="true" down="true" title="Parcel Points">
+        <file>./demo/parcels/parcels.map</file>
+        <layer name="parcel_points"/>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
     -->
 
-	<map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
-		<file>./demo/parcels/parcels.map</file>
-		<layer name="parcels" status="on">
+    <map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
+        <file>./demo/parcels/parcels.map</file>
+        <layer name="parcels" status="on">
             <template name="identify"><![CDATA[
                 <div class="identify-result">
                     <div class="feature-class">Parcel</div>
@@ -190,44 +190,44 @@
                 </div>
             ]]></template>
         </layer>
-		<layer name="parcels_points"/>
-		<param name="FORMAT" value="image/png"/>
-		<!-- this is used only for testing the group-functionality -->
-		<!--
-		-->
-		<layer name="parcels_group"/>
-		<layer name="all"/>
-	</map-source>
+        <layer name="parcels_points"/>
+        <param name="FORMAT" value="image/png"/>
+        <!-- this is used only for testing the group-functionality -->
+        <!--
+        -->
+        <layer name="parcels_group"/>
+        <layer name="all"/>
+    </map-source>
 
-	<!--
-	 * This map-source is used solely for testing geomose
-	 * with international characters.
-	 -->
-	<map-source name="international" type="mapserver">
-		<file>./demo/i18n/utf8_polys.map</file>
-		<layer name="testing"/>
-	</map-source>
+    <!--
+     * This map-source is used solely for testing geomose
+     * with international characters.
+     -->
+    <map-source name="international" type="mapserver">
+        <file>./demo/i18n/utf8_polys.map</file>
+        <layer name="testing"/>
+    </map-source>
 
-	<map-source name="borders" type="mapserver" title="City and County Borders">
-		<file>./demo/statedata/basemap.map</file>
-		<layer name="city_poly" status="off"/>
-		<layer name="county_borders" status="off"/>
-	</map-source>
+    <map-source name="borders" type="mapserver" title="City and County Borders">
+        <file>./demo/statedata/basemap.map</file>
+        <layer name="city_poly" status="off"/>
+        <layer name="county_borders" status="off"/>
+    </map-source>
 
-	<map-source name="iastate" type="wms">
-		<url>https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
-		<layer name="nexrad-n0r"/>
-		<param name="FORMAT" value="image/png"/>
-		<param name="TRANSPARENT" value="TRUE"/>
-	</map-source>
+    <map-source name="iastate" type="wms">
+        <url>https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
+        <layer name="nexrad-n0r"/>
+        <param name="FORMAT" value="image/png"/>
+        <param name="TRANSPARENT" value="TRUE"/>
+    </map-source>
 
 
-	<map-source name="ags" type="ags">
-		<url>https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
-		<layer name="NatGeo_World_Map"/>
-		<param name="FORMAT" value="png"/>
+    <map-source name="ags" type="ags">
+        <url>https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
+        <layer name="NatGeo_World_Map"/>
+        <param name="FORMAT" value="png"/>
         <param name="cross-origin" value="anonymous"/>
-	</map-source>
+    </map-source>
 
     <map-source name="ags-vector-dc16" type="ags-vector">
         <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/16</url>
@@ -379,41 +379,41 @@
     </map-source-->
 
     <map-source name="openstreetmap" type="xyz">
-		<layer name="osm_mapnik">
-			<legend type="html"><![CDATA[
-			&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
-			<br><br>
-			]]></legend>
-		</layer>
-		<url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <layer name="osm_mapnik">
+            <legend type="html"><![CDATA[
+            &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
+            <br><br>
+            ]]></legend>
+        </layer>
+        <url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 
         <param name="cross-origin" value="anonymous"/>
-	</map-source>
+    </map-source>
 
-	<map-source name="wmflabs" type="xyz" printable="false">
-		<layer name="osm_black_n_white">
-			<legend type="html"><![CDATA[
-			Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
-			<br><br>
-			]]></legend>
-		</layer>
-		<url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-	</map-source>
+    <map-source name="wmflabs" type="xyz" printable="false">
+        <layer name="osm_black_n_white">
+            <legend type="html"><![CDATA[
+            Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
+            <br><br>
+            ]]></legend>
+        </layer>
+        <url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
+    </map-source>
 
-	<map-source name="usgs" type="mapserver">
-		<file>./demo/wms/wms_proxy.map</file>
-		<layer name="usgs_imagery"/>
-		<layer name="usgs_topo"/>
-	</map-source>
+    <map-source name="usgs" type="mapserver">
+        <file>./demo/wms/wms_proxy.map</file>
+        <layer name="usgs_imagery"/>
+        <layer name="usgs_topo"/>
+    </map-source>
 
-	<map-source name="lmic" type="mapserver">
-		<file>./demo/wms/wms_proxy.map</file>
-		<layer name="mncomp">
+    <map-source name="lmic" type="mapserver">
+        <file>./demo/wms/wms_proxy.map</file>
+        <layer name="mncomp">
             <legend type="nolegend"/>
         </layer>
-	</map-source>
+    </map-source>
 
     <map-source name="bing" type="bing">
         <layer name="roads"/>
@@ -421,81 +421,79 @@
         <param name="key" value="'Your Key Here'"/>
     </map-source>
 
-	<!--
-		The catalog defines how the layers will be displayed in the catalog tab.
-	-->
-	<catalog>
-		<!-- Layer for testing international character support.
-		<layer title="Test International Characters" src="international/testing"/>
-		-->
-		<layer src="sketch/default"
+    <!--
+        The catalog defines how the layers will be displayed in the catalog tab.
+    -->
+    <catalog>
+        <!-- Layer for testing international character support.
+        <layer title="Test International Characters" src="international/testing"/>
+        -->
+        <layer src="sketch/default"
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" />
 
-		<layer title="Vector Parcels" src="vector-parcels/parcels">
-            <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
-        </layer>
-		<!--
-		<layer title="Census Cities"  activate="true" src="census_cities" fade="false" unfade="false" metadata="false" legend="false" draw-point="false" draw-line="false" draw-polygon="true" edit-attributes="true" edit-shape="true" remove-feature="true" remove-all-features="true" buffer="true"></layer>
-		-->
-		<group title="Overlays">
-			<group title="County Layers" expand="false">
+        <group title="Overlays" expand="true">
+            <group title="County Layers">
 
-				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
-					<metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
-					<!--
-					<legend>images/logo_mini.gif</legend>
-					-->
-				</layer>
-				<layer title="Parcel Points" src="parcels/parcels_points" minscale="6000" maxscale="20000" status="off"/>
+                <layer title="Vector Parcels" src="vector-parcels/parcels">
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                </layer>
+
+                <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                    <!--
+                    <legend>images/logo_mini.gif</legend>
+                    -->
+                </layer>
+                <layer title="Parcel Points" src="parcels/parcels_points" minscale="6000" maxscale="20000" status="off"/>
                 <layer title="Expensive Parcels" src="vector-parcels/big-money"/>
-				<layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
-				<layer title="AGS Dakota County Rail" src="ags-vector-dc16/railroads"/>
-				<!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
-			</group>
-			<layer src="pipelines/pipelines"></layer>
-			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
-		</group>
+                <layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
+                <layer title="AGS Dakota County Rail" src="ags-vector-dc16/railroads"/>
+                <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
+            </group>
+            <layer src="pipelines/pipelines"></layer>
+            <layer title="Weather Radar" src="iastate/nexrad-n0r" />
+        </group>
 
-		<group title="Scalebars" expand="false">
-			<layer src="scalebar_miles/scalebar_mi" legend="false" show-legend="false" fade="false" unfade="false"/>
-			<layer src="scalebar_feet/scalebar_feet" legend="false" show-legend="false" fade="false" unfade="false"/>
-			<layer src="scalebar_kilometers/scalebar_km" legend="false" show-legend="false" fade="false" unfade="false"/>
-		</group>
+        <group title="Scalebars" expand="false">
+            <layer src="scalebar_miles/scalebar_mi" legend="false" show-legend="false" fade="false" unfade="false"/>
+            <layer src="scalebar_feet/scalebar_feet" legend="false" show-legend="false" fade="false" unfade="false"/>
+            <layer src="scalebar_kilometers/scalebar_km" legend="false" show-legend="false" fade="false" unfade="false"/>
+        </group>
 
-		<group title="Backgrounds" expand="true" multiple="false">
-			<layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
+        <group title="Backgrounds" expand="true" multiple="false">
+            <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
-			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
-			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
+            <layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
+            <layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
 
             <!-- These layers can be *very* slow, they are left here
               -  for demonstration purposes.
-			<layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
-			<layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
             -->
-			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
 
             <!-- These layres are commented out until a user enabled bing
               -  with an appropriate key.
-			<layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
-			<layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
             -->
-		</group>
-	</catalog>
+        </group>
+    </catalog>
 
-	<!--
-		The toolbar defines which services are referneces in the toolbar
-	-->
-	<toolbar>
-		<tool name="fullextent" title="Zoom to Full Extent" type="action"/>
-		<tool name="measure" title="Measure" type="service"/>
-		<tool name="print" title="Print" type="action"/>
+    <!--
+        The toolbar defines which services are referneces in the toolbar
+    -->
+    <toolbar>
+        <tool name="fullextent" title="Zoom to Full Extent" type="action"/>
+        <tool name="measure" title="Measure" type="service"/>
+        <tool name="print" title="Print" type="action"/>
 
-		<tool name="identify" title="Identify" type="service"/>
+        <tool name="identify" title="Identify" type="service"/>
 
-		<tool name="select" title="Select Features" type="service"/>
+        <tool name="select" title="Select Features" type="service"/>
 
         <drawer name="searches" title="Search">
             <tool name="search" title="Search by Owner" type="service"/>
@@ -503,5 +501,5 @@
         </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>
-	</toolbar>
+    </toolbar>
 </mapbook>

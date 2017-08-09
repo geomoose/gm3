@@ -64,7 +64,7 @@ function SearchService(Application, options) {
         return [
             {
                 comparitor: 'ilike',
-                name: 'OWNER_NAME',
+                name: fields[0].name,
                 value: '*' + fields[0].value + '*'
             }
         ];
