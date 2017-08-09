@@ -672,9 +672,8 @@ class Map extends Component {
                 let wms_src = this.olLayers[mapSource.name].getSource();
                 let params = wms_src.getParams();
                 // ".ck" = "cache killer"
-                params['.ck'] = (new Date()).getMilliseconds();
+                params['.ck'] = uuid.v4();
                 wms_src.updateParams(params);
-                // this.olLayers[mapSource.name].getSource().refresh();
                 break;
             default:
                 // do nothing
