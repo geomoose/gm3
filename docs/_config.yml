@@ -18,7 +18,7 @@ title: GeoMoose Documentation
 email: geomoose-users@mail.osgeo.org
 description: > # this means to ignore newlines until "baseurl:"
     GeoMoose 3.0.0 Documentation
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/gm3" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: ""
 github_username: ""
