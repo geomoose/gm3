@@ -16,7 +16,7 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
 * [How-to customize the Coordinate Display](./coordinate-display.md)
 * [How-to customize tabs](./customize-tabs.md)
 * [How-to add a disclaimer](./disclaimer.md)
-* [How-to add custom print layouts](./print-layouts.md)
+* [How-to create a custom print layout](./print-layouts.md)
 * [How-to start a service (incl. at startup)](./start-a-service.md)
 * [How-to style the toolbar](./style-the-toolbar.md)
 * [How-to style the header](./style-the-header.md)

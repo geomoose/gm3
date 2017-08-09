@@ -1,4 +1,4 @@
-# Creating a custom print layout
+# How-to create a custom print layout
 
 GeoMoose uses jsPDF to perform client-side generation of PDF printouts.
 It has four built-in templates but they are relatively plain and may

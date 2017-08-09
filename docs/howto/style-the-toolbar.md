@@ -1,4 +1,4 @@
-# How to style the toolbar
+# How-to style the toolbar
 
 Want to change the styling for a toolbar icon? No problem! GeoMoose was written in order to provide easy-to-override CSS. Making it easy to change icons, colours, and other styles without writing any code!
 
