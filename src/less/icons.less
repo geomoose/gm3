@@ -25,19 +25,26 @@
 @folder-color: #FFDC29;
 @refresh-icon-disabled-color: #82A984;
 @refresh-icon-enabled-color: #5DF265;
+@icon-size: 20px;
 
 .icon {
-    font: normal normal normal 14px/1 mapskin;
+    font: normal normal normal @icon-size/1 mapskin;
     cursor: pointer;
-    margin-right: 0.25em;
+    margin-right: 0.5em;
+    vertical-align: middle;
 
     &:before {
         content: "\e031";
     }
 }
 
-.icon.upload, .icon.clear, .icon.download, .icon.remove, .icon.refresh {
+.icon.upload, .icon.clear, .icon.download, .icon.remove, .icon.refresh,
+.icon.lengend, .icon.up, .icon.down,
+.icon.fade, .icon.unfade, .icon.metadata,
+.icon.sort, .icon.remove, .icon.filter,
+.icon.favorite, .icon.refresh, .icon.folder {
     .fa;
+    font-size: @icon-size/1;
 }
 
 .icon.upload {
@@ -62,9 +69,6 @@
     &:before {
         content: @fa-var-minus-circle;
     }
-}
-
-.icon.point,.icon.line,.icon.polygon,.icon.edit {
 }
 
 .icon.point {
@@ -99,24 +103,18 @@
 }
 
 .icon.legend {
-    .fa;
-
     &:before {
         content: @fa-var-list-alt;
     }
 }
 
 .icon.up {
-    .fa;
-
     &:before {
         content: @fa-var-arrow-up;
     }
 }
 
 .icon.down {
-    .fa;
-
     &:before {
         content: @fa-var-arrow-down;
     }
@@ -127,23 +125,15 @@
 }
 
 .icon.fade, .icon.unfade {
-    .fa;
-
     &:before {
         content: @fa-var-adjust;
     }
 }
 
 .icon.metadata {
-    .fa;
-
     &:before {
         content: @fa-var-address-card-o;
     }
-}
-
-.icon.sort, .icon.remove, .icon.filter {
-    .fa;
 }
 
 .icon.sort {
@@ -172,8 +162,6 @@
 }
 
 .icon.favorite {
-    .fa;
-
     color: @favorite-star-color;
 
     &:before {
@@ -188,7 +176,6 @@
 }
 
 .icon.folder {
-    .fa;
     color: @folder-color;
     &:before {
         content: @fa-var-folder;
