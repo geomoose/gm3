@@ -37,16 +37,64 @@ import GeoJSONFormat from 'ol/format/geojson';
 class UploadModal extends Modal {
     constructor(props) {
         super(props);
+        this.state = {
+            progress: '',
+        };
     }
 
     close(status) {
         if(status === 'upload') {
+            this.setState({progress: 'loading', withError: false, features: 0});
             this.parseFiles();
+        } else {
+            this.setState({loading: false, open: false});
         }
-        this.setState({open: false});
+    }
+
+    getOptions() {
+        switch (this.state.progress) {
+            case 'loading':
+                return [];
+            case 'finished':
+                return [
+                    {label: 'Close', value: 'dismiss'},
+                ];
+            default:
+                return this.props.options;
+        }
     }
 
     renderBody() {
+        // when loading,
+        if(this.state.progress === 'loading') {
+            return (
+                <div>
+                    <p>
+                        <span className="upload spinner"></span> Uploading file(s)...
+                    </p>
+                </div>
+            );
+        // after all files have uploaded
+        } else if(this.state.progress === 'finished') {
+            let error = false;
+            if(this.state.withError) {
+                error = (
+                    <p>
+                        There was an error uploading the file. Please verify
+                        it is a valid GeoJSON or KML file.
+                    </p>
+                );
+            }
+            return (
+                <div>
+                    <p>
+                        { this.state.features } features uploaded.
+                    </p>
+                    { error }
+                </div>
+            );
+        }
+
         return (
             <div>
                 <p>
@@ -78,6 +126,7 @@ class UploadModal extends Modal {
             //   () => {} style functions to prevent the context change,
             //   instead of abusing "self".
             // setup a "load" event.
+
             reader.onload = (function(file) {
                 return function(e) {
                     // geojson is always used as the output format.
@@ -112,20 +161,25 @@ class UploadModal extends Modal {
                         //  ol feautures need converted here...
                         let collection = geojson_format.writeFeaturesObject(ol_features);
 
-                        // only add features to the first layer listed in the
+                        // only add features to the first map source listed in the
                         //  catalog's layer definition
                         let src = self.props.layer.src[0];
                         // kick off the event
                         self.props.store.dispatch(msActions.addFeatures(
                             src.mapSourceName, collection.features));
 
-                        // TODO: Notify the user that n-number of features
-                        //       were added to the layer.
-                        // this.store.dispatch(createNotice('info', '...'));
+                        // update the counter for internal features
+                        self.setState({
+                            progress: 'finished',
+                            features: self.state.features + collection.features.length,
+                        });
                     } else {
-                        // TODO: Notify the user that something has
-                        //       gone terribly wrong.
-                        // this.store.dispatch(createNotice('error', '...'));
+                        // the user will get an error notification
+                        self.setState({
+                            progress: 'finished',
+                            features: 0,
+                            withError: true,
+                        });
                     }
                 }
             })(f);
@@ -161,7 +215,7 @@ export class UploadTool extends Component {
     }
 
     showModal() {
-        this.refs.upload_modal.setState({open: true});
+        this.refs.upload_modal.setState({progress: '', open: true});
     }
 
     render() {
