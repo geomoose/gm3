@@ -155,7 +155,7 @@ class Application {
                 'fill-opacity': 0.25,
                 'line-opacity': 0.25,
             },
-            filter: []
+            filter: null,
         }));
         // the "hot" layer shows the features as red on the map,
         //  namely useful for hover-over functionality.
@@ -210,7 +210,7 @@ class Application {
                 'fill-opacity': 0.50,
                 'line-opacity': 0.50,
             },
-            filter: []
+            filter: null,
         }));
     }
 
