@@ -58,7 +58,7 @@ class MetadataTool extends Component {
         return (
             <a className="metadata" href={ this.props.href } target="_blank"
                 title="View metadata - opens new window">
-                <i className="tool metadata"></i>
+                <i className="icon metadata"></i>
             </a>
         );
     }
