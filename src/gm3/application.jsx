@@ -61,8 +61,6 @@ import Mark from 'markup-js';
 
 import * as util from './util';
 
-import Map from './components/map';
-
 class Application {
 
     constructor(config = {}) {
