@@ -33,6 +33,8 @@ import GeoJSONFormat from 'ol/format/geojson';
 
 import proj from 'ol/proj';
 
+import { matchFeatures } from '../../../util';
+
 
 /* Present the user with a helpful modal dialog
  * for downloading their data to the map.
@@ -77,35 +79,37 @@ class DownloadModal extends Modal {
 
         // find the layer and check to see if it has features,
         //  if features is undefined, then just return an empty collection.
-        let features = [];
-        let found = false;
-        for(const layer of map_source.layers) {
-            if(layer.name === src.layerName) {
-                if(layer.features) {
-                    features = layer.features;
-                }
-                found = true;
+        let features = map_source.features;
+
+        // check to see if there is a filter on the specified layer
+        let filter = null;
+        for(let i = 0, ii = map_source.layers.length; filter === null && i < ii; i++) {
+            const layer = map_source.layers[i];
+            if(layer.name === src.layerName && layer.filter !== null) {
+                filter = layer.filter;
             }
         }
 
-        if(found) {
-            // fake a feature collection for parsing purposes.
-            const parsed_features = input_format.readFeatures({
-                type: 'FeatureCollection', features: features
-            }, {
-                dataProjection: proj.get(map_proj),
-                featureProjection: proj.get('EPSG:4326')
-            });
-
-            // write the contents out
-            const output_contents = output_format.writeFeatures(parsed_features);
-            // convert to a blob
-            const output_blob = new Blob([output_contents], {type: output_mimetype});
-            // and BOOM! out to file saver.
-            FileSaver.saveAs(output_blob, filename);
-        } else {
-            console.info('Layer could not be found in the map source.');
+        // if a filter is found on the layer,
+        // then ensure only those features are matched.
+        if(filter !== null) {
+            features = matchFeatures(features, filter);
         }
+
+        // fake a feature collection for parsing purposes.
+        const parsed_features = input_format.readFeatures({
+            type: 'FeatureCollection', features: features
+        }, {
+            dataProjection: proj.get(map_proj),
+            featureProjection: proj.get('EPSG:4326')
+        });
+
+        // write the contents out
+        const output_contents = output_format.writeFeatures(parsed_features);
+        // convert to a blob
+        const output_blob = new Blob([output_contents], {type: output_mimetype});
+        // and BOOM! out to file saver.
+        FileSaver.saveAs(output_blob, filename);
     }
 
     onChange(evt) {
