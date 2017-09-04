@@ -191,7 +191,7 @@ class ServiceManager extends Component {
                 html_contents = service.resultsAsHtml(queryId, query);
             }
         } else {
-            html_contents = "<i class='fa fa-spin fa-refresh'></i>";
+            html_contents = "<i class='service spinner'></i>";
         }
 
         return {__html: html_contents};
