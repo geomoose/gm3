@@ -29,6 +29,7 @@ Add the following to `mapbook.xml`:
         ]]></template>
     </layer>
 </map-source>
+```
 <!-- {% endraw %} -->
 
 ## The important bits
@@ -39,7 +40,7 @@ the layer to be used for select:
 1. In `<map-source ...> `, `type="mapserver-wfs"`: WFS is the OGC Web Feature Serice.
 
    WFS servers emit actual vector features definitions and not rendered maps.
-   
+
    You must have a `<param name="typename" ...>` in the `<map-source ...>` for the wfs to be valid
 
 2. In `<layer ...>`, `selectable="true"`: This tells GeoMoose the layer can
@@ -48,4 +49,4 @@ the layer to be used for select:
 3. Inside of `<layer...>` there is a `<template name="select">`: This will be the template
    used by GeoMoose to render features that have been selected. If the template is not
    present then the layer will not make itself available to select.
-   
+
