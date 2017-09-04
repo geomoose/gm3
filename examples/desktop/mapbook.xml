@@ -462,7 +462,7 @@
             <layer src="scalebar_kilometers/scalebar_km" legend="false" show-legend="false" fade="false" unfade="false"/>
         </group>
 
-        <group title="Backgrounds" expand="true" multiple="false">
+        <group title="Backgrounds" expand="true">
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
             <layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
