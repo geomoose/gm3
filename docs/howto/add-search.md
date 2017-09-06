@@ -37,8 +37,8 @@ In `app.js`, a new search service needs configured for that layer:
 ```javascript
 // Add a search service
 app.registerService('search-firestations', SearchService, {
-    // search only the firestations/fire_stations layer.
-    searchLayers: ['firestations/fire_stations'],
+    // search only the firestations-wfs/fire_stations layer.
+    searchLayers: ['firestations-wfs/fire_stations'],
     // Dak_GIS__4 stores the name of the Firestation's city.
     fields: [
         {type: 'text', label: 'Station city', name: 'Dak_GIS__4'}
