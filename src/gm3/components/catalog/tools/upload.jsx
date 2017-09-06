@@ -31,6 +31,23 @@ import Modal from '../../modal';
 import KMLFormat from 'ol/format/kml';
 import GeoJSONFormat from 'ol/format/geojson';
 
+/** Cursory validation of uploaded features.
+ *
+ *  @param feature
+ *
+ *  @returns Boolean.
+ */
+function isValidFeature(feature) {
+    // ensure all of the geometry's coordinates are numbers.
+    const coords = feature.getGeometry().flatCoordinates;
+    for(var i = 0, ii = coords.length; i < ii; i++) {
+        if(isNaN(coords[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /* Present the user with a helpful modal dialog
  * for uploading their data to the map.
  */
@@ -82,6 +99,13 @@ class UploadModal extends Modal {
                     <p>
                         There was an error uploading the file. Please verify
                         it is a valid GeoJSON or KML file.
+                    </p>
+                );
+            } else if(this.state.invalid > 0) {
+                error = (
+                    <p>
+                        There were { this.state.invalid } invalid features found in the
+                        file. Please check the source and try again.
                     </p>
                 );
             }
@@ -151,15 +175,28 @@ class UploadModal extends Modal {
                     if(input_format !== null) {
                         // parse the features.
                         let ol_features = input_format.readFeatures(e.target.result);
+                        // create a list of validated features.
+                        const valid_features = [];
 
                         // TODO: This should be getting the map projection
                         //       from the map-view!!!
+                        let invalid_count = 0;
                         for(let f of ol_features) {
                             f.setGeometry(f.getGeometry().transform('EPSG:4326', 'EPSG:3857'));
+
+                            if(isValidFeature(f)) {
+                                valid_features.push(f);
+                            } else {
+                                invalid_count += 1;
+                            }
                         }
+
+                        // unload the ol_features array form memory.
+                        ol_features = null;
+
                         // internal feature representation is as GeoJSON, so the parsed
                         //  ol feautures need converted here...
-                        let collection = geojson_format.writeFeaturesObject(ol_features);
+                        let collection = geojson_format.writeFeaturesObject(valid_features);
 
                         // only add features to the first map source listed in the
                         //  catalog's layer definition
@@ -172,6 +209,7 @@ class UploadModal extends Modal {
                         self.setState({
                             progress: 'finished',
                             features: self.state.features + collection.features.length,
+                            invalid: invalid_count,
                         });
                     } else {
                         // the user will get an error notification
