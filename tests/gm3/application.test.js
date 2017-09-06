@@ -108,6 +108,10 @@ describe('application api calls', () => {
             center: [0,0],
             resolution: 100
         });
+
+        const map_view = app.store.getState().map;
+        expect(map_view.center).toEqual([0, 0]);
+        expect(map_view.resolution).toBe(100);
     });
 
     it('adds a projection', () => {
@@ -117,4 +121,11 @@ describe('application api calls', () => {
         });
     });
 
+    it('zooms to a location', () => {
+        app.zoomTo(1000, 1000, 200);
+
+        const map_view = app.store.getState().map;
+        expect(map_view.center).toEqual([1000, 1000]);
+        expect(map_view.resolution).toBe(200);
+    });
 });

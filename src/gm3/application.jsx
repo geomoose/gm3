@@ -503,7 +503,7 @@ class Application {
      *
      */
     zoomTo(lon, lat, resolution) {
-        this.store.dispatch(mapActions.move({lon, lat}, resolution));
+        this.store.dispatch(mapActions.move([lon, lat], resolution));
     }
 
     /** Generic bridge to the application's store's dispatch function.
