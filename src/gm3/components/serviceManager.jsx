@@ -239,12 +239,19 @@ class ServiceManager extends Component {
      */
     renderQuery(queryId) {
         let query = this.props.queries[queryId];
-        let service_title = this.props.services[query.service].resultsTitle;
+
+        const service = this.props.services[query.service];
+
+        let service_title = service.resultsTitle;
+
+        // By default show the summary, unless showSummary is explicitly
+        //  set to false.
+        const show_header = (service.showHeader === false) ? false : true;
 
         // this is a little ungangly but it will help those who
         //  forget to specify a results title.
         if(!service_title) {
-            service_title = this.props.services[query.service].title + ' Results';
+            service_title = service.title + ' Results';
         }
 
         let layer_count = 0, feature_count = 0;
@@ -281,7 +288,7 @@ class ServiceManager extends Component {
                     </div>
                 </div>
                 <div className='results-query-id'>{ queryId }</div>
-                { info_header }
+                { show_header ? info_header : false }
                 <div dangerouslySetInnerHTML={this.renderQueryResults(queryId, query)}/>
             </div>
         );
