@@ -71,8 +71,8 @@ Download and unzip the GeoMoose examples and demo data. The examples zip file al
 the GeoMoose library.
 
 ```
-wget --no-check-certificate https://www.geomoose.org/downloads/gm3-examples-3.0.1.zip
-wget --no-check-certificate https://www.geomoose.org/downloads/gm3-demo-data-3.0.1.zip
+wget https://www.geomoose.org/downloads/gm3-examples-3.0.1.zip
+wget https://www.geomoose.org/downloads/gm3-demo-data-3.0.1.zip
 
 unzip gm3-examples-3.0.1.zip
 unzip gm3-demo-data-3.0.1.zip
