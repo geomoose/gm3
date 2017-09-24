@@ -14,6 +14,4 @@ layout: default
   How to extend GeoMoose's capabilities!
 * Important information for contributors:
     * [Style guide](./style_guide.md)
-
-
-
+* [GeoMoose Workshop](./workshop/index.md)
