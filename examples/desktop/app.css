@@ -84,6 +84,7 @@ body {
     height: 20px;
     left: 0; width: 100%;
     border-top: solid 1px black;
+    overflow: hidden;
 }
 
 #version {
