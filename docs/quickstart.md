@@ -13,6 +13,10 @@ This is the quickstart to *development* guide. If you are looking for a quicksta
 * Docker or MapServer 7.0+ or Newer
 * [NodeJS with Npm](https://nodejs.org/) v6.10.2 or Newer
 
+## Node Version Manager
+
+Recent LTS versions of Linux do  not have a sufficiently modern version of Node for developing GeoMoose. As such, we [recommend using nvm.](https://github.com/creationix/nvm) NVM allows running multiple versions of Node, NPM, and allows installing "global" packages without requiring sudo or root access.
+
 ## Create your fork
 
 GeoMoose contributions are done using Pull Requests.  You can read more about [pull requests on GitHub.](https://help.github.com/articles/about-pull-requests/)
