@@ -27,6 +27,22 @@
                 <b>Drawing</b>
             </div>
             ]]></legend>
+
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+
+    <map-source name="places" type="geojson">
+        <url>./places.geojson</url>
+        <layer name="default" title="Cities and Villages">
+            <style><![CDATA[
+            {
+                "line-color" : "#9e8647",
+                "line-width" : 5
+            }
+            ]]></style>
+
+            <template name="identify" auto="true" />
         </layer>
     </map-source>
 
@@ -428,6 +444,7 @@
         <!-- Layer for testing international character support.
         <layer title="Test International Characters" src="international/testing"/>
         -->
+
         <layer src="sketch/default"
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
@@ -435,6 +452,7 @@
 
         <group title="Overlays" expand="true">
             <group title="County Layers">
+                <layer src="places/default" />
 
                 <layer title="Vector Parcels" src="vector-parcels/parcels">
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
