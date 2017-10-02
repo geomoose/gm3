@@ -446,6 +446,7 @@ function isQueryable(mapSource) {
         case 'wms':
         case 'wfs':
         case 'ags-vector':
+        case 'geojson':
             return true;
         default:
             return false;

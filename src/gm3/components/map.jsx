@@ -245,8 +245,12 @@ class Map extends Component {
         let all_completed = true;
 
         // check to see if there are results for all the layers.
-        for(let layer of query.layers) {
-            all_completed = all_completed && (query.results[layer] || (layer === completedLayer));
+        if(query && query.layers) {
+            for(let layer of query.layers) {
+                all_completed = all_completed && (query.results[layer] || (layer === completedLayer));
+            }
+        } else {
+            all_completed = false;
         }
 
         if(all_completed) {
@@ -569,6 +573,50 @@ class Map extends Component {
 
     }
 
+    /** Run a query in memory.
+     *
+     */
+    vectorLayerQuery(queryId, query, queryLayer) {
+        let map_projection = this.map.getView().getProjection();
+        let geom_field = 'geom';
+
+        // get the map source
+        let ms_name = util.getMapSourceName(queryLayer);
+        let layer_name = util.getLayerName(queryLayer);
+
+        let map_source = this.props.mapSources[ms_name];
+
+        let view = this.props.mapView;
+
+        // if the openlayers layer is not on, this fakes
+        //  one for use in the query.
+        let ol_layer = this.olLayers[ms_name];
+        if(!ol_layer) {
+            ol_layer = this.createLayer(map_source);
+        }
+
+        // get the src
+        let src = ol_layer.getSource();
+
+        const format = new GeoJSONFormat();
+
+        const result_features = [];
+
+        const selection = query.selection;
+        if(selection && selection.geometry && selection.geometry.type === 'Point') {
+            const coords = selection.geometry.coordinates;
+            src.forEachFeatureAtCoordinateDirect(coords, (feature) => {
+                result_features.push(format.writeFeatureObject(feature));
+            });
+        }
+
+        this.props.store.dispatch(
+            mapActions.resultsForQuery(queryId, queryLayer, false, result_features)
+        );
+
+        this.checkQueryForCompleteness(queryId, queryLayer);
+    }
+
 
     /** Execute a query
      *
@@ -583,13 +631,23 @@ class Map extends Component {
             let ms_name = util.getMapSourceName(query_layer);
             let map_source = this.props.mapSources[ms_name];
 
-            if(map_source.type === 'wms') {
-                this.wmsGetFeatureInfoQuery(queryId, query.selection, query_layer);
-            } else if(map_source.type === 'wfs') {
-                // Query the WFS layer.
-                this.wfsGetFeatureQuery(queryId, query, query_layer);
-            } else if(map_source.type === 'ags-vector') {
-                this.agsFeatureQuery(queryId, query, query_layer);
+            // Run the appropriate query function
+            //  based on the map-source type
+            switch(map_source.type) {
+                case 'wms':
+                    this.wmsGetFeatureInfoQuery(queryId, query.selection, query_layer);
+                    break;
+                case 'wfs':
+                    this.wfsGetFeatureQuery(queryId, query, query_layer);
+                    break;
+                case 'ags-vector':
+                    this.agsFeatureQuery(queryId, query, query_layer);
+                    break;
+                case 'geojson':
+                case 'vector':
+                    this.vectorLayerQuery(queryId, query, query_layer);
+                default:
+                    // pass.
             }
         }
     }
