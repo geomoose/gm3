@@ -96,7 +96,7 @@ export function updateLayer(map, layer, mapSource) {
  */
 export function getLegend(mapSource, mapView, layerName) {
     // pull out the first url for making the legend.
-    const base_url = mapSource.urls[0];
+    const base_url = mapSource.urls[0].split('?')[0];
 
     const params = Object.assign({
         'REQUEST': 'GetLegendGraphic',
