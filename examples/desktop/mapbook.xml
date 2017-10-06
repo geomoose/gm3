@@ -32,7 +32,7 @@
         </layer>
     </map-source>
 
-    <map-source name="places" type="geojson">
+    <map-source name="places" type="geojson" title="Cities and Villages">
         <url>./places.geojson</url>
         <layer name="default" title="Cities and Villages">
             <style><![CDATA[

@@ -439,8 +439,9 @@ class Application {
                             const key = properties[k];
                             if(key !== '_uuid') {
                                 const value = feature.properties[key];
-                                html_contents += '<b>' + key + ':</b> ';
-                                html_contents += value + '<br/>';
+                                html_contents += Mark.up('<b>{{ key }}:</b> {{ value }} <br/>', {
+                                    key, value,
+                                }, util.FORMAT_OPTIONS);
                             }
                         }
                         html_contents += '</div>';
