@@ -8,6 +8,7 @@
   "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
     "test": "node node_modules/jest/bin/jest.js --coverage tests",
+    "test:only": "jest",
     "prepublish": "grunt build",
     "start": "grunt serve",
     "serve": "grunt serve"
@@ -68,7 +69,7 @@
     "mapskin": "^1.0.0",
     "markup-js": "^1.5.21",
     "md5": "^2.2.1",
-    "ol": "^4.1.1",
+    "ol": "~4.3.1",
     "papaparse": "^4.1.2",
     "proj4": "^2.4.3",
     "react": "~15.3.1",
