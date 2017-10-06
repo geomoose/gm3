@@ -417,14 +417,36 @@ class Application {
                         console.info('Failed to find template.', path, template_name);
                     }
                 }
-            }
 
-            // do not try to iterate through the features if
-            //  the template does not exist.
-            if(template_contents) {
-                for(let feature of query.results[path]) {
-                    // TODO: Make this plugable, check by template "type"?!?
-                    html_contents += Mark.up(template_contents, feature, util.FORMAT_OPTIONS);
+                // do not try to iterate through the features if
+                //  the template does not exist.
+                if(template_contents) {
+                    for(let feature of query.results[path]) {
+                        // TODO: Make this plugable, check by template "type"?!?
+                        html_contents += Mark.up(template_contents, feature, util.FORMAT_OPTIONS);
+                    }
+                } else if(layer_template && layer_template.type === 'auto') {
+                    const features = query.results[path];
+                    for(let i = 0, ii = features.length; i < ii; i++) {
+                        const feature = features[i];
+                        const properties = Object.keys(feature.properties);
+
+                        html_contents += '<div class="result">';
+                        html_contents += '<div class="feature-class">'
+                        html_contents += layer.label;
+                        html_contents += '</div>';
+                        for(let k = 0, kk = properties.length; k < kk; k++) {
+                            const key = properties[k];
+                            if(key !== '_uuid') {
+                                const value = feature.properties[key];
+                                html_contents += Mark.up('<b>{{ key }}:</b> {{ value }} <br/>', {
+                                    key, value,
+                                }, util.FORMAT_OPTIONS);
+                            }
+                        }
+                        html_contents += '</div>';
+                    }
+
                 }
             }
         }

@@ -258,6 +258,7 @@ export function addFromXml(xml, config) {
 
             let template_src = template_xml.getAttribute('src');
             let template_alias = template_xml.getAttribute('alias');
+            let auto_template = util.parseBoolean(template_xml.getAttribute('auto'));
             if(template_alias) {
                 template_def = {
                     type: 'alias',
@@ -267,12 +268,16 @@ export function addFromXml(xml, config) {
                 template_def = {
                     type: 'remote',
                     src: template_src
-                }
+                };
+            } else if(auto_template) {
+                template_def = {
+                    type: 'auto'
+                };
             } else {
                 template_def = {
                     type: 'local',
                     contents: util.getXmlTextContents(template_xml)
-                }
+                };
             }
 
             layer.templates[template_name] = template_def;
@@ -446,6 +451,8 @@ function isQueryable(mapSource) {
         case 'wms':
         case 'wfs':
         case 'ags-vector':
+        case 'geojson':
+        case 'vector':
             return true;
         default:
             return false;
