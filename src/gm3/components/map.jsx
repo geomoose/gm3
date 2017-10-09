@@ -685,6 +685,13 @@ class Map extends Component {
                     this.currentQueryFilter = filter_md5;
                 }
             }
+        } else {
+            // once there are no more queries,
+            //  clear the results from the map.
+            const results = this.props.mapSources.results;
+            if(results && results.features && results.features.length > 0) {
+                this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+            }
         }
     }
 
