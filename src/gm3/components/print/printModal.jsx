@@ -214,10 +214,10 @@ export default class PrintModal extends Modal {
                 k = 1;
                 break;
             case 'mm':
-                k = 72 / 25.4000508;
+                k = 72 / 25.4;
                 break;
             case 'cm':
-                k = 72 / 2.54000508;
+                k = 72 / 2.54;
                 break;
             case 'in':
                 k = 72;
