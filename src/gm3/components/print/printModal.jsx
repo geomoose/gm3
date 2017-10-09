@@ -33,6 +33,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import View from 'ol/view';
+import Proj from 'ol/proj';
+
 import jsPDF from 'jspdf';
 import Mark from 'markup-js';
 
@@ -44,6 +47,9 @@ import { getActiveMapSources } from '../../actions/mapSource';
 import { printed } from '../../actions/print';
 
 import DefaultLayouts from './printLayouts';
+
+import GeoPdfPlugin from './geopdf';
+
 
 export default class PrintModal extends Modal {
 
@@ -131,11 +137,37 @@ export default class PrintModal extends Modal {
 
     /* Wraps addImage specifically for the map.
      */
-    addMapImage(doc, def) {
+    addMapImage(doc, def, layout) {
         // this is not a smart component and it doesn't need to be,
         //  so sniffing the state for the current image is just fine.
         const image_data = this.props.store.getState().print.printData;
         this.addImage(doc, Object.assign({}, def, {image_data: image_data}));
+
+        // construct the extents from the map and convert
+        // them to WGS84
+        const map_view = this.props.store.getState().map;
+        const view = new View({
+            center: map_view.center,
+            resolution: map_view.resolution,
+            // TODO: get this from state
+            projection: 'EPSG:3857',
+        });
+
+
+        const u = layout.units;
+        let extents = view.calculateExtent([this.toPoints(def.width, u), this.toPoints(def.height, u)]);
+
+        const pdf_extents = [def.x, def.y, def.x + def.width, def.y + def.height];
+        for(let i = 0; i < pdf_extents.length; i++) {
+            pdf_extents[i] = this.toPoints(pdf_extents[i], u);
+        }
+
+        // TODO: the projection should come from the state.
+        extents = Proj.transformExtent(extents, 'EPSG:3857', 'EPSG:4326');
+
+        doc.setGeoArea(pdf_extents, extents);
+
+
     }
 
     /* Draw a shape on the map.
@@ -167,8 +199,53 @@ export default class PrintModal extends Modal {
         }
     }
 
+    /**
+     * Convert units to PDF units
+     *
+     */
+    toPoints(n, unit) {
+        let k = 1;
+
+        // this code is borrowed from jsPDF
+        //  as it does not expose a public API
+        //  for converting units to points.
+        switch (unit) {
+            case 'pt':
+                k = 1;
+                break;
+            case 'mm':
+                k = 72 / 25.4000508;
+                break;
+            case 'cm':
+                k = 72 / 2.54000508;
+                break;
+            case 'in':
+                k = 72;
+                break;
+            case 'px':
+                k = 96 / 72;
+                break;
+            case 'pc':
+                k = 12;
+                break;
+            case 'em':
+                k = 12;
+                break;
+            case 'ex':
+                k = 6;
+                break;
+            default:
+                throw 'Invalid unit: ' + unit;
+        }
+
+        return n * k;
+    }
 
     makePDF(layout) {
+        // check for and install the geopdf plugin
+        if(!jsPDF.API.setGeoArea) {
+            GeoPdfPlugin(jsPDF.API);
+        }
         // new PDF document
         const doc = new jsPDF(layout.orientation, layout.units, layout.page);
 
@@ -184,7 +261,7 @@ export default class PrintModal extends Modal {
                     this.addText(doc, element);
                     break;
                 case 'map':
-                    this.addMapImage(doc, element);
+                    this.addMapImage(doc, element, layout);
                     break;
                 case 'image':
                     this.addImage(doc, element);
