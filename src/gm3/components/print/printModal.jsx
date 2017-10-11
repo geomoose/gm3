@@ -61,12 +61,6 @@ export default class PrintModal extends Modal {
         //  layouts.
         this.layouts = props.layouts ? props.layouts : DefaultLayouts;
 
-        this.pxConversion = {
-            'pt': 1,
-            'in': 72,
-            'mm': 2.83465
-        };
-
         this.state = this.getMapSize(this.layouts[0], 1);
     }
 
@@ -155,7 +149,11 @@ export default class PrintModal extends Modal {
         });
 
         const u = layout.units;
-        const map_extents = view.calculateExtent([this.toPoints(def.width, u), this.toPoints(def.height, u)]);
+        const resolution = parseFloat(this.refs.resolution.value);
+        const map_extents = view.calculateExtent([
+            this.toPoints(def.width, u) * resolution,
+            this.toPoints(def.height, u) * resolution,
+        ]);
 
         const pdf_extents = [def.x, def.y, def.x + def.width, def.y + def.height];
         for(let i = 0; i < pdf_extents.length; i++) {
@@ -296,8 +294,6 @@ export default class PrintModal extends Modal {
      * @return An object with "width" and "height" properties.
      */
     getMapSize(layout, resolution) {
-        const units = this.pxConversion[layout.units];
-
         // iterate through the layout elements looking
         //  for the map.
         let map_element = null;
@@ -310,8 +306,8 @@ export default class PrintModal extends Modal {
 
         // caculate the width and height and kick it back.
         return {
-            width: map_element.width * units * resolution,
-            height: map_element.height * units * resolution
+            width: this.toPoints(map_element.width, layout.units) * resolution,
+            height: this.toPoints(map_element.height, layout.units) * resolution
         };
     }
 
