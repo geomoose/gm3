@@ -102,10 +102,11 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         },
         {
             label: 'Lat,Lon',
-            ref: 'EPSG:4326',
-            precision: 3
+            ref: 'latlon'
         }
     ];
+
+    console.log('projections?', point_projections);
 
     app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
         projections:  point_projections

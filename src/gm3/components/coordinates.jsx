@@ -76,7 +76,7 @@ export class CoordinateDisplay extends Component {
                 ref: 'usng'
             }
         ];
-        this.namedProjections = ['xy', 'usng'];
+        this.namedProjections = ['xy', 'usng', 'latlon'];
         this.getProjectionCoords = this.getProjectionCoords.bind(this);
         this.getCoordinateDisplay = this.getCoordinateDisplay.bind(this);
 
@@ -132,6 +132,12 @@ export class CoordinateDisplay extends Component {
         return proj.transform(this.props.coords, map_proj, latlon_proj);
     }
 
+    latlon() {
+        const coords = this.getLatLonCoords();
+        return coords[1].toFixed(3) + ', ' + coords[0].toFixed(3);
+    }
+
+
     getProjectionCoords(projection) {
         // TODO: The projection should be stored in the store,
         //       and defined by the user.
@@ -156,7 +162,13 @@ export class CoordinateDisplay extends Component {
                     </span>
                 );
                 break;
-
+            case 'latlon':
+                display = (
+                    <span className="coordinates map-latlon" key="latlon">
+                        <label>{projection.label}</label> { this.latlon() }
+                    </span>
+                );
+                break;
             case 'xy':
                 display = (
                     <span className="coordinates map-xy" key="xy">
