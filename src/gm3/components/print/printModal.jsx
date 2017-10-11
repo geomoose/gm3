@@ -143,8 +143,7 @@ export default class PrintModal extends Modal {
         const image_data = this.props.store.getState().print.printData;
         this.addImage(doc, Object.assign({}, def, {image_data: image_data}));
 
-        // construct the extents from the map and convert
-        // them to WGS84
+        // construct the extents from the map
         const map_view = this.props.store.getState().map;
         // TODO: get this from state
         const map_proj = 'EPSG:3857';
