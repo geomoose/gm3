@@ -968,7 +968,6 @@ class Map extends Component {
             // get the view of the map
             let view = this.map.getView();
             // create a "mapAction" and dispatch it.
-            // this.props.store.dispatch(mapActions.move(view.getCenter(), view.getResolution()));
             this.props.store.dispatch(mapActions.setView({
                 center: view.getCenter(),
                 resolution: view.getResolution(),
@@ -1262,6 +1261,10 @@ class Map extends Component {
 
                 this.map.getView().setCenter(view.center);
                 this.map.getView().setResolution(view.resolution);
+            }
+
+            if(map_view.getZoom() !== view.zoom) {
+                this.map.getView().setZoom(view.zoom);
             }
         }
 
