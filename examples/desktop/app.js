@@ -70,9 +70,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             {type: 'text', label: 'Station city', name: 'Dak_GIS__4'}
         ]
     });
-    app.registerService('select', SelectService, {
-        defaultLayer: 'vector-parcels/parcels'
-    });
+    app.registerService('select', SelectService);
 
     // This uses the OpenStreetMap Nominatim geocoder,
     // there is also a BingGeocoder service, but requires

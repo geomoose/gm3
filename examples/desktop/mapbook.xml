@@ -70,7 +70,6 @@
                 "line-width" : 2
             }
             ]]></style>
-            <template name="identify" src="./templates/parcels.html" />
             <template name="search"><![CDATA[
                 <div class="search-result">
                     <div class="search-label">
@@ -193,19 +192,9 @@
 
     <map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
         <file>./demo/parcels/parcels.map</file>
-        <layer name="parcels" status="on">
-            <template name="identify"><![CDATA[
-                <div class="identify-result">
-                    <div class="feature-class">Parcel</div>
-                    <div class="item"><label>PIN:</label> {{ properties.PIN }}</div>
-                    <div class="item"><label>Owner Name:</label> {{ properties.OWNER_NAME }}</div>
-                    <div class="item">
-                        <label>Est. Market Value:</label> <i>{{ properties.EMV_TOTAL }}</i>
-                    </div>
-                    <div class="item"><label>Acres:</label> {{ properties.ACRES_POLY }}</div>
-                </div>
-            ]]></template>
-        </layer>
+        <layer name="parcels" status="on" query-as="vector-parcels/parcels">
+            <template name="identify" src="./templates/parcels.html" />
+                    </layer>
         <layer name="parcels_points"/>
         <param name="FORMAT" value="image/png"/>
         <!-- this is used only for testing the group-functionality -->
