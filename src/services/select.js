@@ -78,7 +78,7 @@ function SelectService(Application, options) {
         label: 'Query Layer',
         default: options.defaultLayer,
         filter: {
-            // do not require the layer be visible to select it.
+            // ensure that the layer is visible to prevent confusion.
             requireVisible: true,
             // but require it have a select template.
             withTemplate: ['select', 'select-header']
