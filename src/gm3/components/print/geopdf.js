@@ -28,15 +28,7 @@ export default function jsGeoPdfPlugin(jsPDFAPI) {
         const out = this.internal.write;
 
         const bbox = pdfExt.join(' ');
-
-        // the ordering may seem odd here but PDF
-        //  flips the Y axis upside down and this accounts for that
-        //  change.
-        const minx = geoExt[0];
-        const maxx = geoExt[2];
-        const maxy = geoExt[1];
-        const miny = geoExt[3];
-        const bounds = [miny, minx, maxy, minx, maxy, maxx, miny, maxx].join(' ');
+        const bounds = geoExt.join(' ');
 
         const bbox_obj = this.internal.newAdditionalObject();
         const bounds_obj = this.internal.newAdditionalObject();
