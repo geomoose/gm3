@@ -72,14 +72,14 @@ function SelectService(Application, options) {
     this.keepAlive = false;
 
     /** User input fields, select allows choosing a layer */
-    this.fields = [{
+    this.fields = options.fields || [{
         type: 'layers-list',
         name: 'layer',
         label: 'Query Layer',
         default: options.defaultLayer,
         filter: {
             // do not require the layer be visible to select it.
-            requireVisible: false,
+            requireVisible: true,
             // but require it have a select template.
             withTemplate: ['select', 'select-header']
         }
