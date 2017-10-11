@@ -169,11 +169,13 @@ export default class PrintModal extends Modal {
         };
 
         for(const key in bbox) {
-            bbox[key] = Proj.toLonLat(bbox[key], map_proj);
+            // convert to lon-lat
+            const ll = Proj.toLonLat(bbox[key], map_proj);
+            // flip the x,y.
+            bbox[key] = [ll[1], ll[0]];
         }
 
         const bounds = bbox.lower_left.concat(bbox.upper_left).concat(bbox.upper_right).concat(bbox.lower_right);
-
 
         const pdf_extents = [def.x, def.y, def.x + def.width, def.y + def.height];
         for(let i = 0; i < pdf_extents.length; i++) {
