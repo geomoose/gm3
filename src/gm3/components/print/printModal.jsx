@@ -155,34 +155,15 @@ export default class PrintModal extends Modal {
             projection: map_proj,
         });
 
-        // as the conversion from the mapping coordinates to
-        //  a valid WGS84 "box" is really a trapezoid, this projects
-        //  all four coordinates independently.
         const u = layout.units;
         const map_extents = view.calculateExtent([this.toPoints(def.width, u), this.toPoints(def.height, u)]);
-
-        const bbox = {
-            lower_left: [map_extents[0], map_extents[3]],
-            upper_left: [map_extents[0], map_extents[1]],
-            lower_right: [map_extents[2], map_extents[3]],
-            upper_right: [map_extents[2], map_extents[1]],
-        };
-
-        for(const key in bbox) {
-            // convert to lon-lat
-            const ll = Proj.toLonLat(bbox[key], map_proj);
-            // flip the x,y.
-            bbox[key] = [ll[1], ll[0]];
-        }
-
-        const bounds = bbox.lower_left.concat(bbox.upper_left).concat(bbox.upper_right).concat(bbox.lower_right);
 
         const pdf_extents = [def.x, def.y, def.x + def.width, def.y + def.height];
         for(let i = 0; i < pdf_extents.length; i++) {
             pdf_extents[i] = this.toPoints(pdf_extents[i], u);
         }
 
-        doc.setGeoArea(pdf_extents, bounds);
+        doc.setGeoArea(pdf_extents, map_extents);
     }
 
     /* Draw a shape on the map.
