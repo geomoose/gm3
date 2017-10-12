@@ -237,6 +237,7 @@ export function addFromXml(xml, config) {
             legend: null,
             style: null,
             filter: null,
+            queryAs: layerXml.getAttribute('query-as'),
         };
 
         // user defined legend.
@@ -307,6 +308,12 @@ export function addFromXml(xml, config) {
                 console.error('There was an error parsing the filter for: ', map_source.name);
                 console.error('Error details', err);
             }
+        }
+
+        // queryAs can be defined as multiple paths,
+        //  and is normalized to an array using split.
+        if(layer.queryAs) {
+            layer.queryAs = layer.queryAs.split(':');
         }
 
         map_layers.push(addLayer(map_source.name, layer));
@@ -510,6 +517,19 @@ export function getVisibleLayers(store) {
     return matchLayers(store, isVisible);
 }
 
+function getLayerFromSources(mapSources, msName, layerName) {
+    if(mapSources[msName]) {
+        const ms = mapSources[msName];
+        for(let i = 0, ii = ms.layers.length; i < ii; i++) {
+            if(ms.layers[i].name === layerName) {
+                return ms.layers[i];
+            }
+        }
+    }
+
+    return null;
+}
+
 /** Return the list of layers that can be queried.
  *
  *  These layers are a subset of visible layers.
@@ -519,7 +539,7 @@ export function getQueryableLayers(store, filter = {}, options = {}) {
     // when visible is set to true, then any visibility will
     //  be false and the isVisible call will be evaluated.
     const req_visible = (typeof filter.requireVisible === 'undefined') ? true : filter.requireVisible;
-    const match_fn = function(ms, layer) {
+    const match_fn = function(ms, layer, queryLayer) {
         let template_filter_pass = true;
         if(filter && filter.withTemplate) {
             let template_names = filter.withTemplate;
@@ -529,15 +549,43 @@ export function getQueryableLayers(store, filter = {}, options = {}) {
             }
 
             template_filter_pass = false;
-            const templates = layer.templates;
+            const templates = queryLayer.templates;
             for (let x = 0, xx = template_names.length; x < xx && !template_filter_pass; x++) {
                 const tpl_name = template_names[x];
                 template_filter_pass = (templates && typeof templates[tpl_name] !== 'undefined');
             }
         }
-        return (template_filter_pass && isQueryable(ms, layer) && (!req_visible || isVisible(ms, layer)));
+        return (template_filter_pass && isQueryable(ms, queryLayer) && (!req_visible || isVisible(ms, layer)));
     }
-    return matchLayers(store, match_fn);
+
+    const map_sources = store.getState().mapSources;
+    const query_layers = [];
+    for(const ms_name in map_sources) {
+        const ms = map_sources[ms_name];
+        for(let i = 0, ii = ms.layers.length; i < ii; i++) {
+            const layer = ms.layers[i];
+            let query_layer_found = false;
+
+            // queryAs allows raster sources to reference vector sources
+            //  for query operations.
+            if(layer.queryAs) {
+                for(var q = 0, qq = layer.queryAs.length; q < qq; q++) {
+                    const qs = layer.queryAs[q].split('/');
+                    const query_layer = getLayerFromSources(map_sources, qs[0], qs[1]);
+                    if(match_fn(ms, layer, query_layer)) {
+                        query_layers.push(layer.queryAs[q]);
+                        query_layer_found = true;
+                    }
+                }
+            }
+
+            if(!query_layer_found && match_fn(ms, layer, layer)) {
+                query_layers.push(ms_name + '/' + layer.name);
+            }
+        }
+    }
+
+    return query_layers;
 }
 
 export function getSelectableLayers(store) {
