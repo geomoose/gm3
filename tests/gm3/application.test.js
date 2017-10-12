@@ -122,10 +122,10 @@ describe('application api calls', () => {
     });
 
     it('zooms to a location', () => {
-        app.zoomTo(1000, 1000, 200);
+        app.zoomTo(-93, 45, 11);
 
         const map_view = app.store.getState().map;
-        expect(map_view.center).toEqual([1000, 1000]);
-        expect(map_view.resolution).toBe(200);
+        expect(map_view.center).toEqual([-10352712.643774442, 5621521.486192066]);
+        expect(map_view.resolution).toBe(100);
     });
 });

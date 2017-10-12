@@ -28,10 +28,11 @@
 
 import { MAP } from '../actionTypes';
 
-export function move(center, resolution) {
+export function move(center, zoom) {
     return {
         type: MAP.MOVE,
-        center, resolution
+        center,
+        zoom,
     }
 }
 

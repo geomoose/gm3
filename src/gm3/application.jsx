@@ -31,6 +31,7 @@
 import Request from 'reqwest';
 
 import { createStore, combineReducers } from 'redux';
+import Proj from 'ol/proj';
 
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
@@ -524,8 +525,13 @@ class Application {
     /** Move the map to a center point and a resolution.
      *
      */
-    zoomTo(lon, lat, resolution) {
-        this.store.dispatch(mapActions.move([lon, lat], resolution));
+    zoomTo(lon, lat, zoom) {
+        // TODO: The destination projection should come
+        //       from the map state.
+        // convert the lon lat coordinates to map coordinates
+        const xy = Proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
+        // trigger a move.
+        this.store.dispatch(mapActions.move(xy, zoom));
     }
 
     /** Generic bridge to the application's store's dispatch function.
