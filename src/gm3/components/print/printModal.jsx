@@ -33,6 +33,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import View from 'ol/view';
+import Proj from 'ol/proj';
+
 import jsPDF from 'jspdf';
 import Mark from 'markup-js';
 
@@ -45,6 +48,9 @@ import { printed } from '../../actions/print';
 
 import DefaultLayouts from './printLayouts';
 
+import GeoPdfPlugin from './geopdf';
+
+
 export default class PrintModal extends Modal {
 
     constructor(props) {
@@ -54,12 +60,6 @@ export default class PrintModal extends Modal {
         // If the user overrides this then they just get their
         //  layouts.
         this.layouts = props.layouts ? props.layouts : DefaultLayouts;
-
-        this.pxConversion = {
-            'pt': 1,
-            'in': 72,
-            'mm': 2.83465
-        };
 
         this.state = this.getMapSize(this.layouts[0], 1);
     }
@@ -131,11 +131,36 @@ export default class PrintModal extends Modal {
 
     /* Wraps addImage specifically for the map.
      */
-    addMapImage(doc, def) {
+    addMapImage(doc, def, layout) {
         // this is not a smart component and it doesn't need to be,
         //  so sniffing the state for the current image is just fine.
         const image_data = this.props.store.getState().print.printData;
         this.addImage(doc, Object.assign({}, def, {image_data: image_data}));
+
+        // construct the extents from the map
+        const map_view = this.props.store.getState().map;
+        // TODO: get this from state
+        const map_proj = 'EPSG:3857';
+
+        const view = new View({
+            center: map_view.center,
+            resolution: map_view.resolution,
+            projection: map_proj,
+        });
+
+        const u = layout.units;
+        const resolution = parseFloat(this.refs.resolution.value);
+        const map_extents = view.calculateExtent([
+            this.toPoints(def.width, u) * resolution,
+            this.toPoints(def.height, u) * resolution,
+        ]);
+
+        const pdf_extents = [def.x, def.y, def.x + def.width, def.y + def.height];
+        for(let i = 0; i < pdf_extents.length; i++) {
+            pdf_extents[i] = this.toPoints(pdf_extents[i], u);
+        }
+
+        doc.setGeoArea(pdf_extents, map_extents);
     }
 
     /* Draw a shape on the map.
@@ -167,8 +192,53 @@ export default class PrintModal extends Modal {
         }
     }
 
+    /**
+     * Convert units to PDF units
+     *
+     */
+    toPoints(n, unit) {
+        let k = 1;
+
+        // this code is borrowed from jsPDF
+        //  as it does not expose a public API
+        //  for converting units to points.
+        switch (unit) {
+            case 'pt':
+                k = 1;
+                break;
+            case 'mm':
+                k = 72 / 25.4;
+                break;
+            case 'cm':
+                k = 72 / 2.54;
+                break;
+            case 'in':
+                k = 72;
+                break;
+            case 'px':
+                k = 96 / 72;
+                break;
+            case 'pc':
+                k = 12;
+                break;
+            case 'em':
+                k = 12;
+                break;
+            case 'ex':
+                k = 6;
+                break;
+            default:
+                throw 'Invalid unit: ' + unit;
+        }
+
+        return n * k;
+    }
 
     makePDF(layout) {
+        // check for and install the geopdf plugin
+        if(!jsPDF.API.setGeoArea) {
+            GeoPdfPlugin(jsPDF.API);
+        }
         // new PDF document
         const doc = new jsPDF(layout.orientation, layout.units, layout.page);
 
@@ -184,7 +254,7 @@ export default class PrintModal extends Modal {
                     this.addText(doc, element);
                     break;
                 case 'map':
-                    this.addMapImage(doc, element);
+                    this.addMapImage(doc, element, layout);
                     break;
                 case 'image':
                     this.addImage(doc, element);
@@ -224,8 +294,6 @@ export default class PrintModal extends Modal {
      * @return An object with "width" and "height" properties.
      */
     getMapSize(layout, resolution) {
-        const units = this.pxConversion[layout.units];
-
         // iterate through the layout elements looking
         //  for the map.
         let map_element = null;
@@ -238,8 +306,8 @@ export default class PrintModal extends Modal {
 
         // caculate the width and height and kick it back.
         return {
-            width: map_element.width * units * resolution,
-            height: map_element.height * units * resolution
+            width: this.toPoints(map_element.width, layout.units) * resolution,
+            height: this.toPoints(map_element.height, layout.units) * resolution
         };
     }
 
