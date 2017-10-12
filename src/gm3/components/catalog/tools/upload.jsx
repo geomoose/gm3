@@ -125,7 +125,7 @@ class UploadModal extends Modal {
                     { this.props.helpText }
                 </p>
                 <p>
-                    <input ref='fileInput' type='file'/>
+                    <input ref='fileInput' type='file' accept='.geojson,.json,.kml'/>
                 </p>
             </div>
         );
