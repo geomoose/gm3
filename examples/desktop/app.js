@@ -142,6 +142,13 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     }, {});
 
+    app.registerAction('reload', function() {
+        this.run = function() {
+            document.location.hash = '';
+            document.location.reload();
+        }
+    });
+
 
     tracker.startTracking();
     hash_tracker.startTracking();

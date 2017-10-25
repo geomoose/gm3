@@ -508,5 +508,6 @@
         </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>
+        <tool name="reload" title="Reload" type="action"/>
     </toolbar>
 </mapbook>
