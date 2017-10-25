@@ -159,7 +159,7 @@ class UploadModal extends Modal {
                     // input_format is defaulted to null and only
                     //  set if the file format can be inferred.
                     let input_format = null;
-                    if(file.type.indexOf('kml') >= 0) {
+                    if(String(file.name).split('.').pop() === 'kml') {
                         // sweet, KML file.
                         input_format = new KMLFormat();
                     } else {
