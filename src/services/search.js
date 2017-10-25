@@ -49,25 +49,33 @@ function SearchService(Application, options) {
 
     /** User input fields */
     this.fields = options.fields ? options.fields : [
-        {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'}
     ];
 
     /** Define the layer(s) to be searched. */
-    this.searchLayers = options.searchLayers ? options.searchLayers : [
-        'vector-parcels/parcels'
-    ];
+    this.searchLayers = options.searchLayers ? options.searchLayers : [];
+
+    /** Allow the user to programmatically change which
+     *  layers are searched.
+     */
+    this.getSearchLayers = options.getSearchLayers ? options.getSearchLayers : function(searchLayers, fields) {
+        return searchLayers;
+    };
 
     /** Field transfomation function. */
     this.prepareFields = options.prepareFields ? options.prepareFields : function(fields) {
         // reformat the fields for the query engine,
         //  "*stuff*" will do a case-ignored "contains" query.
-        return [
-            {
-                comparitor: 'ilike',
-                name: fields[0].name,
-                value: '*' + fields[0].value + '*'
+        var query = [];
+        for(var i = 0, ii = fields.length; i < ii; i++) {
+            if(fields[i].value !== '' && fields[i].value !== undefined) {
+                query.push({
+                    comparitor: 'ilike',
+                    name: fields[i].name,
+                    value: '*' + fields[i].value + '*'
+                });
             }
-        ];
+        }
+        return query;
     };
 
     /** Define the results layer */
@@ -88,9 +96,14 @@ function SearchService(Application, options) {
         //  it would be necessary to put that code here and then manually tell
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
-        Application.dispatchQuery(this.name, selection, this.prepareFields(fields), this.searchLayers, this.template);
+        Application.dispatchQuery(
+            this.name,
+            selection,
+            this.prepareFields(fields),
+            this.getSearchLayers(this.searchLayers, fields),
+            this.template
+        );
     }
-
 
     /** resultsAsHtml is the function used to populate the Service Tab
      *                after the service has finished querying.
