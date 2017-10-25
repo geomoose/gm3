@@ -25,7 +25,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
 import { createStore, combineReducers } from 'redux';
 
@@ -37,6 +38,7 @@ import * as actions from 'gm3/actions/catalog';
 import * as msActions from 'gm3/actions/mapSource';
 
 
+Enzyme.configure({ adapter: new Adapter() });
 
 describe('Catalog component tests', () => {
     const store = createStore(combineReducers({

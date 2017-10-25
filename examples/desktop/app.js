@@ -104,8 +104,6 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     ];
 
-    console.log('projections?', point_projections);
-
     app.add(gm3.components.CoordinateDisplay, 'coordinate-display', {
         projections:  point_projections
     });

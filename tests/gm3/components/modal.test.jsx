@@ -27,7 +27,10 @@ import ReactDOM from 'react-dom';
 
 import Modal from 'gm3/components/modal';
 
-import { shallow } from 'enzyme';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 
 it('renders a one button Modal Dialog', () => {
@@ -46,7 +49,7 @@ it('renders a one button Modal Dialog', () => {
     dialog.setState({open: true});
 
     // close the dialog by simulating a click on the button.
-    dialog.find('button').simulate('click'); 
+    dialog.find('button').simulate('click');
 
     // ensure the call back was called with the closing value.
     expect(callback).toBeCalledWith('okay');

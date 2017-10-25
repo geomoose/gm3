@@ -61,6 +61,9 @@ module.exports = {
                 }
                 return true;
             }
+        }, {
+            test: /\.json$/,
+            loader: 'json-loader',
         }]
     },
     resolve: {
