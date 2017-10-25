@@ -34,11 +34,6 @@ import { startTool } from '../actions/toolbar';
 import { startService } from '../actions/service';
 import { runAction, setUiHint } from '../actions/ui';
 
-import Enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
-Enzyme.configure({ adapter: new Adapter() });
-
 export class ToolbarButton extends Component {
 
     constructor(props) {
