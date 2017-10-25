@@ -57,7 +57,7 @@ function SearchService(Application, options) {
     /** Allow the user to programmatically change which
      *  layers are searched.
      */
-    this.getSearchLayers = options.getSearchLayers ? option.getSearchLayers : function(searchLayers, fields) {
+    this.getSearchLayers = options.getSearchLayers ? options.getSearchLayers : function(searchLayers, fields) {
         return searchLayers;
     };
 
