@@ -63,7 +63,15 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     });
 
     app.registerService('identify', IdentifyService);
-    app.registerService('search', SearchService);
+    app.registerService('search', SearchService, {
+        fields: [
+            {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'},
+            {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
+            {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3'}
+        ],
+        searchLayers: ['vector-parcels/parcels']
+    });
+
     app.registerService('search-firestations', SearchService, {
         searchLayers: ['firestations/fire_stations'],
         fields: [

@@ -156,3 +156,8 @@ body {
 .feature-class.pipelines {
     background-color: #4894ff;
 }
+
+.search-address {
+    font-size: .85em;
+    padding-left: 1em;
+}
