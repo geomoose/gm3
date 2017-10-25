@@ -245,6 +245,7 @@ class Application {
             //  wants to do something after the mapbook has loaded.
             return Request({
                 url: options.url,
+                type: 'xml',
                 success: (response) => {
                     this.populateMapbook(response);
                 }
