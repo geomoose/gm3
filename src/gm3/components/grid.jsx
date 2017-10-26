@@ -162,11 +162,15 @@ class ListFilterModal extends FilterModal {
             const prop = this.props.column.property;
             // when the values are not specified they need
             // to be pulled from the results.
+            const uniq_check = {};
             for(const result of this.props.results) {
                 const v = result.properties[prop];
-                this.filter_values.push({
-                    value: v, label: v
-                });
+                if(uniq_check[v] !== true) {
+                    this.filter_values.push({
+                        value: v, label: v
+                    });
+                }
+                uniq_check[v] = true;
             }
         }
 

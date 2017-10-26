@@ -37,6 +37,10 @@ import toolbarReducer from 'gm3/reducers/toolbar';
 import queryReducer from 'gm3/reducers/query';
 import * as actions from 'gm3/actions/toolbar';
 
+import Enzyme, { mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 
 describe('Toolbar component tests', () => {

@@ -83,6 +83,10 @@
                             </a>
                         </div>
                     </div>
+                    <div class="search-address">
+                        {{ properties.OWN_ADD_L1 }}<br/>
+                        {{ properties.OWN_ADD_L3 }}<br/>
+                    </div>
                 </div>
             ]]></template>
 
@@ -95,7 +99,6 @@
             <template name="gridColumns" src="./templates/parcel-columns.json" />
             <template name="gridRow" src="./templates/parcel-row.html" />
        </layer>
-
     </map-source>
 
     <map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
@@ -460,7 +463,7 @@
         <tool name="select" title="Select Features" type="service"/>
 
         <drawer name="searches" title="Search">
-            <tool name="search" title="Search by Owner" type="service"/>
+            <tool name="search" title="Search Parcels" type="service"/>
             <tool name="geocode" title="Search by Address" type="service"/>
         </drawer>
 

@@ -15,6 +15,14 @@
         "sortAs" : "string"
     },
     {
+        "title" : "City",
+        "property" : "CITY",
+        "sortAs" : "string",
+        "filter" : {
+            "type" : "list"
+        }
+    },
+    {
         "title" : "Est. Value",
         "property" : "EMV_TOTAL",
         "sortAs" : "number",

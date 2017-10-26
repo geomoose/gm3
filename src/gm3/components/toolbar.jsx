@@ -34,7 +34,6 @@ import { startTool } from '../actions/toolbar';
 import { startService } from '../actions/service';
 import { runAction, setUiHint } from '../actions/ui';
 
-
 export class ToolbarButton extends Component {
 
     constructor(props) {
