@@ -83,6 +83,10 @@
                             </a>
                         </div>
                     </div>
+                    <div class="search-address">
+                        {{ properties.OWN_ADD_L1 }}<br/>
+                        {{ properties.OWN_ADD_L3 }}<br/>
+                    </div>
                 </div>
             ]]></template>
 
@@ -110,6 +114,14 @@
                     "sortAs" : "string"
                 },
                 {
+                    "title" : "City",
+                    "property" : "CITY",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
                     "title" : "Est. Value",
                     "property" : "EMV_TOTAL",
                     "sortAs" : "number",
@@ -133,6 +145,7 @@
                   {{ properties.PIN }}
                 </td>
                 <td>{{ properties.OWNER_NAME }}</td>
+                <td>{{ properties.CITY }}</td>
                 <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
             </tr>
             ]]></template>
@@ -503,7 +516,7 @@
         <tool name="select" title="Select Features" type="service"/>
 
         <drawer name="searches" title="Search">
-            <tool name="search" title="Search by Owner" type="service"/>
+            <tool name="search" title="Search Parcels" type="service"/>
             <tool name="geocode" title="Search by Address" type="service"/>
         </drawer>
 

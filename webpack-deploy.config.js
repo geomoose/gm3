@@ -56,8 +56,10 @@ module.exports = {
                         return false;
                     }
                 }
-                return true;
-            }
+            },
+        }, {
+            test: /\.json$/,
+            loader: 'json-loader',
         }]
     },
     resolve: {

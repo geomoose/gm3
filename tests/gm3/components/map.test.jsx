@@ -32,10 +32,13 @@ import queryReducer from 'gm3/reducers/query';
 
 import { createStore, combineReducers } from 'redux';
 
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
 import * as mapActions from 'gm3/actions/map';
 import * as msActions from 'gm3/actions/mapSource';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 /* This is a bit of a hacky polyfill for requestAnimationFrame
  * which is needed by the openlayers map to drawer but is not
