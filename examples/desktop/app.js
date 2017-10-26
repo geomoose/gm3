@@ -150,8 +150,12 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerAction('reload', function() {
         this.run = function() {
-            document.location.hash = '';
-            document.location.reload();
+            app.confirm('reset-okay', 'Reset location and layer settings to application defaults?', function(response) {
+                if(response === 'confirm') {
+                    document.location.hash = '';
+                    document.location.reload();
+                }
+            });
         }
     });
 

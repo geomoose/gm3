@@ -521,6 +521,6 @@
         </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>
-        <tool name="reload" title="Reload" type="action"/>
+        <tool name="reload" title="Start Over" type="action"/>
     </toolbar>
 </mapbook>
