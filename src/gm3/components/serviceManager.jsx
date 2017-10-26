@@ -256,8 +256,10 @@ class ServiceManager extends Component {
 
         let layer_count = 0, feature_count = 0;
         for(const path in query.results) {
-            layer_count += 1;
-            feature_count += query.results[path].length;
+            if(query.results[path].failed !== true) {
+                layer_count += 1;
+                feature_count += query.results[path].length;
+            }
         }
 
         const info_header = (

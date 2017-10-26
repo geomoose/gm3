@@ -81,13 +81,14 @@ export function queryProgress(queryId) {
     };
 }
 
-export function resultsForQuery(queryId, layerName, failed, features) {
+export function resultsForQuery(queryId, layerName, failed, features, messageText='') {
     return {
         type: MAP.QUERY_RESULTS,
         id: queryId,
         layer: layerName,
         failed,
-        features
+        features,
+        messageText,
     }
 }
 

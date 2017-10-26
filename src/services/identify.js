@@ -92,7 +92,7 @@ function IdentifyService(Application, options) {
             var path = query.layers[i];
 
             // check to see that the layer has results and features were returned.
-            if(query.results[path] && !query.results[path].failed) {
+            if(query.results[path]) {
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
                 //  and the specified template and render it. This example uses an inline
                 //  template from the mapbook.

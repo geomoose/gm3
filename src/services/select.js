@@ -132,7 +132,7 @@ function SelectService(Application, options) {
             html += Application.renderTemplate(path, this.headerTemplate, query);
 
             // check to see that the layer has results and features were returned.
-            if(query.results[path] && !query.results[path].failed) {
+            if(query.results[path]) {
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);
             }
 

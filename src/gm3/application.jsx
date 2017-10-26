@@ -397,7 +397,16 @@ class Application {
         let html_contents = '';
 
         if(query.results[path]) {
-            if(template.substring(0, 1) === '@') {
+            if(query.results[path].failed === true) {
+                html_contents = `
+                    <div class="query-error">
+                        <div class="error-header">Error</div>
+                        <div class="error-contents">
+                        ${ query.results[path].failureMessage }
+                        </div>
+                    </div>
+                `;
+            } else if(template.substring(0, 1) === '@') {
                 let template_name = template.substring(1);
                 let layer = getLayerFromPath(this.store, path);
                 let layer_template = layer.templates[template_name];
