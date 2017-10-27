@@ -1,0 +1,16 @@
+<tr
+  onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+  onmouseleave="app.clearHighlight()"
+>
+    <td>
+      <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+        <i class="fa fa-search"></i>
+      </a>
+    </td>
+    <td>
+      {{ properties.PIN }}
+    </td>
+    <td>{{ properties.OWNER_NAME }}</td>
+    <td>{{ properties.CITY }}</td>
+    <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
+</tr>

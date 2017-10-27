@@ -40,6 +40,9 @@ function SelectService(Application, options) {
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@select';
 
+    /** Toggle whether the grid should attempt rendering. */
+    this.showGrid = options.showGrid !== undefined ? options.showGrid : true;
+
     /** Footer template for rendering before features. */
     this.footerTemplate = options.footerTemplate ? options.footerTemplate : '@select-footer';
 
@@ -109,8 +112,15 @@ function SelectService(Application, options) {
         } else {
             // get the query layer.
             var query_layer = fields[0].value;
+            // check which templates should try and load
+            var templates = [this.template];
+            if(this.showGrid) {
+                templates.push('@gridColumns');
+                templates.push('@gridRow');
+            }
+
             // dispatch the query against on the query layer!
-            Application.dispatchQuery(this.name, selection, [], [query_layer], [this.template]);
+            Application.dispatchQuery(this.name, selection, [], [query_layer], templates);
         }
     }
 

@@ -96,62 +96,9 @@
             </div>
             ]]></template>
 
-            <template name="gridColumns"><![CDATA[
-            [
-                {
-                    "title": ""
-                },
-                {
-                    "title": "PIN",
-                    "property" : "PIN",
-                    "filter" : {
-                        "type" : "list"
-                    }
-                },
-                {
-                    "title" : "Owner Name",
-                    "property" : "OWNER_NAME",
-                    "sortAs" : "string"
-                },
-                {
-                    "title" : "City",
-                    "property" : "CITY",
-                    "sortAs" : "string",
-                    "filter" : {
-                        "type" : "list"
-                    }
-                },
-                {
-                    "title" : "Est. Value",
-                    "property" : "EMV_TOTAL",
-                    "sortAs" : "number",
-                    "filter" : {
-                        "type" : "range"
-                    }
-                }
-            ]
-            ]]></template>
-            <template name="gridRow"><![CDATA[
-            <tr
-              onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
-              onmouseleave="app.clearHighlight()"
-            >
-                <td>
-                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
-                    <i class="fa fa-search"></i>
-                  </a>
-                </td>
-                <td>
-                  {{ properties.PIN }}
-                </td>
-                <td>{{ properties.OWNER_NAME }}</td>
-                <td>{{ properties.CITY }}</td>
-                <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
-            </tr>
-            ]]></template>
-
-        </layer>
-
+            <template name="gridColumns" src="./templates/parcel-columns.json" />
+            <template name="gridRow" src="./templates/parcel-row.html" />
+       </layer>
     </map-source>
 
     <map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">

@@ -516,10 +516,14 @@ class Grid extends Component {
 
                 if(layer !== null) {
                     // try to parse the grid columns
-                    try {
-                        grid_cols = JSON.parse(layer.templates.gridColumns.contents);
-                    } catch(err) {
-                        // swallow the error
+                    if(typeof layer.templates.gridColumns.contents === 'object') {
+                        grid_cols = layer.templates.gridColumns.contents;
+                    } else {
+                        try {
+                            grid_cols = JSON.parse(layer.templates.gridColumns.contents);
+                        } catch(err) {
+                            // swallow the error
+                        }
                     }
 
                     if(layer.templates.gridRow) {
