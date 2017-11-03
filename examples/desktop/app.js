@@ -150,7 +150,8 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerAction('reload', function() {
         this.run = function() {
-            app.confirm('reset-okay', 'Reset location and layer settings to application defaults?', function(response) {
+            var reload_msg = 'Are you sure you want to start over? All unsaved work will be lost.';
+            app.confirm('reload-okay', reload_msg, function(response) {
                 if(response === 'confirm') {
                     document.location.hash = '';
                     document.location.reload();
