@@ -34,3 +34,15 @@ function showTabByName(tabName) {
     var target = document.getElementById(tabName+'-tab');
     showTab(tabName, {currentTarget: target});
 }
+
+function toggleTabs() {
+    var e = document.getElementsByTagName('body')[0];
+    if(e.className.indexOf('tabs-closed') >= 0) {
+        e.className = e.className.replace(' tabs-closed', '');
+    } else {
+        e.className += ' tabs-closed';
+    }
+
+    // inform the window that things have moved.
+    window.dispatchEvent(new Event('resize'));
+}

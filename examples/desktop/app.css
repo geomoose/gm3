@@ -115,6 +115,15 @@ body {
     right: 0;
 }
 
+.tabs-closed #tabs {
+    width: 20px;
+}
+
+.tabs-closed #map, .tabs-closed #results-grid {
+    left: 20px;
+}
+
+
 /* This is the main "layout" code that handles the split
  * between the map, grid, and tabs.
  */
