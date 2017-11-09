@@ -148,6 +148,18 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     }, {});
 
+    app.registerAction('reload', function() {
+        this.run = function() {
+            var reload_msg = 'Are you sure you want to start over? All unsaved work will be lost.';
+            app.confirm('reload-okay', reload_msg, function(response) {
+                if(response === 'confirm') {
+                    document.location.hash = '';
+                    document.location.reload();
+                }
+            });
+        }
+    });
+
 
     tracker.startTracking();
     hash_tracker.startTracking();
