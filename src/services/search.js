@@ -117,7 +117,7 @@ function SearchService(Application, options) {
             var path = query.layers[i];
 
             // check to see that the layer has results and features were returned.
-            if(query.results[path] && !query.results[path].failed) {
+            if(query.results[path]) {
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
                 //  and the specified template and render it. This example uses an inline
                 //  template from the mapbook.
@@ -158,7 +158,7 @@ function SearchService(Application, options) {
         var all_features = [];
         for(var i = 0, ii = query.layers.length; i < ii; i++) {
             var path = query.layers[i];
-            if(query.results[path] && !query.results[path].failed) {
+            if(query.results[path]) {
                 all_features = all_features.concat(query.results[path]);
             }
         }

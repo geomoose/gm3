@@ -60,6 +60,7 @@ import olControl from 'ol/control/control';
 
 import olView from 'ol/view';
 import olMap from 'ol/map';
+import olXml from 'ol/xml';
 
 import olCollection from 'ol/collection';
 import olSelectInteraction from 'ol/interaction/select';
@@ -369,36 +370,57 @@ class Map extends Component {
             contentType: is_json_like ? 'json' : 'text/xml',
             data: wfs_query_xml,
             success: (response) => {
-                // not all WMS services play nice and will return the
-                //  error message as a 200, so this still needs checked.
                 if(response) {
-                    // place holder for features to be added.
-                    let js_features = [];
-                    if(is_json_like) {
-                        js_features = response.features;
+                    // check for a WFS error message
+                    if(response.search(/(ows|wfs)\:exception/i) >= 0) {
+                        // parse the document.
+                        const wfs_doc = olXml.parse(response);
+                        const tags = ['ows:ExceptionText', 'wfs:ExceptionText'];
+                        let error_text = '';
+                        for(let t = 0, tt = tags.length; t < tt; t++) {
+                            const nodes = wfs_doc.getElementsByTagName(tags[t]);
+                            for(let n = 0, nn = nodes.length; n < nn; n++) {
+                                error_text += olXml.getAllTextContent(nodes[n]) + '\n';
+                            }
+                        }
+                        // ensure that the console variable exists
+                        if(typeof console !== undefined) {
+                            console.error(error_text);
+                        }
+
+                        // dispatch an error status.
+                        this.props.store.dispatch(
+                            mapActions.resultsForQuery(queryId, queryLayer, true, [], error_text)
+                        );
                     } else {
-                        let gml_format = new GML2Format();
-                        let features = gml_format.readFeatures(response, {
-                            featureProjection: map_projection,
-                            dataProjection: query_projection
-                        });
-                        js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
+                        // place holder for features to be added.
+                        let js_features = [];
+                        if(is_json_like) {
+                            js_features = response.features;
+                        } else {
+                            let gml_format = new GML2Format();
+                            let features = gml_format.readFeatures(response, {
+                                featureProjection: map_projection,
+                                dataProjection: query_projection
+                            });
+                            js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
+                        }
+
+
+                        // apply the transforms
+                        js_features = util.transformFeatures(map_source.transforms, js_features);
+
+                        this.props.store.dispatch(
+                            mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
+                        );
                     }
-
-
-                    // apply the transforms
-                    js_features = util.transformFeatures(map_source.transforms, js_features);
-
-                    this.props.store.dispatch(
-                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                    );
                 }
             },
             error: () => {
                 // dispatch a message that the query has failed.
                 this.props.store.dispatch(
                     // true for 'failed', empty array to prevent looping side-effects.
-                    mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                    mapActions.resultsForQuery(queryId, queryLayer, true, [], 'Server error. Check network logs.')
                 );
             },
             complete: () => {
@@ -768,10 +790,13 @@ class Map extends Component {
             // get the path to the first set of features
             const layer_path = Object.keys(query.results)[0];
 
-            // get the features, aftre applying the query filter
-            const features = util.matchFeatures(query.results[layer_path], query.filter);
-            // render only those features.
-            this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
+            // ensure the layer_path does not have a failure.
+            if(query.results[layer_path].failed !== true) {
+                // get the features, after applying the query filter
+                const features = util.matchFeatures(query.results[layer_path], query.filter);
+                // render only those features.
+                this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
+            }
         } else {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }

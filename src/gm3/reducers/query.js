@@ -129,7 +129,14 @@ export default function queryReducer(state = default_query, action) {
 
             // results are stored as results.layer = [features,]
             const new_results = {};
-            new_results[action.layer] = action.features;
+            if(action.failed) {
+                new_results[action.layer] = {
+                    failed: true,
+                    failureMessage: action.messageText
+                };
+            } else {
+                new_results[action.layer] = action.features;
+            }
             for(let i = 0, ii = action.features.length; i < ii; i++) {
                 new_results[action.layer][i].query = action.id;
             }
