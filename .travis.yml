@@ -25,7 +25,7 @@
 dist: trusty
 language: node_js
 node_js:
-    - "node"
+    - "8"
 
 # setup some solid deps.
 
@@ -33,5 +33,5 @@ node_js:
 before_script:
     - sudo apt-get -qq update
     - sudo apt-get install -y libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev g++
-    - npm install canvas
+    - npm install canvas@1.6.7
     - grunt lint

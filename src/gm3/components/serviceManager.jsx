@@ -36,7 +36,7 @@ import * as uuid from 'uuid';
 
 import * as mapActions from '../actions/map';
 
-import { getLayerFromPath } from '../actions/mapSource';
+import { clearFeatures, getLayerFromPath } from '../actions/mapSource';
 
 import { setUiHint } from '../actions/ui';
 
@@ -413,6 +413,11 @@ class ServiceManager extends Component {
         }
     }
 
+    clearSelectionFeatures() {
+        this.props.dispatch(mapActions.clearSelectionFeatures());
+        this.props.dispatch(clearFeatures('selection'));
+    }
+
     componentWillUpdate(nextProps, nextState) {
         // anytime this updates, the user should really be seeing the service
         //  tab.
@@ -588,10 +593,29 @@ class ServiceManager extends Component {
                     </div>
                 );
             } else {
+                // when there are no queries but a selection is left
+                //  allow the user to remove the selection
+                let enable_clear = false;
+                if(this.props.selectionSrc
+                  && this.props.selectionSrc.features
+                  && this.props.selectionSrc.features.length > 0) {
+                    enable_clear = true;
+                }
+
                 return (
                     <div className="service-manager">
                         <div className="info-box">
                             Nothing available to view. Please click a service to start in the toolbar.
+                        </div>
+
+                        <div className="clear-controls">
+                            <button
+                                disabled={ !enable_clear }
+                                className="clear-button"
+                                onClick={ () => { this.clearSelectionFeatures(); } }
+                            >
+                                <i className="clear icon"></i> Clear previous selections
+                            </button>
                         </div>
                     </div>
                 );
@@ -605,7 +629,8 @@ class ServiceManager extends Component {
 const mapToProps = function(store) {
     return {
         queries: store.query,
-        map: store.map
+        map: store.map,
+        selectionSrc: store.mapSources.selection
     }
 }
 export default connect(mapToProps)(ServiceManager);
