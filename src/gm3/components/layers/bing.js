@@ -33,9 +33,8 @@ import BingSource from 'ol/source/bingmaps';
  *
  */
 function defineSource(mapSource) {
-    // there are two different layers in Bing maps,
-    //  roads and aerials.  This applies the logic to map
-    //  them.
+    //  If both roads and aerials are specified, 
+    //  "AerialWithLabels" is requested.
     let aerials_on = false, roads_on = false;
     for(let layer of mapSource.layers) {
         if(layer.on === true) {
@@ -52,6 +51,14 @@ function defineSource(mapSource) {
         image_style = 'AerialWithLabels';
     } else if(aerials_on) {
         image_style = 'Aerial';
+    } else if(roads_on) {
+        image_style = 'Road';
+    } else {
+        for(let layer of mapSource.layers) {
+            if(layer.on === true) {
+                image_style = layer.name;
+            }
+        }
     }
 
     return {

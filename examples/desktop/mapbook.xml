@@ -381,6 +381,9 @@
     </map-source>
 
     <map-source name="bing" type="bing">
+        <layer name="canvasDark"/>
+        <layer name="canvasLight"/>
+        <layer name="canvasGray"/>
         <layer name="roads"/>
         <layer name="aerials"/>
         <param name="key" value="'Your Key Here'"/>
@@ -444,6 +447,9 @@
 
             <!-- These layres are commented out until a user enabled bing
               -  with an appropriate key.
+            <layer title="Bing Dark"         src="bing/canvasDark"       show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Grey"         src="bing/canvasGray"       show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Light"        src="bing/canvasLight"      show-legend="false" legend="false" fade="true" unfade="true"/>
             <layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
             <layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
             -->
