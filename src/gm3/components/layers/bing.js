@@ -33,7 +33,7 @@ import BingSource from 'ol/source/bingmaps';
  *
  */
 function defineSource(mapSource) {
-    //  If both roads and aerials are specified, 
+    //  If both roads and aerials are specified,
     //  "AerialWithLabels" is requested.
     let aerials_on = false, roads_on = false;
     for(let layer of mapSource.layers) {
