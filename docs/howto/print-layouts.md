@@ -8,7 +8,7 @@ not be for everyone.
 
 A print layout is comprised of a label, orientation, page size,
 unit specification, and a list of page elements. These are defined
-as a Javascript object which can be passed to the PrintModal component.
+as a JavaScript object which can be passed to the PrintModal component.
 
 ## The default configuration
 

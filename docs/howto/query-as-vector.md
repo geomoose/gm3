@@ -1,6 +1,6 @@
 # How-to display a raster layer and query as a vector layer
 
-Raster services have limitataions. WMS can only support a point-based query
+Raster services have limitations. WMS can only support a point-based query
 and not polygon or attribute based queries. However, vector layers can be
 more complicated to style and less consistently displayed between different
 clients.  GeoMoose provides a way to have services automatically refer to

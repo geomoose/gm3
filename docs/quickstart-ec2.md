@@ -8,8 +8,8 @@
 4. For purposes of this tutorial, a 't2.micro' instance is fine
    but if you plan to serve other users from this instance start with
    a 't2.large' instance.
-5. Click 'Review nad Launch'
-6. Congiure a new security group with access to SSH and HTTP.
+5. Click 'Review and Launch'
+6. Configure a new security group with access to SSH and HTTP.
 7. Choose or create an appropriate key-pair.
 
 Wait until the instance launches. Click on the instance in the table and note the IP
@@ -78,7 +78,7 @@ unzip gm3-examples-3.0.1.zip
 unzip gm3-demo-data-3.0.1.zip
 ```
 
-### Make things availabe in the apache document root
+### Make things available in the apache document root
 
 ```
 sudo ln -s /srv/geomoose/gm3-examples/htdocs /var/www/html/geomoose

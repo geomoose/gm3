@@ -1,7 +1,7 @@
 # Getting Started with GeoMoose 3 on Windows
 
 
-## 1. Install Node with Npm
+## 1. Install Node with npm
 
 Travel to the official [NodeJS site](https://nodejs.org/en/) and download the latest LTS release of NodeJS.
 
