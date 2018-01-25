@@ -4,7 +4,7 @@ GeoMoose 3+ supports two different types of tools in the toolbar. In general the
 
  * `service`s are tools which query a set of layers and process the data.
  * `action`s do not use the data-query life-cycle and are mostly arbitrary
-    bits of Javascript that can be executed.
+    bits of JavaScript that can be executed.
 
 ## Actions
 

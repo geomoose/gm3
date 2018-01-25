@@ -34,7 +34,7 @@ app.add(gm3.components.JumpToExtent, 'jump-to-extent', {
 
 ## Getting the configuration from a JSON file
 
-The component can be added asychronously as a part of a AJAX call. For example,
+The component can be added asynchronously as a part of a AJAX call. For example,
 if there was a `locations.json` file it could be loaded using the Fetch API:
 
 ```javascript

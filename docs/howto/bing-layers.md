@@ -2,7 +2,7 @@
 
 ## Step 1: Get a Bing key
 
-Bing services require having a registered API key. 
+Bing services require having a registered API key.
 [Click Here](https://msdn.microsoft.com/en-us/library/ff428642.aspx) to get a key.
 
 
@@ -20,12 +20,12 @@ The following should be added as the last `map-source` entry in the `mapbook.xml
 
 ## Step 3: Add your API key
 
-The XML snippet above features the string `'Your Key Here'` that string sould
+The XML snippet above features the string `'Your Key Here'` that string should
 be replaced with the API key obtains from Bing.
 
 ## Step 4: Add the Bing layer to the catalog
 
-If working from the demo's catalog, then the Bing layers can simply be uncommented. 
+If working from the demo's catalog, then the Bing layers can simply be uncommented.
 If working from an original mapbook, add the following to the `<catalog>` section
 of the mapbook:
 

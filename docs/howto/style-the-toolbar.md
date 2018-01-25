@@ -5,7 +5,7 @@ Want to change the styling for a toolbar icon? No problem! GeoMoose was written 
 
 ## Getting started
 
-When starting from the GeoMoose desktop example there are two css files already included `geomoose.css` and `app.css`.  It is recommeneded to create another css file, `site.css` which will contain all of your site-specific customizations.  More advanced users may have more heavily customized the application, in which case this guide should still be helpful in understanding the styling of tools.
+When starting from the GeoMoose desktop example there are two css files already included `geomoose.css` and `app.css`.  It is recommended to create another css file, `site.css` which will contain all of your site-specific customizations.  More advanced users may have more heavily customized the application, in which case this guide should still be helpful in understanding the styling of tools.
 
 
 `site.css` can be added to the html by adding the following line to the HTML file's `<head>` section:
@@ -134,6 +134,3 @@ Don't love the webfont options? Have something hanging around you'd like to use?
     background-size: 1em;
 }
 ```
-
-
-
