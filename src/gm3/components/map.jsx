@@ -299,7 +299,7 @@ class Map extends Component {
         let filter_mapping = {
             'like': ol_filters.like,
             'ilike': function(name, value) {
-                return ol_filters.like(name, value, '*', '.', '!', false);
+                return ol_filters.like(name, value, '%', '_', '\\', false);
             },
             'eq': ol_filters.equalTo,
             'ge': ol_filters.greaterThanOrEqualTo,
