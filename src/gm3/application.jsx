@@ -459,6 +459,11 @@ class Application {
                     }
 
                 }
+            } else if(template) {
+                // assume the template is template contents.
+                for(let feature of query.results[path]) {
+                    html_contents += Mark.up(template, feature, util.FORMAT_OPTIONS);
+                }
             }
         }
 
