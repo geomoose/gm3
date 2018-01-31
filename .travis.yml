@@ -30,8 +30,10 @@ node_js:
 # setup some solid deps.
 
 # ensure the code lints clean.
-before_script:
+before_install:
     - sudo apt-get -qq update
     - sudo apt-get install -y libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev g++
+
+before_script:
     - npm install canvas@1.6.7
     - grunt lint
