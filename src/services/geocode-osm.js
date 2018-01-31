@@ -49,7 +49,7 @@ function OSMGeocoder(Application, options) {
      *  other than the demo application.
      */
     this.template = '<div class="search-result">' +
-                    '<a onClick="app.zoomToExtent([{{ properties.boundingbox.2 }}, {{ properties.boundingbox.0 }}, {{ properties.boundingbox.3 }}, {{ properties.boundingbox.1 }}], \'EPSG:4326\')" class="zoomto-link">' +
+                    '<a onClick="app.zoomTo({{ properties.lon }}, {{ properties.lat }}, 18)" class="zoomto-link">' +
                         '<i class="fa fa-search"></i>' +
                         '{{ properties.display_name }}' +
                     '</a>' +
