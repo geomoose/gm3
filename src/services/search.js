@@ -71,7 +71,7 @@ function SearchService(Application, options) {
                 query.push({
                     comparitor: 'ilike',
                     name: fields[i].name,
-                    value: '*' + fields[i].value + '*'
+                    value: '%' + fields[i].value + '%'
                 });
             }
         }
