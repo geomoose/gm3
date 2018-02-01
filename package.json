@@ -9,7 +9,6 @@
   "scripts": {
     "test": "node node_modules/jest/bin/jest.js --coverage tests",
     "test:only": "jest",
-    "prepublish": "grunt build",
     "start": "grunt serve",
     "serve": "grunt serve"
   },
@@ -80,9 +79,12 @@
     "react-redux": "~5.0.6",
     "redux": "~3.7.2",
     "reqwest": "~2.0.5",
-    "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
+    "usng-tools-js": "https://github.com/klassenjs/usng-tools-js.git",
     "uuid": "~2.0.3",
     "webpack": "~1.13.2",
     "webpack-dev-server": "~1.16.1"
+  },
+  "dependencies": {
+    "canvas": "^1.6.9"
   }
 }
