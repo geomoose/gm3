@@ -9,7 +9,7 @@
   "scripts": {
     "test": "node node_modules/jest/bin/jest.js --coverage tests",
     "test:only": "jest",
-    "prepublish": "grunt build",
+    "prepack": "grunt build",
     "start": "grunt serve",
     "serve": "grunt serve"
   },
