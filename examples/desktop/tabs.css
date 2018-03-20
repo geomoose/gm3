@@ -47,14 +47,24 @@
     border-radius: 10px 0px 0px 10px;
     border: solid 1px black;
     z-index: 1000;
+    width: 20px;
+	padding: 1px;
 }
 
 .tab-parent .tab-toggler .tab-toggler-icon:before {
-    content: "<";
+    content: "\f0a8";
+	font-family: FontAwesome;
+	font-style: normal;
+	font-size: 1.3em;
+	padding-left: 0px;
 }
 
 .tabs-closed .tab-parent .tab-toggler .tab-toggler-icon:before {
-    content: ">";
+	content: "\f0a9";
+	font-family: FontAwesome;
+	font-style: normal;
+	font-size: 1.3em;
+	padding-left: 0px;
 }
 
 .tabs-closed .tab-content, .tabs-closed .tabs {
