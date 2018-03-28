@@ -178,56 +178,64 @@ class Map extends Component {
         // get the map source
         let ms_name = util.getMapSourceName(queryLayer);
 
-        // GetFeatureInfo only supports point queries,
-        // so if the shape isn't a point, skip it.
-        let feature_type = selection.geometry.type;
+        const fail_layer = (message) => {
+            // dispatch a message that the query has failed.
+            this.props.dispatch(
+                // true for 'failed', empty array to prevent looping side-effects.
+                mapActions.resultsForQuery(queryId, queryLayer, true, [], message)
+            );
 
-        if(feature_type === 'Point') {
-            const coords = selection.geometry.coordinates;
-            let src = this.olLayers[ms_name].getSource();
-
-            // TODO: Allow the configuration to specify GML vs GeoJSON,
-            //       but GeoMoose needs a real feature returned.
-            let params = {
-                'FEATURE_COUNT': 1000,
-                'QUERY_LAYERS': util.getLayerName(queryLayer),
-                'INFO_FORMAT': 'application/vnd.ogc.gml'
-            };
-
-            let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
-
-            const fail_layer = () => {
-                // dispatch a message that the query has failed.
-                this.props.store.dispatch(
-                    // true for 'failed', empty array to prevent looping side-effects.
-                    mapActions.resultsForQuery(queryId, queryLayer, true, [])
-                );
-            };
-
-            util.xhr({
-                url: info_url,
-            }).then((response) => {
-                // not all WMS services play nice and will return the
-                //  error message as a 200, so this still needs checked.
-                if(response) {
-                    let gml_format = new WMSGetFeatureInfoFormat();
-                    let features = gml_format.readFeatures(response.responseText);
-                    let js_features = geojson.writeFeaturesObject(features).features;
-
-                    this.props.store.dispatch(
-                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                    );
-                } else {
-                    fail_layer();
-                }
-            })
-            .fail((err, msg) => {
-                fail_layer();
-            })
-            .always(() => {
+            // TODO: This delay allows the state tree to refresh before
+            //       checking for completeness.
+            setTimeout(() => {
                 this.checkQueryForCompleteness(queryId, queryLayer);
-            });
+            }, 200);
+        };
+
+        // check that we have a geometry, if not fail.
+        if (!selection || !selection.geometry || selection.geometry.type !== 'Point') {
+            // set the failure
+            fail_layer('No valid selection geometry.');
+            // leave the function.
+            return;
         }
+
+        const coords = selection.geometry.coordinates;
+        let src = this.olLayers[ms_name].getSource();
+
+        // TODO: Allow the configuration to specify GML vs GeoJSON,
+        //       but GeoMoose needs a real feature returned.
+        let params = {
+            'FEATURE_COUNT': 1000,
+            'QUERY_LAYERS': util.getLayerName(queryLayer),
+            'INFO_FORMAT': 'application/vnd.ogc.gml'
+        };
+
+        let info_url = src.getGetFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
+
+        util.xhr({
+            url: info_url,
+        }).then((response) => {
+            // not all WMS services play nice and will return the
+            //  error message as a 200, so this still needs checked.
+            if(response) {
+                let gml_format = new WMSGetFeatureInfoFormat();
+                let features = gml_format.readFeatures(response.responseText);
+                let js_features = geojson.writeFeaturesObject(features).features;
+
+                this.props.dispatch(
+                    mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
+                );
+            } else {
+                fail_layer();
+            }
+        })
+        .fail((err, msg) => {
+            fail_layer();
+        })
+        .always(() => {
+            this.checkQueryForCompleteness(queryId, queryLayer);
+        });
     }
 
     /** Iterate through the layers and ensure that they have all
@@ -255,7 +263,7 @@ class Map extends Component {
         }
 
         if(all_completed) {
-            this.props.store.dispatch(mapActions.finishQuery(queryId));
+            this.props.dispatch(mapActions.finishQuery(queryId));
         }
     }
 
@@ -389,7 +397,7 @@ class Map extends Component {
                         }
 
                         // dispatch an error status.
-                        this.props.store.dispatch(
+                        this.props.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, true, [], error_text)
                         );
                     } else {
@@ -410,7 +418,7 @@ class Map extends Component {
                         // apply the transforms
                         js_features = util.transformFeatures(map_source.transforms, js_features);
 
-                        this.props.store.dispatch(
+                        this.props.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                         );
                     }
@@ -418,7 +426,7 @@ class Map extends Component {
             },
             error: () => {
                 // dispatch a message that the query has failed.
-                this.props.store.dispatch(
+                this.props.dispatch(
                     // true for 'failed', empty array to prevent looping side-effects.
                     mapActions.resultsForQuery(queryId, queryLayer, true, [], 'Server error. Check network logs.')
                 );
@@ -576,14 +584,14 @@ class Map extends Component {
                     // apply the transforms
                     js_features = util.transformFeatures(map_source.transforms, js_features);
 
-                    this.props.store.dispatch(
+                    this.props.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                     );
                 }
             },
             error: () => {
                 // dispatch a message that the query has failed.
-                this.props.store.dispatch(
+                this.props.dispatch(
                     // true for 'failed', empty array to prevent looping side-effects.
                     mapActions.resultsForQuery(queryId, queryLayer, true, [])
                 );
@@ -632,7 +640,7 @@ class Map extends Component {
             });
         }
 
-        this.props.store.dispatch(
+        this.props.dispatch(
             mapActions.resultsForQuery(queryId, queryLayer, false, result_features)
         );
 
@@ -712,7 +720,7 @@ class Map extends Component {
             //  clear the results from the map.
             const results = this.props.mapSources.results;
             if(results && results.features && results.features.length > 0) {
-                this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+                this.props.dispatch(mapSourceActions.clearFeatures('results', 'results'));
             }
         }
     }
@@ -786,7 +794,7 @@ class Map extends Component {
     renderQueryLayer(query) {
         if(this.props.mapSources.results) {
             // clear the features
-            this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+            this.props.dispatch(mapSourceActions.clearFeatures('results', 'results'));
             // get the path to the first set of features
             const layer_path = Object.keys(query.results)[0];
 
@@ -795,7 +803,7 @@ class Map extends Component {
                 // get the features, after applying the query filter
                 const features = util.matchFeatures(query.results[layer_path], query.filter);
                 // render only those features.
-                this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
+                this.props.dispatch(mapSourceActions.addFeatures('results', features));
             }
         } else {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
@@ -901,13 +909,13 @@ class Map extends Component {
             id: uuid.v4()
         }, json_feature.properties);
 
-        this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
+        this.props.dispatch(mapActions.addSelectionFeature(json_feature));
 
-        this.props.store.dispatch(
+        this.props.dispatch(
             mapSourceActions.clearFeatures('selection')
         );
 
-        this.props.store.dispatch(
+        this.props.dispatch(
             mapSourceActions.addFeatures('selection', [json_feature])
         );
 
@@ -993,7 +1001,7 @@ class Map extends Component {
             // get the view of the map
             let view = this.map.getView();
             // create a "mapAction" and dispatch it.
-            this.props.store.dispatch(mapActions.setView({
+            this.props.dispatch(mapActions.setView({
                 center: view.getCenter(),
                 resolution: view.getResolution(),
                 zoom: view.getZoom()
@@ -1004,13 +1012,13 @@ class Map extends Component {
         //  there as well.
         this.map.on('pointermove', (event) => {
             var action = mapActions.cursor(event.coordinate);
-            this.props.store.dispatch(action);
+            this.props.dispatch(action);
 
             if(this.sketchFeature) {
                 // convert the sketch feature's geometry to JSON and kick it out
                 // to the store.
                 const json_geom = util.geomToJson(this.sketchFeature.getGeometry());
-                this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
+                this.props.dispatch(mapActions.updateSketchGeometry(json_geom));
             }
         });
 
@@ -1049,7 +1057,7 @@ class Map extends Component {
         button.innerHTML = '<i class="stop tool"></i> ' + tool_desc;
         // when the button is clicked, stop drawing.
         button.onclick = () => {
-            this.props.store.dispatch(mapActions.changeTool(null));
+            this.props.dispatch(mapActions.changeTool(null));
         };
 
         // create a wrapper div that places the button in the map
@@ -1143,7 +1151,7 @@ class Map extends Component {
                     const id_prop = '_uuid';
                     const fid = evt.selected[0].getProperties()[id_prop];
                     // send the remove feature event to remove it.
-                    this.props.store.dispatch(
+                    this.props.dispatch(
                         mapSourceActions.removeFeature(map_source_name, fid)
                     );
                     // clear the selected features from the tool.
@@ -1169,7 +1177,7 @@ class Map extends Component {
                             const id = feature.getProperties()[id_prop];
 
                             if(id) {
-                                this.props.store.dispatch(
+                                this.props.dispatch(
                                     mapSourceActions.modifyFeatureGeometry(map_source_name, id, geometry)
                                 );
                             }
@@ -1200,18 +1208,18 @@ class Map extends Component {
                         let geojson = new GeoJSONFormat();
                         let json_feature = geojson.writeFeatureObject(evt.feature);
 
-                        this.props.store.dispatch(mapSourceActions.addFeatures(
+                        this.props.dispatch(mapSourceActions.addFeatures(
                                                      map_source_name, [json_feature]));
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.dispatch(mapActions.updateSketchGeometry(null));
                     });
                 } else {
                     this.drawTool.on('drawend', (evt) => {
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.dispatch(mapActions.updateSketchGeometry(null));
                     });
                 }
             }

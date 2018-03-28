@@ -516,7 +516,7 @@ class Grid extends Component {
 
                 if(layer !== null) {
                     // try to parse the grid columns
-                    if(typeof layer.templates.gridColumns.contents === 'object') {
+                    if(layer.templates.gridColumns && typeof layer.templates.gridColumns.contents === 'object') {
                         grid_cols = layer.templates.gridColumns.contents;
                     } else {
                         try {
