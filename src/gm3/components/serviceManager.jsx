@@ -64,7 +64,7 @@ class SetSelectionBuffer extends Component {
      *
      */
     setBuffer(distance) {
-        this.props.store.dispatch(mapActions.setSelectionBuffer(distance));
+        this.props.dispatch(mapActions.setSelectionBuffer(distance));
     }
 
     render() {
@@ -190,6 +190,8 @@ class ServiceManager extends Component {
             if(service.resultsAsHtml) {
                 html_contents = service.resultsAsHtml(queryId, query);
             }
+        } else if(query.progress === 'failed') {
+            html_contents = "There was an error with your query please try again.";
         } else {
             html_contents = "<i class='service spinner'></i>";
         }
@@ -198,7 +200,7 @@ class ServiceManager extends Component {
     }
 
     removeQuery(queryId) {
-        this.props.store.dispatch(removeQuery(queryId));
+        this.props.dispatch(removeQuery(queryId));
     }
 
     /** Get the extent of a query's results.
@@ -303,11 +305,11 @@ class ServiceManager extends Component {
      *
      */
     drawTool(type) {
-        this.props.store.dispatch(changeTool(type));
+        this.props.dispatch(changeTool(type));
     }
 
     closeForm() {
-        this.props.store.dispatch(finishService());
+        this.props.dispatch(finishService());
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -421,7 +423,7 @@ class ServiceManager extends Component {
     componentWillUpdate(nextProps, nextState) {
         // anytime this updates, the user should really be seeing the service
         //  tab.
-        this.props.store.dispatch(setUiHint('service-manager'));
+        this.props.dispatch(setUiHint('service-manager'));
 
         if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
@@ -441,7 +443,7 @@ class ServiceManager extends Component {
             // 'rotate' the current servie to the next services.
             this.setState({lastService: nextProps.queries.service, lastFeature: ''});
             // clear out the previous selection feaures.
-            this.props.store.dispatch(mapActions.clearSelectionFeatures());
+            this.props.dispatch(mapActions.clearSelectionFeatures());
 
             // clear out the previous field values.
             if(!this.fieldValues[nextProps.queries.service]) {
@@ -452,7 +454,7 @@ class ServiceManager extends Component {
             //  does not actually support buffering, remove the buffer.
             if(this.props.map.selectionBuffer !== 0
                && (!service_def || !service_def.bufferAvailable)) {
-                this.props.store.dispatch(mapActions.setSelectionBuffer(0));
+                this.props.dispatch(mapActions.setSelectionBuffer(0));
             }
         } else {
             let service_name = this.state.lastService;
