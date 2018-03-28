@@ -49,6 +49,8 @@ module.exports = function(grunt) {
                 in_value = false;
             } else if(chr === '#' && !in_value) {
                 throw grunt.util.error('ID selector found in [' + filename + ':' + line_no + ']');
+            } else if(chr === '\t') {
+                throw grunt.util.error('No tabs allowed! Tab found in [' + filename + ':' + line_no + ']');
             } else if(chr === '\n') {
                 line_no++;
             }
