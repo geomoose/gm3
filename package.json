@@ -7,8 +7,6 @@
   "homepage": "http://www.geomoose.org",
   "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
-    "build-dev": "webpack --config webpack.config.js",
-    "build-deploy": "webpack --config webpack-deploy.config.js",
     "test": "node node_modules/jest/bin/jest.js --coverage tests",
     "test:only": "jest",
     "prepack": "grunt build",
