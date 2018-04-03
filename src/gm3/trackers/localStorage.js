@@ -23,10 +23,6 @@
  */
 
 
-import React, {Component, PropTypes } from 'react';
-
-import { connect } from 'react-redux';
-
 import { favoriteLayer } from '../actions/mapSource';
 
 import * as util from '../util';
@@ -116,12 +112,13 @@ export default class LocalStorageTracker {
     }
 
     track() {
-        // when tracking is not active, just return null.
+        // when tracking is not active, just return false.
         if(this.tracking) {
             this.trackFavorites();
         }
 
         // no DOM components to render.
-        return null;
+        return false;
     }
+
 }

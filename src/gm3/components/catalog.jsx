@@ -283,8 +283,13 @@ export class Catalog extends Component {
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
                 <div className="layer-label">
-                    <input className="checkbox" type="checkbox"
-                       onChange={doNothing} onClick={toggle} checked={is_on} />
+                    <input
+                        className="checkbox"
+                        type="checkbox"
+                        onChange={doNothing}
+                        onClick={toggle}
+                        checked={is_on}
+                    />
 
                     <i className={ is_favorite } onClick={toggleFavorite}/>
                     <span onClick={toggle}>
@@ -320,7 +325,7 @@ export class Catalog extends Component {
             <div key={group.id} className={classes}>
                 <div onClick={toggle} className="group-label"><i className={'folder icon ' + is_open}></i>{group.label}</div>
                 <div className="children">
-                {group.children.map(this.renderTreeNode)}
+                    {group.children.map(this.renderTreeNode)}
                 </div>
             </div>
         );
@@ -336,7 +341,7 @@ export class Catalog extends Component {
             if(this.searchable && this.shouldLayerRender(node)) {
                 return this.renderLayer(node);
             } else {
-                return null;
+                return false;
             }
         }
     }

@@ -185,7 +185,7 @@ function subtreeActions(store, parent, subtreeXml) {
 
     for(let i = 0, ii = subtreeXml.childNodes.length; i < ii; i++) {
         let childNode = subtreeXml.childNodes[i];
-        let child = null, parent_id = null;
+        let child = false, parent_id = null;
         if(parent && parent.id) {
             parent_id = parent.id;
         }

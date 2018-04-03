@@ -185,9 +185,9 @@ export class MeasureTool extends Component {
 
         segment_html.unshift((
             <tr key="line_total">
-                    <td>&#931;</td>
-                    <td>{ total_length.toFixed(2) }</td>
-                    <td>&nbsp;</td>
+                <td>&#931;</td>
+                <td>{ total_length.toFixed(2) }</td>
+                <td>&nbsp;</td>
             </tr>
         ));
 
@@ -247,7 +247,7 @@ export class MeasureTool extends Component {
         if(g === null ||
             (g.type === 'LineString' && g.coordinates.length < 2) ||
             (g.type === 'Polygon' && g.coordinates[0].length < 3)
-           ) {
+        ) {
             return (
                 <div className="help-text">
                     Please draw a feature on the map to measure.

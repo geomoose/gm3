@@ -127,7 +127,7 @@ module.exports = function(grunt) {
             options: {
                 webpack: webpackConfig
             },
-            start: Object.assign({keepAlive: true}, webpackConfig.devServer)
+            start: webpackConfig.devServer,
         }
     });
 

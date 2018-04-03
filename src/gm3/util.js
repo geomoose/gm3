@@ -57,7 +57,7 @@ export function getXmlTextContents(node) {
         return node.textContent;
     }
 
-    return null;
+    return '';
 }
 
 
@@ -313,7 +313,11 @@ export function filterFeatures(features, filter, inverse = true) {
 
     // the createFilter function is from mapbox!
     // uses the mapbox gl style filters.
-    const filter_function = createFilter(['all'].concat(filter));
+    let filter_function = function() { return true; };
+
+    if (filter !== undefined && filter !== null ) {
+        filter_function = createFilter(['all'].concat(filter));
+    }
 
     for(let feature of features) {
         if(inverse !== filter_function(feature)) {
@@ -336,7 +340,7 @@ export function filterFeatures(features, filter, inverse = true) {
  */
 export function matchFeatures(features, filter) {
     // when no filter is applied, just return the features.
-    if(filter === null || filter === false) {
+    if(filter === undefined || filter === null || filter === false) {
         return features;
     }
 

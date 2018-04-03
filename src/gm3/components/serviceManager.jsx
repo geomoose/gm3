@@ -64,7 +64,7 @@ class SetSelectionBuffer extends Component {
      *
      */
     setBuffer(distance) {
-        this.props.dispatch(mapActions.setSelectionBuffer(distance));
+        this.props.store.dispatch(mapActions.setSelectionBuffer(distance));
     }
 
     render() {
@@ -200,7 +200,7 @@ class ServiceManager extends Component {
     }
 
     removeQuery(queryId) {
-        this.props.dispatch(removeQuery(queryId));
+        this.props.store.dispatch(removeQuery(queryId));
     }
 
     /** Get the extent of a query's results.
@@ -230,7 +230,7 @@ class ServiceManager extends Component {
     zoomToResults(queryId) {
         const query = this.props.queries[queryId];
         const extent = this.getExtentForQuery(query.results);
-        this.props.dispatch(zoomToExtent(extent));
+        this.props.store.dispatch(zoomToExtent(extent));
     }
 
 
@@ -265,7 +265,7 @@ class ServiceManager extends Component {
         }
 
         const info_header = (
-           <div className='results-info'>
+            <div className='results-info'>
                 <div className='results-info-item features-count'>
                     <div className="label">Features</div>
                     <div className="value">{ feature_count }</div>
@@ -305,11 +305,11 @@ class ServiceManager extends Component {
      *
      */
     drawTool(type) {
-        this.props.dispatch(changeTool(type));
+        this.props.store.dispatch(changeTool(type));
     }
 
     closeForm() {
-        this.props.dispatch(finishService());
+        this.props.store.dispatch(finishService());
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -408,7 +408,7 @@ class ServiceManager extends Component {
 
             if(query && query.progress === 'new') {
                 if(typeof(service.runQuery) == 'function') {
-                    this.props.dispatch(mapActions.startQuery(query_id));
+                    this.props.store.dispatch(mapActions.startQuery(query_id));
                     service.runQuery(query_id, query);
                 }
             }
@@ -416,14 +416,14 @@ class ServiceManager extends Component {
     }
 
     clearSelectionFeatures() {
-        this.props.dispatch(mapActions.clearSelectionFeatures());
-        this.props.dispatch(clearFeatures('selection'));
+        this.props.store.dispatch(mapActions.clearSelectionFeatures());
+        this.props.store.dispatch(clearFeatures('selection'));
     }
 
     componentWillUpdate(nextProps, nextState) {
         // anytime this updates, the user should really be seeing the service
         //  tab.
-        this.props.dispatch(setUiHint('service-manager'));
+        this.props.store.dispatch(setUiHint('service-manager'));
 
         if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
@@ -443,7 +443,7 @@ class ServiceManager extends Component {
             // 'rotate' the current servie to the next services.
             this.setState({lastService: nextProps.queries.service, lastFeature: ''});
             // clear out the previous selection feaures.
-            this.props.dispatch(mapActions.clearSelectionFeatures());
+            this.props.store.dispatch(mapActions.clearSelectionFeatures());
 
             // clear out the previous field values.
             if(!this.fieldValues[nextProps.queries.service]) {
@@ -454,7 +454,7 @@ class ServiceManager extends Component {
             //  does not actually support buffering, remove the buffer.
             if(this.props.map.selectionBuffer !== 0
                && (!service_def || !service_def.bufferAvailable)) {
-                this.props.dispatch(mapActions.setSelectionBuffer(0));
+                this.props.store.dispatch(mapActions.setSelectionBuffer(0));
             }
         } else {
             let service_name = this.state.lastService;

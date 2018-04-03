@@ -32,18 +32,23 @@ var fs = require('fs');
 var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
 
 module.exports = {
+    mode: 'development',
     devtool: 'eval-source-map',
     entry: [
-        'webpack-dev-server/client?http://localhost:4000',
-        'babel-polyfill',
+        //'webpack-dev-server/client?http://localhost:4000',
+        //'babel-polyfill',
         //'webpack/hot/only-dev-server',
-        './src/' //index.jsx'
+        './src/index.js' //index.jsx'
     ],
-
+    resolve: {
+        extensions: [
+            '.js', '.jsx',
+        ],
+    },
     module: {
-        loaders: [{
+        rules: [{
             test: /\.(jsx|js)$/,
-            loaders: ['babel'],
+            loaders: ['babel-loader'],
             include: [
                 path.join(__dirname, 'src'),
                 path.join(__dirname, 'node_modules/'),
@@ -64,10 +69,10 @@ module.exports = {
         }, {
             test: /\.json$/,
             loader: 'json-loader',
+            exclude: [
+                path.join(__dirname, 'node_modules/'),
+            ]
         }]
-    },
-    resolve: {
-        extensions: ['', '.js', '.jsx']
     },
     output: {
         path: __dirname + '/dist',
@@ -96,11 +101,8 @@ module.exports = {
             },
         ]
     },
-    externals: {
-        //openlayers: 'ol',
-    },
     plugins: [
-        new webpack.BannerPlugin(license_text, {raw: true}),
+        new webpack.BannerPlugin(license_text),
         new webpack.DefinePlugin({
             GM_VERSION: JSON.stringify(package.version)
         })
