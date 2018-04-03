@@ -35,4 +35,4 @@ before_script:
     - sudo apt-get install -y libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev g++
     - npm install canvas@1.6.7
     - npm install
-    - grunt lint
+    - grunt build
