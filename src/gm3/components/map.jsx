@@ -29,15 +29,14 @@
  *  of the mapbook in a nice tree format.
  */
 
-import React, {Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 
 import { connect } from 'react-redux';
 
 import uuid from 'uuid';
-import md5 from 'md5';
+import md5 from 'md5/md5';
 
-import getStyleFunction from 'mapbox-to-ol-style';
+import applyStyleFunction from 'mapbox-to-ol-style';
 
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
@@ -79,7 +78,7 @@ import * as vectorLayer from './layers/vector';
 import * as bingLayer from './layers/bing';
 
 
-class Map extends Component {
+class Map extends React.Component {
 
     constructor() {
         super();
@@ -180,7 +179,7 @@ class Map extends Component {
 
         const fail_layer = (message) => {
             // dispatch a message that the query has failed.
-            this.props.dispatch(
+            this.props.store.dispatch(
                 // true for 'failed', empty array to prevent looping side-effects.
                 mapActions.resultsForQuery(queryId, queryLayer, true, [], message)
             );
@@ -215,27 +214,28 @@ class Map extends Component {
 
         util.xhr({
             url: info_url,
-        }).then((response) => {
-            // not all WMS services play nice and will return the
-            //  error message as a 200, so this still needs checked.
-            if(response) {
-                let gml_format = new WMSGetFeatureInfoFormat();
-                let features = gml_format.readFeatures(response.responseText);
-                let js_features = geojson.writeFeaturesObject(features).features;
+        })
+            .then((response) => {
+                // not all WMS services play nice and will return the
+                //  error message as a 200, so this still needs checked.
+                if(response) {
+                    let gml_format = new WMSGetFeatureInfoFormat();
+                    let features = gml_format.readFeatures(response.responseText);
+                    let js_features = geojson.writeFeaturesObject(features).features;
 
-                this.props.dispatch(
-                    mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                );
-            } else {
+                    this.props.store.dispatch(
+                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
+                    );
+                } else {
+                    fail_layer();
+                }
+            })
+            .fail((err, msg) => {
                 fail_layer();
-            }
-        })
-        .fail((err, msg) => {
-            fail_layer();
-        })
-        .always(() => {
-            this.checkQueryForCompleteness(queryId, queryLayer);
-        });
+            })
+            .always(() => {
+                this.checkQueryForCompleteness(queryId, queryLayer);
+            });
     }
 
     /** Iterate through the layers and ensure that they have all
@@ -263,7 +263,7 @@ class Map extends Component {
         }
 
         if(all_completed) {
-            this.props.dispatch(mapActions.finishQuery(queryId));
+            this.props.store.dispatch(mapActions.finishQuery(queryId));
         }
     }
 
@@ -397,7 +397,7 @@ class Map extends Component {
                         }
 
                         // dispatch an error status.
-                        this.props.dispatch(
+                        this.props.store.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, true, [], error_text)
                         );
                     } else {
@@ -418,7 +418,7 @@ class Map extends Component {
                         // apply the transforms
                         js_features = util.transformFeatures(map_source.transforms, js_features);
 
-                        this.props.dispatch(
+                        this.props.store.dispatch(
                             mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                         );
                     }
@@ -426,7 +426,7 @@ class Map extends Component {
             },
             error: () => {
                 // dispatch a message that the query has failed.
-                this.props.dispatch(
+                this.props.store.dispatch(
                     // true for 'failed', empty array to prevent looping side-effects.
                     mapActions.resultsForQuery(queryId, queryLayer, true, [], 'Server error. Check network logs.')
                 );
@@ -584,14 +584,14 @@ class Map extends Component {
                     // apply the transforms
                     js_features = util.transformFeatures(map_source.transforms, js_features);
 
-                    this.props.dispatch(
+                    this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
                     );
                 }
             },
             error: () => {
                 // dispatch a message that the query has failed.
-                this.props.dispatch(
+                this.props.store.dispatch(
                     // true for 'failed', empty array to prevent looping side-effects.
                     mapActions.resultsForQuery(queryId, queryLayer, true, [])
                 );
@@ -640,7 +640,7 @@ class Map extends Component {
             });
         }
 
-        this.props.dispatch(
+        this.props.store.dispatch(
             mapActions.resultsForQuery(queryId, queryLayer, false, result_features)
         );
 
@@ -693,7 +693,7 @@ class Map extends Component {
             if(query && query.progress === 'new' && query.layers.length > 0) {
                 // issue a 'started' modification so the query is
                 //  not run twice.
-                this.props.dispatch(mapActions.startQuery(query_id));
+                this.props.store.dispatch(mapActions.startQuery(query_id));
                 // run the query.
                 this.runQuery(queries, query_id);
             }
@@ -720,7 +720,7 @@ class Map extends Component {
             //  clear the results from the map.
             const results = this.props.mapSources.results;
             if(results && results.features && results.features.length > 0) {
-                this.props.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+                this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
             }
         }
     }
@@ -794,7 +794,7 @@ class Map extends Component {
     renderQueryLayer(query) {
         if(this.props.mapSources.results) {
             // clear the features
-            this.props.dispatch(mapSourceActions.clearFeatures('results', 'results'));
+            this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
             // get the path to the first set of features
             const layer_path = Object.keys(query.results)[0];
 
@@ -803,7 +803,7 @@ class Map extends Component {
                 // get the features, after applying the query filter
                 const features = util.matchFeatures(query.results[layer_path], query.filter);
                 // render only those features.
-                this.props.dispatch(mapSourceActions.addFeatures('results', features));
+                this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
             }
         } else {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
@@ -884,10 +884,12 @@ class Map extends Component {
             // create an array of the drawn features.
             const selection_src = this.selectionLayer.getSource();
             const drawn_features = selection_src.getFeatures();
-            const json_features = [];
+            let json_features = [];
             for(let i = 0, ii = drawn_features.length; i < ii; i++) {
                 json_features.push(geojson.writeFeatureObject(drawn_features[i]));
             }
+
+            json_features = util.projectFeatures(json_features, 'EPSG:3857', 'EPSG:4326');
 
             // buffer those features.
             const buffered_geom = jsts.bufferAndUnion(json_features, buffer)
@@ -900,7 +902,7 @@ class Map extends Component {
                 }
             };
 
-            json_feature = buffered_feature;
+            json_feature = util.projectFeatures([buffered_feature], 'EPSG:4326', 'EPSG:3857')[0];
         }
 
 
@@ -909,13 +911,13 @@ class Map extends Component {
             id: uuid.v4()
         }, json_feature.properties);
 
-        this.props.dispatch(mapActions.addSelectionFeature(json_feature));
+        this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
 
-        this.props.dispatch(
+        this.props.store.dispatch(
             mapSourceActions.clearFeatures('selection')
         );
 
-        this.props.dispatch(
+        this.props.store.dispatch(
             mapSourceActions.addFeatures('selection', [json_feature])
         );
 
@@ -928,29 +930,30 @@ class Map extends Component {
         let src_selection = new VectorSource();
 
         this.selectionLayer = new VectorLayer({
-            style: getStyleFunction({
-                'version': 8,
-                'layers': [
-                    {
-                        'id': 'dummy',
-                        'source': 'dummy-source',
-                        'paint': {
-                            'fill-color': '#ff0000',
-                            'line-color': '#00ff00',
-                            'circle-radius': 4,
-                            'circle-color': '#ff00ff',
-                            'circle-stroke-color': '#ff0000'
-                        }
-                    }
-                ],
-                'dummy-source': [
-                    {
-                        'type': 'vector'
-                    }
-                ]
-            }, 'dummy-source'),
-            source: src_selection
+            source: src_selection,
         });
+
+        applyStyleFunction(this.selectionLayer, {
+            'version': 8,
+            'layers': [
+                {
+                    'id': 'dummy',
+                    'source': 'dummy-source',
+                    'paint': {
+                        'fill-color': '#ff0000',
+                        'line-color': '#00ff00',
+                        'circle-radius': 4,
+                        'circle-color': '#ff00ff',
+                        'circle-stroke-color': '#ff0000'
+                    }
+                }
+            ],
+            'dummy-source': [
+                {
+                    'type': 'vector'
+                }
+            ]
+        }, 'dummy-source');
 
         // whenever a feature has been added or changed on the selection layer,
         //  reflect that in the selection.
@@ -1001,7 +1004,7 @@ class Map extends Component {
             // get the view of the map
             let view = this.map.getView();
             // create a "mapAction" and dispatch it.
-            this.props.dispatch(mapActions.setView({
+            this.props.store.dispatch(mapActions.setView({
                 center: view.getCenter(),
                 resolution: view.getResolution(),
                 zoom: view.getZoom()
@@ -1012,13 +1015,13 @@ class Map extends Component {
         //  there as well.
         this.map.on('pointermove', (event) => {
             var action = mapActions.cursor(event.coordinate);
-            this.props.dispatch(action);
+            this.props.store.dispatch(action);
 
             if(this.sketchFeature) {
                 // convert the sketch feature's geometry to JSON and kick it out
                 // to the store.
                 const json_geom = util.geomToJson(this.sketchFeature.getGeometry());
-                this.props.dispatch(mapActions.updateSketchGeometry(json_geom));
+                this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
             }
         });
 
@@ -1057,7 +1060,7 @@ class Map extends Component {
         button.innerHTML = '<i class="stop tool"></i> ' + tool_desc;
         // when the button is clicked, stop drawing.
         button.onclick = () => {
-            this.props.dispatch(mapActions.changeTool(null));
+            this.props.store.dispatch(mapActions.changeTool(null));
         };
 
         // create a wrapper div that places the button in the map
@@ -1151,7 +1154,7 @@ class Map extends Component {
                     const id_prop = '_uuid';
                     const fid = evt.selected[0].getProperties()[id_prop];
                     // send the remove feature event to remove it.
-                    this.props.dispatch(
+                    this.props.store.dispatch(
                         mapSourceActions.removeFeature(map_source_name, fid)
                     );
                     // clear the selected features from the tool.
@@ -1177,7 +1180,7 @@ class Map extends Component {
                             const id = feature.getProperties()[id_prop];
 
                             if(id) {
-                                this.props.dispatch(
+                                this.props.store.dispatch(
                                     mapSourceActions.modifyFeatureGeometry(map_source_name, id, geometry)
                                 );
                             }
@@ -1208,18 +1211,19 @@ class Map extends Component {
                         let geojson = new GeoJSONFormat();
                         let json_feature = geojson.writeFeatureObject(evt.feature);
 
-                        this.props.dispatch(mapSourceActions.addFeatures(
-                                                     map_source_name, [json_feature]));
+                        this.props.store.dispatch(
+                            mapSourceActions.addFeatures(map_source_name, [json_feature])
+                        );
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
                     });
                 } else {
                     this.drawTool.on('drawend', (evt) => {
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
                     });
                 }
             }
@@ -1344,8 +1348,11 @@ class Map extends Component {
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
                 let is_selection = (this.props.mapView.activeSource === null);
-                this.activateDrawTool(this.props.mapView.interactionType,
-                                      this.props.mapView.activeSource, is_selection);
+                this.activateDrawTool(
+                    this.props.mapView.interactionType,
+                    this.props.mapView.activeSource,
+                    is_selection
+                );
             }
 
             // update the map size when data changes

@@ -23,9 +23,6 @@
  */
 
 
-import React from 'react';
-import { connect } from 'react-redux';
-
 import { getVisibleLayers } from '../actions/mapSource';
 import * as mapActions from '../actions/map';
 import { MAPSOURCE } from '../actionTypes';
@@ -208,7 +205,7 @@ export default class HashTracker {
     }
 
     track() {
-        // when tracking is not active, just return null.
+        // when tracking is not active, just return false.
         if(this.tracking) {
             let new_hash = '';
 
@@ -231,6 +228,6 @@ export default class HashTracker {
         }
 
         // no DOM components to render.
-        return null;
+        return false;
     }
 }

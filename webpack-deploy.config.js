@@ -25,22 +25,28 @@
  */
 var path = require('path');
 var webpack = require('webpack');
+
 var package = require('./package.json');
 
 var fs = require('fs');
 var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
 
-module.exports = {
-    devtool: 'source-map',
-    entry: [
-        'babel-polyfill',
-        './src/'
-    ],
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
+module.exports = {
+    mode: 'production',
+    entry: [
+        './src/index.js'
+    ],
+    resolve: {
+        extensions: [
+            '.js', '.jsx',
+        ],
+    },
     module: {
-        loaders: [{
+        rules: [{
             test: /\.(jsx|js)$/,
-            loaders: ['babel'],
+            loaders: ['babel-loader'],
             include: [
                 path.join(__dirname, 'src'),
                 path.join(__dirname, 'node_modules/'),
@@ -56,14 +62,15 @@ module.exports = {
                         return false;
                     }
                 }
-            },
+                return true;
+            }
         }, {
             test: /\.json$/,
             loader: 'json-loader',
+            exclude: [
+                path.join(__dirname, 'node_modules/'),
+            ]
         }]
-    },
-    resolve: {
-        extensions: ['', '.js', '.jsx']
     },
     output: {
         path: __dirname + '/dist',
@@ -72,17 +79,31 @@ module.exports = {
         library: ['gm3'],
         libraryTarget: 'umd'
     },
-    externals: {
-        openlayers: 'ol',
+    devServer: {
+        publicPath: '/examples/geomoose/dist',
+        contentBase: './',
+        port: 4000,
+        proxy: [
+            {
+                context: ['/mapserver'],
+                target: 'http://localhost:8000/',
+                secure: false
+            },
+            {
+                // point the example "geomoose" directories back
+                //  at the geomoose repository.
+                context: ['/examples/geomoose/'],
+                target: 'http://localhost:4000/',
+                pathRewrite: {'^/examples/geomoose' : '' },
+                secure: false
+            },
+        ]
     },
     plugins: [
+        new UglifyJsPlugin(),
+        new webpack.BannerPlugin(license_text),
         new webpack.DefinePlugin({
-            GM_VERSION: JSON.stringify(package.version),
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        }),
-        new webpack.optimize.UglifyJsPlugin(),
-        new webpack.BannerPlugin(license_text, {raw: true})
+            GM_VERSION: JSON.stringify(package.version)
+        })
     ]
 };

@@ -34,13 +34,11 @@ import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp';
 import UnionOp from 'jsts/org/locationtech/jts/operation/union/UnionOp';
 import GeoJSONParser from 'jsts/org/locationtech/jts/io/GeoJSONParser';
 
+import turf_buffer from '@turf/buffer';
+import turf_union from '@turf/union';
+
 export function buffer(feature, meters) {
-    const parser = new GeoJSONParser();
-    const jsts_geom = parser.read(feature);
-
-    const buffer_feature = BufferOp.bufferOp(jsts_geom, meters);
-
-    return parser.write(buffer_feature);
+    return turf_buffer(feature, meters, {units: 'meters'}).geometry;
 }
 
 
@@ -57,9 +55,8 @@ export function bufferAndUnion(features, meters) {
     let geometry = null;
 
     for(let i = 0, ii = features.length; i < ii; i++) {
-        // convert the geometry to the JSTS representation,
-        //  then buffer it.
-        const g = BufferOp.bufferOp(parser.read(features[i].geometry), meters);
+        // buffer the geometry.
+        const g = turf_buffer(features[i], meters, {units: 'meters'});
 
         // if the output geometry is still null, then set the
         //  first member to the new geometry
@@ -67,9 +64,9 @@ export function bufferAndUnion(features, meters) {
             geometry = g;
         // otherwise buffer it.
         } else {
-            geometry = UnionOp.union(geometry, g);
+            geometry = turf_union(geometry, g);
         }
     }
 
-    return parser.write(geometry);
+    return geometry.geometry;
 }

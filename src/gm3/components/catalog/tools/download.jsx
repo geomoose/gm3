@@ -85,7 +85,7 @@ class DownloadModal extends Modal {
         let filter = null;
         for(let i = 0, ii = map_source.layers.length; filter === null && i < ii; i++) {
             const layer = map_source.layers[i];
-            if(layer.name === src.layerName && layer.filter !== null) {
+            if(layer.name === src.layerName && layer.filter !== undefined) {
                 filter = layer.filter;
             }
         }

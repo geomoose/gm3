@@ -52,7 +52,7 @@ export default class SelectInput extends TextInput {
             <div className='service-input select'>
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
                 <select id={ 'input-' + id} value={this.state.value} onChange={this.onChange}>
-                { options.map(this.renderOption) }
+                    { options.map(this.renderOption) }
                 </select>
             </div>
         );

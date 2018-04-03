@@ -50,8 +50,13 @@ class CatalogLegend extends Component {
 
         switch(legend.type) {
             case 'html':
-                return (<div key={key} className="legend-html"
-                        dangerouslySetInnerHTML={this.htmlLegend(legend.html)} />);
+                return (
+                    <div
+                        key={key}
+                        className="legend-html"
+                        dangerouslySetInnerHTML={this.htmlLegend(legend.html)}
+                    />
+                );
             case 'img':
                 const img_tags = [];
                 legend_idx = 0;

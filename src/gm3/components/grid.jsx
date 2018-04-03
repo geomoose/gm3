@@ -314,26 +314,35 @@ class ColumnFilter extends Component {
         switch(this.props.column.filter.type) {
             case 'list':
                 modal = (
-                    <ListFilterModal ref='modal'
-                       column={this.props.column}
-                       results={this.props.results}
-                       store={this.props.store} queryId={this.props.queryId} />
+                    <ListFilterModal
+                        ref='modal'
+                        column={this.props.column}
+                        results={this.props.results}
+                        store={this.props.store}
+                        queryId={this.props.queryId}
+                    />
                 );
                 break;
             case 'range':
                 modal = (
-                    <RangeFilterModal ref='modal'
-                       column={this.props.column}
-                       results={this.props.results}
-                       store={this.props.store} queryId={this.props.queryId} />
+                    <RangeFilterModal
+                        ref='modal'
+                        column={this.props.column}
+                        results={this.props.results}
+                        store={this.props.store}
+                        queryId={this.props.queryId}
+                    />
                 );
                 break;
             default:
                 modal = (
-                    <FilterModal ref='modal'
-                       column={this.props.column}
-                       results={this.props.results}
-                       store={this.props.store} queryId={this.props.queryId} />
+                    <FilterModal
+                        ref='modal'
+                        column={this.props.column}
+                        results={this.props.results}
+                        store={this.props.store}
+                        queryId={this.props.queryId}
+                    />
                 );
         }
 
@@ -341,8 +350,12 @@ class ColumnFilter extends Component {
         const filter_title = 'filter';
         return (
             <span>
-                <i title={ filter_title}
-                   onClick={ () => { this.showFilterDialog() } } className="filter icon"></i>
+                <i
+                    title={ filter_title}
+                    onClick={ () => { this.showFilterDialog() }}
+                    className="filter icon"
+                >
+                </i>
                 { modal }
             </span>
         );
@@ -411,8 +424,12 @@ class Grid extends Component {
             }
 
             let filter = (
-                <ColumnFilter store={ this.props.store } column={ column_def }
-                              results={results} queryId={ query_id } />
+                <ColumnFilter
+                    store={ this.props.store }
+                    column={ column_def }
+                    results={results}
+                    queryId={ query_id }
+                />
             );
 
             header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool} {filter} </th>));
@@ -496,10 +513,10 @@ class Grid extends Component {
         // contains the cells for the header row
         const header_row = [];
 
-        let features = null;
+        let features = [];
         let display_table = false;
 
-        let grid_cols = null, grid_row = null;
+        let grid_cols, grid_row;
 
         // only render the first query.
         const query_id = this.props.queries.order[0];
@@ -530,7 +547,7 @@ class Grid extends Component {
                         grid_row = layer.templates.gridRow.contents;
                     }
 
-                    if(grid_cols !== null && grid_row !== null) {
+                    if(grid_cols && grid_row) {
                         // render as a grid.
                         features = util.matchFeatures(query.results[layer_path], query.filter);
                         if(query.results[layer_path].length > 0) {
@@ -545,7 +562,7 @@ class Grid extends Component {
 
         // render the empty string if there is nothing to show.
         if(!display_table) {
-            return null;
+            return false;
         }
 
         // when minimized, show the maximize button.
@@ -558,13 +575,18 @@ class Grid extends Component {
         return (
             <div className="gm-grid">
                 <div className="toolbar">
-                    <button onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
-                      className={'tool download'}
-                      title="Download results as CSV">
+                    <button
+                        onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
+                        className={'tool download'}
+                        title="Download results as CSV"
+                    >
                         <i className="icon download"></i>
                     </button>
-                    <button onClick={ toggle_grid } className={'tool ' + min_btn_class}
-                      title='Min/Maximize Grid'>
+                    <button
+                        onClick={ toggle_grid }
+                        className={'tool ' + min_btn_class}
+                        title='Min/Maximize Grid'
+                    >
                         <i className={'icon ' + min_btn_class}></i>
                     </button>
                 </div>

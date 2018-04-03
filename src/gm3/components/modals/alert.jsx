@@ -32,7 +32,7 @@ export default class AlertDialog extends Modal {
     renderBody() {
         return (
             <div className="alert-message">
-            { this.props.message }
+                { this.props.message }
             </div>
         );
     }

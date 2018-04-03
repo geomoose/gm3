@@ -85,9 +85,12 @@ class PrintImage extends Component {
         // draw the map.
         return (
             <div style={image_style} id={this.state.mapId}>
-                <Map store={this.props.store} center={center} resolution={rez}
-                     printOnly={true}
-                     mapRenderedCallback={() => { this.mapRendered() }}
+                <Map
+                    store={this.props.store}
+                    center={center}
+                    resolution={rez}
+                    printOnly={true}
+                    mapRenderedCallback={() => { this.mapRendered() }}
                 />
             </div>
         );

@@ -87,9 +87,9 @@ class DrawTool extends Component {
         if(gtype === 'Select') {
             tool_label = 'Select from: ';
             select_options = (
-              <select value={ this.state.selectLayer } onChange={ this.changeSelectLayer }>
-                { this.getSelectOptions() }
-              </select>
+                <select value={ this.state.selectLayer } onChange={ this.changeSelectLayer }>
+                    { this.getSelectOptions() }
+                </select>
             );
         } else if(gtype === 'Modify') {
             tool_label = 'Modify Feature';

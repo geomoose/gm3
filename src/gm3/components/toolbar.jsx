@@ -73,11 +73,11 @@ export class ToolbarDrawer extends Component {
             <div className="drawer tool">
                 <span className="drawer icon"></span><span className="label">{drawer.label}</span>
                 <div className="drawer-contents">
-                {
-                    this.props.toolbar[drawer.name].map((tool, i ) => {
-                        return (<ToolbarButton store={this.props.store} key={'btn' + i} tool={ tool } />);
-                    })
-                }
+                    {
+                        this.props.toolbar[drawer.name].map((tool, i ) => {
+                            return (<ToolbarButton store={this.props.store} key={'btn' + i} tool={ tool } />);
+                        })
+                    }
                 </div>
             </div>
         );

@@ -37,7 +37,7 @@ import VectorSource from 'ol/source/vector';
 import VectorLayer from 'ol/layer/vector';
 import TileGrid from 'ol/tilegrid';
 
-import getStyleFunction from 'mapbox-to-ol-style';
+import applyStyleFunction from 'mapbox-to-ol-style';
 
 /** Create the parameters for a Vector layer.
  *
@@ -196,7 +196,7 @@ function defineSource(mapSource) {
 /** Return a style function for the layer.
  *
  */
-function defineStyle(mapSource) {
+function applyStyle(vectorLayer, mapSource) {
     const layers = [];
     for(const layer of mapSource.layers) {
         if(layer.on === true) {
@@ -211,7 +211,7 @@ function defineStyle(mapSource) {
             // check to see if there is a filter
             //  set on the layer.  This uses the Mapbox GL/JS
             //  filters.
-            if(layer.filter !== null) {
+            if(layer.filter !== undefined) {
                 layer_def.filter = layer.filter;
             }
 
@@ -219,7 +219,8 @@ function defineStyle(mapSource) {
         }
     }
 
-    return getStyleFunction({
+
+    applyStyleFunction(vectorLayer, {
         'version': 8,
         'layers': layers,
         'dummy-source': [
@@ -251,9 +252,11 @@ export function createLayer(mapSource) {
 
     const opts = {
         source,
-        style: defineStyle(mapSource)
     };
-    return new VectorLayer(opts);
+    const vector_layer = new VectorLayer(opts);
+    applyStyle(vector_layer, mapSource);
+
+    return vector_layer;
 }
 
 /** Ensure that the Vector parameters all match.
@@ -289,5 +292,5 @@ export function updateLayer(map, layer, mapSource) {
 
     // update the style effectively turns "layers"
     // on and off on vector layers.
-    layer.setStyle(defineStyle(mapSource));
+    applyStyle(layer, mapSource);
 }
