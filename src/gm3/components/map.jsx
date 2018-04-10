@@ -69,6 +69,9 @@ import olEventConditions from 'ol/events/condition';
 
 import olPoint from 'ol/geom/point';
 
+import olZoomControl from 'ol/control/zoom';
+import olRotateControl from 'ol/control/rotate';
+
 
 /* Import the various layer types */
 import * as wmsLayer from './layers/wms';
@@ -996,7 +999,11 @@ class Map extends React.Component {
             target: this.mapId,
             layers: [this.selectionLayer],
             logo: false,
-            view: new olView(view_params)
+            view: new olView(view_params),
+            controls: [
+                new olZoomControl(),
+                new olRotateControl(),
+            ],
         });
 
         // when the map moves, dispatch an action
