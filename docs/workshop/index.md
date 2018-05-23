@@ -1,8 +1,8 @@
 ---
-title: GeoMoose 3.0 Workshop
+title: GeoMoose 3.2 Workshop
 author: Dan "Ducky" Little / @theduckylittle
 date: 15 August 2017
-version: 3.0.0
+version: 3.2.0
 output:
     beamer_presentation:
         slide_level: 2
@@ -25,7 +25,7 @@ fontsize: 8pt
 ## Who is this workshop for?
 
 * Anyone wanting to have a WebGIS application for their users.
-* "GIS Admins" - People who have data and want to get it out.
+* "GIS Admins" - People who have data and want to serve it on the web.
 * Developers who don't want to repeat themselves.
 
 # Installing MS4W
@@ -41,18 +41,13 @@ Requirements:
 
  * A computer running Windows 7 or newer.
  * A copy of MS4W.  [Download Here.](http://ms4w.com)
- * A copy of the GeoMoose Demo Data. [Download Here.](https://www.geomoose.org/downloads/gm3-demo-data-3.0.0-ms4w.zip)
- * A copy of the GeoMoose MS4W Package [Download Here.](https://www.geomoose.org/downloads/gm3-examples-3.0.0-ms4w.zip)
 
 
 ## Install MS4W
 
-**Double click the ms4w-3.2.2-setup.exe icon.**
+**Double click the ms4w-3.2.7-setup.exe icon.**
 
-
-MapServer for Windows does come with an older version of GeoMoose,
-but it is recommended to skip that and install the latest and greatest version
-for the full Moose experience.
+Ensure the checkbox for **GeoMoose 3.2.0 is checked.**
 
 ![ms4w setup screen 1](../ms4w-quickstart/ms4w-setup-1.png)
 
@@ -75,28 +70,7 @@ You can validate the ms4w installation by navigating to [localhost](http://local
 
 ![working ms4w](../ms4w-quickstart/ms4w-success.png)
 
-# Installing GeoMoose
-
-## Install the GeoMoose Demo Data
-
-Extract the `gm3-demo-data-3.0.0-ms4w.zip` to the `C:\` directory. This will unzip mapfiles and shapefiles used to power the GeoMoose examples.
-
-![geomoose extract zip](../ms4w-quickstart/geomoose-setup-1.png)
-
-
-## Install the GeoMoose SDK and examples
-
-Extract the `gm3-examples-3.0.0-ms4w.zip` to the `C:\` directory. Everything in it is already set to install where needed within the ms4w subdirectories including Apache, Apps, and httpd.d.
-
-![geomoose extract zip](../ms4w-quickstart/geomoose-setup-1.png)
-
-## Restart Apache
-
-Once extracted, restart the Apache MS4W Service.
-
-![restart windows apache service](../ms4w-quickstart/geomoose-setup-2.png)
-
-## Back to the browser
+## Find the GeoMoose listing
 
 GeoMoose will now show up on the MS4W [localhost](http://localhost/) page under applications
 
@@ -339,6 +313,25 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 ```
 <!-- {% endraw %} -->
 
+## Tweak the raster Firestations layer
+
+* The vector version of the layer needs to be "referenced" by the
+  raster version.
+
+From:
+<!-- {% raw %} -->
+```
+<layer name="fire_stations">
+```
+<!-- {% endraw %} -->
+
+To:
+<!-- {% raw %} -->
+```
+<layer name="fire_stations" query-as="firestations-wfs/fire_stations">
+```
+<!-- {% endraw %} -->
+
 ## Reload and select Firestations
 
 * Back in the browser, reload the page, and click 'Select' from the toolbar.
@@ -389,9 +382,6 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
 ## GeoMoose is very HTML, such CSS.
 
 * Chrome and Firefox both have excellent DOM/CSS Inspection tools.
-* GeoMoose's desktop example will try to load `site.css` from `index.html`.
-  This file is intentionally not included.  `site.css` provides a place
-  for custom CSS themes that will not ever be overwritten during upgrades.
 
 ## Let's tweak the toolbar!
 
@@ -404,6 +394,26 @@ from a layer it needs to have a `mapserver-wfs`, `wfs` or `ags-vector` source.
     display: none;
 }
 ```
+
+## Now add the cite.css file to our HTML
+
+* Luckily GeoMoose has envisioned the need to customize the look!
+
+Change line 9 of `index.html from:
+
+<!-- {% raw %} -->
+```
+<!--link rel="stylesheet" type="text/css" href="site.css"/-->
+```
+<!-- {% endraw %} -->
+
+To:
+
+<!-- {% raw %} -->
+```
+<link rel="stylesheet" type="text/css" href="site.css"/>
+```
+<!-- {% endraw %} -->
 
 ## And change the icon!
 
