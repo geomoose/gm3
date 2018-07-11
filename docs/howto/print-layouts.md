@@ -93,6 +93,6 @@ The following elements are available:
   * `width`, `height` - `rect`-only the width and height of the rectangle.
   * `rx`, `ry` - `ellipse`-only, specifies the x and y radii of the ellipse.
 * `image` - Add an image to the map.
-  * `data` - The bytes defining the image.
+  * `image_data` - The bytes defining the image.
   * `x`, `y` - Define the upper left corner of the image.
   * `width`, `height` - The width and height of the image in the map (optional).
