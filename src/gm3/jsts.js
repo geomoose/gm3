@@ -30,10 +30,6 @@
  *
  */
 
-import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp';
-import UnionOp from 'jsts/org/locationtech/jts/operation/union/UnionOp';
-import GeoJSONParser from 'jsts/org/locationtech/jts/io/GeoJSONParser';
-
 import turf_buffer from '@turf/buffer';
 import turf_union from '@turf/union';
 
@@ -51,7 +47,6 @@ export function buffer(feature, meters) {
  * @returns GeoJSON feature.
  */
 export function bufferAndUnion(features, meters) {
-    const parser = new GeoJSONParser();
     let geometry = null;
 
     for(let i = 0, ii = features.length; i < ii; i++) {

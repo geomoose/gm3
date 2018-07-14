@@ -31,6 +31,7 @@ import fs from 'fs';
 describe('Application Component', () => {
     it('create an application instance', () => {
         const app = new Application();
+        expect(app).toBeDefined();
     });
 });
 
@@ -57,7 +58,7 @@ describe('application api calls', () => {
     it('loads a mapbook', (done) => {
         fs.readFile(MAPBOOK_PATH, (err, contents) => {
             const parser = new DOMParser();
-            const xml = parser.parseFromString(contents, "text/xml");
+            const xml = parser.parseFromString(contents, 'text/xml');
             app.loadMapbook({content: xml});
 
             done();
@@ -105,7 +106,7 @@ describe('application api calls', () => {
 
     it('sets the view', () => {
         app.setView({
-            center: [0,0],
+            center: [0, 0],
             resolution: 100
         });
 

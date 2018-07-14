@@ -23,7 +23,6 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import Enzyme, { mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -85,14 +84,13 @@ describe('Catalog component tests', () => {
             name: 'test1',
             on: false,
             label: 'Test 1',
-            legend: false,
             legend: {
                 type: 'img',
-                images: ['https://geomoose.org/_static/logo_2011.png',],
+                images: ['https://geomoose.org/_static/logo_2011.png', ],
             },
         }));
 
-        const xml= `
+        const xml = `
             <catalog>
                 <group title="Group">
                     <layer refresh="30" title="Test 2" src="test/test0"/>
@@ -106,7 +104,7 @@ describe('Catalog component tests', () => {
             </catalog>`;
 
         const parser = new DOMParser();
-        const catalog_xml = parser.parseFromString(xml, "text/xml");
+        const catalog_xml = parser.parseFromString(xml, 'text/xml');
         const results = actions.parseCatalog(store, catalog_xml.getElementsByTagName('catalog')[0]);
 
         for(const action of results) {

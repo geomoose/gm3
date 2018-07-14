@@ -26,11 +26,7 @@
  *
  */
 
-import uuid from 'uuid';
-
 import { TOOLBAR } from '../actionTypes';
-
-import * as util from '../util';
 
 /*
  * TOOLBAR tool definition

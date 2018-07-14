@@ -36,7 +36,7 @@ function defineSource(mapSource) {
     //  If both roads and aerials are specified,
     //  "AerialWithLabels" is requested.
     let aerials_on = false, roads_on = false;
-    for(let layer of mapSource.layers) {
+    for(const layer of mapSource.layers) {
         if(layer.on === true) {
             if(layer.name === 'aerials') {
                 aerials_on = true;
@@ -54,7 +54,7 @@ function defineSource(mapSource) {
     } else if(roads_on) {
         image_style = 'Road';
     } else {
-        for(let layer of mapSource.layers) {
+        for(const layer of mapSource.layers) {
             if(layer.on === true) {
                 image_style = layer.name;
             }
@@ -83,9 +83,9 @@ export function createLayer(mapSource) {
  */
 export function updateLayer(map, layer, mapSource) {
     // pull in the open layers source
-    let src = layer.getSource();
+    const src = layer.getSource();
     // get the new definition
-    let defn = defineSource(mapSource);
+    const defn = defineSource(mapSource);
 
     if(defn.imagerySet !== src.getImagerySet()) {
         layer.setSource(new BingSource(defn));

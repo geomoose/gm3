@@ -90,26 +90,26 @@ export default class HashTracker {
         const layers = layersOn.split(this.joinSymbol);
 
         // check for what the visible layers are now.
-        const visible_layers = getVisibleLayers(this.store);
+        const visible_layers = getVisibleLayers(this.store.getState().mapSources);
 
         // layers to turn on
         const turn_off = [];
         const turn_on = [];
 
-        for(var i = 0, ii = layers.length; i < ii; i++) {
+        for(let i = 0, ii = layers.length; i < ii; i++) {
             // the layer from the URL is not "visible"
             if(visible_layers.indexOf(layers[i]) < 0) {
                 turn_on.push(layers[i]);
             }
         }
 
-        for(var i = 0, ii = visible_layers.length; i < ii; i++) {
+        for(let i = 0, ii = visible_layers.length; i < ii; i++) {
             if(layers.indexOf(visible_layers[i]) < 0) {
                 turn_off.push(visible_layers[i]);
             }
         }
 
-        for(var layer of turn_on) {
+        for(const layer of turn_on) {
             this.store.dispatch({
                 type: MAPSOURCE.LAYER_VIS,
                 mapSourceName: util.getMapSourceName(layer),
@@ -121,7 +121,7 @@ export default class HashTracker {
         // get the mapsources from the current state
         const map_sources = this.store.getState().mapSources;
 
-        for(var layer of turn_off) {
+        for(const layer of turn_off) {
             const ms_name = util.getMapSourceName(layer);
             if(!this.isAlwaysOn(map_sources[ms_name])) {
                 this.store.dispatch({
@@ -174,9 +174,10 @@ export default class HashTracker {
     /* Track which layers are on in the hash.
      */
     trackLayers() {
-        const visible_layers = getVisibleLayers(this.store);
-        const trackable_layers = [];
         const map_sources = this.store.getState().mapSources;
+        const visible_layers = getVisibleLayers(map_sources);
+
+        const trackable_layers = [];
         for(const layer of visible_layers) {
             const ms_name = util.getMapSourceName(layer);
             if(!this.isAlwaysOn(map_sources[ms_name])) {

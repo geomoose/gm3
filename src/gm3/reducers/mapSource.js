@@ -41,15 +41,15 @@ import { changeFeatures, filterFeatures } from '../util';
  */
 function setLayerAttribute(state, action, attr) {
     // make a copy of the layers list
-    let layers = [];
+    const layers = [];
     if(!state[action.mapSourceName]) {
         // no state changes if we can't find the mapsource.
         return state;
     }
 
-    for(var i = 0, ii = state[action.mapSourceName].layers.length; i < ii; i++) {
+    for(let i = 0, ii = state[action.mapSourceName].layers.length; i < ii; i++) {
         // copy each layer and update the matching one.
-        let layer = Object.assign({}, state[action.mapSourceName].layers[i]);
+        const layer = Object.assign({}, state[action.mapSourceName].layers[i]);
         if(layer.name === action.layerName) {
             if(action.type === MAPSOURCE.SET_TEMPLATE) {
                 layer.templates[action.name] = action.template;
@@ -95,7 +95,7 @@ function changeMapSourceFeatures(state, action) {
     switch(action.type) {
         case MAPSOURCE.ADD_FEATURES:
             // add an ID to the features
-            for(var x = 0, xx = action.features.length; x < xx; x++) {
+            for(let x = 0, xx = action.features.length; x < xx; x++) {
                 const id_mixin = {};
                 id_mixin[id_prop] = uuid();
                 action.features[x].properties = Object.assign({},

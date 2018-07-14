@@ -60,9 +60,9 @@ export function createLayer(mapSource) {
  */
 export function updateLayer(map, layer, mapSource) {
     // pull in the open layers source
-    let src = layer.getSource();
+    const src = layer.getSource();
     // get the new definition
-    let defn = defineSource(mapSource);
+    const defn = defineSource(mapSource);
 
     // if the url changed, update that as well.
     if(src.getUrls()[0] !== defn.url) {

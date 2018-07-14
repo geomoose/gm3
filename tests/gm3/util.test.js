@@ -15,7 +15,7 @@ test('parseBoolean', () => {
  */
 
 describe('Filter Tests (matchFeatures)', () => {
-    var features = null
+    let features = null
 
     // before each test refresh the copy of FEATURES.
     beforeEach(() => {
@@ -23,34 +23,34 @@ describe('Filter Tests (matchFeatures)', () => {
     });
 
     test('Simple expression equals search {prop: value}', () => {
-        var pin = '350010001050';
-        var filter = [['==', 'pin', '350010001050']];
+        const pin = '350010001050';
+        const filter = [['==', 'pin', '350010001050']];
         expect(util.matchFeatures(features, filter)[0].properties.pin).toBe(pin);
     });
     test('Simple list filter', () => {
-        var pin = '350010001050';
-        var filter = [['in', 'pin', pin, '160020001550']];
-        var results = util.matchFeatures(features, filter);
+        const pin = '350010001050';
+        const filter = [['in', 'pin', pin, '160020001550']];
+        const results = util.matchFeatures(features, filter);
         expect(results.length).toBe(2);
 
         // reduce the "pin" set to a testable array.
-        var pins = results.map((f) => { return f.properties.pin; });
+        const pins = results.map((f) => { return f.properties.pin; });
         expect(pins).toEqual(expect.arrayContaining([pin]));
     });
     describe('Filter by range', () => {
         test('With min and max', () => {
-            var filter = [
+            const filter = [
                 ['>=', 'emv_total', 250000],
                 ['<=', 'emv_total', 500000]
             ];
             expect(util.matchFeatures(features, filter).length).toBe(5);
         });
         test('With only min', () => {
-            var filter = [['>=', 'emv_total', 300000]];
+            const filter = [['>=', 'emv_total', 300000]];
             expect(util.matchFeatures(features, filter).length).toBe(3);
         });
         test('With only max', () => {
-            var filter = [['<=', 'emv_total', 300000]];
+            const filter = [['<=', 'emv_total', 300000]];
             expect(util.matchFeatures(features, filter).length).toBe(7);
         });
     });
@@ -58,10 +58,8 @@ describe('Filter Tests (matchFeatures)', () => {
 });
 
 describe('Test repojection', () => {
-    var features = null;
-
     test('Simple point reprojection', () => {
-        var feature_def = {
+        const feature_def = {
             type: 'Feature',
             geometry: {
                 type: 'Point',
@@ -73,12 +71,12 @@ describe('Test repojection', () => {
         };
 
         // project the feature from 3857 to 4326
-        var wgs_features = util.projectFeatures([feature_def], 'EPSG:3857', 'EPSG:4326');
+        const wgs_features = util.projectFeatures([feature_def], 'EPSG:3857', 'EPSG:4326');
 
         // floating point conversion isn't perfect so this test
         // ensures that the conversion is "good enough"
-        var close_enough = [-93.165, 45.011];
-        var coords = wgs_features[0].geometry.coordinates;
+        const close_enough = [-93.165, 45.011];
+        const coords = wgs_features[0].geometry.coordinates;
 
         expect(Math.floor(coords[0] * 1000)).toBe(close_enough[0] * 1000);
         expect(Math.floor(coords[1] * 1000)).toBe(close_enough[1] * 1000);

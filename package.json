@@ -7,10 +7,13 @@
   "homepage": "http://www.geomoose.org",
   "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
+    "cover": "jest --coverage",
     "test": "node node_modules/jest/bin/jest.js --coverage tests",
     "test:only": "jest",
+    "lint": "eslint --config ./eslint.config.js src/gm3 tests",
+    "pretest": "npm run lint",
     "prepack": "grunt build",
-    "start": "grunt serve",
+    "start": "webpack-dev-server --config ./webpack.config.js",
     "serve": "grunt serve"
   },
   "babel": {
@@ -46,7 +49,7 @@
     "@turf/union": "^5.0.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.2",
+    "babel-eslint": "^8.2.6",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
@@ -86,5 +89,12 @@
     "webpack": "^4.4.1",
     "webpack-cli": "^2.0.13",
     "webpack-dev-server": "^3.1.1"
+  },
+  "dependencies": {
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-plugin-flowtype": "^2.50.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.11.1"
   }
 }

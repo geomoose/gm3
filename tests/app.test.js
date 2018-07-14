@@ -38,12 +38,12 @@ import { runAction } from 'gm3/actions/ui';
  * - https://stackoverflow.com/questions/44111231/react-native-requestanimationframe-is-not-supported-in-node
  */
 if (!window.requestAnimationFrame) {
-  let targetTime = 0
-  window.requestAnimationFrame = function (callbackFun) {
-    const currentTime = +new Date()
-    const timeoutCb = function () { callbackFun(+new Date()) }
-    return window.setTimeout(timeoutCb, Math.max(targetTime + 16, currentTime) - currentTime)
-  }
+    const targetTime = 0
+    window.requestAnimationFrame = function(callbackFun) {
+        const currentTime = +new Date()
+        const timeoutCb = function() { callbackFun(+new Date()) }
+        return window.setTimeout(timeoutCb, Math.max(targetTime + 16, currentTime) - currentTime)
+    }
 }
 
 /** This is intended to create a basic "dummy" app
@@ -64,7 +64,7 @@ describe('real lyfe test', () => {
     it('loads examples/desktop/mapbook.xml', (done) => {
         fs.readFile('examples/desktop/mapbook.xml', (err, contents) => {
             const parser = new DOMParser();
-            const xml = parser.parseFromString(contents, "text/xml");
+            const xml = parser.parseFromString(contents, 'text/xml');
             app.loadMapbook({content: xml}).then(() => {
                 done();
             });

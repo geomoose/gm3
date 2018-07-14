@@ -42,7 +42,7 @@
 .icon.legend, .icon.up, .icon.down,
 .icon.fade, .icon.unfade, .icon.metadata,
 .icon.sort, .icon.remove, .icon.filter,
-.icon.favorite, .icon.refresh, .icon.folder {
+.icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox {
     .fa;
     font-size: @icon-size/1;
 }
@@ -197,4 +197,16 @@
 
 .icon.refresh.on {
     color: @refresh-icon-enabled-color;
+}
+
+.icon.checkbox {
+    &:before {
+        content: @fa-var-square-o;
+    }
+
+    &.on {
+        &:before {
+            content: @fa-var-check-square-o;
+        }
+    }
 }

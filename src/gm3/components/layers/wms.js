@@ -34,9 +34,9 @@ import ImageWMS from 'ol/source/imagewms';
  *
  */
 function defineSource(mapSource) {
-    let layers = [];
+    const layers = [];
     // this creates a layer list
-    for(let layer of mapSource.layers) {
+    for(const layer of mapSource.layers) {
         if(layer.on) {
             layers.push(layer.name);
         }
@@ -71,9 +71,9 @@ export function createLayer(mapSource) {
  */
 export function updateLayer(map, layer, mapSource) {
     // pull in the open layers source
-    let src = layer.getSource();
+    const src = layer.getSource();
     // get the new definition
-    let defn = defineSource(mapSource);
+    const defn = defineSource(mapSource);
 
     // if the params objects differ update them
     if(util.objectsDiffer(defn.params, src.getParams())) {

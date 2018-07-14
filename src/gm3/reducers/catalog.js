@@ -30,19 +30,20 @@ import uuid from 'uuid';
 
 import { CATALOG } from '../actionTypes';
 
-import * as util from '../util';
-
+function addGroup(state, action) {
+    const new_elem = {};
+    const ch = action.child;
+    new_elem[ch.id] = ch;
+    return Object.assign({}, state, new_elem);
+}
 
 export default function catalogReducer(state = {'root': {id: uuid.v4(), children: []}}, action) {
-    let new_layer = {};
+    const new_layer = {};
 
     switch(action.type) {
         case CATALOG.ADD_LAYER:
         case CATALOG.ADD_GROUP:
-            var new_elem = {};
-            var ch = action.child;
-            new_elem[ch.id] = ch;
-            return Object.assign({}, state, new_elem);
+            return addGroup(state, action);
         case CATALOG.ADD_CHILD:
             // this is a root-level child.
             let p = action.parentId;
@@ -66,7 +67,7 @@ export default function catalogReducer(state = {'root': {id: uuid.v4(), children
             mixin[p] = new_elem;
             return Object.assign({}, state, mixin);
         case CATALOG.FAVORITE:
-            let new_fav_layer = {};
+            const new_fav_layer = {};
             new_fav_layer[action.id] = Object.assign({}, state[action.id], {
                 favorite: action.favorite
             });

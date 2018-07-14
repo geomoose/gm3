@@ -27,10 +27,7 @@
  */
 
 import uuid from 'uuid';
-
 import { UI } from '../actionTypes';
-
-import * as util from '../util';
 
 const defaultState = {
     stateId: 0,
