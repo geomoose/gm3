@@ -31,6 +31,20 @@ import { addProjDef } from '../util';
 import proj from 'ol/proj';
 
 /**
+ * Ensure the coordinates look pretty before output.
+ * TODO: Localize the number formatting.
+ *
+ * @param {Object} projection - Output projection definition.
+ * @param {number[]} coordinates - Coordinates to format.
+ *
+ * @return {string} Formatted coordinates.
+ */
+export function formatCoordinates(projection, coords, defaultPrecision = 4) {
+    const precision = projection.precision !== undefined ? projection.precision : defaultPrecision;
+    return coords.map(x => x.toFixed(precision)).join(', ');
+}
+
+/**
  * CoordinateDisplay options
  * - These options can be passed when adding the coordinate display to the app
  *
@@ -130,9 +144,9 @@ export default class CoordinateDisplay extends React.Component {
         return proj.transform(this.props.coords, map_proj, latlon_proj);
     }
 
-    latlon() {
+    latlon(projection) {
         const coords = this.getLatLonCoords();
-        return coords[1].toFixed(3) + ', ' + coords[0].toFixed(3);
+        return formatCoordinates(projection, [coords[1], coords[0]]);
     }
 
 
@@ -144,10 +158,7 @@ export default class CoordinateDisplay extends React.Component {
 
         // transform the point
         const coords = proj.transform(this.props.coords, map_proj, dest_proj);
-        if (projection.precision) {
-            return coords.map((coord) => coord.toFixed(projection.precision))
-        }
-        return coords;
+        return formatCoordinates(projection, coords);
     }
 
     getCoordinateDisplay(projection) {
@@ -163,23 +174,23 @@ export default class CoordinateDisplay extends React.Component {
             case 'latlon':
                 display = (
                     <span className='coordinates map-latlon' key='latlon'>
-                        <label>{projection.label}</label> { this.latlon() }
+                        <label>{projection.label}</label> { this.latlon(projection) }
                     </span>
                 );
                 break;
             case 'xy':
                 display = (
                     <span className='coordinates map-xy' key='xy'>
-                        <label>{projection.label}</label> { this.mapXY() }
+                        { formatCoordinates(projection, this.props.coords, 1) }
                     </span>
                 );
                 break;
             default: {
                 const className = 'coordinates map-' + projection.ref.replace(/:/g, '-');
-                const coords = this.getProjectionCoords(projection);
                 display = (
                     <span className={className} key={projection.ref}>
-                        <label>{projection.label}</label> { coords[0] + ', ' + coords[1] }
+                        <label>{projection.label}</label>
+                        { this.getProjectionCoords(projection) }
                     </span>
                 )
                 break;

@@ -23,23 +23,50 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 
-import CoordinateDisplay from 'gm3/components/coordinate-display';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+import CoordinateDisplay, { formatCoordinates } from 'gm3/components/coordinate-display';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 describe('coordinate display component', () => {
+    it('formats coordinates with default precision', () => {
+        const proj = {
+            projection: 'xy',
+        };
+        expect(formatCoordinates(proj, [100, 100])).toBe('100.0000, 100.0000');
+    });
+
+    it('formats coordinates with a set precision', () => {
+        const proj = {
+            projection: 'xy',
+            precision: 2,
+        };
+        expect(formatCoordinates(proj, [100, 100])).toBe('100.00, 100.00');
+    });
+
+    it('formats coordinates with a set precision of 0', () => {
+        const proj = {
+            projection: 'xy',
+            precision: 0,
+        };
+        expect(formatCoordinates(proj, [100, 100])).toBe('100, 100');
+    });
+
+
     it('renders a coordinate display', () => {
-        const div = document.createElement('div');
-        ReactDOM.render(
+        const wrapper = mount(
             <CoordinateDisplay
                 coords={[100000, 100000]}
-            />, div);
+            />
+        );
 
-        expect(div.innerHTML).toContain('100000.0, 100000.0');
+        expect(wrapper.html()).toContain('100000.0, 100000.0');
     });
 
     it('accepts a custom projections list', () => {
-        const div = document.createElement('div');
         const projections = [
             {
                 label: 'X,Y',
@@ -60,14 +87,27 @@ describe('coordinate display component', () => {
             }
         ];
 
-        ReactDOM.render(
+        mount(
             <CoordinateDisplay
                 coords={[100000, 100000]}
                 projections={ projections }
-            />,
-            div
+            />
         );
     });
+
+
+    it('renders precision 0 correctly', () => {
+        const wrapper = mount(
+            <CoordinateDisplay
+                coords={[123.456, 123.456]}
+                projections={[{
+                    label: 'xy',
+                    ref: 'xy',
+                    precision: 0,
+                }]}
+            />
+        );
+
+        expect(wrapper.html().indexOf('123, 123')).not.toBe(-1);
+    });
 });
-
-
