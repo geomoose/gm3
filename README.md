@@ -37,4 +37,4 @@ GeoMoose is an OSGeo Project. To learn more about OSGeo and what that means, cli
 
 Cross-browser testing graciously provided by:
 
-[![Browserstack logo](./docs/browserstack.png)](https://www.browserstack.com/)
+[![Browserstack logo](https://3fxtqy18kygf3on3bu39kh93-wpengine.netdna-ssl.com/wp-content/themes/browserstack/img/header-logo.svg)](https://www.browserstack.com/)
