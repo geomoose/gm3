@@ -32,6 +32,7 @@ driver = webdriver.Remote(
     },
     desired_capabilities=desired_cap)
 
-tests.run(driver)
-
-driver.quit()
+try:
+    tests.run(driver)
+finally:
+    driver.quit()

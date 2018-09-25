@@ -10,6 +10,8 @@ import tests
 
 driver = webdriver.Firefox()
 
-tests.run(driver)
+try:
+    tests.run(driver)
 
-driver.quit()
+finally:
+    driver.quit()
