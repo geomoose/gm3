@@ -5,6 +5,10 @@
 # is any build artifacts that are needed at runtime should be included
 # in npm but excluded from git.
 
+# Python n things
+env/
+.env
+*.pyc
 
 # GeoMOOSE demo site specific config file
 examples/desktop/config.js
