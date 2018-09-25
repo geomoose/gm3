@@ -30,7 +30,7 @@
  *     is not used.
  */
 
-fs = require('fs');
+const fs = require('fs');
 module.exports = function(grunt) {
 
     function lintSelectors(filename, data) {

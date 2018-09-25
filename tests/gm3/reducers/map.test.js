@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- /*
+/*
 CHANGE_TOOL: 'MAP_CHANGE_TOOL',
 ADD_SELECTION_FEATURE: 'MAP_ADD_SELECTION_FEATURE',
 CLEAR_SELECTION_FEATURES: 'MAP_CLEAR_SELECTION_FEATURES',
@@ -59,7 +59,7 @@ describe('test the `map` reducer', () => {
             type: 'Feature',
             geometry: {
                 type: 'Point',
-                coordinates: [0,0]
+                coordinates: [0, 0]
             }
         };
         // ensure that a selection feature is added to the stack
@@ -78,7 +78,7 @@ describe('test the `map` reducer', () => {
 
     it('sets the map using a center/resolution', () => {
         const new_view = {
-            center: [-100,-100],
+            center: [-100, -100],
             resolution: 200
         };
 
@@ -98,7 +98,7 @@ describe('test the `map` reducer', () => {
         // This test simply ensures setting the extent will set
         // it in the reducer.
         const view = {
-            bbox: [100,100,200,200],
+            bbox: [100, 100, 200, 200],
             projection: 'EPSG:900913'
         }
 

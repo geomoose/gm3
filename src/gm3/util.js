@@ -32,8 +32,8 @@ import createFilter from '@mapbox/mapbox-gl-style-spec/feature_filter';
  */
 
 export function parseBoolean(bool, def = false) {
-    if(typeof(bool) == "undefined" || bool === null) { return def; }
-    var boolString = new String(bool);
+    if(typeof(bool) == 'undefined' || bool === null) { return def; }
+    const boolString = '' + bool;
     if(boolString.match(/true/i)) { return true; }
     else if(boolString === '1') { return true; }
     else if(boolString.match(/on/i)) { return true; }
@@ -117,6 +117,7 @@ export function objectsDiffer(objA, objB, deep) {
                 if(objA[key] !== objB[key]) {
                     return true;
                 }
+                break;
             // GO DEEP!
             case 'object':
                 // typeof(null) == 'object', this
@@ -129,6 +130,7 @@ export function objectsDiffer(objA, objB, deep) {
                 if(deep === true && objectsDiffer(objA[key], objB[key], true)) {
                     return true;
                 }
+                break;
             default:
                 // assume the objects differ if they cannot
                 //  be typed.
@@ -250,8 +252,8 @@ function inRange(value, min = null, max = null) {
  *  @returns {Boolean} whether the feature matches.
  */
 export function featureMatch(feature, filter) {
-    let match_all = (filter.match === 'any') ? false : true;
-    for(let filter_key in filter) {
+    const match_all = (filter.match === 'any') ? false : true;
+    for(const filter_key in filter) {
         const filter_def = filter[filter_key];
         const prop_val = feature.properties[filter_key];
         let v = false;
@@ -309,7 +311,7 @@ export function featureMatch(feature, filter) {
  * @returns New list of features.
  */
 export function filterFeatures(features, filter, inverse = true) {
-    let new_features = [];
+    const new_features = [];
 
     // the createFilter function is from mapbox!
     // uses the mapbox gl style filters.
@@ -319,7 +321,7 @@ export function filterFeatures(features, filter, inverse = true) {
         filter_function = createFilter(['all'].concat(filter));
     }
 
-    for(let feature of features) {
+    for(const feature of features) {
         if(inverse !== filter_function(feature)) {
             new_features.push(feature);
         }
@@ -357,9 +359,9 @@ export function matchFeatures(features, filter) {
  * @returns New list of features.
  */
 export function changeFeatures(features, filter, properties, geometry) {
-    let new_features = [];
+    const new_features = [];
 
-    for(let feature of features) {
+    for(const feature of features) {
         if(featureMatch(feature, filter)) {
             const new_feature = Object.assign({}, feature);
             if(properties) {
@@ -382,8 +384,9 @@ export function changeFeatures(features, filter, properties, geometry) {
  *
  */
 export function getVersion() {
-    let v = GM_VERSION;
-    return v;
+    // this will be replaced by a version string by Webpack.
+    // eslint-disable-next-line
+    return GM_VERSION;
 }
 
 /** Determine the extent of the features in a source.
@@ -394,19 +397,19 @@ export function getVersion() {
  * @returns Array containing [minx,miny,maxx,maxy]
  */
 export function getFeaturesExtent(mapSource) {
-    let bounds = [null, null, null, null];
+    const bounds = [null, null, null, null];
 
-    let min = function(x, y) {
+    const min = function(x, y) {
         if(x === null || y < x) { return y; }
         return x;
     };
 
-    let max = function(x, y) {
+    const max = function(x, y) {
         if(x === null || y > x) { return y; }
         return x;
     };
 
-    let update_bounds = function(x, y) {
+    const update_bounds = function(x, y) {
         bounds[0] = min(bounds[0], x);
         bounds[1] = min(bounds[1], y);
         bounds[2] = max(bounds[2], x);
@@ -414,17 +417,17 @@ export function getFeaturesExtent(mapSource) {
     };
 
     if(mapSource.features) {
-        for(let feature of mapSource.features) {
-            let geom = feature.geometry;
+        for(const feature of mapSource.features) {
+            const geom = feature.geometry;
             if(geom.type === 'Point') {
                 update_bounds(geom.coordinates[0], geom.coordinates[1]);
             } else if(geom.type === 'LineString') {
-                for(let pt of geom.coordinates) {
+                for(const pt of geom.coordinates) {
                     update_bounds(pt[0], pt[1]);
                 }
             } else if(geom.type === 'Polygon' || geom.type === 'MultiLineString') {
-                for(let ring of geom.coordinates) {
-                    for(let pt of ring) {
+                for(const ring of geom.coordinates) {
+                    for(const pt of ring) {
                         update_bounds(pt[0], pt[1]);
                     }
                 }
@@ -448,7 +451,7 @@ export function configureProjections(p4) {
     // var north = bounds.top > 0 ? 'north' : 'south';
 
     for(let utm_zone = 1; utm_zone <= 60; utm_zone++) {
-        for(let north of ['north', 'south']) {
+        for(const north of ['north', 'south']) {
             // southern utm zones are 327XX, northern 326XX
             const epsg_code = 32600 + utm_zone + (north === 'north' ? 0 : 100);
 
@@ -486,8 +489,6 @@ export function addProjDef(p4, code, def) {
  * @return UTM string (e.g. UTM15N)
  */
 export function getUtmZone(pt) {
-    let utm_string = 'UTM';
-
     // No citation provideded for this calculation,
     // it was working in the GM2.X series without a lot
     // of complaints.
@@ -517,9 +518,9 @@ const EQUIVALENT_METERS = {
     'in': 0.0254,
     'm': 1,
     'km': 1000,
-    "ch": 20.11684,
-    "a": 63.63,
-    "h": 100
+    'ch': 20.11684,
+    'a': 63.63,
+    'h': 100
 };
 
 /** Converts numeric lengths between given units
@@ -575,10 +576,13 @@ export function isLayerOn(mapSources, layer) {
     let is_on = true;
     // iterate through each src,
     //  if any are off, mark the checkbox as "off".
-    for(const src of layer.src) {
+    for(let s = 0, ss = layer.src.length; s < ss; s++) {
+        const src = layer.src[s];
+
         if(mapSources[src.mapSourceName]) {
             const map_source = mapSources[src.mapSourceName];
-            for(const layer of map_source.layers) {
+            for(let l = 0, ll = map_source.layers.length; l < ll; l++) {
+                const layer = map_source.layers[l];
                 if(layer.name === src.layerName) {
                     is_on = (is_on && layer.on);
                 }
@@ -614,7 +618,7 @@ export function getZValue(mapSources, layer) {
  *         of a layer.
  */
 export function getLayersByZOrder(catalog, mapSources) {
-    let layers = [];
+    const layers = [];
     for(const key of Object.keys(catalog)) {
         const node = catalog[key];
         // no children, should be a layer

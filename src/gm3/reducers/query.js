@@ -61,15 +61,15 @@ function queryProgress(queryId, state, progress) {
  * @returns A new state.
  */
 function filterQueryResults(state, queryId, filter) {
-    let new_results = {};
+    const new_results = {};
     // iterate through the paths
-    for(let path in state[queryId].results) {
+    for(const path in state[queryId].results) {
         new_results[path] = util.filterFeatures(state[queryId].results[path], filter);
     }
 
-    let new_query = Object.assign({}, state[queryId], {results: new_results});
+    const new_query = Object.assign({}, state[queryId], {results: new_results});
 
-    let new_state = Object.assign({}, state);
+    const new_state = Object.assign({}, state);
     new_state[queryId] = new_query;
     return new_state;
 }
@@ -82,14 +82,14 @@ function filterQueryResults(state, queryId, filter) {
  * @returns updated state.
  */
 function removeQuery(state, queryId) {
-    let new_order = [];
-    for(let id of state.order) {
+    const new_order = [];
+    for(const id of state.order) {
         if(id !== queryId) {
             new_order.push(id);
         }
     }
 
-    let new_state = Object.assign({}, state, {order: new_order});
+    const new_state = Object.assign({}, state, {order: new_order});
     delete new_state[queryId];
     return new_state;
 }
@@ -114,7 +114,7 @@ export default function queryReducer(state = default_query, action) {
 
             // when running in single query mode the current query should
             //  be the only one displayed.
-            let new_state = Object.assign({}, state);
+            const new_state = Object.assign({}, state);
             if(action.singleQuery) {
                 query_order = [query_id];
                 // remove the other queries
@@ -124,9 +124,6 @@ export default function queryReducer(state = default_query, action) {
             }
             return Object.assign(new_state, {order: query_order}, new_query);
         case MAP.QUERY_RESULTS:
-            // issued when a specific layer returns a result
-            const query_detail = state[action.id];
-
             // results are stored as results.layer = [features,]
             const new_results = {};
             if(action.failed) {

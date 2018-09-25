@@ -28,8 +28,6 @@
 
 import { MAP } from '../actionTypes';
 
-import * as util from '../util';
-
 const default_view = {
     coords: [0, 0],
     sketchGeometry: null

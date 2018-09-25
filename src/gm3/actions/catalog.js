@@ -33,21 +33,6 @@ import { CATALOG } from '../actionTypes';
 import * as util from '../util';
 import * as mapSources from './mapSource';
 
-function addElement(tree, parentId, child) {
-    if(parentId === null) {
-        tree.children.push(child);
-    }
-
-    for(let i = 0, ii = tree.length; i < ii; i++) {
-        let element = tree[i];
-        if(element.type === 'group') {
-            if(element.id === parentId) {
-
-            }
-        }
-    }
-}
-
 
 /** Convert a group to a Javascript object.
  *
@@ -58,7 +43,7 @@ function addElement(tree, parentId, child) {
  *  @returns Object representing the group.
  */
 function parseGroup(groupXml) {
-    let new_group = {
+    const new_group = {
         id: groupXml.getAttribute('uuid'),
         children: [],
         label: groupXml.getAttribute('title'),
@@ -67,7 +52,7 @@ function parseGroup(groupXml) {
         multiple: util.parseBoolean(groupXml.getAttribute('multiple'), true)
     };
 
-    let p = groupXml.parentNode;
+    const p = groupXml.parentNode;
     if(p && p.tagName === 'group') {
         new_group.parent = p.getAttribute('uuid');
     }
@@ -82,7 +67,7 @@ function parseGroup(groupXml) {
  * @returns Object representing the layer
  */
 function parseLayer(store, layerXml) {
-    let new_layer = {
+    const new_layer = {
         id: layerXml.getAttribute('uuid'),
         label: layerXml.getAttribute('title'),
         legend: util.parseBoolean(layerXml.getAttribute('show-legend'), true),
@@ -128,14 +113,14 @@ function parseLayer(store, layerXml) {
     let src_favorite = false;
 
     // parse out the souces
-    let src_str = layerXml.getAttribute('src');
+    const src_str = layerXml.getAttribute('src');
     if(src_str) {
         // migrated to ";" as the split key because the old ":"
         //  was problematic for WFS layers which specified a schema.
-        for(let src of src_str.split(';')) {
-            let split = src.split('/');
+        for(const src of src_str.split(';')) {
+            const split = src.split('/');
             // create a new src entry.
-            let s = {
+            const s = {
                 mapSourceName: split[0],
                 layerName: null,
             };
@@ -153,7 +138,7 @@ function parseLayer(store, layerXml) {
             // check to see if a 'default' name is needed
             // for the catalog entry.
             if(!new_layer.label) {
-                let ms = mapSources.get(store, s.mapSourceName);
+                const ms = mapSources.get(store, s.mapSourceName);
                 if(ms.label) {
                     new_layer.label = ms.label;
                 }
@@ -171,7 +156,7 @@ function parseLayer(store, layerXml) {
     // set the new layer state based on the src.
     new_layer.favorite = src_favorite;
 
-    let p = layerXml.parentNode;
+    const p = layerXml.parentNode;
     if(p && p.tagName === 'group') {
         new_layer.parent = p.getAttribute('uuid');
     }
@@ -184,20 +169,20 @@ function subtreeActions(store, parent, subtreeXml) {
     let actions = [];
 
     for(let i = 0, ii = subtreeXml.childNodes.length; i < ii; i++) {
-        let childNode = subtreeXml.childNodes[i];
+        const childNode = subtreeXml.childNodes[i];
         let child = false, parent_id = null;
         if(parent && parent.id) {
             parent_id = parent.id;
         }
         if(childNode.tagName === 'group') {
-            let group = parseGroup(childNode);
+            const group = parseGroup(childNode);
             actions.push({type: CATALOG.ADD_GROUP, child: group});
             child = group;
 
             // build the tree by recursion.
             actions = actions.concat(subtreeActions(store, group, childNode));
         } else if(childNode.tagName === 'layer') {
-            let layer = parseLayer(store, childNode);
+            const layer = parseLayer(store, childNode);
             actions.push({type: CATALOG.ADD_LAYER, child: layer})
             child = layer;
         }
@@ -220,9 +205,9 @@ export function parseCatalog(store, catalogXml) {
     // first add a "uuid" attribute to each one
     //  of the elements
     // The UUIDs are used to flatten the tree's data structure.
-    let elements = catalogXml.getElementsByTagName('*');
+    const elements = catalogXml.getElementsByTagName('*');
     for(let i = 0, ii = elements.length; i < ii; i++) {
-        let e = elements[i];
+        const e = elements[i];
         e.setAttribute('uuid', uuid.v4());
     }
 
@@ -238,3 +223,13 @@ export function setLegendVisibility(layerId, on) {
         on
     };
 }
+
+/** Toggle the state of a group
+ */
+export function setGroupExpand(groupId, expand) {
+    return {
+        type: CATALOG.GROUP_VIS,
+        id: groupId,
+        expand,
+    };
+};

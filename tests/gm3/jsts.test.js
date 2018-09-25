@@ -27,12 +27,12 @@ import * as jsts from 'gm3/jsts';
 describe('test basic jsts stuff', function() {
 
     it('buffers a point', function() {
-        let point = {
+        const point = {
             type: 'Feature',
             properties: {},
             geometry: {
                 type: 'Point',
-                coordinates: [0,0]
+                coordinates: [0, 0]
             }
         };
 
@@ -48,7 +48,7 @@ describe('test basic jsts stuff', function() {
                 geometry: {
                     type: 'Polygon',
                     coordinates: [[
-                        [0,0],[-1,0],[0,1],[0,0]
+                        [0, 0], [-1, 0], [0, 1], [0, 0]
                     ]]
                 }
             },
@@ -65,7 +65,7 @@ describe('test basic jsts stuff', function() {
         ];
 
         const shp = jsts.bufferAndUnion(features, 1);
-
+        expect(shp).toBeDefined();
     });
 
 });

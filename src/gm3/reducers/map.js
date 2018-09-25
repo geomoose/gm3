@@ -28,8 +28,6 @@
 
 import { MAP } from '../actionTypes';
 
-import * as util from '../util';
-
 const default_view = {
     center: [0, 0],
     resolution: null,

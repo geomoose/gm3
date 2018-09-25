@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- /*
+/*
 CHANGE_TOOL: 'MAP_CHANGE_TOOL',
 ADD_SELECTION_FEATURE: 'MAP_ADD_SELECTION_FEATURE',
 CLEAR_SELECTION_FEATURES: 'MAP_CLEAR_SELECTION_FEATURES',
@@ -39,10 +39,10 @@ describe('test the `map` reducer', () => {
     let store = null;
 
     // before each test refresh the store.
-    //beforeEach(() => {
-        store = createStore(combineReducers({
-            mapSources: reducer
-        }));
+    // beforeEach(() => {
+    store = createStore(combineReducers({
+        mapSources: reducer
+    }));
     // });
 
     it('adds a vector layer', () => {
@@ -90,7 +90,7 @@ describe('test the `map` reducer', () => {
                 properties: {},
                 geometry: {
                     type: 'Point',
-                    coordinates: [0,0]
+                    coordinates: [0, 0]
                 }
             }
         ]));
@@ -101,6 +101,7 @@ describe('test the `map` reducer', () => {
     });
 
     it('removes a feature from the vector layer (by id)', () => {
+        // eslint-disable-next-line
         const fid = store.getState().mapSources.results.features[0].properties._uuid;
         store.dispatch(msActions.removeFeature('results', fid));
 

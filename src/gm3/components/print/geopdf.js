@@ -25,8 +25,6 @@
 export default function jsGeoPdfPlugin(jsPDFAPI) {
 
     const setGeoArea = function(pdfExt, geoExt) {
-        const out = this.internal.write;
-
         const bbox = pdfExt.join(' ');
 
         // the ordering may seem odd here but PDF

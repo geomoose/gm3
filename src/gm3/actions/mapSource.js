@@ -30,7 +30,7 @@ import { MAPSOURCE } from '../actionTypes';
 
 import * as util from '../util';
 
-var MS_Z_INDEX = 100000;
+let MS_Z_INDEX = 100000;
 
 /** Add a map-source using a MapSource
  *  object.
@@ -64,10 +64,10 @@ export function addLayer(mapSourceName, layer) {
  *  @returns Object containing the params
  */
 function parseParams(msXml) {
-    var params_obj = {};
-    var params = msXml.getElementsByTagName('param');
+    const params_obj = {};
+    const params = msXml.getElementsByTagName('param');
     for(let i = 0, ii = params.length; i < ii; i++) {
-        let param = params[i];
+        const param = params[i];
         params_obj[param.getAttribute('name')] = param.getAttribute('value');
     }
     return params_obj;
@@ -100,13 +100,13 @@ export function favoriteLayer(mapSourceName, layerName, favorite) {
  */
 function mapServerToDestType(msXml, conf, destType) {
     let urls = util.getTagContents(msXml, 'url', true);
-    let mapfile = util.getTagContents(msXml, 'file', true)[0];
+    const mapfile = util.getTagContents(msXml, 'file', true)[0];
 
     // if the url is null then default to the
     //  mapserver url.
     if(urls.length === 0) { urls = [conf.mapserver_url]; }
 
-    let map_source = {
+    const map_source = {
         type: destType,
         serverType: 'mapserver',
         urls: urls,
@@ -157,7 +157,7 @@ function mapServerToWFS(msXml, conf) {
  */
 export function addFromXml(xml, config) {
     // initialize the map source object.
-    let map_source = {
+    const map_source = {
         name: xml.getAttribute('name'),
         urls: util.getTagContents(xml, 'url', true),
         type: xml.getAttribute('type'),
@@ -175,7 +175,7 @@ export function addFromXml(xml, config) {
 
     // handle setting up the zIndex
     if(map_source.zIndex) {
-        map_source.zIndex = parseInt(map_source.zIndex);
+        map_source.zIndex = parseInt(map_source.zIndex, 10);
     }
 
     // try to get an opacity,  if it won't parse then default to 1.0
@@ -185,7 +185,7 @@ export function addFromXml(xml, config) {
     }
 
     // allow server-type hinting for hidpi displays.
-    let server_type = xml.getAttribute('server-type');
+    const server_type = xml.getAttribute('server-type');
     if(server_type) {
         map_source.serverType = server_type;
     }
@@ -201,7 +201,7 @@ export function addFromXml(xml, config) {
     // check to see if there is a refresh interval.
     if(xml.getAttribute('refresh')) {
         // parse the refresh number
-        let refresh_seconds = parseFloat(xml.getAttribute('refresh'));
+        const refresh_seconds = parseFloat(xml.getAttribute('refresh'));
         // this will be truthy when a number has been returned,
         //  NaN or Infinitity should return as falsy.
         if(refresh_seconds) {
@@ -221,13 +221,13 @@ export function addFromXml(xml, config) {
     Object.assign(map_source.params, parseParams(xml));
 
     // add all of the layers.
-    let map_layers = [];
-    let xml_layers = xml.getElementsByTagName('layer');
+    const map_layers = [];
+    const xml_layers = xml.getElementsByTagName('layer');
     for(let i = 0, ii = xml_layers.length; i < ii; i++) {
-        let layerXml = xml_layers[i];
-        let layer_title = layerXml.getAttribute('title');
+        const layerXml = xml_layers[i];
+        const layer_title = layerXml.getAttribute('title');
 
-        let layer = {
+        const layer = {
             name: layerXml.getAttribute('name'),
             on: util.parseBoolean(layerXml.getAttribute('status')),
             favorite: util.parseBoolean(layerXml.getAttribute('favorite')),
@@ -241,7 +241,7 @@ export function addFromXml(xml, config) {
 
         // user defined legend.
         // two types currently supported: "html" and "img"
-        let legends = layerXml.getElementsByTagName('legend');
+        const legends = layerXml.getElementsByTagName('legend');
         if(legends.length > 0) {
             layer.legend = {
                 type: legends[0].getAttribute('type'),
@@ -249,16 +249,16 @@ export function addFromXml(xml, config) {
             };
         }
 
-        let templates = layerXml.getElementsByTagName('template');
+        const templates = layerXml.getElementsByTagName('template');
         for(let x = 0, xx = templates.length; x < xx; x++) {
             let template_def = {};
 
-            let template_xml = templates[x];
-            let template_name = template_xml.getAttribute('name');
+            const template_xml = templates[x];
+            const template_name = template_xml.getAttribute('name');
 
-            let template_src = template_xml.getAttribute('src');
-            let template_alias = template_xml.getAttribute('alias');
-            let auto_template = util.parseBoolean(template_xml.getAttribute('auto'));
+            const template_src = template_xml.getAttribute('src');
+            const template_alias = template_xml.getAttribute('alias');
+            const auto_template = util.parseBoolean(template_xml.getAttribute('auto'));
             if(template_alias) {
                 template_def = {
                     type: 'alias',
@@ -286,7 +286,7 @@ export function addFromXml(xml, config) {
         }
 
         // check to see if there are any style definitions
-        let style = util.getTagContents(layerXml, 'style', false);
+        const style = util.getTagContents(layerXml, 'style', false);
         if(style && style.length > 0) {
             // convert to JSON
             try {
@@ -298,7 +298,7 @@ export function addFromXml(xml, config) {
         }
 
         // check to see if there are any filter definitions
-        let filter = util.getTagContents(layerXml, 'filter', false);
+        const filter = util.getTagContents(layerXml, 'filter', false);
         if(filter && filter.length > 0) {
             // convert to JSON
             try {
@@ -352,15 +352,15 @@ export function get(store, mapSourceName) {
  * @returns The layer from the map-source in the store.
  */
 export function getLayer(store, layer) {
-    let map_source = get(store, layer.mapSourceName);
-    for(let l of map_source.layers) {
+    const map_source = get(store, layer.mapSourceName);
+    for(const l of map_source.layers) {
         if(l.name === layer.layerName) { return l; }
     }
     if(layer.layerName == null) {
         return map_source;
     }
     console.error('Cannot find layer', layer.mapSourceName, layer.layerName);
-    throw {message: "Cannot find layer", layer};
+    throw new Error(`Cannot find layer ${layer.mapSourceName}/${layer.layerName}`);
 }
 
 /** Get a layer using the internal path format "source"/"layer"
@@ -409,7 +409,7 @@ export function isFavoriteLayer(store, layer) {
  */
 function isMapSourceActive(mapSource) {
     if(mapSource.layers) {
-        for(let layer of mapSource.layers) {
+        for(const layer of mapSource.layers) {
             if(layer.on) {
                 return true;
             }
@@ -424,10 +424,10 @@ function isMapSourceActive(mapSource) {
  *  layer that is on.
  */
 export function getActiveMapSources(store, onlyPrintable = false) {
-    let map_sources = store.getState().mapSources;
-    let active = [];
+    const map_sources = store.getState().mapSources;
+    const active = [];
     const all_maps = !onlyPrintable;
-    for(let ms in map_sources) {
+    for(const ms in map_sources) {
         if(isMapSourceActive(map_sources[ms])) {
             if(all_maps || map_sources[ms].printable) {
                 active.push(ms);
@@ -438,8 +438,8 @@ export function getActiveMapSources(store, onlyPrintable = false) {
 }
 
 export function getLayerFromPath(store, path) {
-    let ms_name = util.getMapSourceName(path);
-    let layer_name = util.getLayerName(path);
+    const ms_name = util.getMapSourceName(path);
+    const layer_name = util.getLayerName(path);
 
     return getLayer(store, {mapSourceName: ms_name, layerName: layer_name});
 }
@@ -482,7 +482,6 @@ function isSelectable(mapSource, layer) {
         default:
             return false
     }
-    return false;
 }
 
 /* Match layers based on a matching function.
@@ -492,13 +491,13 @@ function isSelectable(mapSource, layer) {
  *
  * @return List of layers (as paths).
  */
-export function matchLayers(store, matchFunction) {
-    let map_sources = store.getState().mapSources;
-    let matches = [];
-    for(let ms in map_sources) {
-        for(let layer of map_sources[ms].layers) {
-            if(matchFunction(map_sources[ms], layer)) {
-                matches.push(ms + '/' + layer.name);
+export function matchLayers(mapSources, matchFunction) {
+    const matches = [];
+    for(const ms in mapSources) {
+        const layers = mapSources[ms].layers;
+        for(let i = 0, ii = layers.length; i < ii; i++) {
+            if(matchFunction(mapSources[ms], layers[i])) {
+                matches.push(ms + '/' + layers[i].name);
             }
         }
     }
@@ -512,11 +511,11 @@ export function matchLayers(store, matchFunction) {
  *
  *  @return List of layers.
  */
-export function getVisibleLayers(store) {
-    return matchLayers(store, isVisible);
+export function getVisibleLayers(mapSources) {
+    return matchLayers(mapSources, isVisible);
 }
 
-function getLayerFromSources(mapSources, msName, layerName) {
+export function getLayerFromSources(mapSources, msName, layerName) {
     if(mapSources[msName]) {
         const ms = mapSources[msName];
         for(let i = 0, ii = ms.layers.length; i < ii; i++) {
@@ -568,7 +567,7 @@ export function getQueryableLayers(store, filter = {}, options = {}) {
             // queryAs allows raster sources to reference vector sources
             //  for query operations.
             if(layer.queryAs) {
-                for(var q = 0, qq = layer.queryAs.length; q < qq; q++) {
+                for(let q = 0, qq = layer.queryAs.length; q < qq; q++) {
                     const qs = layer.queryAs[q].split('/');
                     const query_layer = getLayerFromSources(map_sources, qs[0], qs[1]);
                     if(match_fn(ms, layer, query_layer)) {
@@ -587,11 +586,11 @@ export function getQueryableLayers(store, filter = {}, options = {}) {
     return query_layers;
 }
 
-export function getSelectableLayers(store) {
+export function getSelectableLayers(mapSources) {
     const match_fn = function(ms, layer) {
         return (isSelectable(ms, layer) && isVisible(ms, layer));
     }
-    return matchLayers(store, match_fn);
+    return matchLayers(mapSources, match_fn);
 }
 
 
@@ -658,9 +657,9 @@ export function changeFeatures(mapSourceName, filter, properties) {
  *
  */
 export function getOrderedMapSources(mapSources) {
-    let active = [];
-    for(let ms in mapSources) {
-        if(isMapSourceActive(map_sources[ms])) {
+    const active = [];
+    for(const ms in mapSources) {
+        if(isMapSourceActive(mapSources[ms])) {
             active.push(ms);
         }
     }
@@ -713,5 +712,20 @@ export function setLayerTemplate(mapSourceName, layerName, name, template) {
         type: MAPSOURCE.SET_TEMPLATE,
         mapSourceName, layerName,
         name, template
+    };
+}
+
+/** Change the visibility of a layer.
+ *
+ * @param mapSourceName The name of the map-source
+ * @param layerName     The name of the layer
+ * @param on            Visibility state of the layer.
+ */
+export function setLayerVisibility(mapSourceName, layerName, on) {
+    return {
+        type: MAPSOURCE.LAYER_VIS,
+        layerName,
+        mapSourceName,
+        on
     };
 }

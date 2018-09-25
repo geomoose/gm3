@@ -69,8 +69,8 @@ export default class LocalStorageTracker {
             //  issue a 'FAVORITES' command for the mapsource.
             if(faves && faves.length) {
                 for(const fave of faves) {
-                    let ms_name = util.getMapSourceName(fave);
-                    let layer_name = util.getLayerName(fave);
+                    const ms_name = util.getMapSourceName(fave);
+                    const layer_name = util.getLayerName(fave);
                     this.store.dispatch(favoriteLayer(ms_name, layer_name, true));
                 }
             }
@@ -90,7 +90,7 @@ export default class LocalStorageTracker {
      *  as a favorite.
      */
     trackFavorites() {
-        let state = this.store.getState();
+        const state = this.store.getState();
 
         let favorites = '', prefix = '';
         // check map-sources for favorite layers.
@@ -103,7 +103,7 @@ export default class LocalStorageTracker {
             }
         }
 
-        let changed = (this.lastFavorites !== favorites);
+        const changed = (this.lastFavorites !== favorites);
         if(changed) {
             // serialize the favorite layers and save them in local storage.
             localStorage.setItem('favorites', favorites);

@@ -31,17 +31,17 @@ module.exports = {
     		jsx: true
     	}
     },
+    extends: ['react-app'],
     rules: {
-    /*
-    'prefer-const' : ['error', {
-        destructuring: 'any',
-        ignoreReadBeforeAssign: true
-    }],
-    */
 
 	'prefer-spread' : 'error',
 
+    'prefer-const': 1, // warn! ['warning', 'always'],
+    'no-var': 1,
+
 	'array-callback-return' : 'error',
+
+    quotes: ['warn', 'single'],
 
 	camelcase: 'off',
 

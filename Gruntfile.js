@@ -43,7 +43,7 @@ module.exports = function(grunt) {
             options: {
                 configFile: 'eslint.config.js',
             },
-            target: ['src/**/*.jsx', 'src/**/*.js']
+            target: ['src/gm3/**/*.js']
         },
 
         // line the CSS

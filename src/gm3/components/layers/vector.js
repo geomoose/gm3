@@ -64,7 +64,7 @@ function defineSource(mapSource) {
                     console.error('No "typename" param defined for a WFS layer. This will fail.');
                 }
 
-                let url_params = Object.assign({}, mapSource.params, {
+                const url_params = Object.assign({}, mapSource.params, {
                     'srsname': 'EPSG:3857',
                     'outputFormat': output_format,
                     'service': 'WFS',
@@ -88,7 +88,7 @@ function defineSource(mapSource) {
         // This performs a basic query based on the bounding box.
         return {
             loader: function(extent, resolution, proj) {
-                let url = mapSource.urls[0] + '/query/';
+                const url = mapSource.urls[0] + '/query/';
 
                 // the E**I language can get a bit complicated but
                 //  this is the format for a basic BBOX query.
@@ -127,7 +127,6 @@ function defineSource(mapSource) {
                                 //  this ensure that the batches are small enough to prevent
                                 //  404 errors.
                                 const n_objects = object_ids.length;
-                                const current_object = 0;
 
                                 // dummy "request" that can be used to estimate the
                                 //  overall length of the query.
@@ -239,8 +238,6 @@ function applyStyle(vectorLayer, mapSource) {
  */
 export function createLayer(mapSource) {
     const source = new VectorSource(defineSource(mapSource));
-
-    const layer = new VectorLayer(opts);
 
     // get the transforms for the layer
     if(mapSource.transforms) {

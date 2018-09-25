@@ -26,8 +26,6 @@
  *
  */
 
-import * as util from '../../util';
-
 import XYZSource from 'ol/source/xyz';
 import TileLayer from 'ol/layer/tile';
 
@@ -62,17 +60,17 @@ export function createLayer(mapSource) {
  */
 export function updateLayer(map, layer, mapSource) {
     // pull in the open layers source
-    let src = layer.getSource();
+    const src = layer.getSource();
     // get the new definition
-    let defn = defineSource(mapSource);
+    const defn = defineSource(mapSource);
 
     // check to see if the list of URLs has changed.
-    let urls = src.getUrls();
+    const urls = src.getUrls();
     let update_urls = false
     if(urls.length !== defn.urls.length) {
         update_urls = true;
     } else {
-        for(let url of urls) {
+        for(const url of urls) {
             if(defn.urls.indexOf(url) < 0) {
                 update_urls = true;
             }

@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { PRINT } from '../actionTypes';
+
 
 const default_state = {
     state: 'printed',
@@ -35,10 +37,6 @@ const default_state = {
  * { size: [600, 400], center: [0,0], resolution: 1000 }
  *
  */
-
-import { PRINT } from '../actionTypes';
-
-
 export default function printReducer(state = default_state, action) {
     switch(action.type) {
         // requests come in specifying the size, center, and resolution.
