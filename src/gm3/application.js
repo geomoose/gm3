@@ -322,7 +322,7 @@ class Application {
         const template_promise = new Promise((resolve, reject) => {
             if(template.substring(0, 1) === '@') {
                 const template_name = template.substring(1);
-                const layer = getLayerFromPath(this.store, path);
+                const layer = getLayerFromPath(this.store.getState().mapSources, path);
                 const layer_template = layer.templates[template_name];
 
                 if(layer_template) {
@@ -408,7 +408,7 @@ class Application {
                 `;
             } else if(template.substring(0, 1) === '@') {
                 const template_name = template.substring(1);
-                const layer = getLayerFromPath(this.store, path);
+                const layer = getLayerFromPath(this.store.getState().mapSources, path);
                 const layer_template = layer.templates[template_name];
 
                 if(layer_template) {
@@ -481,7 +481,7 @@ class Application {
     renderTemplate(path, template, params) {
         if(template.substring(0, 1) === '@') {
             const template_name = template.substring(1);
-            const layer = getLayerFromPath(this.store, path);
+            const layer = getLayerFromPath(this.store.getState().mapSources, path);
             const layer_template = layer.templates[template_name];
             let template_contents = '';
 
@@ -507,7 +507,7 @@ class Application {
      */
 
     getActiveMapSources() {
-        return getActiveMapSources(this.store);
+        return getActiveMapSources(this.store.getState().mapSources);
     }
 
     /** Get a list of all visible paths.
@@ -523,7 +523,7 @@ class Application {
      *  @returns an array of layer paths.
      */
     getQueryableLayers(filter) {
-        return getQueryableLayers(this.store, filter);
+        return getQueryableLayers(this.store.getState().mapSources, filter);
     }
 
     /** zoom to an extent

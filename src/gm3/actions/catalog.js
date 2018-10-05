@@ -115,6 +115,8 @@ function parseLayer(store, layerXml) {
     // parse out the souces
     const src_str = layerXml.getAttribute('src');
     if(src_str) {
+        const map_sources = store.getState().mapSources;
+
         // migrated to ";" as the split key because the old ":"
         //  was problematic for WFS layers which specified a schema.
         for(const src of src_str.split(';')) {
@@ -133,15 +135,12 @@ function parseLayer(store, layerXml) {
 
             // if any of the underlaying paths in the src
             //  are false, then turn all of them off.
-            src_favorite = src_favorite || mapSources.isFavoriteLayer(store, s);
+            src_favorite = src_favorite || mapSources.isFavoriteLayer(map_sources, s);
 
             // check to see if a 'default' name is needed
             // for the catalog entry.
-            if(!new_layer.label) {
-                const ms = mapSources.get(store, s.mapSourceName);
-                if(ms.label) {
-                    new_layer.label = ms.label;
-                }
+            if(!new_layer.label && map_sources[s.mapSourceName].label) {
+                new_layer.label = map_sources[s.mapSourceName].label;
             }
 
         }

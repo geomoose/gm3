@@ -511,7 +511,7 @@ class Grid extends React.Component {
                 const layer_path = Object.keys(query.results)[0];
                 let layer = null;
                 try {
-                    layer = getLayerFromPath(this.props.store, layer_path);
+                    layer = getLayerFromPath(this.props.mapSources, layer_path);
                 } catch(err) {
                     // no layer, no problem.
                 }
@@ -593,7 +593,8 @@ class Grid extends React.Component {
 
 const mapToProps = function(store) {
     return {
-        queries: store.query
+        queries: store.query,
+        mapSources: store.mapSources,
     }
 }
 export default connect(mapToProps)(Grid);

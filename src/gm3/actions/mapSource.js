@@ -333,17 +333,6 @@ export function remove(path) {
     }
 }
 
-/** Get the map-source definition from a store
- *
- *  @param store
- *  @param mapSourceName
- *
- *  @return the map-source definition
- */
-export function get(store, mapSourceName) {
-    return store.getState().mapSources[mapSourceName];
-}
-
 /** Get a map-source layer based on a catalog layer object.
  *
  *  @param store The master store.
@@ -351,8 +340,8 @@ export function get(store, mapSourceName) {
  *
  * @returns The layer from the map-source in the store.
  */
-export function getLayer(store, layer) {
-    const map_source = get(store, layer.mapSourceName);
+export function getLayer(mapSources, layer) {
+    const map_source = mapSources[layer.mapSourceName];
     for(const l of map_source.layers) {
         if(l.name === layer.layerName) { return l; }
     }
@@ -365,14 +354,14 @@ export function getLayer(store, layer) {
 
 /** Get a layer using the internal path format "source"/"layer"
  *
- *  @param store The master store.
+ *  @param mapSources A list of map-sources
  *  @param path  String defining the path.
  *
  * @return The layer from the map-source in the store.
  */
-export function getLayerByPath(store, path) {
+export function getLayerByPath(mapSources, path) {
     const p = path.split('/');
-    return getLayer(store, {
+    return getLayer(mapSources, {
         mapSourceName: p[0],
         layerName: p[1]
     });
@@ -382,9 +371,9 @@ export function getLayerByPath(store, path) {
  *  a handy function.
  *
  */
-export function getVisibility(store, layer) {
+export function getVisibility(mapSources, layer) {
     // the === normalizes everything when values are undefined.
-    return (getLayer(store, layer).on === true);
+    return (getLayer(mapSources, layer).on === true);
 }
 
 /** Check to see if a layer is a 'favorite'
@@ -394,8 +383,8 @@ export function getVisibility(store, layer) {
  *
  * @returns {Boolean} true if a favorite, false otherwise.
  */
-export function isFavoriteLayer(store, layer) {
-    return (getLayer(store, layer).favorite === true);
+export function isFavoriteLayer(mapSources, layer) {
+    return (getLayer(mapSources, layer).favorite === true);
 }
 
 /** Check whether a map-source is 'active',
@@ -423,13 +412,12 @@ function isMapSourceActive(mapSource) {
 /** Get the list of all map-sources which have a
  *  layer that is on.
  */
-export function getActiveMapSources(store, onlyPrintable = false) {
-    const map_sources = store.getState().mapSources;
+export function getActiveMapSources(mapSources, onlyPrintable = false) {
     const active = [];
     const all_maps = !onlyPrintable;
-    for(const ms in map_sources) {
-        if(isMapSourceActive(map_sources[ms])) {
-            if(all_maps || map_sources[ms].printable) {
+    for(const ms in mapSources) {
+        if(isMapSourceActive(mapSources[ms])) {
+            if(all_maps || mapSources[ms].printable) {
                 active.push(ms);
             }
         }
@@ -437,11 +425,11 @@ export function getActiveMapSources(store, onlyPrintable = false) {
     return active;
 }
 
-export function getLayerFromPath(store, path) {
+export function getLayerFromPath(mapSources, path) {
     const ms_name = util.getMapSourceName(path);
     const layer_name = util.getLayerName(path);
 
-    return getLayer(store, {mapSourceName: ms_name, layerName: layer_name});
+    return getLayer(mapSources, {mapSourceName: ms_name, layerName: layer_name});
 }
 
 /** Check if a map-source is queryable.
@@ -533,7 +521,7 @@ export function getLayerFromSources(mapSources, msName, layerName) {
  *  These layers are a subset of visible layers.
  *
  */
-export function getQueryableLayers(store, filter = {}, options = {}) {
+export function getQueryableLayers(mapSources, filter = {}, options = {}) {
     // when visible is set to true, then any visibility will
     //  be false and the isVisible call will be evaluated.
     const req_visible = (typeof filter.requireVisible === 'undefined') ? true : filter.requireVisible;
@@ -556,10 +544,9 @@ export function getQueryableLayers(store, filter = {}, options = {}) {
         return (template_filter_pass && isQueryable(ms, queryLayer) && (!req_visible || isVisible(ms, layer)));
     }
 
-    const map_sources = store.getState().mapSources;
     const query_layers = [];
-    for(const ms_name in map_sources) {
-        const ms = map_sources[ms_name];
+    for(const ms_name in mapSources) {
+        const ms = mapSources[ms_name];
         for(let i = 0, ii = ms.layers.length; i < ii; i++) {
             const layer = ms.layers[i];
             let query_layer_found = false;
@@ -569,7 +556,7 @@ export function getQueryableLayers(store, filter = {}, options = {}) {
             if(layer.queryAs) {
                 for(let q = 0, qq = layer.queryAs.length; q < qq; q++) {
                     const qs = layer.queryAs[q].split('/');
-                    const query_layer = getLayerFromSources(map_sources, qs[0], qs[1]);
+                    const query_layer = getLayerFromSources(mapSources, qs[0], qs[1]);
                     if(match_fn(ms, layer, query_layer)) {
                         query_layers.push(layer.queryAs[q]);
                         query_layer_found = true;

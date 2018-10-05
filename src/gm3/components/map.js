@@ -84,9 +84,6 @@ class Map extends React.Component {
     constructor() {
         super();
 
-        // create a new map id for this component
-        this.mapId = uuid.v4();
-
         // hash of mapsources
         this.olLayers = { };
 
@@ -631,6 +628,11 @@ class Map extends React.Component {
     runQuery(queries, queryId) {
         const query = queries[queryId];
 
+        if (!query.layers || query.layers.length === 0) {
+            // a ha! no layers in the query. consider it done.
+            this.props.finishQuery(queryId);
+        }
+
         for(const query_layer of query.layers) {
             // get the map source
             const ms_name = util.getMapSourceName(query_layer);
@@ -792,7 +794,7 @@ class Map extends React.Component {
     refreshMapSources() {
         // get the list of current active map-sources
         const print_only = (this.props.printOnly === true);
-        const active_map_sources = mapSourceActions.getActiveMapSources(this.props.store, print_only);
+        const active_map_sources = mapSourceActions.getActiveMapSources(this.props.mapSources, print_only);
 
         // annoying O(n^2) iteration to see if the mapsource needs
         //  to be turned off.
@@ -969,7 +971,7 @@ class Map extends React.Component {
 
         // initialize the map.
         this.map = new olMap({
-            target: this.mapId,
+            target: this.mapDiv,
             layers: [this.selectionLayer],
             logo: false,
             view: new olView(view_params),
@@ -1240,8 +1242,7 @@ class Map extends React.Component {
         if(this.map) {
             this.map.updateSize();
 
-            const map_div = this.refs.map;
-            const canvas = map_div.getElementsByTagName('canvas');
+            const canvas = this.mapDiv.getElementsByTagName('canvas');
             if(canvas[0] && canvas[0].style.display !== 'none') {
                 return true;
             }
@@ -1252,11 +1253,11 @@ class Map extends React.Component {
     /** Intercept extent changes during a part of the render
      *  cycle where the state can get modified.
      */
-    UNSAFE_componentWillUpdate(nextProps, nextState) {
+    componentDidUpdate(prevProps) {
         // extent takes precendent over the regular map-view,
-        if(nextProps && nextProps.mapView.extent) {
-            let bbox = nextProps.mapView.extent.bbox;
-            const bbox_code = nextProps.mapView.extent.projection;
+        if(this.props.mapView.extent) {
+            let bbox = this.props.mapView.extent.bbox;
+            const bbox_code = this.props.mapView.extent.projection;
             if(bbox_code) {
                 const map_proj = this.map.getView().getProjection();
                 bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
@@ -1265,9 +1266,9 @@ class Map extends React.Component {
             this.map.getView().fit(bbox, {size: this.map.getSize()});
 
         // check to see if the view has been altered.
-        } else if(nextProps && nextProps.mapView) {
+        } else if(this.props.mapView) {
             const map_view = this.map.getView();
-            const view = nextProps.mapView;
+            const view = this.props.mapView;
 
             const center = map_view.getCenter();
             const resolution = map_view.getResolution();
@@ -1286,7 +1287,7 @@ class Map extends React.Component {
 
         // ensure that the selection features have been 'cleared'
         //  appropriately.
-        if(nextProps && nextProps.mapView.selectionFeatures.length === 0) {
+        if(this.props.mapView.selectionFeatures.length === 0) {
             if(this.selectionLayer) {
                 this.selectionLayer.getSource().clear();
             }
@@ -1294,15 +1295,15 @@ class Map extends React.Component {
 
         // this will cause the active drawing tool to *stop*
         //  when the service changes.
-        if(nextProps.queries.service !== null
-           && nextProps.queries.service !== this.props.queries.service) {
+        if(this.props.queries.service !== null
+           && this.props.queries.service !== prevProps.queries.service) {
             this.stopDrawing();
         }
 
         // handle out of loop buffer distance changes
-        if(nextProps && nextProps.mapView.selectionBuffer !== this.props.mapView.selectionBuffer) {
-            if(this.selectionLayer && !isNaN(nextProps.mapView.selectionBuffer)) {
-                const buffer = nextProps.mapView.selectionBuffer;
+        if(this.props.mapView.selectionBuffer !== prevProps.mapView.selectionBuffer) {
+            if(this.selectionLayer && !isNaN(this.props.mapView.selectionBuffer)) {
+                const buffer = this.props.mapView.selectionBuffer;
                 const selection_src = this.selectionLayer.getSource();
 
                 for(const feature of selection_src.getFeatures()) {
@@ -1312,10 +1313,9 @@ class Map extends React.Component {
         }
 
         // see if any queries need their results populated.
-        this.checkQueries(nextProps.queries);
-    }
+        this.checkQueries(this.props.queries);
 
-    render() {
+
         // ensure the map is defined and ready.
         if(this.map) {
             // refresh all the map sources, as approriate.
@@ -1333,7 +1333,12 @@ class Map extends React.Component {
                     is_selection
                 );
             }
+        }
+    }
 
+    render() {
+        // ensure the map is defined and ready.
+        if(this.map) {
             // update the map size when data changes
             setTimeout(this.updateMapSize, 250);
         }
@@ -1351,22 +1356,34 @@ class Map extends React.Component {
         }
 
         return (
-            <div className="map" ref='map' id={this.mapId}>
+            <div
+                className='map'
+                ref={(self) => {
+                    this.mapDiv = self;
+                }}
+            >
             </div>
         )
     }
 }
 
-const mapToProps = function(store) {
+function mapState(state) {
     return {
-        mapSources: store.mapSources,
-        mapView: store.map,
-        queries: store.query
+        mapSources: state.mapSources,
+        mapView: state.map,
+        queries: state.query
     }
 }
 
-export default connect(mapToProps)(Map);
+function mapDispatch(dispatch) {
+    return {
+        finishQuery: (queryId) => {
+            dispatch(mapActions.finishQuery(queryId));
+        },
+    };
+}
 
+export default connect(mapState, mapDispatch)(Map);
 
 
 export function getLegend(mapSource, mapView, layerName) {
@@ -1402,5 +1419,3 @@ export function getLegend(mapSource, mapView, layerName) {
             };
     }
 }
-
-
