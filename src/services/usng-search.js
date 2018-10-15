@@ -37,7 +37,7 @@ function USNGSearch(Application, options) {
         'Point': true,
         'default': 'Point'
     };
-    
+
     /** Aaand the search field. */
     this.fields = [{
         name: 'usng', type: 'text', label: 'USNG'
@@ -55,7 +55,7 @@ function USNGSearch(Application, options) {
      *  other than the demo application.
      */
     this.template = '<div class="search-result">' +
-                    '<a onClick="app.zoomTo({{ properties.lon }}, {{ properties.lat }}, 18)" class="zoomto-link">' +
+        '<a onClick="app.zoomToExtent([{{ properties.minx }}, {{ properties.miny }}, {{ properties.maxx }}, {{ properties.maxy }}], \'EPSG:4326\')" class="zoomto-link">' +
                         '<i class="fa fa-search"></i>' +
                         '{{ properties.usng }}' +
                     '</a>' +
@@ -77,60 +77,60 @@ function USNGSearch(Application, options) {
         var target_layer = this.targetLayer;
         var map_proj = this.mapProjection;
 
-	var features = [];
+        var features = [];
 
-	try {
-	    // Make sure we have an input USNG value
-	    if(typeof(query.fields[0].value) === 'undefined') {
-		throw('A USNG coordinate is required for this query');
-	    }
+        try {
+            // Make sure we have an input USNG value
+            if(typeof(query.fields[0].value) === 'undefined') {
+                throw('A USNG coordinate is required for this query');
+            }
 
-	    // Get starting point for search, if supplied
-	    var selection = null;
-	    if(query.selection && query.selection.type && query.selection.type === 'Feature') {
-		var point = gm3.util.projectFeatures([query.selection], map_proj, 'EPSG:4326')[0];
-		selection = { lon: point.geometry.coordinates[0], lat: point.geometry.coordinates[1] };
-	    }
+            // Get starting point for search, if supplied
+            var selection = null;
+            if(query.selection && query.selection.type && query.selection.type === 'Feature') {
+                var point = gm3.util.projectFeatures([query.selection], map_proj, 'EPSG:4326')[0];
+                selection = { lon: point.geometry.coordinates[0], lat: point.geometry.coordinates[1] };
+            }
 
-	    // Attempt to convert USNG to a feature
-	    // TODO: This should be a box, not a point
-	    var u = new USNG2();
-	    var ll = u.toLonLat(query.fields[0].value, selection);
-	    console.log(ll);
+            // Attempt to convert USNG to a feature
+            // TODO: This should be a box, not a point
+            var u = new USNG2();
+            var ll = u.toLonLatPoly(query.fields[0].value, selection);
+            console.log(ll);
             features.push({
-		type: 'Feature',
-		geometry: {
-                    type: 'Point',
-                    coordinates: [ll.lon, ll.lat]
-		},
-		properties: ll
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: ll.coordinates
+                },
+                properties: ll
             });
-	    
+
             // put the feature in map projection.
             features = gm3.util.projectFeatures(features, 'EPSG:4326', map_proj);
-	    
+
             // populate the results
             Application.dispatch({
-		id: queryId,
-		type: 'MAP_QUERY_RESULTS',
-		failed: false,
-		// this is a bit of a cheat as there is no real 'usngsearch' layer.
-		// However, 'usngsearch' is the path used to render the results.
-		layer: 'usngsearch', features: features
+                id: queryId,
+                type: 'MAP_QUERY_RESULTS',
+                failed: false,
+                // this is a bit of a cheat as there is no real 'usngsearch' layer.
+                // However, 'usngsearch' is the path used to render the results.
+                layer: 'usngsearch', features: features
             });
-	} catch(e) {
-	    // populate the results
+        } catch(e) {
+            // populate the results
             Application.dispatch({
-		id: queryId,
-		type: 'MAP_QUERY_RESULTS',
-		failed: true,
-		messageText: e.toString(),
-		// this is a bit of a cheat as there is no real 'usngsearch' layer.
-		// However, 'usngsearch' is the path used to render the results.
-		layer: 'usngsearch', features: features
+                id: queryId,
+                type: 'MAP_QUERY_RESULTS',
+                failed: true,
+                messageText: e.toString(),
+                // this is a bit of a cheat as there is no real 'usngsearch' layer.
+                // However, 'usngsearch' is the path used to render the results.
+                layer: 'usngsearch', features: features
             });
-	}
-	
+        }
+
         // mark the query as finished.
         Application.dispatch({
             id: queryId,
@@ -139,7 +139,7 @@ function USNGSearch(Application, options) {
 
         // remove features from the target_layer
         Application.clearFeatures(target_layer);
-	
+
         if(features.length > 0) {
             Application.addFeatures(target_layer, features);
         }

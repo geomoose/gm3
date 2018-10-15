@@ -3,19 +3,19 @@
  * Maintained at https://github.com/klassenjs/usng_tools
  *
  * License:
- * 
+ *
  * Copyright (c) 2008-2013 James Klassen
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the 'Software'), to
  * deal in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies of this Software or works derived from this Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,7 @@
  *       Return box instead of point?
  *       Return list of coordinates w/distances for truncated search as well as best.
  *       Internalize UPS projection (remove proj4js dependency).
- *       
+ *
  */
 
 window.USNG2 = function() {
@@ -45,13 +45,13 @@ window.USNG2 = function() {
 	var EWLetters25 = ['J','K','L','M','N','P','Q','R'];
 	var EWLetters36 = ['S','T','U','V','W','X','Y','Z'];
 
-	//                  -80  -72  -64  -56  -48  -40  -32  -24  -16  -8    0    8   16   24   32   40   48   56   64   72   (*Latitude) 
+	//                  -80  -72  -64  -56  -48  -40  -32  -24  -16  -8    0    8   16   24   32   40   48   56   64   72   (*Latitude)
   //                                                                                                 Handle oddball zone 80-84
 	var GridZones    = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'X'];
 	var GridZonesDeg = [-80, -72, -64, -56, -48, -40, -32, -24, -16, -8,   0,   8,  16,  24,  32,  40,  48,  58,  64,  72,  80];
-	
+
 	// TODO: This is approximate and actually depends on longitude too.
-	var GridZonesNorthing = new Array(20);	
+	var GridZonesNorthing = new Array(20);
 	for(var i = 0 ; i < 20; i++) {
 		GridZonesNorthing[i] = 110946.259 * GridZonesDeg[i]; // == 2 * PI * 6356752.3 * (latitude / 360.0)
 	}
@@ -62,10 +62,10 @@ window.USNG2 = function() {
 	var YNLetters = [ 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'A', 'B', 'C', 'D', 'E', 'F', 'G' ];
 	var YSLetters = [ 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	                  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M' ];
-	
+
 
 	// http://en.wikipedia.org/wiki/Great-circle_distance
-	// http://en.wikipedia.org/wiki/Vincenty%27s_formulae 
+	// http://en.wikipedia.org/wiki/Vincenty%27s_formulae
 	this.llDistance = function(ll_start, ll_end)
 	{
 		var lat_s = ll_start.lat * Math.PI / 180;
@@ -77,8 +77,8 @@ window.USNG2 = function() {
 	}
 
 	/* Returns a USNG String for a UTM point, and zone id's, and precision
-	 * utm_zone => 15 ; grid_zone => 'T' (calculated from latitude); 
-	 * utm_easting => 491000, utm_northing => 49786000; precision => 2 
+	 * utm_zone => 15 ; grid_zone => 'T' (calculated from latitude);
+	 * utm_easting => 491000, utm_northing => 49786000; precision => 2
 	 */
 	this.fromUTM = function(utm_zone, grid_zone, utm_easting, utm_northing, precision) {
 		var utm_zone;
@@ -87,9 +87,9 @@ window.USNG2 = function() {
 		var grid_easting;
 		var grid_northing;
 		var precision;
-		
+
 		var grid_square_set = utm_zone % 6;
-		
+
 		var ew_idx = Math.floor(utm_easting / 100000) - 1; // should be [100000, 900000]
 		var ns_idx = Math.floor((utm_northing % 2000000) / 100000); // should [0, 10000000) => [0, 2000000)
 		if(ns_idx < 0) { /* handle southern hemisphere */
@@ -118,7 +118,7 @@ window.USNG2 = function() {
 				throw("USNG: can't get here");
 		}
 
-		
+
 		// Calc Easting and Northing integer to 100,000s place
 		var easting  = Math.floor(utm_easting % 100000).toString();
 		var northing = Math.floor(utm_northing % 100000);
@@ -132,19 +132,19 @@ window.USNG2 = function() {
 		// Pad up to meter precision (5 digits)
 		while(easting.length < 5) easting = '0' + easting;
 		while(northing.length < 5) northing = '0' + northing;
-		
+
 		if(precision > 5) {
 			// Calculate the fractional meter parts
 			var digits = precision - 5;
 			grid_easting  = easting + (utm_easting % 1).toFixed(digits).substr(2,digits);
-			grid_northing = northing + (utm_northing % 1).toFixed(digits).substr(2,digits);		
+			grid_northing = northing + (utm_northing % 1).toFixed(digits).substr(2,digits);
 		} else {
 			// Remove unnecessary digits
 			grid_easting  = easting.substr(0, precision);
 			grid_northing = northing.substr(0, precision);
 		}
-		
-		var usng_string = String(utm_zone) + grid_zone + " " + grid_square + " " + grid_easting + " " + grid_northing; 
+
+		var usng_string = String(utm_zone) + grid_zone + " " + grid_square + " " + grid_easting + " " + grid_northing;
 		return(usng_string);
 	}
 
@@ -178,7 +178,7 @@ window.USNG2 = function() {
 				ns_grid = NSLetters135;
 				ew_grid = EWLetters25;
 				break;
-			case 0: // grid_square_set will == 0, but it is technically group 6 
+			case 0: // grid_square_set will == 0, but it is technically group 6
 				ns_grid = NSLetters246;
 				ew_grid = EWLetters36;
 				break;
@@ -187,17 +187,17 @@ window.USNG2 = function() {
 		}
 		var ew_idx = ew_grid.indexOf(grid_square[0]);
 		var ns_idx = ns_grid.indexOf(grid_square[1]);
-		
+
 		if(ew_idx == -1 || ns_idx == -1)
 			throw("USNG: Invalid USNG 100km grid designator for UTM zone " + utm_zone + ".");
 			//throw(RangeError("USNG: Invalid USNG 100km grid designator."));
-		
+
 		utm_easting = ((ew_idx + 1) * 100000) + grid_easting; // Should be [100,000, 900,000]
 		utm_northing = ((ns_idx + 0) * 100000) + grid_northing; // Should be [0, 2,000,000)
 
 		// TODO: this really depends on easting too...
 		// At this point know UTM zone, Grid Zone (min latitude), and easting
-		// Right now this is look up table returns a max number based on lon == utm zone center 	
+		// Right now this is look up table returns a max number based on lon == utm zone center
 		var min_northing = GridZonesNorthing[GridZones.indexOf(grid_zone)]; // Unwrap northing to ~ [0, 10000000]
 		utm_northing += 2000000 * Math.ceil((min_northing - utm_northing) / 2000000);
 
@@ -223,7 +223,7 @@ window.USNG2 = function() {
 				throw("USNG: calculated coordinate not in correct grid zone! Supplied: "+utm_zone+grid_zone+" Calculated: "+ll_utm_zone+ll_grid_zone);
 		} else {
 			// Loosen requirements to allow for grid extensions that don't introduce ambiguity.
-		
+
 			// "The UTM grid extends to 80°30'S and 84°30'N, providing a 30-minute overlap with the UPS grid."
 			// -- http://earth-info.nga.mil/GandG/publications/tm8358.1/tr83581b.html Section 2-6.3.1
 			if(ll.lat > 84.5 || ll.lat < -79.5)
@@ -233,7 +233,7 @@ window.USNG2 = function() {
 			// 100km grids unique for 800,000m in one UTM zone.
 			// Thus, two limiting conditions for uniqueness:
 			//		UTM zone max width = 665,667m at equator => 800,000m is 1.2 UTM 6* zones wide at 0*N. => 67000m outside zone.
-			//			=> utm_easting in [100,000, 900,000] (800,000m wide centered at 500,000m (false easting) 
+			//			=> utm_easting in [100,000, 900,000] (800,000m wide centered at 500,000m (false easting)
 			//		UTM zone min width = 63,801m at 84.5* N. => 12 UTM 6* zones.  => 2 UTM zones.
 			if(utm_easting < 100000 || utm_easting > 900000)
 				throw("USNG: calculated coordinate not in correct UTM zone! Supplied: "+utm_zone+grid_zone+" Calculated: "+ll_utm_zone+ll_grid_zone);
@@ -252,10 +252,10 @@ window.USNG2 = function() {
 		}
 
 		var usng_string = String(utm_zone) + grid_zone + " " + grid_square + " " + grid_easting + " " + grid_northing;
-		return { zone : utm_zone, easting : utm_easting, northing : utm_northing, precision : precision, usng: usng_string };	
+		return { zone : utm_zone, easting : utm_easting, northing : utm_northing, precision : precision, usng: usng_string };
 	}
 
-	/* Method to convert a USNG coordinate string into a NAD83/WGS84 LonLat Point 
+	/* Method to convert a USNG coordinate string into a NAD83/WGS84 LonLat Point
 	 * First parameter: usng = A valid USNG coordinate string (possibly truncated)
 	 *	Possible cases:
 	 *		Full USNG: 14TPU3467
@@ -267,7 +267,7 @@ window.USNG2 = function() {
 	 *		Truncated:    PU
 	 * Second parameter: a LonLat point to use to disambiguate a truncated USNG point
 	 * Returns: The LonLat point
-	 */ 
+	 */
 	this.toUTM = function(usng, initial_lonlat, strict) {
 		// Parse USNG into component parts
 		var easting = 0;
@@ -278,7 +278,7 @@ window.USNG2 = function() {
 		var grid_square = null;
 		var grid_zone = null;
 		var utm_zone = null;
-		
+
 		// Remove Whitespace (shouldn't be any)
 		usng = usng.replace(/ /g, "");
 
@@ -323,7 +323,7 @@ window.USNG2 = function() {
 		// Our job is to find the closest point to the llPoint given what we know about the USNG point.
 
 		// Calculate the UTM zone, easting and northing from what we know
-		
+
 		/* Method: we can only guess missing prefix information so our cases are:
 		 * We have everything (14TPU)
 		 * We are missing the UTM zone (PU)
@@ -331,7 +331,7 @@ window.USNG2 = function() {
 		 * TODO: Need to throw an exception if utm_zone and no grid_zone as invalid
 		 * TODO: Also need to throw an exception if don't have at least one of grid_zone and coordinate...maybe
 		 * TODO: Error if grid_zone is not in GridZones
-		 */	
+		 */
 
 		if(utm_zone && grid_zone && grid_square) {
 			; // We have everything so there is nothing more to do, UTM.
@@ -342,14 +342,14 @@ window.USNG2 = function() {
 			// We know the grid zone so first we need to find the closest matching grid zone
 			// to the initial point. Then add in the easting and northing (if any).
 			//throw("USNG: Truncated coordinate support not implemented");
-			
+
 			// Linear search all possible points (TODO: try to put likely guesses near top of list)
 			var min_arc_distance = 1000;
 			var min_utm_zone  = null;
 			var min_grid_zone = null;
-			
+
 			var ll_utm_zone = Math.floor((initial_lonlat.lon - (-180.0)) / 6.0) + 1;
-			var ll_grid_zone_idx = Math.floor((initial_lonlat.lat - (-80.0)) / 8); 
+			var ll_grid_zone_idx = Math.floor((initial_lonlat.lat - (-80.0)) / 8);
 
 			// Check the min ranges that need to be searched based on the spec.
 			// Need to wrap UTM zones mod 60
@@ -393,7 +393,7 @@ window.USNG2 = function() {
 					;//console.log("USNG: upstream: "+e); // catch range errors and ignore
 				}
 			}
-				
+
 			if(min_grid_zone) {
 				utm_zone = min_utm_zone;
 				grid_zone = min_grid_zone;
@@ -409,9 +409,9 @@ window.USNG2 = function() {
 			var min_utm_zone  = null;
 			var min_grid_zone = null;
 			var min_grid_square = null;
-			
+
 			var ll_utm_zone = Math.floor((initial_lonlat.lon - (-180.0)) / 6.0) + 1;
-			var ll_grid_zone_idx = Math.floor((initial_lonlat.lat - (-80.0)) / 8); 
+			var ll_grid_zone_idx = Math.floor((initial_lonlat.lat - (-80.0)) / 8);
 
 			// Check the min ranges that need to be searched based on the spec.
 			for(utm_zone = ll_utm_zone-1; utm_zone <= ll_utm_zone+1; utm_zone++) { // still true at 80*?
@@ -441,7 +441,7 @@ window.USNG2 = function() {
 							ns_grid = NSLetters135;
 							ew_grid = EWLetters25;
 							break;
-						case 0: // grid_square_set will == 0, but it is technically group 6 
+						case 0: // grid_square_set will == 0, but it is technically group 6
 							ns_grid = NSLetters246;
 							ew_grid = EWLetters36;
 							break;
@@ -474,7 +474,7 @@ window.USNG2 = function() {
 			var ups_zones;
 			var y_zones;
 			var y_max;
-			if(initial_lonlat.lat > 0) { 
+			if(initial_lonlat.lat > 0) {
 				ups_zones = ['Y', 'Z'];
 				y_zones = YNLetters;
 				y_max = 14;
@@ -506,7 +506,7 @@ window.USNG2 = function() {
 					}
 				}
 			}
-				
+
 			if(min_grid_zone) {
 				utm_zone = min_utm_zone;
 				grid_zone = min_grid_zone;
@@ -532,13 +532,13 @@ window.USNG2 = function() {
 			throw( "UPS only valid in zones A, B, Y, and Z" );
 
 		var grid_square;
-	
+
 		var grid_square_x_idx = Math.floor((ups_x - 2000000) / 100000);
 		var grid_square_y_idx = Math.floor((ups_y - 2000000) / 100000);
 
 		if(grid_square_x_idx < 0)
 			grid_square_x_idx += 18;
-		
+
 		if(grid_zone == "A" || grid_zone == "B") { // south
 			if(grid_square_y_idx < 0)
 				grid_square_y_idx += 24;
@@ -550,7 +550,7 @@ window.USNG2 = function() {
 
 			grid_square = XLetters[grid_square_x_idx] + YNLetters[grid_square_y_idx];
 		}
-	
+
 		// Calc X and Y integer to 100,000s place
 		var x = Math.floor(ups_x % 100000).toString();
 		var y = Math.floor(ups_y % 100000).toString();
@@ -563,13 +563,13 @@ window.USNG2 = function() {
 			// Calculate the fractional meter parts
 			var digits = precision - 5;
 			grid_x  = x + (ups_x % 1).toFixed(digits).substr(2,digits);
-			grid_y = y + (ups_y % 1).toFixed(digits).substr(2,digits);		
+			grid_y = y + (ups_y % 1).toFixed(digits).substr(2,digits);
 		} else {
 			// Remove unnecessary digits
 			grid_x  = x.substr(0, precision);
 			grid_y = y.substr(0, precision);
 		}
-	
+
 		return grid_zone + " " + grid_square + " " + grid_x + " " + grid_y;
 	}
 
@@ -578,7 +578,7 @@ window.USNG2 = function() {
 	{
 		if(!Proj4js)
 			throw("USNG: Zones A,B,Y, and Z require Proj4js.");
-	
+
 		/* Start at the pole */
 		var ups_x = 2000000;
 		var ups_y = 2000000;
@@ -635,7 +635,7 @@ window.USNG2 = function() {
 		}
 
 		var usng_string = grid_zone + " " + grid_square + " " + grid_x + " " + grid_y;
-		return { grid_zone : grid_zone, x : ups_x, y : ups_y, precision : precision, usng: usng_string };	
+		return { grid_zone : grid_zone, x : ups_x, y : ups_y, precision : precision, usng: usng_string };
 	}
 
 
@@ -653,12 +653,12 @@ window.USNG2 = function() {
 		while(lon > 180) {
 			lon -= 180;
 		}
-		
+
 		// Calculate UTM Zone number from Longitude
 		// -180 = 180W is grid 1... increment every 6 degrees going east
-		// Note [-180, -174) is in grid 1, [-174,-168) is 2, [174, 180) is 60 
+		// Note [-180, -174) is in grid 1, [-174,-168) is 2, [174, 180) is 60
 		var utm_zone = Math.floor((lon - (-180.0)) / 6.0) + 1;
-		
+
 		// Calculate USNG Grid Zone Designation from Latitude
 		// Starts at -80 degrees and is in 8 degree increments
 		if(! ((lat > -80) && (lat < 84) )) {
@@ -673,19 +673,19 @@ window.USNG2 = function() {
 				grid_zone = (lon < 0) ? "Y":"Z";
 			} else {
 				Proj4js.transform( ll_proj, south_proj, ups_pt );
-				grid_zone = (lon < 0) ? "A":"B";	
-			}	
-			return this.fromUPS(grid_zone, ups_pt.x, ups_pt.y, precision);		
+				grid_zone = (lon < 0) ? "A":"B";
+			}
+			return this.fromUPS(grid_zone, ups_pt.x, ups_pt.y, precision);
 		}
-		
-		var grid_zone = GridZones[Math.floor((lat - (-80.0)) / 8)]; 
+
+		var grid_zone = GridZones[Math.floor((lat - (-80.0)) / 8)];
 		var utm_pt = utm_proj.proj(utm_zone, lon, lat);
-		
+
 		return this.fromUTM(utm_zone, grid_zone, utm_pt.utm_easting, utm_pt.utm_northing, precision);
 	}
 
 
-	
+
 	this.toLonLat = function(usng, initial_lonlat, strict)
 	{
 		var result = this.toUTM(usng, initial_lonlat, strict);
@@ -708,11 +708,77 @@ window.USNG2 = function() {
 		}
 		return (ll);
 	}
-	
-	this.UTM = function() {		
+
+
+  	this.toLonLatPoly = function(usng, initial_lonlat, strict)
+	{
+		var result = this.toUTM(usng, initial_lonlat, strict);
+		var grid_zone = result.grid_zone;
+		var ll;
+
+		//console.log(result);
+		if(south_proj && (grid_zone == "A" || grid_zone == "B")) {
+			var pt = {x: result.x, y: result.y};
+			Proj4js.transform( south_proj, ll_proj, pt );
+			ll = { lon: pt.x, lat: pt.y, precision: result.precision, usng: result.usng };
+		} else if(north_proj && (grid_zone == "Y" || grid_zone == "Z")) {
+			var pt = {x: result.x, y: result.y};
+			Proj4js.transform( north_proj, ll_proj, pt );
+			ll = { lon: pt.x, lat: pt.y, precision: result.precision, usng: result.usng };
+		} else {
+			ll = utm_proj.invProj(result.zone, result.easting, result.northing);
+			ll.precision = result.precision;
+			ll.usng = result.usng;
+
+            var step = Math.pow(10, 4 - result.precision);
+            var coordinates = [];
+            var e = result.easting;
+            var n = result.northing;
+
+            // TODO: Need to clip to UTM zone boundary - prob need JSTS
+            var l = utm_proj.invProj(result.zone, e, n);
+            coordinates.push([l.lon, l.lat]);
+            ll.minx = l.lon;
+            ll.miny = l.lat;
+
+            for(var i = 1; i <= 10; i++) {
+                n = result.northing + (i*step);
+                var l = utm_proj.invProj(result.zone, e, n);
+                coordinates.push([l.lon, l.lat]);
+            }
+            for(var i = 0; i <= 9; i++) {
+                e = result.easting + (i*step);
+                var l = utm_proj.invProj(result.zone, e, n);
+                coordinates.push([l.lon, l.lat]);
+            }
+            i = i + 1;
+            e = result.easting + (i*step);
+            var l = utm_proj.invProj(result.zone, e, n);
+            coordinates.push([l.lon, l.lat]);
+            ll.maxx = l.lon;
+            ll.maxy = l.lat;
+            for(var i = 10; i >= 0; i--) {
+                n = result.northing + (i*step);
+                var l = utm_proj.invProj(result.zone, e, n);
+                coordinates.push([l.lon, l.lat]);
+            }
+            for(var i = 10; i >= 0; i--) {
+                e = result.easting + (i*step);
+                var l = utm_proj.invProj(result.zone, e, n);
+                coordinates.push([l.lon, l.lat]);
+            }
+
+            ll.coordinates = coordinates;
+		}
+		return (ll);
+	}
+
+
+
+	this.UTM = function() {
 		// Functions to convert between lat,lon and utm. Derived from visual basic
 		// routines from Craig Perault. This assumes a NAD83 datum.
-		
+
 		// constants
 		var MajorAxis = 6378137.0;
 		var MinorAxis = 6356752.3;
@@ -722,7 +788,7 @@ window.USNG2 = function() {
 		var E4 = Ecc * Ecc;
 		var E6 = Ecc * E4;
 		var degrees2radians = Math.PI / 180.0;
-		
+
 		// Computes the meridian distance for the GRS-80 Spheroid.
 		// See equation 3-22, USGS Professional Paper 1395.
 		function meridianDist(lat) {
@@ -730,83 +796,83 @@ window.USNG2 = function() {
 			var c2 = -MajorAxis * (3 * Ecc / 8 + 3 * E4 / 32 + 45 * E6 / 1024);
 			var c3 = MajorAxis * (15 * E4 / 256 + 45 * E6 / 1024);
 			var c4 = -MajorAxis * 35 * E6 / 3072;
-			
+
 			return(c1 * lat + c2 * Math.sin(lat * 2) + c3 * Math.sin(lat * 4) + c4 * Math.sin(lat * 6));
 		}
-		
+
 		// Convert lat/lon (given in decimal degrees) to UTM, given a particular UTM zone.
 		this.proj = function(zone, in_lon, in_lat) {
 			var centeralMeridian = -((30 - zone) * 6 + 3) * degrees2radians;
-			
+
 			var lat = in_lat * degrees2radians;
 			var lon = in_lon * degrees2radians;
-			
+
 			var latSin = Math.sin(lat);
 			var latCos = Math.cos(lat);
 			var latTan = latSin / latCos;
 			var latTan2 = latTan * latTan;
 			var latTan4 = latTan2 * latTan2;
-			
+
 			var N = MajorAxis / Math.sqrt(1 - Ecc * (latSin*latSin));
 			var c = Ecc2 * latCos*latCos;
 			var a = latCos * (lon - centeralMeridian);
 			var m = meridianDist(lat);
-			
+
 			var temp5 = 1.0 - latTan2 + c;
 			var temp6 = 5.0 - 18.0 * latTan2 + latTan4 + 72.0 * c - 58.0 * Ecc2;
 			var temp11 = Math.pow(a, 5);
-			
+
 			var x = K0 * N * (a + (temp5 * Math.pow(a, 3)) / 6.0 + temp6 * temp11 / 120.0) + 500000;
-			
+
 			var temp7 = (5.0 - latTan2 + 9.0 * c + 4.0 * (c*c)) * Math.pow(a,4) / 24.0;
 			var temp8 = 61.0 - 58.0 * latTan2 + latTan4 + 600.0 * c - 330.0 * Ecc2;
 			var temp9 = temp11 * a / 720.0;
-			
+
 			var y = K0 * (m + N * latTan * ((a * a) / 2.0 + temp7 + temp8 * temp9))
-				
+
 			return( { utm_zone: zone, utm_easting : x, utm_northing : y } );
 		}
-		
+
 		// Convert UTM coordinates (given in meters) to Lat/Lon (in decimal degrees), given a particular UTM zone.
 		this.invProj = function(zone, easting, northing) {
 			var centeralMeridian = -((30 - zone) * 6 + 3) * degrees2radians;
-			
+
 			var temp = Math.sqrt(1.0 - Ecc);
 			var ecc1 = (1.0 - temp) / (1.0 + temp);
 			var ecc12 = ecc1 * ecc1;
 			var ecc13 = ecc1 * ecc12;
 			var ecc14 = ecc12 * ecc12;
-			
+
 			easting = easting - 500000.0;
-			
+
 			var m = northing / K0;
 			var um = m / (MajorAxis * (1.0 - (Ecc / 4.0) - 3.0 * (E4 / 64.0) - 5.0 * (E6 / 256.0)));
-			
+
 			var temp8 = (1.5 * ecc1) - (27.0 / 32.0) * ecc13;
 			var temp9 = ((21.0 / 16.0) * ecc12) - ((55.0 / 32.0) * ecc14);
-			
+
 			var latrad1 = um + temp8 * Math.sin(2 * um) + temp9 * Math.sin(4 * um) + (151.0 * ecc13 / 96.0) * Math.sin(6.0 * um);
-			
+
 			var latsin1 = Math.sin(latrad1);
 			var latcos1 = Math.cos(latrad1);
 			var lattan1 = latsin1 / latcos1;
 			var n1 = MajorAxis / Math.sqrt(1.0 - Ecc * latsin1 * latsin1);
 			var t2 = lattan1 * lattan1;
 			var c1 = Ecc2 * latcos1 * latcos1;
-			
+
 			var temp20 = (1.0 - Ecc * latsin1 * latsin1);
 			var r1 = MajorAxis * (1.0 - Ecc) / Math.sqrt(temp20 * temp20 * temp20);
-			
+
 			var d1 = easting / (n1*K0);
 			var d2 = d1 * d1;
 			var d3 = d1 * d2;
 			var d4 = d2 * d2;
 			var d5 = d1 * d4;
 			var d6 = d3 * d3;
-			
+
 			var t12 = t2 * t2;
 			var c12 = c1 * c1;
-			
+
 			var temp1 = n1 * lattan1 / r1;
 			var temp2 = 5.0 + 3.0 * t2 + 10.0 * c1 - 4.0 * c12 - 9.0 * Ecc2;
 			var temp4 = 61.0 + 90.0 * t2 + 298.0 * c1 + 45.0 * t12 - 252.0 * Ecc2 - 3.0 * c12;
@@ -816,10 +882,10 @@ window.USNG2 = function() {
 			var lat = (latrad1 - temp1 * (d2 / 2.0 - temp2 * (d4 / 24.0) + temp4 * d6 / 720.0)) * 180 / Math.PI;
 			var lon = (centeralMeridian + (d1 - temp5 + temp6 * d5 / 120.0) / latcos1) * 180 / Math.PI;
 			//easting = easting + 500000.0;
-			
+
 			return ({ lon: lon, lat: lat});
 		}
-		
+
 	}
 	var utm_proj = new this.UTM();
 
