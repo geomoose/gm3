@@ -471,6 +471,7 @@
         <drawer name="searches" title="Search">
             <tool name="search" title="Search Parcels" type="service"/>
             <tool name="geocode" title="Geocode an Address" type="service"/>
+            <tool name="usngsearch" title="USNG Search" type="service"/>
         </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>
