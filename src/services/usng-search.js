@@ -95,7 +95,7 @@ function USNGSearch(Application, options) {
             // Attempt to convert USNG to a feature
             // TODO: This should be a box, not a point
             var u = new USNG2();
-            var ll = u.toLonLatPoly(query.fields[0].value, selection);
+            var ll = u.toLonLatPoly(query.fields[0].value.toUpperCase(), selection);
             console.log(ll);
             features.push({
                 type: 'Feature',
