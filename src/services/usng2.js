@@ -716,7 +716,7 @@ window.USNG2 = function() {
 		var grid_zone = result.grid_zone;
 		var ll;
 
-		//console.log(result);
+		console.log(result);
 		if(south_proj && (grid_zone == "A" || grid_zone == "B")) {
 			var pt = {x: result.x, y: result.y};
 			Proj4js.transform( south_proj, ll_proj, pt );
@@ -728,7 +728,24 @@ window.USNG2 = function() {
 		} else {
 			ll = utm_proj.invProj(result.zone, result.easting, result.northing);
 			ll.precision = result.precision;
-			ll.usng = result.usng;
+
+            // Fix for returning too many digits
+            var usng = result.usng.split(' ');
+            var easting = String(result.easting % 100000);
+            var northing = String(result.northing % 100000);
+
+            // Pad up to meter precision (5 digits)
+    		while(easting.length < 5) easting = '0' + easting;
+    		while(northing.length < 5) northing = '0' + northing;
+
+        	if(result.precision > 5) {
+                result.precision = 5;
+            }
+            // Remove unnecessary digits
+			easting  = easting.substr(0, result.precision);
+			northing = northing.substr(0, result.precision);
+
+			ll.usng = usng[0] + ' ' + usng[1] + ' ' + easting + ' ' + northing;
 
             var step = Math.pow(10, 4 - result.precision);
             var coordinates = [];
