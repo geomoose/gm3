@@ -89,8 +89,6 @@ class Application {
 
         this.store.subscribe(() => { this.shouldUiUpdate(); });
 
-        this.dialogs = {};
-
         this.showWarnings = (config.showWarnings === true);
     }
 
@@ -322,7 +320,7 @@ class Application {
         const template_promise = new Promise((resolve, reject) => {
             if(template.substring(0, 1) === '@') {
                 const template_name = template.substring(1);
-                const layer = getLayerFromPath(this.store, path);
+                const layer = getLayerFromPath(this.store.getState().mapSources, path);
                 const layer_template = layer.templates[template_name];
 
                 if(layer_template) {
@@ -408,7 +406,7 @@ class Application {
                 `;
             } else if(template.substring(0, 1) === '@') {
                 const template_name = template.substring(1);
-                const layer = getLayerFromPath(this.store, path);
+                const layer = getLayerFromPath(this.store.getState().mapSources, path);
                 const layer_template = layer.templates[template_name];
 
                 if(layer_template) {
@@ -481,7 +479,7 @@ class Application {
     renderTemplate(path, template, params) {
         if(template.substring(0, 1) === '@') {
             const template_name = template.substring(1);
-            const layer = getLayerFromPath(this.store, path);
+            const layer = getLayerFromPath(this.store.getState().mapSources, path);
             const layer_template = layer.templates[template_name];
             let template_contents = '';
 
@@ -507,7 +505,7 @@ class Application {
      */
 
     getActiveMapSources() {
-        return getActiveMapSources(this.store);
+        return getActiveMapSources(this.store.getState().mapSources);
     }
 
     /** Get a list of all visible paths.
@@ -523,7 +521,7 @@ class Application {
      *  @returns an array of layer paths.
      */
     getQueryableLayers(filter) {
-        return getQueryableLayers(this.store, filter);
+        return getQueryableLayers(this.store.getState().mapSources, filter);
     }
 
     /** zoom to an extent
@@ -666,30 +664,28 @@ class Application {
     }
 
     showDialog(signature, title, message, options, callback = null) {
-        // If the dialog does not exist, then create it.
-        if(!this.dialogs[signature]) {
-            // create a target div for the dialog.
-            const body = document.getElementsByTagName('body')[0];
-            const modal_div = document.createElement('div');
-            body.appendChild(modal_div);
+        // create a target div for the dialog.
+        const body = document.getElementsByTagName('body')[0];
+        const modal_div = document.createElement('div');
+        body.appendChild(modal_div);
 
-            // configure the new props.
-            const props = {
-                title: title,
-                onClose: callback,
-                options,
-                message
-            };
+        // configure the new props.
+        const props = {
+            title: title,
+            onClose: (value) => {
+                if(typeof callback === 'function') {
+                    callback(value);
+                }
+                body.removeChild(modal_div);
+            },
+            options,
+            message,
+            open: true,
+        };
 
-            // create the element
-            const e = React.createElement(Modal, props);
-            const elem = ReactDOM.render(e, modal_div);
-            // registry the dialogs signature.
-            this.dialogs[signature] = elem;
-        }
-
-        // open the dialog
-        this.dialogs[signature].setState({open: true});
+        // create the element
+        const e = React.createElement(Modal, props);
+        ReactDOM.render(e, modal_div);
     }
 
     /* Set the view of the map

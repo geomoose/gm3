@@ -21,33 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import SelectInput from './select';
 
 import { getQueryableLayers, getLayerByPath } from '../../actions/mapSource';
 
-export default class LayersListInput extends SelectInput {
+export class LayersListInput extends SelectInput {
     getOptions() {
-        // default to an empty layers list.
-        let layers = [];
-        // if layers are specified in a list then just use
-        //   that list of paths.
-        if(this.props.field.filter.layers) {
-            layers = this.props.field.filter.layers;
-        // otherwise assume this is used for querying and get the list of
-        //  queryable layers that match the filter.
-        } else {
-            layers = getQueryableLayers(this.props.store, this.props.field.filter);
-        }
-
         const options = [];
-        for(let i = 0, ii = layers.length; i < ii; i++) {
-            const layer = getLayerByPath(this.props.store, layers[i]);
+        for(let i = 0, ii = this.props.layers.length; i < ii; i++) {
+            const layer = getLayerByPath(this.props.mapSources, this.props.layers[i]);
             options.push({
-                value: layers[i],
+                value: this.props.layers[i],
                 label: layer.label,
             });
         }
         return options;
     }
 }
+
+LayersListInput.propTypes = {
+    layers: PropTypes.array,
+};
+
+LayersListInput.defaultProps = {
+    mapSources: {},
+    layers: [],
+};
+
+function mapState(state, ownProps) {
+    const filter_layers = (ownProps.filter && ownProps.filter.layers) ? ownProps.filter.layers : null;
+    return {
+        layers: filter_layers ? filter_layers : getQueryableLayers(state.mapSources),
+        mapSources: state.mapSources,
+    };
+}
+
+export default connect(mapState)(LayersListInput);
