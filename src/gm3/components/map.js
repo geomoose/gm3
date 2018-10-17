@@ -256,7 +256,7 @@ class Map extends React.Component {
             for(const layer of query.layers) {
                 all_completed = all_completed && (query.results[layer] || (layer === completedLayer));
             }
-        } else {
+        } else if (query && query.layers.length > 0) {
             all_completed = false;
         }
 

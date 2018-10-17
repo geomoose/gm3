@@ -89,8 +89,6 @@ class Application {
 
         this.store.subscribe(() => { this.shouldUiUpdate(); });
 
-        this.dialogs = {};
-
         this.showWarnings = (config.showWarnings === true);
     }
 
@@ -666,30 +664,28 @@ class Application {
     }
 
     showDialog(signature, title, message, options, callback = null) {
-        // If the dialog does not exist, then create it.
-        if(!this.dialogs[signature]) {
-            // create a target div for the dialog.
-            const body = document.getElementsByTagName('body')[0];
-            const modal_div = document.createElement('div');
-            body.appendChild(modal_div);
+        // create a target div for the dialog.
+        const body = document.getElementsByTagName('body')[0];
+        const modal_div = document.createElement('div');
+        body.appendChild(modal_div);
 
-            // configure the new props.
-            const props = {
-                title: title,
-                onClose: callback,
-                options,
-                message
-            };
+        // configure the new props.
+        const props = {
+            title: title,
+            onClose: (value) => {
+                if(typeof callback === 'function') {
+                    callback(value);
+                }
+                body.removeChild(modal_div);
+            },
+            options,
+            message,
+            open: true,
+        };
 
-            // create the element
-            const e = React.createElement(Modal, props);
-            const elem = ReactDOM.render(e, modal_div);
-            // registry the dialogs signature.
-            this.dialogs[signature] = elem;
-        }
-
-        // open the dialog
-        this.dialogs[signature].setState({open: true});
+        // create the element
+        const e = React.createElement(Modal, props);
+        ReactDOM.render(e, modal_div);
     }
 
     /* Set the view of the map

@@ -126,7 +126,7 @@ class ServiceManager extends React.Component {
                 this.props.changeDrawTool(null);
             }
 
-            this.props.finish();
+            this.props.onServiceFinished();
             this.props.services[service].query(selection, fields);
         } else {
             console.info('Failed to start query, service: ' + service + ' not found.');
@@ -439,7 +439,7 @@ class ServiceManager extends React.Component {
                         this.props.startQuery(this.props.map.selectionFeatures, service_def, values);
                     }}
                     onCancel={() => {
-                        this.props.finish();
+                        this.props.onServiceFinished();
                     }}
                 />
             );
@@ -500,7 +500,7 @@ const mapToProps = function(store) {
 
 function mapDispatch(dispatch, ownProps) {
     return {
-        finish: () => {
+        onServiceFinsihed: () => {
             dispatch(finishService());
         },
         startQuery: (selectionFeatures, serviceDef, values) => {
