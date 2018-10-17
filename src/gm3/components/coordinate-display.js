@@ -181,7 +181,7 @@ export default class CoordinateDisplay extends React.Component {
             case 'xy':
                 display = (
                     <span className='coordinates map-xy' key='xy'>
-                        { formatCoordinates(projection, this.props.coords, 1) }
+                        <label>{projection.label}</label> { formatCoordinates(projection, this.props.coords, 1) }
                     </span>
                 );
                 break;
