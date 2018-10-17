@@ -28,7 +28,8 @@ import CoordinateDisplay from './coordinate-display';
 
 const mapToProps = function(store) {
     return {
-        coords: store.cursor.coords
+        coords: store.cursor.coords,
+        resolution: store.map.resolution
     }
 }
 

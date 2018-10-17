@@ -124,7 +124,10 @@ export default class CoordinateDisplay extends React.Component {
     usng() {
         const coords = this.getLatLonCoords();
         try {
-            return this.u.fromLonLat({ lon: coords[0], lat: coords[1] }, 4);
+            // TODO: This assumes resolution is in meters per pixel
+            const resolution = this.props.resolution;
+            const digits = Math.max( Math.min( Math.ceil(Math.log10(100000 / resolution)), 5), 0);
+            return this.u.fromLonLat({ lon: coords[0], lat: coords[1] }, digits);
         } catch (e) {
             console.log(e);
             return '--';
