@@ -446,9 +446,9 @@ class ServiceManager extends React.Component {
         } else {
             if(this.props.queries.order.length > 0) {
                 contents = (
-                    <div className='service-manager'>
+                    <React.Fragment>
                         { this.props.queries.order.map(this.renderQuery) }
-                    </div>
+                    </React.Fragment>
                 );
             } else {
                 // when there are no queries but a selection is left
@@ -461,7 +461,7 @@ class ServiceManager extends React.Component {
                 }
 
                 contents = (
-                    <div className='service-manager'>
+                    <React.Fragment>
                         <div className='info-box'>
                             Nothing available to view. Please click a service to start in the toolbar.
                         </div>
@@ -475,14 +475,16 @@ class ServiceManager extends React.Component {
                                 <i className='clear icon'></i> Clear previous selections
                             </button>
                         </div>
-                    </div>
+                    </React.Fragment>
                 );
             }
         }
 
         return (
             <Provider store={ this.props.store }>
-                { contents }
+                <div className='service-manager'>
+                    { contents }
+                </div>
             </Provider>
         );
     }
