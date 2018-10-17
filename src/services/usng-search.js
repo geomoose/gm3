@@ -64,9 +64,7 @@ function USNGSearch(Application, options) {
     this.resultsAsHtml = function(queryid, query) {
         var html = '';
 
-        // TODO: Handle errors from the GeoCoder service better.
         if(true) {
-            // get the addresses from the results set.
             html += Application.renderFeaturesWithTemplate(query, 'usngsearch', this.template);
         }
 
@@ -93,15 +91,14 @@ function USNGSearch(Application, options) {
             }
 
             // Attempt to convert USNG to a feature
-            // TODO: This should be a box, not a point
             var u = new USNG2();
             var ll = u.toLonLatPoly(query.fields[0].value.toUpperCase(), selection);
             console.log(ll);
             features.push({
                 type: 'Feature',
                 geometry: {
-                    type: 'LineString',
-                    coordinates: ll.coordinates
+                    type: 'Polygon',
+                    coordinates: [ll.coordinates]
                 },
                 properties: ll
             });
