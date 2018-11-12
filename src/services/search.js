@@ -61,6 +61,14 @@ function SearchService(Application, options) {
         return searchLayers;
     };
 
+    /** Allow the user to programmatically validate form field values. */
+    this.validateFieldValues = options.validateFieldValues ? options.validateFieldValues : function (fields) {
+        return {
+            valid: true,
+            message: null
+        };
+    };
+
     /** Field transfomation function. */
     this.prepareFields = options.prepareFields ? options.prepareFields : function(fields) {
         // reformat the fields for the query engine,

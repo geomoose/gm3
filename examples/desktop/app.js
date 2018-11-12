@@ -69,7 +69,30 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
             {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3'}
         ],
-        searchLayers: ['vector-parcels/parcels']
+        searchLayers: ['vector-parcels/parcels'],
+        validateFieldValues: function (fields) {
+            let nonEmpty = 0;
+            const validateFieldValuesResult = {
+                valid: true,
+                message: null
+            };
+
+            if (fields['OWNER_NAME'] !== undefined && fields['OWNER_NAME'] !== '') {
+                    nonEmpty++;
+            }
+            if (fields['OWN_ADD_L1'] !== undefined && fields['OWN_ADD_L1'] !== '') {
+                nonEmpty++;
+            }
+            if (fields['OWN_ADD_L3'] !== undefined && fields['OWN_ADD_L3'] !== '') {
+                nonEmpty++;
+            }
+
+            if (nonEmpty === 0) {
+                validateFieldValuesResult.valid = false;
+                validateFieldValuesResult.message = 'Please complete at least one field.'
+            }
+            return validateFieldValuesResult;
+        }
     });
 
     app.registerService('search-firestations', SearchService, {
