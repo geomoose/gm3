@@ -13,7 +13,7 @@ as a JavaScript object which can be passed to the PrintModal component.
 ## The default configuration
 
 In the desktop example application, the PrintModal uses its built-in
-layouts but is defined in this way:
+layouts defined in `examples/desktop/app.js`:
 
 ```javascript
  var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
