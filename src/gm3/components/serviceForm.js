@@ -67,6 +67,8 @@ export default class ServiceForm extends React.Component {
 
         this.state = {
             values,
+            validateFieldValuesResultMessage: null,
+            lastService: null,
         };
     }
 
@@ -82,6 +84,14 @@ export default class ServiceForm extends React.Component {
             this.props.onSubmit(this.state.values);
         } else if(code === 27) {
             this.props.onCancel();
+        }
+    }
+
+    UNSAFE_componentWillUpdate(nextProps, nextState) {
+        if(this.state.lastService !== nextProps.serviceDef
+            && nextProps.serviceDef !== null) {
+            // 'rotate' the current service to the next services.
+            this.setState({lastService: nextProps.serviceDef, validateFieldValuesResultMessage: null});
         }
     }
 
@@ -125,9 +135,34 @@ export default class ServiceForm extends React.Component {
                         return renderServiceField(field, this.state.values[field.name], onChange);
                     })
                 }
+                {
+                    !this.state.validateFieldValuesResultMessage ? false : (
+                        <div className="query-error">
+                            <div className="error-header">Error</div>
+                            <div className="error-contents">
+                                { this.state.validateFieldValuesResultMessage }
+                            </div>
+                        </div>
+                    )
+                }
                 <div className='tab-controls'>
                     <button className='close-button' onClick={() => { this.props.onCancel(); }}><i className='close-icon'></i> Close</button>
-                    <button className='go-button' onClick={() => { this.props.onSubmit(this.state.values); }}><i className='go-icon'></i> Go</button>
+                    <button className='go-button' onClick={() =>
+                    {
+                        // validate field values
+                        let validateFieldValuesResultValid = true;
+                        let validateFieldValuesResultMessage = null;
+                        if (service_def.validateFieldValues) {
+                            const validateFieldValuesResult = service_def.validateFieldValues(this.state.values);
+                            validateFieldValuesResultValid = validateFieldValuesResult.valid;
+                            validateFieldValuesResultMessage = validateFieldValuesResult.message;
+                        }
+                        if (validateFieldValuesResultValid) {
+                            this.props.onSubmit(this.state.values);
+                        }
+                        // update state validation message
+                        this.setState( {validateFieldValuesResultMessage} );
+                    }}><i className='go-icon'></i> Go</button>
                 </div>
             </div>
         );

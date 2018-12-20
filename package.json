@@ -34,7 +34,8 @@
     ],
     "setupFiles": [
       "./tests/setup.js"
-    ]
+    ],
+    "testURL": "http://localhost"
   },
   "author": "Dan 'Ducky' Little",
   "license": "MIT",
