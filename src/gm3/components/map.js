@@ -44,31 +44,31 @@ import * as mapActions from '../actions/map';
 import * as util from '../util';
 import * as jsts from '../jsts';
 
-import GeoJSONFormat from 'ol/format/geojson';
-import EsriJSONFormat from 'ol/format/esrijson';
-import GML2Format from 'ol/format/gml2';
-import WFSFormat from 'ol/format/wfs';
-import WMSGetFeatureInfoFormat from 'ol/format/wmsgetfeatureinfo';
+import GeoJSONFormat from 'ol/format/GeoJSON';
+import EsriJSONFormat from 'ol/format/EsriJSON';
+import GML2Format from 'ol/format/GML2';
+import WFSFormat from 'ol/format/WFS';
+import WMSGetFeatureInfoFormat from 'ol/format/WMSGetFeatureInfo';
 
-import VectorSource from 'ol/source/vector';
-import VectorLayer from 'ol/layer/vector';
-import ol_filters from 'ol/format/filter';
-import proj from 'ol/proj';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import * as ol_filters from 'ol/format/filter';
+import * as proj from 'ol/proj';
 
-import olControl from 'ol/control/control';
+import olControl from 'ol/control/Control';
 
-import olView from 'ol/view';
-import olMap from 'ol/map';
+import olView from 'ol/View';
+import olMap from 'ol/Map';
 import olXml from 'ol/xml';
 
-import olCollection from 'ol/collection';
-import olSelectInteraction from 'ol/interaction/select';
-import olDrawInteraction from 'ol/interaction/draw';
-import olModifyInteraction from 'ol/interaction/modify';
+import olCollection from 'ol/Collection';
+import olSelectInteraction from 'ol/interaction/Select';
+import olDrawInteraction from 'ol/interaction/Draw';
+import olModifyInteraction from 'ol/interaction/Modify';
 import olEventConditions from 'ol/events/condition';
 
-import olZoomControl from 'ol/control/zoom';
-import olRotateControl from 'ol/control/rotate';
+import olZoomControl from 'ol/control/Zoom';
+import olRotateControl from 'ol/control/Rotate';
 
 
 /* Import the various layer types */
@@ -1239,11 +1239,11 @@ class Map extends React.Component {
      * @returns Boolean. True when the map sucessfully sized, false otherwise.
      */
     updateMapSize() {
-        if(this.map) {
+        if(this.map && this.mapDiv) {
             this.map.updateSize();
 
             const canvas = this.mapDiv.getElementsByTagName('canvas');
-            if(canvas[0] && canvas[0].style.display !== 'none') {
+            if(canvas && canvas[0] && canvas[0].style.display !== 'none') {
                 return true;
             }
         }

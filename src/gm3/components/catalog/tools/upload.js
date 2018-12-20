@@ -25,8 +25,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import KMLFormat from 'ol/format/kml';
-import GeoJSONFormat from 'ol/format/geojson';
+import KMLFormat from 'ol/format/KML';
+import GeoJSONFormat from 'ol/format/GeoJSON';
 
 import { addFeatures } from '../../../actions/mapSource';
 import Modal from '../../modal';

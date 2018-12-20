@@ -25,7 +25,6 @@
 import fs from 'fs';
 
 import Application from 'gm3/application';
-import Map from 'gm3/components/map';
 
 import ZoomToAction from 'services/zoomto';
 
@@ -52,9 +51,6 @@ if (!window.requestAnimationFrame) {
  *
  */
 describe('real lyfe test', () => {
-    // get the body of the page
-    const body = document.getElementsByTagName('body')[0];
-
     // define a new app
     const app = new Application({
         mapserver_url: '/cgi-bin/mapserv',
@@ -69,13 +65,6 @@ describe('real lyfe test', () => {
                 done();
             });
         });
-    });
-
-    it('can create a map', () => {
-        const map_div = document.createElement('div');
-        map_div.id = 'map';
-        body.appendChild(map_div);
-        app.add(Map, 'map');
     });
 
     it('registers an action', () => {

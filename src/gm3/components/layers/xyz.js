@@ -26,8 +26,8 @@
  *
  */
 
-import XYZSource from 'ol/source/xyz';
-import TileLayer from 'ol/layer/tile';
+import XYZSource from 'ol/source/XYZ';
+import TileLayer from 'ol/layer/Tile';
 
 /** Create the parameters for a XYZ layer.
  *

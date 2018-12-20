@@ -24,7 +24,7 @@
 
 import Request from 'reqwest';
 
-import GeoJSONFormat from 'ol/format/geojson';
+import GeoJSONFormat from 'ol/format/GeoJSON';
 
 import createFilter from '@mapbox/mapbox-gl-style-spec/feature_filter';
 

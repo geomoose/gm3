@@ -26,8 +26,8 @@
  *
  */
 
-import TileLayer from 'ol/layer/tile';
-import BingSource from 'ol/source/bingmaps';
+import TileLayer from 'ol/layer/Tile';
+import BingSource from 'ol/source/BingMaps';
 
 /** Create the parameters for a Bing Services layer.
  *
