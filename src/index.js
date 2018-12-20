@@ -52,9 +52,6 @@ import proj4 from 'proj4';
 
 import proj from 'ol/proj';
 
-// setup some real proj4 action.
-proj.setProj4(proj4);
-
 util.configureProjections(proj4);
 
 var components = {

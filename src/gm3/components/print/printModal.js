@@ -32,7 +32,7 @@
  */
 import React from 'react';
 
-import View from 'ol/view';
+import View from 'ol/View';
 
 import jsPDF from 'jspdf';
 import Mark from 'markup-js';

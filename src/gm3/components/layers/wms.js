@@ -27,8 +27,8 @@
  */
 
 import * as util from '../../util';
-import Image from 'ol/layer/image';
-import ImageWMS from 'ol/source/imagewms';
+import Image from 'ol/layer/Image';
+import ImageWMS from 'ol/source/ImageWMS';
 
 /** Create the parameters for a WMS layer.
  *

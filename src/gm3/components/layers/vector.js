@@ -29,12 +29,12 @@
 
 import * as util from '../../util';
 
-import GML2Format from 'ol/format/gml2';
-import GeoJSONFormat from 'ol/format/geojson';
-import EsriJsonFormat from 'ol/format/esrijson';
-import LoadingStrategy from 'ol/loadingstrategy';
-import VectorSource from 'ol/source/vector';
-import VectorLayer from 'ol/layer/vector';
+import GML2Format from 'ol/format/GML2';
+import GeoJSONFormat from 'ol/format/GeoJSON';
+import EsriJsonFormat from 'ol/format/EsriJSON';
+import { tile, bbox } from 'ol/loadingstrategy';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
 import TileGrid from 'ol/tilegrid';
 
 import applyStyleFunction from 'mapbox-to-ol-style';
@@ -75,7 +75,7 @@ function defineSource(mapSource) {
 
                 return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
             },
-            strategy: LoadingStrategy.bbox
+            strategy: bbox
         };
     } else if(mapSource.type === 'geojson') {
         return {
@@ -183,7 +183,7 @@ function defineSource(mapSource) {
                     }
                 });
             },
-            strategy: LoadingStrategy.tile(TileGrid.createXYZ({
+            strategy: tile(TileGrid.createXYZ({
                 tileSize: 512
             }))
         }

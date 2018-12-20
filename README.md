@@ -27,6 +27,12 @@ grunt build
 npm test
 ```
 
+*Tests will skip the map unless canvas is installed. To perform a more complete test ensure node-canvas 1.x is installed*
+
+```
+npm install canvas@~1.0.0
+```
+
 ## License
 
 GeoMoose3 uses an MIT-style licence. You can read the contents of it [here](./LICENSE)

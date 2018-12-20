@@ -29,21 +29,17 @@ import DrawTool from './drawTool';
 
 import * as util from '../util';
 
-import proj from 'ol/proj';
+import * as proj from 'ol/proj';
 
-import olPoint from 'ol/geom/point';
-import olLineString from 'ol/geom/linestring';
+import olPoint from 'ol/geom/Point';
+import olLineString from 'ol/geom/LineString';
 
-import { CoordinateDisplay } from './coordinate-display';
+import CoordinateDisplay from './coordinate-display';
 
 export class MeasureTool extends Component {
 
     constructor(props) {
         super(props);
-
-        // TODO: sniff the map for the proj.
-        this.mapProjection = proj.get('EPSG:3857');
-
         this.state = {
             units: this.props.initialUnits ? this.props.initialUnits : 'ft'
         };
@@ -117,7 +113,7 @@ export class MeasureTool extends Component {
         // create the new line
         let line = new olLineString([a, b]);
         // transform into the new projection
-        line = line.transform(this.mapProjection, utmZone);
+        line = line.transform(this.props.mapProjection, utmZone);
         // return the measurement.
         const meters = line.getLength();
 
@@ -129,7 +125,7 @@ export class MeasureTool extends Component {
         // convert the first point of the line to 4326
         //  so a UTM zone can be determined.
         let point0 = new olPoint(geom.coordinates[0]);
-        point0 = point0.transform(this.mapProjection, 'EPSG:4326');
+        point0 = point0.transform(this.props.mapProjection, 'EPSG:4326');
 
         // determine an appropriate utm zone for measurement.
         const utm_zone = proj.get(util.getUtmZone(point0.getCoordinates()));
@@ -212,12 +208,12 @@ export class MeasureTool extends Component {
      */
     renderArea(geom) {
         let point0 = new olPoint(geom.coordinates[0][0]);
-        point0 = point0.transform(this.mapProjection, 'EPSG:4326');
+        point0 = point0.transform(this.props.mapProjection, 'EPSG:4326');
 
         // determine an appropriate utm zone for measurement.
         const utm_zone = proj.get(util.getUtmZone(point0.getCoordinates()));
 
-        const utm_geom = util.jsonToGeom(geom).transform(this.mapProjection, utm_zone)
+        const utm_geom = util.jsonToGeom(geom).transform(this.props.mapProjection, utm_zone)
 
         const area_m = utm_geom.getArea();
 
@@ -342,7 +338,8 @@ export class MeasureTool extends Component {
 const mapToProps = function(store) {
     return {
         map: store.map,
-        cursor: store.cursor
+        cursor: store.cursor,
+        mapProjection: 'EPSG:3857',
     }
 }
 

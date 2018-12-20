@@ -54,7 +54,14 @@ if (!window.requestAnimationFrame) {
     }
 }
 
-describe('map compnent tests', () => {
+describe('map component tests', () => {
+    if (global.HAS_CANVAS === false) {
+        it('is going to skip all tests....', () => {
+            console.error('Skipping map tests without node-canvas installed.');
+        });
+        return false;
+    }
+
     let store = null;
 
     beforeEach(() => {

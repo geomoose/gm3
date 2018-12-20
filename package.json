@@ -8,7 +8,7 @@
   "bugs": "https://github.com/geomoose/gm3/issues",
   "scripts": {
     "cover": "jest --coverage",
-    "test": "node node_modules/jest/bin/jest.js --coverage tests",
+    "test": "jest",
     "test:only": "jest",
     "lint": "eslint --config ./eslint.config.js src/gm3 tests",
     "pretest": "npm run lint",
@@ -24,6 +24,7 @@
     "plugins": []
   },
   "jest": {
+    "testURL": "http://geo.moose/",
     "transformIgnorePatterns": [
       "node_modules/(?!ol|mapbox|jsts)"
     ],
@@ -66,7 +67,6 @@
     "grunt-webpack": "^3.1.1",
     "gruntify-eslint": "^4.0.0",
     "jest": "^22.4.3",
-    "jsdom": "^11.7.0",
     "json-loader": "^0.5.7",
     "jspdf": "^1.3.5",
     "jsts": "~1.4.0",
@@ -74,8 +74,6 @@
     "mapskin": "^1.0.0",
     "markup-js": "^1.5.21",
     "md5": "^2.2.1",
-    "ol": "^4.6.5",
-    "ol-mapbox-style": "^2.11.2",
     "papaparse": "^4.3.7",
     "proj4": "^2.4.3",
     "react": "^16.3.0",
@@ -95,6 +93,9 @@
     "eslint-plugin-flowtype": "^2.50.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
-    "eslint-plugin-react": "^7.11.1"
+    "eslint-plugin-react": "^7.11.1",
+    "jsdom": "^13.1.0",
+    "ol": "^5.3.0",
+    "ol-mapbox-style": "^3.5.0"
   }
 }

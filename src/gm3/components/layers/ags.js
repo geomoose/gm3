@@ -26,8 +26,8 @@
  *
  */
 
-import TileLayer from 'ol/layer/tile';
-import ArcRestSource from 'ol/source/tilearcgisrest';
+import TileLayer from 'ol/layer/Tile';
+import ArcRestSource from 'ol/source/TileArcGISRest';
 
 /** Create the parameters for a ArcGIS REST Services layer.
  *

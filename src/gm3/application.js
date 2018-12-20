@@ -31,7 +31,7 @@
 import Request from 'reqwest';
 
 import { createStore, combineReducers } from 'redux';
-import Proj from 'ol/proj';
+import * as Proj from 'ol/proj';
 
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
@@ -55,6 +55,7 @@ import Modal from './components/modal';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4';
 
 import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSources } from './actions/mapSource';
 
@@ -72,6 +73,8 @@ class Application {
         this.actions = {};
 
         this.config = config;
+
+        register(proj4);
 
         // TODO: Combine Reducers here
         this.store = createStore(combineReducers({
@@ -270,8 +273,7 @@ class Application {
         }
 
         const e = React.createElement(component, props);
-        const elem = ReactDOM.render(e, document.getElementById(domId));
-        return elem;
+        return ReactDOM.render(e, document.getElementById(domId));
     }
 
 

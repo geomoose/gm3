@@ -28,7 +28,7 @@ import proj4 from 'proj4';
 
 import { addProjDef } from '../util';
 
-import proj from 'ol/proj';
+import * as proj from 'ol/proj';
 
 /**
  * Ensure the coordinates look pretty before output.

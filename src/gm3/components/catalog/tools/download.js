@@ -27,9 +27,9 @@ import { connect } from 'react-redux';
 
 import FileSaver from 'file-saver';
 
-import KMLFormat from 'ol/format/kml';
-import GeoJSONFormat from 'ol/format/geojson';
-import Proj from 'ol/proj';
+import KMLFormat from 'ol/format/KML';
+import GeoJSONFormat from 'ol/format/GeoJSON';
+import * as Proj from 'ol/proj';
 
 import { Tool } from '../tools';
 import Modal from '../../modal';
