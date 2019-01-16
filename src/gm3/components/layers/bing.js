@@ -75,7 +75,9 @@ function defineSource(mapSource) {
  */
 export function createLayer(mapSource) {
     return new TileLayer({
-        source: new BingSource(defineSource(mapSource))
+        source: new BingSource(defineSource(mapSource)),
+        minResolution: mapSource.minresolution,
+        maxResolution: mapSource.maxresolution,
     });
 }
 

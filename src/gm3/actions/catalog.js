@@ -104,10 +104,13 @@ function parseLayer(store, layerXml) {
         }
     }
 
-    // parse a refresh time if it exists
-    if(layerXml.getAttribute('refresh')) {
-        new_layer.refresh = parseFloat(layerXml.getAttribute('refresh'));
-    }
+    // parse the optional float attributes
+    ['refresh', 'minresolution', 'maxresolution'].forEach((attr) => {
+        const value = layerXml.getAttribute(attr);
+        if(value) {
+            new_layer[attr] = parseFloat(value);
+        }
+    });
 
     // collect the src states
     let src_favorite = false;
@@ -116,6 +119,7 @@ function parseLayer(store, layerXml) {
     const src_str = layerXml.getAttribute('src');
     if(src_str) {
         const map_sources = store.getState().mapSources;
+        const inhert_attrs = ['minresolution', 'maxresolution', 'label'];
 
         // migrated to ";" as the split key because the old ":"
         //  was problematic for WFS layers which specified a schema.
@@ -137,12 +141,12 @@ function parseLayer(store, layerXml) {
             //  are false, then turn all of them off.
             src_favorite = src_favorite || mapSources.isFavoriteLayer(map_sources, s);
 
-            // check to see if a 'default' name is needed
-            // for the catalog entry.
-            if(!new_layer.label && map_sources[s.mapSourceName].label) {
-                new_layer.label = map_sources[s.mapSourceName].label;
-            }
-
+            inhert_attrs.forEach((attr) => {
+                const value = map_sources[s.mapSourceName][attr];
+                if (!new_layer[attr] && value) {
+                    new_layer[attr] = value;
+                }
+            });
         }
     }
 

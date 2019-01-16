@@ -249,6 +249,8 @@ export function createLayer(mapSource) {
 
     const opts = {
         source,
+        minResolution: mapSource.minresolution,
+        maxResolution: mapSource.maxresolution,
     };
     const vector_layer = new VectorLayer(opts);
     applyStyle(vector_layer, mapSource);

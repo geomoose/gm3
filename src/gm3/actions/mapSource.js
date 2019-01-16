@@ -198,16 +198,13 @@ export function addFromXml(xml, config) {
         Object.assign(map_source, mapServerToWFS(xml, config));
     }
 
-    // check to see if there is a refresh interval.
-    if(xml.getAttribute('refresh')) {
-        // parse the refresh number
-        const refresh_seconds = parseFloat(xml.getAttribute('refresh'));
-        // this will be truthy when a number has been returned,
-        //  NaN or Infinitity should return as falsy.
-        if(refresh_seconds) {
-            map_source.refresh = refresh_seconds;
+    // parse the optional float attributes
+    ['refresh', 'minresolution', 'maxresolution'].forEach((attr) => {
+        const value = xml.getAttribute(attr);
+        if(value) {
+            map_source[attr] = parseFloat(value);
         }
-    }
+    });
 
     // catalog the transforms for the layer
     const transforms = xml.getElementsByTagName('transform');
@@ -281,8 +278,6 @@ export function addFromXml(xml, config) {
             }
 
             layer.templates[template_name] = template_def;
-
-
         }
 
         // check to see if there are any style definitions
