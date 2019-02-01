@@ -24,7 +24,7 @@
     "plugins": []
   },
   "jest": {
-    "testURL": "http://geo.moose/",
+    "testURL": "http://localhost",
     "transformIgnorePatterns": [
       "node_modules/(?!ol|mapbox|jsts)"
     ],
@@ -34,8 +34,7 @@
     ],
     "setupFiles": [
       "./tests/setup.js"
-    ],
-    "testURL": "http://localhost"
+    ]
   },
   "author": "Dan 'Ducky' Little",
   "license": "MIT",

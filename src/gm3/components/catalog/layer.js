@@ -23,6 +23,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import ClearTool from './tools/clear';
 import DownTool from './tools/down';
@@ -41,7 +42,7 @@ import Legend from './legend';
 import LayerCheckbox from './layer-checkbox';
 import LayerFavorite from './layer-favorite';
 
-export default class CatalogLayer extends React.Component {
+export class CatalogLayer extends React.Component {
     /* Convert the tool definitions to components.
      */
     getTools(layer, enabledTools) {
@@ -105,12 +106,13 @@ export default class CatalogLayer extends React.Component {
             layer_classes.push('on');
         }
 
-        // TODO: Check layer for minscale/maxscale against
-        //       the mapView.
-        // if(isOutOfScale(layer)) {
-        //  layer_classes.push('out-of-scale');
-        // }
-
+        if((layer.minresolution || layer.maxresolution) && this.props.resolution) {
+            const min_z = layer.minresolution !== undefined ? layer.minresolution : -1;
+            const max_z = layer.maxresolution !== undefined ? layer.maxresolution : 1000;
+            if (this.props.resolution < min_z || this.props.resolution > max_z) {
+                layer_classes.push('out-of-resolution');
+            }
+        }
 
         const tools = this.getToolsForLayer(layer);
 
@@ -153,3 +155,11 @@ CatalogLayer.propTypes = {
 CatalogLayer.defaultProps = {
     forceTools: [],
 };
+
+function mapState(state) {
+    return {
+        resolution: state.map ? state.map.resolution : -1,
+    };
+}
+
+export default connect(mapState)(CatalogLayer);

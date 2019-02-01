@@ -50,8 +50,10 @@ function defineSource(mapSource) {
             'VERSION': '1.1.1',
             'LAYERS': layers.join(',')
         }, mapSource.params),
-        serverType: mapSource.serverType
-    }
+        serverType: mapSource.serverType,
+        minResolution: mapSource.minresolution,
+        maxResolution: mapSource.maxresolution,
+    };
 }
 
 

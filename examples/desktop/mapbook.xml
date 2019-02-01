@@ -32,9 +32,9 @@
         </layer>
     </map-source>
 
-    <map-source name="places" type="geojson" title="Cities and Villages">
+    <map-source name="places" type="geojson" title="Cities and Villages" minresolution="100" maxresolution="5000">
         <url>./places.geojson</url>
-        <layer name="default" title="Cities and Villages">
+        <layer name="default">
             <style><![CDATA[
             {
                 "line-color" : "#9e8647",

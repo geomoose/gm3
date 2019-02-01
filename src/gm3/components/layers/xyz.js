@@ -52,7 +52,9 @@ function defineSource(mapSource) {
  */
 export function createLayer(mapSource) {
     return new TileLayer({
-        source: new XYZSource(defineSource(mapSource))
+        source: new XYZSource(defineSource(mapSource)),
+        minResolution: mapSource.minresolution,
+        maxResolution: mapSource.maxresolution,
     });
 }
 
