@@ -229,7 +229,7 @@ class Application {
                 url: options.url,
                 type: 'xml',
                 success: (response) => {
-                    this.populateMapbook(response, options);
+                    this.populateMapbook(response);
                 }
             });
 
@@ -237,7 +237,7 @@ class Application {
             // this is just straight mapbook xml
             //  TODO: Maybe it needs parsed?!?
             const populate_promise = new Promise((resolve, reject) => {
-                this.populateMapbook(options.content, options);
+                this.populateMapbook(options.content);
                 resolve(options.content);
             });
             return populate_promise;

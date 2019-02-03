@@ -28,10 +28,38 @@
  * SOFTWARE.
  */
 
+const selectionColor = '#00FFFF';
+const selectionStyle = {
+    'circle-color': selectionColor,
+    'circle-stroke-color': selectionColor,
+    'line-color': selectionColor,
+    'fill-color': selectionColor
+};
+
+const highlightColor = '#008080';
+const highlightStyle = {
+    'circle-color': highlightColor,
+    'circle-stroke-color': highlightColor,
+    'line-color': highlightColor,
+    'fill-color': highlightColor
+};
+
+const hotColor = '#FF9933';
+const hotStyle = {
+    'circle-color': hotColor,
+    'circle-stroke-color': hotColor,
+    'line-color': hotColor,
+    'fill-color': hotColor
+};
 
 var app = new gm3.Application({
     mapserver_url: CONFIG.mapserver_url,
-    mapfile_root: CONFIG.mapfile_root
+    mapfile_root: CONFIG.mapfile_root,
+    selectionStyle: selectionStyle,
+    resultsStyle: {
+        highlight: highlightStyle,
+        hot: hotStyle
+    }
 });
 
 app.uiUpdate = function(ui) {

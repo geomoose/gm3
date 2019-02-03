@@ -11,11 +11,11 @@ has selected a subset of results.
 ## GeoMoose vector styles
 
 All vector styles are styled using the Mapbox GL Styles format. It is Javascript/JSON
-friendly and well documented here. TODO: INSERT LINK.
+friendly and well documented (here)[https://docs.mapbox.com/mapbox-gl-js/style-spec/].
 
 ## Change the highlight color
 
-Pass `resultsStyle.highlight` into the `loadMapbook` options.
+Pass `resultsStyle.highlight` into the `Application` constructor options.
 
 Example:
 
@@ -89,5 +89,5 @@ var app = new gm3.Application({
     mapserver_url: CONFIG.mapserver_url,
     mapfile_root: CONFIG.mapfile_root,
     selectionStyle: selectionStyle
-}); 
+});
 ```
