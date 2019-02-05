@@ -1,6 +1,10 @@
+const xmldom = require('xmlshim');
+
 global.requestAnimationFrame = function(callback) {
     setTimeout(callback, 0);
 };
+
+global.XMLSerializer = xmldom.XMLSerializer;
 
 try {
     require('canvas');

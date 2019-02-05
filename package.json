@@ -86,7 +86,8 @@
     "uuid": "^3.2.1",
     "webpack": "^4.4.1",
     "webpack-cli": "^2.0.13",
-    "webpack-dev-server": "^3.1.1"
+    "webpack-dev-server": "^3.1.1",
+    "xmlshim": "^0.2.5"
   },
   "dependencies": {
     "eslint-config-react-app": "^2.1.0",
