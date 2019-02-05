@@ -64,7 +64,7 @@ function normalizeSelection(selectionFeatures) {
 /** Get the extent of a query's results.
  *  All features must have a boundedBy property.
  */
-function getExtentForQuery(results) {
+function getExtentForQuery(results, minSize = 150) {
     let extent = null;
 
     for(const path in results) {
@@ -82,6 +82,18 @@ function getExtentForQuery(results) {
             }
         }
     }
+
+    if (extent[3] - extent[1] < minSize || extent[2] - extent[0] < minSize) {
+        const mid_x = (extent[0] + extent[2]) / 2;
+        const mid_y = (extent[1] + extent[3]) / 2;
+        extent = [
+            mid_x - minSize,
+            mid_y - minSize,
+            mid_x + minSize,
+            mid_y + minSize,
+        ];
+    }
+
     return extent;
 }
 
