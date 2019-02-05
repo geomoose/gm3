@@ -86,10 +86,10 @@
     "uuid": "^3.2.1",
     "webpack": "^4.4.1",
     "webpack-cli": "^2.0.13",
-    "webpack-dev-server": "^3.1.1",
-    "xmlshim": "^0.2.5"
+    "webpack-dev-server": "^3.1.1"
   },
   "dependencies": {
+    "canvas": "^1.6.7",
     "eslint-config-react-app": "^2.1.0",
     "eslint-plugin-flowtype": "^2.50.0",
     "eslint-plugin-import": "^2.14.0",
@@ -97,6 +97,7 @@
     "eslint-plugin-react": "^7.11.1",
     "jsdom": "^13.1.0",
     "ol": "^5.3.0",
-    "ol-mapbox-style": "^3.5.0"
+    "ol-mapbox-style": "^3.5.0",
+    "xmlshim": "^0.2.5"
   }
 }

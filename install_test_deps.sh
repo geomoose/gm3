@@ -1,7 +1,9 @@
+#!/bin/bash
+
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2017 Dan "Ducky" Little
+# Copyright (c) 2016-2019 Dan "Ducky" Little
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +23,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
 #
-dist: trusty
-language: node_js
-node_js:
-    - "8"
+# These are the additional dependencies needed for
+# complete testing.  They require a compiler so
+# we do not include them by default.
+#
 
-# setup some solid deps.
-before_install:
-    - sudo apt-get -qq update
-    - sudo apt-get install -y libgif-dev libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev g++
-    - npm install canvas@1.6.7
-    # used for testing XML stuff outside the browser.
-    - npm install xmlshim
-    - npm install
-
-# ensure the code lints clean.
-before_script:
-    - grunt build
+npm install canvas@1.6.7
+npm install xmlshim
+npm install

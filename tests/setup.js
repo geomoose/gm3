@@ -1,10 +1,14 @@
-const xmldom = require('xmlshim');
 
 global.requestAnimationFrame = function(callback) {
     setTimeout(callback, 0);
 };
 
-global.XMLSerializer = xmldom.XMLSerializer;
+try {
+    const xmldom = require('xmlshim');
+    global.XMLSerializer = xmldom.XMLSerializer;
+} catch(err) {
+    // pass... sad pand, no XMLSerializer.
+}
 
 try {
     require('canvas');

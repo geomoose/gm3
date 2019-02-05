@@ -26,8 +26,6 @@ import * as proj from 'ol/proj';
 
 import { buildWfsQuery } from 'gm3/components/layers/wfs';
 
-// const BASIC_TEST = `<GetFeature xmlns="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="text/xml; subtype=gml/2.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"><Query typeName="ms:parcels" srsName="EPSG:4326"><Filter xmlns="http://www.opengis.net/ogc"><PropertyIsLike wildCard="%" singleChar="_" escapeChar="\" matchCase="false"><PropertyName>OWNER_NAME</PropertyName><Literal>%peters%</Literal></PropertyIsLike></Filter></Query></GetFeature>`;
-
 const PARCELS_SRC = {
     layers: [{
     }],
@@ -40,6 +38,13 @@ const PARCELS_SRC = {
 };
 
 describe('WFS Testing', () => {
+    if (!global.XMLSerializer) {
+        it('is going to skip all tests....', () => {
+            console.error('Skipping WFS tests without xmlshim installed.');
+        });
+        return false;
+    }
+
     it('Test creating a query with on input', () => {
         const basic_query = {
             fields: [
