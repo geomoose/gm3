@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2019 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,11 @@ import SelectInput from './select';
 
 import { getQueryableLayers, getLayerByPath } from '../../actions/mapSource';
 
+// special list of layers that should never float to the top.
+const TO_THE_BOTTOM = [
+    'sketch/default',
+];
+
 export class LayersListInput extends SelectInput {
     getOptions() {
         const options = [];
@@ -38,7 +43,15 @@ export class LayersListInput extends SelectInput {
                 label: layer.label,
             });
         }
-        return options;
+
+        return options.sort((a, b) => {
+            if (TO_THE_BOTTOM.indexOf(a.value) >= 0) {
+                return 1;
+            } else if (TO_THE_BOTTOM.indexOf(b.value) >= 0) {
+                return -1;
+            }
+            return a < b ? -1 : 1;
+        });
     }
 }
 

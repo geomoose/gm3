@@ -90,7 +90,7 @@ class DrawTool extends React.Component {
 
         let tool_label = gtype;
         if(gtype === 'Select') {
-            tool_label = 'Select from: ';
+            tool_label = 'Feature from: ';
             select_options = (
                 <select value={ this.state.selectLayer } onChange={ this.changeSelectLayer }>
                     { this.getSelectOptions() }

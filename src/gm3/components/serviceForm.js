@@ -101,6 +101,9 @@ export default class ServiceForm extends React.Component {
         const show_buffer = service_def.bufferAvailable;
 
         const draw_tools = [];
+        if (service_def.drawToolsLabel) {
+            draw_tools.push((<label key='label'>{ service_def.drawToolsLabel }</label>));
+        }
         for(const gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon', 'Select', 'Modify']) {
             const dt_key = 'draw_tool_' + gtype;
             if(service_def.tools[gtype]) {
@@ -114,6 +117,21 @@ export default class ServiceForm extends React.Component {
             this.setState({values});
         };
 
+        const buffer_input = !show_buffer ? false : (
+            <BufferInput key='buffer-input'/>
+        );
+
+        const fields = this.props.serviceDef.fields.map((field) => {
+            return renderServiceField(field, this.state.values[field.name], onChange);
+        });
+
+        let inputs = [];
+        if (service_def.fieldsFirst === true) {
+            inputs = [fields, draw_tools, buffer_input];
+        } else {
+            inputs = [draw_tools, buffer_input, fields];
+        }
+
         return (
             <div className='service-form'
                 onKeyUp={(evt) => {
@@ -122,19 +140,7 @@ export default class ServiceForm extends React.Component {
             >
 
                 <h3>{service_def.title}</h3>
-                {
-                    draw_tools
-                }
-                {
-                    !show_buffer ? false : (
-                        <BufferInput />
-                    )
-                }
-                {
-                    this.props.serviceDef.fields.map((field) => {
-                        return renderServiceField(field, this.state.values[field.name], onChange);
-                    })
-                }
+                { inputs }
                 {
                     !this.state.validateFieldValuesResultMessage ? false : (
                         <div className="query-error">
