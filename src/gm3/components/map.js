@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Dan "Ducky" Little
+ * Copyright (c) 2016-present Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,12 +47,10 @@ import * as jsts from '../jsts';
 import GeoJSONFormat from 'ol/format/GeoJSON';
 import EsriJSONFormat from 'ol/format/EsriJSON';
 import GML2Format from 'ol/format/GML2';
-import WFSFormat from 'ol/format/WFS';
 import WMSGetFeatureInfoFormat from 'ol/format/WMSGetFeatureInfo';
 
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
-import * as ol_filters from 'ol/format/filter';
 import * as proj from 'ol/proj';
 
 import olControl from 'ol/control/Control';
@@ -77,6 +75,8 @@ import * as xyzLayer from './layers/xyz';
 import * as agsLayer from './layers/ags';
 import * as vectorLayer from './layers/vector';
 import * as bingLayer from './layers/bing';
+
+import { buildWfsQuery } from './layers/wfs';
 
 
 class Map extends React.Component {
@@ -273,7 +273,6 @@ class Map extends React.Component {
      */
     wfsGetFeatureQuery(queryId, query, queryLayer) {
         const map_projection = this.map.getView().getProjection();
-        const geom_field = 'geom';
 
         // get the map source
         const ms_name = util.getMapSourceName(queryLayer);
@@ -292,68 +291,13 @@ class Map extends React.Component {
             ol_layer = this.createLayer(map_source);
         }
 
-        // map the functions from OpenLayers to the internal
-        //  types
-        const filter_mapping = {
-            'like': ol_filters.like,
-            'ilike': function(name, value) {
-                return ol_filters.like(name, value, '%', '_', '\\', false);
-            },
-            'eq': ol_filters.equalTo,
-            'ge': ol_filters.greaterThanOrEqualTo,
-            'gt': ol_filters.greaterThan,
-            'le': ol_filters.lessThanOrEqualTo,
-            'lt': ol_filters.lessThan
-        };
-
-        const filters = [];
-        if(query.selection && query.selection.geometry) {
-            // convert the geojson geometry into a ol geometry.
-            const ol_geom = (new GeoJSONFormat()).readGeometry(query.selection.geometry);
-            // convert the geometry to the query projection
-            ol_geom.transform(map_projection, query_projection);
-            // add the intersection filter to the filter stack.
-            filters.push(ol_filters.intersects(geom_field, ol_geom));
-        }
-
-        for(const filter of query.fields) {
-            // TODO: Catch "filter.type" and use internal conversion
-            //       functions for specialty filters.
-            filters.push(filter_mapping[filter.comparitor](filter.name, filter.value));
-        }
-
-        // when multiple filters are set then they need to be
-        //  chained together to create the compound filter.
-        let chained_filters = null;
-        if(filters.length > 1) {
-            chained_filters = ol_filters.and(filters[0], filters[1]);
-            for(let i = 2, ii = filters.length; i < ii; i++) {
-                chained_filters = ol_filters.and(chained_filters, filters[i]);
-            }
-        } else {
-            chained_filters = filters[0];
-        }
-
-        // the OL formatter requires that the typename and the schema be
-        //  broken apart in order to properly format the request.
-        // TODO: If this gets used elsewhere, push to a util function.
-        const type_parts = map_source.params.typename.split(':');
-
         // check for the output_format based on the params
         let output_format = 'text/xml; subtype=gml/2.1.2';
         if(map_source.params.outputFormat) {
             output_format = map_source.params.outputFormat;
         }
 
-        const feature_request = new WFSFormat().writeGetFeature({
-            srsName: query_projection.getCode(),
-            featurePrefix: type_parts[0],
-            featureTypes: [type_parts[1]],
-            outputFormat: output_format,
-            filter: chained_filters
-        });
-
-        const wfs_query_xml = new XMLSerializer().serializeToString(feature_request);
+        const wfs_query_xml = buildWfsQuery(query, map_source, map_projection, output_format);
 
         // Ensure all the extra URL params are attached to the
         //  layer.
