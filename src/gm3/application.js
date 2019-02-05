@@ -63,6 +63,8 @@ import Mark from 'markup-js';
 
 import * as util from './util';
 
+import { HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
+
 class Application {
 
     constructor(config = {}) {
@@ -121,7 +123,7 @@ class Application {
      *  query reuslts.
      *
      */
-    configureResultsLayer() {
+    configureResultsLayer(resultsStyle = {}) {
         // add a layer that listens for changes
         //  to the query results.  This hs
         this.store.dispatch(mapSourceActions.add({
@@ -140,44 +142,30 @@ class Application {
             //  on top of everything else.
             zIndex: 200001,
         }));
+
+        const results_style = Object.assign({}, HIGHLIGHT_STYLE, resultsStyle.highlight);
         this.store.dispatch(mapSourceActions.addLayer('results', {
             name: 'results',
             on: true,
             label: 'Results',
             selectable: true,
-            style: {
-                'circle-radius': 4,
-                'circle-color': '#ffff00',
-                'circle-stroke-color': '#ffff00',
-                'line-color': '#ffff00',
-                'line-width': 4,
-                'fill-color': '#ffff00',
-                'fill-opacity': 0.25,
-                'line-opacity': 0.25,
-            },
+            style: results_style,
             filter: null,
         }));
+
         // the "hot" layer shows the features as red on the map,
         //  namely useful for hover-over functionality.
+        const hot_style = Object.assign({}, HIGHLIGHT_HOT_STYLE, resultsStyle.hot);
         this.store.dispatch(mapSourceActions.addLayer('results', {
             name: 'results-hot',
             on: true,
-            style: {
-                'circle-radius': 4,
-                'circle-color': '#ff0000',
-                'circle-stroke-color': '#ff0000',
-                'line-color': '#ff0000',
-                'line-width': 4,
-                'fill-color': '#ff0000',
-                'fill-opacity': 0.50,
-                'line-opacity': 0.50,
-            },
+            style: hot_style,
             filter: ['==', 'displayClass', 'hot']
         }));
 
     }
 
-    configureSelectionLayer() {
+    configureSelectionLayer(selectionStyle) {
         // add a layer that listens for changes
         //  to the query results.  This hs
         this.store.dispatch(mapSourceActions.add({
@@ -197,26 +185,19 @@ class Application {
             //  on top of everything else.
             zIndex: 200002,
         }));
+
+        const selection_style = Object.assign({}, SELECTION_STYLE, selectionStyle);
         this.store.dispatch(mapSourceActions.addLayer('selection', {
             name: 'selection',
             on: true,
-            style: {
-                'circle-radius': 4,
-                'circle-color': '#8470ff',
-                'circle-stroke-color': '#8470ff',
-                'line-color': '#8470ff',
-                'line-width': 4,
-                'fill-color': '#8470ff',
-                'fill-opacity': 0.50,
-                'line-opacity': 0.50,
-            },
+            style: selection_style,
             filter: null,
         }));
     }
 
     populateMapbook(mapbookXml) {
-        this.configureSelectionLayer();
-        this.configureResultsLayer();
+        this.configureSelectionLayer(this.config.selectionStyle);
+        this.configureResultsLayer(this.config.resultsStyle);
 
         // load the map-sources
         const sources = mapbookXml.getElementsByTagName('map-source');
