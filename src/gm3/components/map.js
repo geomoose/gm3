@@ -65,7 +65,7 @@ import olCollection from 'ol/Collection';
 import olSelectInteraction from 'ol/interaction/Select';
 import olDrawInteraction from 'ol/interaction/Draw';
 import olModifyInteraction from 'ol/interaction/Modify';
-import olEventConditions from 'ol/events/condition';
+import * as olEventConditions from 'ol/events/condition';
 
 import olZoomControl from 'ol/control/Zoom';
 import olRotateControl from 'ol/control/Rotate';
