@@ -67,7 +67,7 @@ LayersListInput.defaultProps = {
 function mapState(state, ownProps) {
     const filter_layers = (ownProps.filter && ownProps.filter.layers) ? ownProps.filter.layers : null;
     return {
-        layers: filter_layers ? filter_layers : getQueryableLayers(state.mapSources),
+        layers: filter_layers ? filter_layers : getQueryableLayers(state.mapSources, ownProps.field.filter),
         mapSources: state.mapSources,
     };
 }
