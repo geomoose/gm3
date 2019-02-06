@@ -16,3 +16,4 @@ layout: default
 * Important information for contributors:
     * [Style guide](./style_guide.md)
 * [GeoMoose Workshop](./workshop/index.md)
+* [Projections, measurements, and scalebars](./projections-and-scalebars.md)
