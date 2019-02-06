@@ -30,6 +30,6 @@
 # we do not include them by default.
 #
 
-npm install canvas@1.6.7
-npm install xmlshim
+npm install --no-save canvas@1.6.7
+npm install --no-save xmlshim
 npm install
