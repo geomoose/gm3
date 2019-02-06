@@ -83,15 +83,15 @@ function getExtentForQuery(results, minSize = 150) {
         }
     }
 
-    if (extent[3] - extent[1] < minSize || extent[2] - extent[0] < minSize) {
+    if (extent[2] - extent[0] < minSize) {
         const mid_x = (extent[0] + extent[2]) / 2;
+        extent[0] = mid_x - minSize;
+        extent[2] = mid_x + minSize;
+    }
+    if (extent[3] - extent[1] < minSize) {
         const mid_y = (extent[1] + extent[3]) / 2;
-        extent = [
-            mid_x - minSize,
-            mid_y - minSize,
-            mid_x + minSize,
-            mid_y + minSize,
-        ];
+        extent[1] = mid_y - minSize;
+        extent[3] = mid_y + minSize;
     }
 
     return extent;
