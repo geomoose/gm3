@@ -15,7 +15,7 @@ export class BufferInput extends React.Component {
         // inputs require a 'field' to render their label and
         // set their value.  This mocks that up.
         const mock_field = {
-            label: 'Buffer',
+            label: 'With buffer',
             value: this.props.distance,
             default: this.props.distance,
         };

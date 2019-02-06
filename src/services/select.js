@@ -78,7 +78,7 @@ function SelectService(Application, options) {
     this.fields = options.fields || [{
         type: 'layers-list',
         name: 'layer',
-        label: 'Query Layer',
+        label: 'Select from',
         default: options.defaultLayer,
         filter: {
             // ensure that the layer is visible to prevent confusion.
@@ -87,6 +87,12 @@ function SelectService(Application, options) {
             withTemplate: ['select', 'select-header']
         }
     }];
+
+    /** When true, put the query fields above any drawing tools. */
+    this.fieldsFirst = true;
+
+    /** When defined, label the draw tools */
+    this.drawToolsLabel = options.drawToolsLabel ? options.drawToolsLabel : 'Using';
 
     /** Alow shapes to be buffered. */
     this.bufferAvailable = true;
