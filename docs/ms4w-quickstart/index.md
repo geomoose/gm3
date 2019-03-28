@@ -3,7 +3,7 @@
 Requirements:
 
  * A computer running Windows 7 or newer.
- * Download the latest copy of MS4W.  [Download Here.](http://ms4w.com)
+ * Download the latest copy of MS4W.  [Download Here.](https://ms4w.com)
  * Download the latest copy of the GeoMoose Demo Data. [Download Here.](https://www.geomoose.org/downloads/gm3-demo-data-3.3.0-ms4w.zip)
  * Download the latest version of the GeoMoose MS4W Package [Download Here.](https://www.geomoose.org/downloads/gm3-examples-3.3.0-ms4w.zip)
 
@@ -13,7 +13,7 @@ MapServer for Windows will install the base files required by GeoMoose along wit
 
 ![ms4w setup screen 1](ms4w-setup-1.png)
 
-MapServer for Windows does come with an older version of GeoMoose, but it is recommended to skip that and install the latest and greatest version for the full Moose experience.
+MapServer for Windows may occasionally come with an older version of GeoMoose, so our Quickstart steps here will skip the GeoMoose option in the MS4W installer, and instead manually install the latest and greatest version for the full Moose experience.
 
 The MapServer for Windows installer will prompt for a path. GeoMoose is set up and expects to run from the default path (C:\ms4w\apps\gm3\htdocs\ ), so please leave it set to C:\.  This will also make all future updates and enhancements to the application simpler.
 
