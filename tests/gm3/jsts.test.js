@@ -24,7 +24,16 @@
 
 import * as jsts from 'gm3/jsts';
 
+// this is necessary to configure the UTM projections
+import { configureProjections } from 'gm3/util';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
+
 describe('test basic jsts stuff', function() {
+    beforeEach(() => {
+        configureProjections(proj4);
+        register(proj4);
+    });
 
     it('buffers a point', function() {
         const point = {
@@ -36,7 +45,7 @@ describe('test basic jsts stuff', function() {
             }
         };
 
-        const polygon = jsts.buffer(point.geometry, 1);
+        const polygon = jsts.buffer(point, 1);
         expect(polygon.type).toBe('Polygon');
     });
 

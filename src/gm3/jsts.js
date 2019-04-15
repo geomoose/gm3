@@ -43,13 +43,16 @@ function bufferFeature(feature, meters) {
     // Start on null island.
     let pos_pt = [0, 0];
 
-    // TODO: Handle multi-poly and multi-line.
-    if (feature.geometry.type === 'Point') {
+    const gtype = feature.geometry.type;
+
+    if (gtype === 'Point') {
         pos_pt = feature.geometry.coordinates;
-    } else if(feature.geometry.type === 'LineString') {
+    } else if(gtype === 'MultiPoint' || gtype === 'LineString') {
+        pos_pt = feature.geometry.coordinates[0];
+    } else if(gtype === 'MultiLineString' || gtype === 'Polygon') {
         pos_pt = feature.geometry.coordinates[0][0];
-    } else if(feature.geometry.type === 'Polygon') {
-        pos_pt = feature.geometry.coordinates[0][0][0];
+    } else if(gtype === 'MuliPolygon') {
+        pos_pt = feature.geometry.cooredinates[0][0][0];
     }
 
     // find the feature's location in UTM space.
