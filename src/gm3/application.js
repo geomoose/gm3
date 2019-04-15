@@ -40,6 +40,7 @@ import * as serviceActions from './actions/service';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
+import { setConfig } from './actions/config';
 
 import catalogReducer from './reducers/catalog';
 import msReducer from './reducers/mapSource';
@@ -49,6 +50,7 @@ import queryReducer from './reducers/query';
 import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
 import printReducer from './reducers/print';
+import configReducer from './reducers/config';
 
 import Modal from './components/modal';
 
@@ -87,8 +89,11 @@ class Application {
             'query': queryReducer,
             'ui': uiReducer,
             'cursor': cursorReducer,
-            'print': printReducer
+            'print': printReducer,
+            'config': configReducer,
         }));
+
+        this.store.dispatch(setConfig(config));
 
         this.state = {};
 

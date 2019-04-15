@@ -54,6 +54,7 @@ import VectorLayer from 'ol/layer/Vector';
 import * as proj from 'ol/proj';
 
 import olControl from 'ol/control/Control';
+import olScaleLine from 'ol/control/ScaleLine';
 
 import olView from 'ol/View';
 import olMap from 'ol/Map';
@@ -77,6 +78,25 @@ import * as vectorLayer from './layers/vector';
 import * as bingLayer from './layers/bing';
 
 import { buildWfsQuery } from './layers/wfs';
+
+function getControls(mapConfig) {
+    const controls = [];
+
+    if (mapConfig.showZoom !== false) {
+        controls.push(new olZoomControl());
+    }
+    if (mapConfig.allowRotate !== false) {
+        controls.push(new olRotateControl());
+    }
+
+    const scaleLineConf = Object.assign({enabled: false, units: 'metric'}, mapConfig.scaleLine);
+    console.log('scaleLineConf', scaleLineConf, scaleLineConf.enabled);
+
+    if (scaleLineConf.enabled !== false) {
+        controls.push(new olScaleLine({units: scaleLineConf.units}));
+    }
+    return controls;
+}
 
 
 class Map extends React.Component {
@@ -919,10 +939,7 @@ class Map extends React.Component {
             layers: [this.selectionLayer],
             logo: false,
             view: new olView(view_params),
-            controls: [
-                new olZoomControl(),
-                new olRotateControl(),
-            ],
+            controls: getControls(this.props.config),
         });
 
         // when the map moves, dispatch an action
@@ -1312,10 +1329,16 @@ class Map extends React.Component {
 }
 
 function mapState(state) {
+    let config = {};
+    if (state.config && state.config.map) {
+        config = state.config.map;
+    }
+
     return {
         mapSources: state.mapSources,
         mapView: state.map,
-        queries: state.query
+        queries: state.query,
+        config,
     }
 }
 
