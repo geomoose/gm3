@@ -123,3 +123,7 @@ export const PRINT = {
     REQUEST: 'PRINT_REQUEST',
     IMAGE: 'PRINT_IMAGE',
 };
+
+export const CONFIG = {
+    SET: 'GM3_CONFIG_SET',
+};

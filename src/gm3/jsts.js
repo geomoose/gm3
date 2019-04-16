@@ -30,11 +30,61 @@
  *
  */
 
-import turf_buffer from '@turf/buffer';
+import { BufferOp, GeoJSONReader, GeoJSONWriter } from 'turf-jsts';
 import turf_union from '@turf/union';
+import * as proj from 'ol/proj';
+import { jsonToGeom, geomToJson, getUtmZone } from './util';
 
 export function buffer(feature, meters) {
-    return turf_buffer(feature, meters, {units: 'meters'}).geometry;
+    return bufferFeature(feature, meters).geometry;
+}
+
+function bufferFeature(feature, meters) {
+    // Start on null island.
+    let pos_pt = [0, 0];
+
+    const gtype = feature.geometry.type;
+
+    if (gtype === 'Point') {
+        pos_pt = feature.geometry.coordinates;
+    } else if(gtype === 'MultiPoint' || gtype === 'LineString') {
+        pos_pt = feature.geometry.coordinates[0];
+    } else if(gtype === 'MultiLineString' || gtype === 'Polygon') {
+        pos_pt = feature.geometry.coordinates[0][0];
+    } else if(gtype === 'MuliPolygon') {
+        pos_pt = feature.geometry.cooredinates[0][0][0];
+    }
+
+    // find the feature's location in UTM space.
+    const utmZone = proj.get(getUtmZone(pos_pt));
+
+    // convert the geometry to an OL geometry
+    let geom = jsonToGeom(feature.geometry);
+
+    // project it to UTM
+    geom = geom.transform('EPSG:4326', utmZone);
+
+    // back again to JSON after reprojection
+    let meters_geojson = geomToJson(geom);
+
+    // JSTS buffer operation
+    const reader = new GeoJSONReader();
+    const jstsGeom = reader.read(meters_geojson);
+    const buffered = BufferOp.bufferOp(jstsGeom, meters);
+    const writer = new GeoJSONWriter();
+
+    // buffer by meters
+    meters_geojson = writer.write(buffered);
+
+    // back to 4326
+    const final_geom = jsonToGeom(meters_geojson).transform(utmZone, 'EPSG:4326');
+
+    // return the geometry wrapped in a feature.
+    return {
+        type: 'Feature',
+        properties: {},
+        geometry: geomToJson(final_geom),
+    };
 }
 
 
@@ -51,8 +101,7 @@ export function bufferAndUnion(features, meters) {
 
     for(let i = 0, ii = features.length; i < ii; i++) {
         // buffer the geometry.
-        const g = turf_buffer(features[i], meters, {units: 'meters'});
-
+        const g = bufferFeature(features[i], meters);
         // if the output geometry is still null, then set the
         //  first member to the new geometry
         if(geometry === null) {
