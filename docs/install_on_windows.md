@@ -62,6 +62,7 @@ cd c:\GeoMoose\gm3
 grunt build
 grunt serve
 ```
+Open GeoMoose in a browser: http://localhost:4000/examples/desktop/debug.html
 
 ## 8. Troubleshooting
 
