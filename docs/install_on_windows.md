@@ -42,7 +42,18 @@ cd c:\GeoMoose\gm3
 npm install
 ```
 
-## 6. Do an initial build and startup the application
+## 6. Run Tests (Optional)
+
+From the command prompt:
+
+```
+cd c:\GeoMoose\gm3
+npm test
+```
+
+Note: There are a couple of node modules (only required for some tests, not for building GeoMoose) that are somewhat difficult to install on Windows because they require compiling C/C++ code to install.  These tests will be skipped if those modules aren't installed.  The remainder of the tests will run (and should pass).
+
+## 7. Do an initial build and startup the application
 
 From the command prompt:
 
@@ -51,3 +62,9 @@ cd c:\GeoMoose\gm3
 grunt build
 grunt serve
 ```
+
+## 8. Troubleshooting
+
+If tests or the build unexpectedly fail, make sure your `node_modules` directory is up to date.  First, check that the `package-lock.json` file is up to date with the repo (some npm commands will modify this file and that may cause issues if that gets out of step with the main code).  Then delete the `node_modules` directory and re-run `npm install`.
+
+And feel free to ask questions on the geomoose-users [mailing list](https://www.geomoose.org/info/mailing_lists.html)
