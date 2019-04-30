@@ -55,6 +55,15 @@ Note: There are a couple of node modules (only required for some tests, not for 
 
 ## 7. Do an initial build and startup the application
 
+Copy `gm3\examples\config.js.example` to `gm3\examples\desktop\config.js` and edit it to match your machine's configuration for mapserver and the demo dataset for GeoMoose.  For example, if you have already installed MS4W (contains mapserver and Apache web server), and the demo dataset for GeoMoose:
+```
+CONFIG = {
+   mapserver_url: 'http://localhost/cgi-bin/mapserv.exe',
+   mapfile_root: 'C:/ms4w/apps/gm3-demo-data/'
+};
+
+```
+
 From the command prompt:
 
 ```
