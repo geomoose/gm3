@@ -73,6 +73,23 @@ grunt serve
 ```
 Open GeoMoose in a browser: http://localhost:4000/examples/desktop/debug.html
 
+If you have a problem displaying demo map content in your browser, it could be due to using MS4W's Apache server on port 80 and grunt serving GeoMoose files on port 4000.  This can be caused by a Cross Origin Resource Sharing (CORS) restriction in your Apache configuration.  You can remove the restriction by editing the `C:\ms4w\Apache\conf\httpd.conf` file and adding the lines starting with `Header`:
+```
+#
+# Configure MS4W locations and directories
+#
+<Location "/cgi-bin">
+    Options None
+    Require all granted
+   
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+    Header always set Access-Control-Max-Age "1000"
+    Header always set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token"
+</Location>
+```
+
+
 ## 8. Troubleshooting
 
 If tests or the build unexpectedly fail, make sure your `node_modules` directory is up to date.  First, check that the `package-lock.json` file is up to date with the repo (some npm commands will modify this file and that may cause issues if that gets out of step with the main code).  Then delete the `node_modules` directory and re-run `npm install`.
