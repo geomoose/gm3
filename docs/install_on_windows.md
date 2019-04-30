@@ -9,9 +9,9 @@ It is fine to install Node with all of the defaults.  That will put the node com
 
 After node is installed, open a Command Prompt and install Grunt.
 
-<code>
+```
 npm install -g grunt
-</code>
+```
 
 
 ## 2. Create a Folder for GeoMoose
@@ -28,38 +28,26 @@ Upon installation GitHub Desktop the GUI will ask prompt the user if they wish t
 
 If it is not available then double click on 'Git shell' and execute the following:
 
-<code>
+```
 cd c:\GeoMoose
-
 git clone https://github.com/geomoose/gm3.git
-</code>
+```
 
 ## 5. Install Packages
 
 The best way to do this is using the command line.  Upon up a shell (command, PowerShell, Git Shell) and run the following:
 
-<code>
-
+```
 cd c:\GeoMoose\gm3
-
 npm install
-
-</code>
+```
 
 ## 6. Do an initial build and startup the application
 
 From the command prompt:
 
-<code>
-
+```
 cd c:\GeoMoose\gm3
-
 grunt build
-
 grunt serve
-
-</code>
-
-
-
-
+```
