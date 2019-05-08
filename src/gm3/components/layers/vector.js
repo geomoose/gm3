@@ -35,7 +35,7 @@ import EsriJsonFormat from 'ol/format/EsriJSON';
 import { tile, bbox } from 'ol/loadingstrategy';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
-import TileGrid from 'ol/tilegrid';
+import { createXYZ } from 'ol/tilegrid';
 
 import applyStyleFunction from 'mapbox-to-ol-style';
 
@@ -183,7 +183,7 @@ function defineSource(mapSource) {
                     }
                 });
             },
-            strategy: tile(TileGrid.createXYZ({
+            strategy: tile(createXYZ({
                 tileSize: 512
             }))
         }
