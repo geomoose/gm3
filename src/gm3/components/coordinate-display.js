@@ -106,7 +106,18 @@ export default class CoordinateDisplay extends React.Component {
                     addProjDef(proj4, projection.ref, projection.projDef);
                 }
                 const isNamedProjection = (this.namedProjections.indexOf(projection.ref) !== -1);
-                const isDefinedProjection = (proj.get(projection.ref) !== null);
+                let isDefinedProjection = false;
+                if (!isNamedProjection) {
+                    // This is not the cleanest test for definition,
+                    // but prevents the error during render.
+                    try {
+                        proj4(projection.ref, [0, 0]);
+                        isDefinedProjection = true;
+                    } catch(err) {
+                        // swallow the error of the undefined projection.
+                        console.error('Undefined projection', err);
+                    }
+                }
                 if(isNamedProjection || isDefinedProjection) {
                     this.projections.push(projection);
                 }
@@ -152,15 +163,12 @@ export default class CoordinateDisplay extends React.Component {
         return formatCoordinates(projection, [coords[1], coords[0]]);
     }
 
-
     getProjectionCoords(projection) {
         // TODO: The projection should be stored in the store,
         //       and defined by the user.
-        const map_proj = new proj.get('EPSG:3857');
-        const dest_proj = new proj.get(projection.ref);
-
+        const map_proj = 'EPSG:3857';
         // transform the point
-        const coords = proj.transform(this.props.coords, map_proj, dest_proj);
+        const coords = proj4(map_proj, projection.ref, this.props.coords);
         return formatCoordinates(projection, coords);
     }
 
