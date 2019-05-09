@@ -129,7 +129,7 @@ export default class CoordinateDisplay extends React.Component {
             const digits = Math.max( Math.min( Math.ceil(Math.log10(100000 / resolution)), 5), 0);
             return this.u.fromLonLat({ lon: coords[0], lat: coords[1] }, digits);
         } catch (e) {
-            console.log(e);
+            console.error('Bug with USNG coordinate', e);
             return '--';
         }
     }
