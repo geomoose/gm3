@@ -417,7 +417,7 @@
             <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
             <layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
             -->
-            <layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="ArcGIS Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
 
             <!-- These layres are commented out until a user enabled bing
               -  with an appropriate key.

@@ -339,7 +339,7 @@
 
 			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
 			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
-			<layer title="ArcGIS 9.3 Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+			<layer title="ArcGIS Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
 		</group>
 	</catalog>
 
