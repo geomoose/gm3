@@ -725,3 +725,15 @@ export function projectFeatures(features, srcProj, destProj) {
     //  the ".features" ensures an array is returned.
     return (GEOJSON_FORMAT.writeFeaturesObject(new_features)).features;
 }
+
+/**
+ * Compare two objects by their JSON strings.
+ *
+ * @param a First object to compare.
+ * @param b Second object to compare.
+ *
+ * @returns Boolean, true if they match, false if not.
+ */
+export function jsonEquals(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+}
