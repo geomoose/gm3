@@ -58,7 +58,7 @@ import olScaleLine from 'ol/control/ScaleLine';
 
 import olView from 'ol/View';
 import olMap from 'ol/Map';
-import olXml from 'ol/xml';
+import * as olXml from 'ol/xml';
 
 import olCollection from 'ol/Collection';
 import olSelectInteraction from 'ol/interaction/Select';

@@ -32,6 +32,8 @@ import BufferInput from './serviceInputs/buffer';
 
 import DrawTool from './drawTool';
 
+import { jsonEquals } from '../util';
+
 function renderServiceField(fieldDef, value, onChange) {
     let InputClass = TextInput;
 
@@ -53,20 +55,22 @@ function renderServiceField(fieldDef, value, onChange) {
     );
 }
 
+function getDefaultValues(serviceDef) {
+    // convert the values to a hash and memoize it into the state.
+    const values = {};
+    for (let i = 0, ii = serviceDef.fields.length; i < ii; i++) {
+        const field = serviceDef.fields[i];
+        values[field.name] = field.default;
+    }
+    return values;
+}
+
 
 export default class ServiceForm extends React.Component {
     constructor(props) {
         super(props);
-
-        // convert the values to a hash and memoize it into the state.
-        const values = {};
-        for (let i = 0, ii = this.props.serviceDef.fields.length; i < ii; i++) {
-            const field = this.props.serviceDef.fields[i];
-            values[field.name] = field.default;
-        }
-
         this.state = {
-            values,
+            values: getDefaultValues(this.props.serviceDef),
             validateFieldValuesResultMessage: null,
             lastService: null,
         };
@@ -88,10 +92,18 @@ export default class ServiceForm extends React.Component {
     }
 
     UNSAFE_componentWillUpdate(nextProps, nextState) {
-        if(this.state.lastService !== nextProps.serviceDef
-            && nextProps.serviceDef !== null) {
+        if (
+            nextProps.serviceDef !== null && (
+                !jsonEquals(this.state.lastService, nextProps.serviceDef) ||
+                !jsonEquals(this.props.serviceDef, nextProps.serviceDef)
+            )
+        ) {
             // 'rotate' the current service to the next services.
-            this.setState({lastService: nextProps.serviceDef, validateFieldValuesResultMessage: null});
+            this.setState({
+                values: getDefaultValues(nextProps.serviceDef),
+                lastService: nextProps.serviceDef,
+                validateFieldValuesResultMessage: null,
+            });
         }
     }
 
