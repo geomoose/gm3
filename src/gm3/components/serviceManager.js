@@ -549,6 +549,9 @@ function mapDispatch(dispatch, ownProps) {
         setBuffer: (distance) => {
             dispatch(mapActions.setSelectionBuffer(distance));
         },
+        onServiceFinished: () => {
+            dispatch(finishService());
+        },
     };
 }
 export default connect(mapToProps, mapDispatch)(ServiceManager);
