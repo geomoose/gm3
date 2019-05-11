@@ -29,6 +29,12 @@ import Adapter from 'enzyme-adapter-react-16';
 
 import CoordinateDisplay, { formatCoordinates } from 'gm3/components/coordinate-display';
 
+// this is necessary to configure the UTM projections
+import { configureProjections } from 'gm3/util';
+import { register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
+
+
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('coordinate display component', () => {
@@ -67,7 +73,14 @@ describe('coordinate display component', () => {
     });
 
     it('accepts a custom projections list', () => {
+        configureProjections(proj4);
+        register(proj4);
         const projections = [
+            {
+                label: 'UTM',
+                ref: 'EPSG:32615',
+                precision: 0
+            },
             {
                 label: 'X,Y',
                 ref: 'xy'
@@ -80,19 +93,16 @@ describe('coordinate display component', () => {
                 label: 'Lat,Lon',
                 ref: 'EPSG:4326',
                 precision: 3
-            },
-            {
-                label: 'UTM',
-                projDef: '+proj=utm +zone=15 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
             }
         ];
 
-        mount(
+        const wrapper = mount(
             <CoordinateDisplay
-                coords={[100000, 100000]}
+                coords={[-10370000, 5550000]}
                 projections={ projections }
             />
         );
+        expect(wrapper.html()).toContain('487664, 4932296');
     });
 
 
