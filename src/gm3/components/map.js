@@ -81,17 +81,13 @@ import { buildWfsQuery } from './layers/wfs';
 
 function getControls(mapConfig) {
     const controls = [];
-
     if (mapConfig.showZoom !== false) {
         controls.push(new olZoomControl());
     }
     if (mapConfig.allowRotate !== false) {
         controls.push(new olRotateControl());
     }
-
     const scaleLineConf = Object.assign({enabled: false, units: 'metric'}, mapConfig.scaleLine);
-    console.log('scaleLineConf', scaleLineConf, scaleLineConf.enabled);
-
     if (scaleLineConf.enabled !== false) {
         controls.push(new olScaleLine({units: scaleLineConf.units}));
     }
