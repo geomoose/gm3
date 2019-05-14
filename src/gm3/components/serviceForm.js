@@ -72,7 +72,6 @@ export default class ServiceForm extends React.Component {
         this.state = {
             values: getDefaultValues(this.props.serviceDef),
             validateFieldValuesResultMessage: null,
-            lastService: null,
         };
     }
 
@@ -94,14 +93,12 @@ export default class ServiceForm extends React.Component {
     UNSAFE_componentWillUpdate(nextProps, nextState) {
         if (
             nextProps.serviceDef !== null && (
-                !jsonEquals(this.state.lastService, nextProps.serviceDef) ||
-                !jsonEquals(this.props.serviceDef, nextProps.serviceDef)
+                this.props.serviceName !== nextProps.serviceName
             )
         ) {
             // 'rotate' the current service to the next services.
             this.setState({
                 values: getDefaultValues(nextProps.serviceDef),
-                lastService: nextProps.serviceDef,
                 validateFieldValuesResultMessage: null,
             });
         }
