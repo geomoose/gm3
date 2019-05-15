@@ -446,6 +446,7 @@ class ServiceManager extends React.Component {
 
             contents = (
                 <ServiceForm
+                    serviceName={service_name}
                     serviceDef={service_def}
                     onSubmit={(values) => {
                         this.props.startQuery(this.props.map.selectionFeatures, service_def, values);
