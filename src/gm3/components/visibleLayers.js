@@ -60,7 +60,7 @@ class VisibleLayers extends React.Component {
 
         return (
             <Provider store={this.props.store}>
-                <div className="catalog visble-layers flat">
+                <div className="catalog visble-layers visible-layers flat">
                     <div className="info-box">
                     This tab lists all of the visible layers. Checking a layer
                     from the Catalog will cause the layer to appear here. Unchecking a
