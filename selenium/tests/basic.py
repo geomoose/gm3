@@ -12,5 +12,5 @@ def run(driver):
     elem = driver.find_element_by_id('catalog')
     layers = elem.find_elements_by_class_name('layer')
 
-    if len(layers) != 17:
+    if len(layers) < 10:
         raise Exception('Layers did not render!')
