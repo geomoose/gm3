@@ -117,36 +117,6 @@ class ServiceManager extends React.Component {
         this.fieldValues = {};
     }
 
-    /** Call the service with the relevant information
-     *  and have it start a query.
-     *
-     */
-    startQuery(service) {
-        if(this.props.services[service]) {
-            const service_def = this.props.services[service];
-            const selection = normalizeSelection(this.props.store.getState().map.selectionFeatures);
-            const fields = [];
-
-            for(const name in this.fieldValues[service]) {
-                fields.push({name: name, value: this.fieldValues[service][name]});
-            }
-
-            // check to see if the selection should stay
-            //  'alive' in the background.
-            if(service_def.keepAlive !== true) {
-                // shutdown the drawing on the layer.
-                this.props.changeDrawTool(null);
-            }
-
-            this.props.onServiceFinished();
-            this.props.services[service].query(selection, fields);
-        } else {
-            console.info('Failed to start query, service: ' + service + ' not found.');
-        }
-
-    }
-
-
     /** Renders the results for an individual query.
      *
      *  @param queryId the query's ID.
@@ -504,7 +474,6 @@ class ServiceManager extends React.Component {
 
 }
 
-
 const mapToProps = function(store) {
     return {
         queries: store.query,
@@ -520,7 +489,10 @@ function mapDispatch(dispatch, ownProps) {
         },
         startQuery: (selectionFeatures, serviceDef, values) => {
             const selection = normalizeSelection(selectionFeatures);
-            const fields = Object.keys(values).map(key => ({name: key, value: values[key]}));
+            const fields = serviceDef.fields.map(field => ({
+                name: field.name,
+                value: values[field.name] || field.default,
+            }));
 
             // check to see if the selection should stay
             //  'alive' in the background.
