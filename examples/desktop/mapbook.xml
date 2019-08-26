@@ -325,6 +325,9 @@
 
     <map-source name="openstreetmap" type="xyz">
         <layer name="osm_mapnik">
+            <attribution><![CDATA[
+                &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
+            ]]></attribution>
             <legend type="html"><![CDATA[
             &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
             <br><br>

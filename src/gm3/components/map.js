@@ -79,6 +79,8 @@ import * as bingLayer from './layers/bing';
 
 import { buildWfsQuery } from './layers/wfs';
 
+import AttributionDisplay from './attribution-display';
+
 function getControls(mapConfig) {
     const controls = [];
     if (mapConfig.showZoom !== false) {
@@ -1319,6 +1321,7 @@ class Map extends React.Component {
                     this.mapDiv = self;
                 }}
             >
+                <AttributionDisplay store={this.props.store} />
             </div>
         )
     }
