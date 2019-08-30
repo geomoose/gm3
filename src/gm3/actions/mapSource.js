@@ -232,6 +232,7 @@ export function addFromXml(xml, config) {
             label: layer_title ? layer_title : map_source.label,
             templates: {},
             legend: null,
+            attribution: null,
             style: null,
             queryAs: layerXml.getAttribute('query-as'),
         };
@@ -244,6 +245,12 @@ export function addFromXml(xml, config) {
                 type: legends[0].getAttribute('type'),
                 contents: util.getXmlTextContents(legends[0])
             };
+        }
+
+        // pull in an HTML attribution as available.
+        const attribution = layerXml.getElementsByTagName('attribution');
+        if (attribution.length > 0) {
+            layer.attribution = util.getXmlTextContents(attribution[0]);
         }
 
         const templates = layerXml.getElementsByTagName('template');

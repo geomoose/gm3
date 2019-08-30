@@ -21,4 +21,5 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
 * [How-to style the toolbar](./style-the-toolbar.md)
 * [How-to style the header](./style-the-header.md)
 * [How-to display a raster layer and query as a vector layer](./query-as-vector.md)
+* [How-to add Attribution](./add-attribution.md)
 
