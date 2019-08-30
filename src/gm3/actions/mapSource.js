@@ -234,7 +234,6 @@ export function addFromXml(xml, config) {
             legend: null,
             attribution: null,
             style: null,
-            attribution: null,
             queryAs: layerXml.getAttribute('query-as'),
         };
 
