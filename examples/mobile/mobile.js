@@ -33,7 +33,21 @@ var app = new gm3.Application({
 });
 
 function changeTab(tabName) {
-    $('#'+tabName+'-btn').trigger('click');
+    $('#tabs .tab-content')
+        .toggleClass('hidden', true);
+
+    $('#' + tabName)
+        .toggleClass('hidden', false);
+
+    $('#tabs')
+        .toggleClass('show', tabName !== 'map');
+
+    $('.navbar .nav-item')
+        .removeClass('active');
+
+    $('.navbar a[data-tab="' + tabName + '"]')
+        .parent()
+        .addClass('active');
 }
 
 app.uiUpdate = function(ui) {
@@ -56,12 +70,17 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerAction('findme', FindMeAction);
 
     app.add(gm3.components.Catalog, 'catalog');
-    app.add(gm3.components.Favorites, 'favorites');
-    app.add(gm3.components.ServiceManager, 'service-tab', /*hasServices*/ true);
     app.add(gm3.components.Map, 'map');
+    app.add(gm3.components.Favorites, 'favorites');
+    app.add(gm3.components.ServiceManager, 'service-tab', {
+        services: true
+    });
 
-    changeTab('map');
-
+    $('.nav-item .nav-link')
+        .on('click', evt => {
+            const tab = evt.currentTarget.getAttribute('data-tab');
+            changeTab(tab);
+        });
 
     // setup the Find Me button to find the user and
     //  go there on the map.
@@ -75,5 +94,8 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     // kick off an idenify.
     $('#identify-btn').on('click', function() {
         app.startService('identify');
+        changeTab('map');
     });
+
+    changeTab('map');
 });

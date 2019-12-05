@@ -5,8 +5,9 @@
   "description": "GeoMoose 3 Mobile Application Demo",
   "main": "mobile.js",
   "dependencies": {
-    "jquery": "^2.1.4",
-    "jquery-mobile": "^1.4.1"
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1",
+    "popper": "^1.0.1"
   },
   "devDependencies": {},
   "scripts": {

@@ -22,46 +22,38 @@
  * SOFTWARE.
  */
 
-#tabs {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    bottom: 0;
-}
-
-#tab-bar {
-    position: absolute;
-    top: 0;
-    left; 0;
-    width: 100%;
-}
-
-.tab-content {
-    position: absolute;
-    top: 2em; bottom: 0;
-    width: 100%;
-    overflow: auto;
-}
-
-#map {
-    background-color: white;
-    overflow: hidden;
-}
-
-#map .map {
+#map, #tabs {
     position: absolute;
     left: 0; width: 100%;
     top: 0; height: 100%;
+    background-color: white;
+}
+
+#map {
     overflow: hidden;
 }
 
-.catalog .searchbox {
-    top: 15px;
+#tabs {
+    display: none;
 }
 
-.ui-navbar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+#tabs.show {
+    display: block;
+}
+
+#tabs div {
+    /* ensure the tabs are above the map. */
+    z-index: 1;
+}
+
+#tabs .hidden {
+    display: none;
+}
+
+#controls {
+    padding: 16px;
+}
+
+#controls .btn {
+    margin-right: 8px;
 }
