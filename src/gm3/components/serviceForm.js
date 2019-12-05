@@ -113,7 +113,7 @@ export default class ServiceForm extends React.Component {
         if (service_def.drawToolsLabel) {
             draw_tools.push((<label key='label'>{ service_def.drawToolsLabel }</label>));
         }
-        for(const gtype of ['Point', 'MultiPoint', 'LineString', 'Polygon', 'Select', 'Modify']) {
+        for(const gtype of ['Box', 'Point', 'MultiPoint', 'LineString', 'Polygon', 'Select', 'Modify']) {
             const dt_key = 'draw_tool_' + gtype;
             if(service_def.tools[gtype]) {
                 draw_tools.push(<DrawTool key={dt_key} geomType={gtype} />);
