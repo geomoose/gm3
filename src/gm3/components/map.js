@@ -62,7 +62,7 @@ import * as olXml from 'ol/xml';
 
 import olCollection from 'ol/Collection';
 import olSelectInteraction from 'ol/interaction/Select';
-import olDrawInteraction from 'ol/interaction/Draw';
+import olDrawInteraction, {createBox} from 'ol/interaction/Draw';
 import olModifyInteraction from 'ol/interaction/Modify';
 import * as olEventConditions from 'ol/events/condition';
 
@@ -1128,10 +1128,17 @@ class Map extends React.Component {
                     });
                 }
             } else {
-                this.drawTool = new olDrawInteraction({
-                    source: source,
-                    type
-                });
+                const drawOptions = {
+                    source,
+                    type,
+                };
+
+                // Draw by box requires some special settings.
+                if (type === 'Box') {
+                    drawOptions.type = 'Circle';
+                    drawOptions.geometryFunction = createBox();
+                }
+                this.drawTool = new olDrawInteraction(drawOptions);
 
                 if(oneAtATime === true && type !== 'MultiPoint') {
                     this.drawTool.on('drawstart', (evt) => {

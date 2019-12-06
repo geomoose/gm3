@@ -54,6 +54,7 @@ function SelectService(Application, options) {
 
     /** Limit the number of selection tools available */
     this.tools = {
+        'Box': true,
         'Point': true,
         'MultiPoint': true,
         'Polygon': true,
