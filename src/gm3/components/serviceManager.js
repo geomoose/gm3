@@ -354,13 +354,23 @@ class ServiceManager extends React.Component {
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
             if(service_def && service_def.autoGo) {
-                const selection = nextProps.store.getState().map.selectionFeatures;
-                if(selection.length > 0) {
-                    // okay, there *is* a selection feature.
-                    const fid = selection[0].properties.id;
-                    if(nextState.lastFeature !== fid) {
-                        this.setState({lastFeature: fid});
-                        this.props.startQuery(selection, this.props.services[service_name], this.state.values);
+                // assume all fields are required unless otherwise
+                //  specified as optional.
+                const req_fields = service_def.fields ? service_def.fields.filter(f => f.optional !== true).length : 0;
+
+                if (service_def.bufferAvailable || req_fields.length > 0) {
+                    // Don't allow the user to "autoGo" if there are
+                    // fields which are required.
+                    console.error('Misconfigured service. This service has been configured with autoGo but has required fields');
+                } else {
+                    const selection = nextProps.store.getState().map.selectionFeatures;
+                    if(selection.length > 0) {
+                        // okay, there *is* a selection feature.
+                        const fid = selection[0].properties.id;
+                        if(nextState.lastFeature !== fid) {
+                            this.setState({lastFeature: fid});
+                            this.props.startQuery(selection, this.props.services[service_name], this.state.values);
+                        }
                     }
                 }
             }
