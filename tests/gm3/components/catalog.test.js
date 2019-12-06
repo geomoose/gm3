@@ -129,9 +129,9 @@ describe('Catalog component tests', () => {
 
     it('toggles the group state', function() {
         catalog.find('.group-label').first().simulate('click');
-        expect(catalog.find('.expand').length).toBe(1);
+        expect(catalog.find('.gm-expand').length).toBe(1);
         catalog.find('.group-label').first().simulate('click');
-        expect(catalog.find('.collapse').length).toBe(1);
+        expect(catalog.find('.gm-collapse').length).toBe(1);
     });
 
     it('triggers a catalog search', function() {
