@@ -42,7 +42,7 @@ function defineSource(mapSource) {
         }
     }
 
-    return {
+    const source_opts = {
         url: mapSource.urls[0],
         // This is a carry over from previous generations behaviour.
         ratio: 1.0,
@@ -54,6 +54,11 @@ function defineSource(mapSource) {
         minResolution: mapSource.minresolution,
         maxResolution: mapSource.maxresolution,
     };
+
+    if(mapSource.params['cross-origin']) {
+        source_opts.crossOrigin = mapSource.params['cross-origin'];
+    }
+    return source_opts;
 }
 
 
