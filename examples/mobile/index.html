@@ -1,15 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>GeoMoose3 Mobile Demo</title>
     <!--
     /*
      * The MIT License (MIT)
      *
-     * Copyright (c) 2016 GeoMoose
+     * Copyright (c) 2016-2019 GeoMoose
      *
      * Permission is hereby granted, free of charge, to any person obtaining a copy
      * of this software and associated documentation files (the "Software"), to deal
@@ -31,48 +31,49 @@
      */
     -->
 
+
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../geomoose/dist/css/geomoose.css">
-
-    <link rel="stylesheet" href="node_modules/jquery-mobile/dist/jquery.mobile.css">
-    <script type="text/javascript" src="node_modules/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="node_modules/jquery-mobile/dist/jquery.mobile.min.js"></script>
-
     <link rel="stylesheet" href="mobile.css">
 </head>
 <body>
-    <div data-role="tabs" id="tabs">
-    <div data-role="navbar">
-        <ul id="tab-bar">
-            <li><a id="map-btn" href="#map"><i class="fa fa-map"></i></a></li>
-            <li><a href="#catalog"><i class="fa fa-book"></i></a></li>
-            <li><a href="#favorites"><i class="fa fa-star"></i></a></li>
-            <li><a href="#controls"><i class="fa fa-wrench"></i></a></li>
-            <li><a id="service-tab-btn" href="#service-tab"><i class="fa fa-table"></i></a></li>
-        </ul>
+    <div id="map"></div>
+
+    <div id="tabs">
+        <div id="catalog" class="tab-content hidden"></div>
+        <div id="favorites" class="tab-content"></div>
+        <div id="controls" class="tab-content">
+            <button id="findme-btn" class="btn btn-primary">
+                <i class="fa fa-map-marker" aria-hidden="true"></i><br>
+                Find Me
+            </button>
+            <button id="identify-btn" class="btn btn-primary">
+                <i class="fa fa-info-circle" aria-hidden="true"></i><br>
+                Identify
+            </button>
+        </div>
+        <div id="service-tab" class="tab-content"></div>
     </div>
 
-    <div id="map" class="ui-body-d ui-content tab-content"></div>
-    <div id="catalog" class="ui-body-d ui-content tab-content"></div>
-    <div id="favorites" class="ui-body-d ui-content tab-content"></div>
-    <div id="controls" class="ui-body-d ui-content tab-content">
-        <button id="findme-btn" class="service-btn ui-btn ui-btn-inline">
-            <i class="fa fa-map-marker" aria-hidden="true"></i><br>
-            Find Me
-        </button>
-        <button id="identify-btn" class="service-btn ui-btn ui-btn-inline">
-            <i class="fa fa-info-circle" aria-hidden="true"></i><br>
-            Identify
-        </button>
-    </div>
-
-    <div id="service-tab" class="ui-body-d ui-content tab-content"></div>
-    </div>
-
+    <nav class="navbar navbar-expand fixed-bottom navbar-dark bg-dark">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto nav-fill w-100">
+                <li class="nav-item active">
+                    <a class="nav-link" data-tab="map" title="Show map"><i class="fa fa-map"></i></a>
+                </li>
+                <li class="nav-item"><a class="nav-link" data-tab="catalog" title="Show catalog"><i class="fa fa-book"></i></a></li>
+                <li class="nav-item"><a class="nav-link" data-tab="favorites" title="Show favorites"><i class="fa fa-star"></i></a></li>
+                <li class="nav-item"><a class="nav-link" data-tab="controls" title="Show tools"><i class="fa fa-wrench"></i></a></li>
+                <li class="nav-item"><a class="nav-link" id="service-tab-btn" data-tab="service-tab" title="Show results"><i class="fa fa-table"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.slim.min.js"></script>
+    <script type="text/javascript" src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="config.js"></script>
-    <script type="text/javascript" src="../geomoose/dist/geomoose.min.js"></script>
+    <script type="text/javascript" src="../geomoose/dist/geomoose.js"></script>
     <script type="text/javascript" src="../geomoose/dist/services/identify.js"></script>
     <script type="text/javascript" src="../geomoose/dist/services/findme.js"></script>
     <script type="text/javascript" src="mobile.js"></script>
 </body>
-
-
+</html>

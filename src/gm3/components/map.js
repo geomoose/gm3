@@ -1335,16 +1335,11 @@ class Map extends React.Component {
 }
 
 function mapState(state) {
-    let config = {};
-    if (state.config && state.config.map) {
-        config = state.config.map;
-    }
-
     return {
         mapSources: state.mapSources,
         mapView: state.map,
         queries: state.query,
-        config,
+        config: state.config.map || {},
     }
 }
 

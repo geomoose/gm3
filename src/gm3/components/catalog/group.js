@@ -31,10 +31,10 @@ export default class CatalogGroup extends React.Component {
         let classes = 'group';
         let is_open = '';
         if(group.expand) {
-            classes += ' expand';
+            classes += ' gm-expand';
             is_open = 'open';
         } else {
-            classes += ' collapse';
+            classes += ' gm-collapse';
         }
 
         return (
