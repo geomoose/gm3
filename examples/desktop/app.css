@@ -64,7 +64,6 @@ body {
     border-top: solid 1px black;
 }
 
-
 #map .map {
     position: absolute;
     top:0; left:0;
@@ -116,11 +115,11 @@ body {
 }
 
 .tabs-closed #tabs {
-    width: 20px;
+    width: 0px;
 }
 
 .tabs-closed #map, .tabs-closed #results-grid {
-    left: 20px;
+    left: 0px;
 }
 
 
@@ -137,6 +136,10 @@ body {
         width: 220px;
     }
 
+    .tab-toggler {
+        left: 205px;
+    }
+
     #map, #results-grid {
         left: 220px;
     }
@@ -145,6 +148,10 @@ body {
 @media screen and (min-width: 500px) {
     #tabs {
         width: 350px;
+    }
+
+    .tab-toggler {
+        left: 335px;
     }
 
     #map, #results-grid {

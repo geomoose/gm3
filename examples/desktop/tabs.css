@@ -28,7 +28,6 @@
 .tab-content {
     display: none;
     position: relative;
-
 }
 
 .tab-content.show {
@@ -39,19 +38,23 @@
     width: 100%;
 }
 
-.tab-parent .tab-toggler {
+.tab-toggler {
     position: absolute;
-    right: -1px;
     bottom: 50%;
     background-color: white;
-    border-radius: 10px 0px 0px 10px;
+    border-radius: 15px;
     border: solid 1px black;
     z-index: 1000;
-    width: 20px;
+    width: 30px;
     padding: 1px;
+    transition: left linear 500ms;
 }
 
-.tab-parent .tab-toggler .tab-toggler-icon:before {
+.tabs-closed .tab-toggler {
+    left: 0;
+}
+
+.tab-toggler .tab-toggler-icon:before {
     content: "\f0a8";
     font-family: FontAwesome;
     font-style: normal;
@@ -59,7 +62,7 @@
     padding-left: 0px;
 }
 
-.tabs-closed .tab-parent .tab-toggler .tab-toggler-icon:before {
+.tabs-closed .tab-toggler .tab-toggler-icon:before {
     content: "\f0a9";
     font-family: FontAwesome;
     font-style: normal;
@@ -70,4 +73,3 @@
 .tabs-closed .tab-content, .tabs-closed .tabs {
     display: none;
 }
-
