@@ -41,26 +41,6 @@
         </layer>
     </map-source>
 
-	<map-source name="scalebar_miles" type="mapserver" title="Scalebar Miles">
-		<file>./demo/scalebars/scalebar_miles.map</file>
-		<layer name="scalebar_mi"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
-
-
-	<map-source name="scalebar_feet" type="mapserver" title="Scalebar Feet">
-		<file>./demo/scalebars/scalebar_feet.map</file>
-		<layer name="scalebar_feet"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
-
-
-	<map-source name="scalebar_kilometers" type="mapserver" title="Scalebar Kilometers">
-		<file>./demo/scalebars/scalebar_kilometers.map</file>
-		<layer name="scalebar_km"/>
-		<param name="FORMAT" value="image/png"/>
-	</map-source>
-
 	<map-source name="pipelines" type="mapserver" title="Pipelines">
 		<file>./demo/pipelines/pipelines.map</file>
 		<layer name="pipelines" status="off">
@@ -326,12 +306,6 @@
 			</group>
 			<layer src="pipelines/pipelines"></layer>
 			<layer title="Weather Radar" src="iastate/nexrad-n0r" />
-		</group>
-
-		<group title="Scalebars" expand="false">
-			<layer src="scalebar_miles/scalebar_mi" legend="false" show-legend="false" fade="false" unfade="false"/>
-			<layer src="scalebar_feet/scalebar_feet" legend="false" show-legend="false" fade="false" unfade="false"/>
-			<layer src="scalebar_kilometers/scalebar_km" legend="false" show-legend="false" fade="false" unfade="false"/>
 		</group>
 
 		<group title="Backgrounds" expand="true">
