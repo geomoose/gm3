@@ -1,5 +1,8 @@
 /**
- * @module ol/control/ScaleLine
+ * This code is a refactored version of what comes in the
+ * ol/control/ScaleLine. It uses much of the same logic but
+ * instead of rendering the scale line it returns the metadata
+ * for rendering.
  */
 import {getPointResolution, METERS_PER_UNIT} from 'ol/proj';
 import ProjUnits from 'ol/proj/Units';
