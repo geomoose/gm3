@@ -164,6 +164,7 @@
         <layer name="nexrad-n0r"/>
         <param name="FORMAT" value="image/png"/>
         <param name="TRANSPARENT" value="TRUE"/>
+        <param name="cross-origin" value="anonymous"/>
     </map-source>
 
 
