@@ -7,6 +7,7 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
     * [How-to add identify to a layer](./add-identify.md)
     * [How-to add a layer search](./add-search.md)
     * [How-to add a layer to select](./add-select.md)
+        * [How-to modify select options](./configure-select-options.md)
 
 * [How-to add a GeoJSON layer](./add-geojson.md)
 * [How-to use GeoJSON/WFS](./geojson-wfs.md)
