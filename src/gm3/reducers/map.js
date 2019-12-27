@@ -30,6 +30,7 @@ import { MAP } from '../actionTypes';
 
 const default_view = {
     center: [0, 0],
+    zoom: 1,
     resolution: null,
     extent: null,
     activeSource: null,
