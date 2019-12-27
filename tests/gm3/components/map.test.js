@@ -28,6 +28,7 @@ import Map from 'gm3/components/map';
 import mapReducer from 'gm3/reducers/map';
 import msReducer from 'gm3/reducers/mapSource';
 import queryReducer from 'gm3/reducers/query';
+import configReducer from 'gm3/reducers/config';
 
 import { createStore, combineReducers } from 'redux';
 
@@ -69,6 +70,7 @@ describe('map component tests', () => {
             map: mapReducer,
             mapSources: msReducer,
             query: queryReducer,
+            config: configReducer,
         }));
     });
 
@@ -85,6 +87,7 @@ describe('map component tests', () => {
                 map: mapReducer,
                 mapSources: msReducer,
                 query: queryReducer,
+                config: configReducer,
             }));
             // seed the view
             store.dispatch(mapActions.setView({

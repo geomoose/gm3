@@ -27,7 +27,7 @@
  *
  */
 
-import * as util from '../../util';
+import { transformProperties, formatUrlParameters, requEstimator } from '../../util';
 
 import GML2Format from 'ol/format/GML2';
 import GeoJSONFormat from 'ol/format/GeoJSON';
@@ -38,6 +38,9 @@ import VectorLayer from 'ol/layer/Vector';
 import { createXYZ } from 'ol/tilegrid';
 
 import applyStyleFunction from 'mapbox-to-ol-style';
+
+// for JSONP support
+import request from 'reqwest';
 
 /** Create the parameters for a Vector layer.
  *
@@ -73,7 +76,7 @@ function defineSource(mapSource) {
                     'bbox': extent.concat('EPSG:3857').join(',')
                 });
 
-                return mapSource.urls[0] + '?' + util.formatUrlParameters(url_params);
+                return mapSource.urls[0] + '?' + formatUrlParameters(url_params);
             },
             strategy: bbox
         };
@@ -110,7 +113,7 @@ function defineSource(mapSource) {
                 };
 
                 // use JSONP to fetch the features.
-                util.xhr({
+                request({
                     url: url,
                     data: params,
                     type: 'jsonp',
@@ -143,7 +146,7 @@ function defineSource(mapSource) {
                                 let current_batch = [];
                                 for(let i = 0; i < n_objects; i++) {
                                     // estimate the request size
-                                    const requestimate = util.requEstimator(Object.assign(sniff_r, {
+                                    const requestimate = requEstimator(Object.assign(sniff_r, {
                                         objectIds: current_batch.concat([object_ids[i]]).join(',')
                                     }));
                                     // if it's too long "rotate" the batches.
@@ -160,7 +163,7 @@ function defineSource(mapSource) {
 
                                 // make the feature requests based on the batches.
                                 for(const batch of batches) {
-                                    util.xhr({
+                                    request({
                                         url: url,
                                         data: Object.assign({}, params, {
                                             returnIdsOnly: false,
@@ -243,7 +246,7 @@ export function createLayer(mapSource) {
     if(mapSource.transforms) {
         source.on('addfeature', function(evt) {
             const f = evt.feature;
-            f.setProperties(util.transformProperties(mapSource.transforms, f.getProperties()));
+            f.setProperties(transformProperties(mapSource.transforms, f.getProperties()));
         });
     }
 

@@ -227,16 +227,18 @@ class Map extends React.Component {
         };
 
         const info_url = src.getGetFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
-
-        util.xhr({
-            url: info_url,
+        fetch(info_url, {
+            headers: {
+                'Access-Control-Request-Headers': '*',
+            },
         })
-            .then((response) => {
+            .then(r => r.text())
+            .then(responseText => {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
-                if(response) {
+                if(responseText) {
                     const gml_format = new WMSGetFeatureInfoFormat();
-                    const features = gml_format.readFeatures(response.responseText);
+                    const features = gml_format.readFeatures(responseText);
                     const js_features = geojson.writeFeaturesObject(features).features;
 
                     this.props.store.dispatch(
@@ -245,11 +247,10 @@ class Map extends React.Component {
                 } else {
                     fail_layer();
                 }
+                this.checkQueryForCompleteness(queryId, queryLayer);
             })
-            .fail((err, msg) => {
+            .catch((err, msg) => {
                 fail_layer();
-            })
-            .always(() => {
                 this.checkQueryForCompleteness(queryId, queryLayer);
             });
     }
@@ -323,12 +324,15 @@ class Map extends React.Component {
 
         const is_json_like = (output_format.toLowerCase().indexOf('json') > 0);
 
-        util.xhr({
-            url: wfs_url,
-            method: 'post',
-            contentType: is_json_like ? 'json' : 'text/xml',
-            data: wfs_query_xml,
-            success: (response) => {
+        fetch(wfs_url, {
+            method: 'POST',
+            body: wfs_query_xml,
+            headers: {
+                'Access-Control-Request-Headers': '*',
+            },
+        })
+            .then(r => r.text())
+            .then(response => {
                 if(response) {
                     // check for a WFS error message
                     if(response.search(/(ows|wfs):exception/i) >= 0) {
@@ -355,7 +359,7 @@ class Map extends React.Component {
                         // place holder for features to be added.
                         let js_features = [];
                         if(is_json_like) {
-                            js_features = response.features;
+                            js_features = JSON.parse(response).features;
                         } else {
                             const gml_format = new GML2Format();
                             const features = gml_format.readFeatures(response, {
@@ -374,19 +378,16 @@ class Map extends React.Component {
                         );
                     }
                 }
-            },
-            error: () => {
+                this.checkQueryForCompleteness(queryId, queryLayer);
+            })
+            .catch(() => {
                 // dispatch a message that the query has failed.
                 this.props.store.dispatch(
                     // true for 'failed', empty array to prevent looping side-effects.
                     mapActions.resultsForQuery(queryId, queryLayer, true, [], 'Server error. Check network logs.')
                 );
-            },
-            complete: () => {
                 this.checkQueryForCompleteness(queryId, queryLayer);
-            }
-        });
-
+            });
     }
 
 
