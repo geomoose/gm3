@@ -322,9 +322,9 @@ class Application {
                         const layer_name = util.getLayerName(path);
 
                         // fetch the contents of the template
-                        util.xhr({
-                            url: layer_template.src,
-                            success: (content) => {
+                        fetch(layer_template.src)
+                            .then(r => r.text())
+                            .then(content => {
                                 // convert the "remote" template to a local one
                                 this.store.dispatch(
                                     mapSourceActions.setLayerTemplate(
@@ -337,13 +337,12 @@ class Application {
                                 );
                                 // resolve this promise with the content
                                 resolve(content);
-                            },
+                            })
                             // when there is an error fetching the template,
                             // 404 or whatever, return a blank template.
-                            error: function() {
+                            .catch(() => {
                                 resolve('');
-                            },
-                        });
+                            });
                     } else {
                         resolve(layer.templates[template_name].contents);
                     }
