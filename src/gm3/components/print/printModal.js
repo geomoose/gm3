@@ -163,7 +163,7 @@ export default class PrintModal extends Modal {
         // add a scale line
         const scaleLine = state.config.map.scaleLine;
         if (scaleLine && scaleLine.enabled) {
-            const scaleInfo = getScalelineInfo(view, scaleLine.units || 'us');
+            const scaleInfo = getScalelineInfo(view, scaleLine.units || 'us', {multiplier: resolution});
             const pxToLayout = this.toPoints(1, 'px') / this.toPoints(1, layout.units);
             const margin = 12 * pxToLayout;
             const height = 12 * pxToLayout;

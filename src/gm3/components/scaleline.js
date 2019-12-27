@@ -24,6 +24,7 @@ const LEADING_DIGITS = [1, 2, 5];
 
 const DEFAULT_OPTIONS = {
     minWidth: 64,
+    multiplier: 1,
 };
 
 export function getScalelineInfo(viewState, units, inOpts = {}) {
@@ -39,7 +40,7 @@ export function getScalelineInfo(viewState, units, inOpts = {}) {
     }
     const resolution = viewState.getResolution();
     let pointResolution =
-        getPointResolution(projection, resolution, center, pointResolutionUnits);
+        getPointResolution(projection, resolution * options.multiplier, center, pointResolutionUnits);
     if (projection.getUnits() !== ProjUnits.DEGREES && projection.getMetersPerUnit()
       && pointResolutionUnits === ProjUnits.METERS) {
         pointResolution *= projection.getMetersPerUnit();
