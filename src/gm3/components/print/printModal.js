@@ -55,20 +55,20 @@ export default class PrintModal extends Modal {
     constructor(props) {
         super(props);
 
-        // Define the built-in layouts.
-        // If the user overrides this then they just get their
-        //  layouts.
-        this.layouts = props.layouts ? props.layouts : DefaultLayouts;
-
-        this.state = this.getMapSize(this.layouts[0], 1);
+        this.state = {
+            mapTitle: '',
+            layout: 0,
+            resolution: 1,
+            layouts: props.layouts ? props.layouts : DefaultLayouts,
+        };
     }
 
     /* Print the PDF! Or, ya know, close the dialog.
      */
     close(status) {
         if(status === 'print') {
-            const layout = parseInt(this.refs.layout.value, 10);
-            this.makePDF(this.layouts[layout]);
+            const layout = parseInt(this.state.layout, 10);
+            this.makePDF(this.state.layouts[layout]);
             // tell the store that the print is done,
             // this ensures that the memory is freed that was used
             // to store the (sometimes) enormous image.
@@ -87,7 +87,7 @@ export default class PrintModal extends Modal {
         // these are the subsitution strings for the map text elements
         const date = new Date();
         const subst_dict = {
-            title: this.refs.map_title.value,
+            title: this.state.mapTitle,
             year: date.getFullYear(),
             month: date.getMonth() + 1,
             day: date.getDate()
@@ -149,7 +149,7 @@ export default class PrintModal extends Modal {
         });
 
         const u = layout.units;
-        const resolution = parseFloat(this.refs.resolution.value);
+        const resolution = parseFloat(this.state.resolution);
         const map_extents = view.calculateExtent([
             this.toPoints(def.width, u) * resolution,
             this.toPoints(def.height, u) * resolution,
@@ -319,12 +319,11 @@ export default class PrintModal extends Modal {
     /* The Map Image size changes based on the layout used
      * and the resolution selected by the user.
      *
-     * @param layout The layout definition.
-     * @param resolution The "map size" multiplier.
-     *
      * @return An object with "width" and "height" properties.
      */
-    getMapSize(layout, resolution) {
+    getMapSize() {
+        const layout = this.state.layouts[this.state.layout];
+        const resolution = this.state.resolution;
         // iterate through the layout elements looking
         //  for the map.
         let map_element = null;
@@ -342,32 +341,21 @@ export default class PrintModal extends Modal {
         };
     }
 
-    /* Update the map size whenever
-     * The layout or resolutoin has changed.
-     */
-    updateMapLayout() {
-        // check for the first map element and then
-        //  use that as the render size.
-        const layout = this.layouts[parseInt(this.refs.layout.value, 10)];
-        // convert the resoltion to a multiplier.
-        const resolution = parseFloat(this.refs.resolution.value);
-
-        this.setState(this.getMapSize(layout, resolution));
-    }
-
     /** Render a select box with the layouts.
      */
     renderLayoutSelect() {
-        // convert the layouts to options based on their index
-        //  and the label given in "label"
-        const options = [];
-        for(let i = 0, ii = this.layouts.length; i < ii; i++) {
-            options.push(<option key={ i } value={ i }>{ this.layouts[i].label }</option>);
-        }
-        // kick back the select.
         return (
-            <select ref='layout' onChange={ () => { this.updateMapLayout(); } }>
-                { options }
+            <select
+                onChange={evt => {
+                    this.setState({layout: evt.target.value});
+                }}
+                value={this.state.layout}
+            >
+                {
+                    this.state.layouts.map((layout, idx) => (
+                        <option key={layout.label} value={idx}>{ layout.label }</option>
+                    ))
+                }
             </select>
         );
     }
@@ -377,7 +365,14 @@ export default class PrintModal extends Modal {
      */
     renderResolutionSelect() {
         return (
-            <select ref='resolution' onChange={ () => { this.updateMapLayout(); } }>
+            <select
+                onChange={evt => {
+                    this.setState({
+                        resolution: evt.target.value,
+                    });
+                }}
+                value={this.state.resolution}
+            >
                 <option value='1'>Normal</option>
                 <option value='1.5'>Higher</option>
                 <option value='2'>Highest</option>
@@ -414,13 +409,21 @@ export default class PrintModal extends Modal {
             );
         }
 
+        const mapSize = this.getMapSize();
+
         return (
             <div>
                 {print_warning}
 
                 <p>
                     <label>Map title:</label>
-                    <input ref='map_title' placeholder="Map title"/>
+                    <input
+                        placeholder="Map title"
+                        value={ this.state.mapTitle }
+                        onChange={evt => {
+                            this.setState({mapTitle: evt.target.value});
+                        }}
+                    />
                 </p>
                 <p>
                     <label>Page layout:</label>
@@ -435,7 +438,7 @@ export default class PrintModal extends Modal {
                 </div>
 
                 <div style={ map_style_hack }>
-                    <PrintImage width={this.state.width} height={this.state.height} store={this.props.store}/>
+                    <PrintImage width={mapSize.width} height={mapSize.height} store={this.props.store}/>
                 </div>
             </div>
         );
