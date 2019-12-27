@@ -57,6 +57,8 @@ function defineSource(mapSource) {
 
     if(mapSource.params['cross-origin']) {
         source_opts.crossOrigin = mapSource.params['cross-origin'];
+    } else if (mapSource.urls[0].indexOf('http') === 0) {
+        source_opts.crossOrigin = 'anonymous';
     }
     return source_opts;
 }

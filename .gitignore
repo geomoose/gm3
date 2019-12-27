@@ -38,3 +38,5 @@ geomoose*.tgz
 dist/
 docs/_site/
 *.lock
+# this is the results of building the fonts dict.
+src/gm3/components/print/fonts.js
