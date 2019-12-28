@@ -32,8 +32,6 @@ import BufferInput from './serviceInputs/buffer';
 
 import DrawTool from './drawTool';
 
-import { jsonEquals } from '../util';
-
 function renderServiceField(fieldDef, value, onChange) {
     let InputClass = TextInput;
 

@@ -47,6 +47,7 @@ import { printed } from '../../actions/print';
 import DefaultLayouts from './printLayouts';
 
 import GeoPdfPlugin from './geopdf';
+import { getScalelineInfo } from '../scaleline';
 
 
 export default class PrintModal extends Modal {
@@ -82,7 +83,7 @@ export default class PrintModal extends Modal {
     }
 
 
-    addText(doc, def) {
+    addText(doc, def, options = {}) {
         // these are the subsitution strings for the map text elements
         const date = new Date();
         const subst_dict = {
@@ -96,7 +97,7 @@ export default class PrintModal extends Modal {
         const defaults = {
             size: 13,
             color: [0, 0, 0],
-            font: 'Arial',
+            font: 'helvetica',
             fontStyle: 'normal'
         };
 
@@ -112,7 +113,7 @@ export default class PrintModal extends Modal {
         // and the font face.
         doc.setFont(full_def.font, full_def.fontStyle);
         // then mark the face.
-        doc.text(full_def.x, full_def.y, Mark.up(full_def.text, subst_dict));
+        doc.text(full_def.x, full_def.y, Mark.up(full_def.text, subst_dict), options);
     }
 
     /* Embed an image in the PDF
@@ -130,13 +131,14 @@ export default class PrintModal extends Modal {
     /* Wraps addImage specifically for the map.
      */
     addMapImage(doc, def, layout) {
+        const state = this.props.store.getState();
+
         // this is not a smart component and it doesn't need to be,
         //  so sniffing the state for the current image is just fine.
-        const image_data = this.props.store.getState().print.printData;
-        this.addImage(doc, Object.assign({}, def, {image_data: image_data}));
+        this.addImage(doc, Object.assign({}, def, {image_data: state.print.printData}));
 
         // construct the extents from the map
-        const map_view = this.props.store.getState().map;
+        const map_view = state.map;
         // TODO: get this from state
         const map_proj = 'EPSG:3857';
 
@@ -158,6 +160,38 @@ export default class PrintModal extends Modal {
             pdf_extents[i] = this.toPoints(pdf_extents[i], u);
         }
 
+        // add a scale line
+        const scaleLine = state.config.map.scaleLine;
+        if (scaleLine && scaleLine.enabled) {
+            const scaleInfo = getScalelineInfo(view, scaleLine.units || 'us', {multiplier: resolution});
+            const pxToLayout = this.toPoints(1, 'px') / this.toPoints(1, layout.units);
+            const margin = 12 * pxToLayout;
+            const height = 12 * pxToLayout;
+            this.addDrawing(doc, {
+                type: 'rect',
+                filled: true,
+                // place this in the lower left corner of the map
+                x: def.x + margin,
+                y: def.y + def.height - margin - height,
+                // width info comes as pixels, this
+                //  should convert the width
+                width: scaleInfo.width / 72,
+                height,
+                strokeWidth: 0,
+                fill: [178, 196, 219],
+            });
+
+            this.addText(doc, {
+                x: def.x + margin + 2 * pxToLayout,
+                y: def.y + def.height - margin - height / 2,
+                text: scaleInfo.label,
+                size: 12,
+                color: [238, 238, 238],
+            }, {
+                baseline: 'middle',
+            });
+        }
+
         doc.setGeoArea(pdf_extents, map_extents);
     }
 
@@ -170,17 +204,20 @@ export default class PrintModal extends Modal {
         let style = 'S';
         if(def.filled) {
             style = 'DF';
+            const fill = def.fill ? def.fill : [255, 255, 255];
+            doc.setFillColor(fill[0], fill[1], fill[2]);
         }
 
-        // set the colors
-        const stroke = def.stroke ? def.stroke : [0, 0, 0];
-        const fill = def.fill ? def.fill : [255, 255, 255];
-        doc.setDrawColor(stroke[0], stroke[1], stroke[2]);
-        doc.setFillColor(fill[0], fill[1], fill[2]);
-
         // set the stroke width
-        const stroke_width = def.strokeWidth ? def.strokeWidth : 1;
-        doc.setLineWidth(stroke_width);
+        const stroke_width = def.strokeWidth !== undefined ? def.strokeWidth : this.toPoints(1, 'px');
+        if (stroke_width > 0) {
+            const stroke = def.stroke ? def.stroke : [0, 0, 0];
+            doc.setLineWidth(stroke_width);
+            doc.setDrawColor(stroke[0], stroke[1], stroke[2]);
+        } else {
+            style = 'F';
+            doc.setLineWidth(0);
+        }
 
         // draw the shape.
         if(def.type === 'rect') {
@@ -239,10 +276,6 @@ export default class PrintModal extends Modal {
         }
         // new PDF document
         const doc = new jsPDF(layout.orientation, layout.units, layout.page);
-
-        // add some fonts
-        doc.addFont('Arial', 'Arial', 'normal');
-        doc.addFont('Arial-Bold', 'Arial', 'bold');
 
         // iterate through the elements of the layout
         //  and place them in the document.

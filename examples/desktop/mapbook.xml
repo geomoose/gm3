@@ -145,6 +145,16 @@
     </map-source>
 
     <!--
+     * This map-source is used solely for testing geomose for scale issues
+     -->
+    <map-source name="grids" type="mapserver" up="true" down="true" title="Grids">
+        <file>./demo/grids/grids.map</file>
+        <param name="FORMAT" value="image/png"/>
+        <layer name="grid_1km"/>
+        <layer name="grid_1mile"/>
+    </map-source>
+
+    <!--
      * This map-source is used solely for testing geomose
      * with international characters.
      -->
@@ -404,6 +414,11 @@
             </group>
             <layer src="pipelines/pipelines"></layer>
             <layer title="Weather Radar" src="iastate/nexrad-n0r" />
+        </group>
+
+        <group title="Test Grids">
+            <layer title="1 km grid" src="grids/grid_1km"/>
+            <layer title="1 mile grid" src="grids/grid_1mile"/>
         </group>
 
         <group title="Backgrounds" expand="true">
