@@ -80,6 +80,7 @@ import * as bingLayer from './layers/bing';
 import { buildWfsQuery } from './layers/wfs';
 
 import AttributionDisplay from './attribution-display';
+import JumpToZoom from './jump-to-zoom';
 
 function getControls(mapConfig) {
     const controls = [];
@@ -1322,6 +1323,11 @@ class Map extends React.Component {
             }, 250);
         }
 
+        const enableZoomJump = (
+            this.props.config &&
+            this.props.config.enableZoomJump === true
+        );
+
         return (
             <div
                 className='map'
@@ -1330,6 +1336,7 @@ class Map extends React.Component {
                 }}
             >
                 <AttributionDisplay store={this.props.store} />
+                {enableZoomJump && <JumpToZoom store={this.props.store} />}
             </div>
         )
     }
