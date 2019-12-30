@@ -36,4 +36,4 @@ before_install:
 
 # ensure the code lints clean.
 before_script:
-    - grunt build
+    - npm run build

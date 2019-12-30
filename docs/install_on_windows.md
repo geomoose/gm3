@@ -7,24 +7,17 @@ Travel to the official [NodeJS site](https://nodejs.org/en/) and download the la
 
 It is fine to install Node with all of the defaults.  That will put the node command line in the PATH and install the NPM package manager.
 
-After node is installed, open a Command Prompt and install Grunt.
-
-```
-npm install -g grunt
-```
-
-
 ## 2. Create a Folder for GeoMoose
 
 These examples will use C:\GeoMoose as the target folder.
 
 ## 3. Install Git
 
-I would suggest [GitHub Desktop](https://desktop.github.com/).  It's a nice clean interface.  Any Git client will work fine. 
+I would suggest [GitHub Desktop](https://desktop.github.com/).  It's a nice clean interface.  Any Git client will work fine.
 
 ## 4. Clone the GeoMoose3 Repository
 
-Upon installation GitHub Desktop the GUI will ask prompt the user if they wish to Add, Create, or Clone a repository. The GeoMoose/gm3 repository will not be immediately available unless you are a member of the geomoose GitHub organization.  
+Upon installation GitHub Desktop the GUI will ask prompt the user if they wish to Add, Create, or Clone a repository. The GeoMoose/gm3 repository will not be immediately available unless you are a member of the geomoose GitHub organization.
 
 If it is not available then double click on 'Git shell' and execute the following:
 
@@ -68,12 +61,12 @@ From the command prompt:
 
 ```
 cd c:\GeoMoose\gm3
-grunt build
-grunt serve
+npm run build
+npm start
 ```
-Open GeoMoose in a browser: http://localhost:4000/examples/desktop/debug.html
+Open GeoMoose in a browser: http://localhost:4000/examples/desktop/index.html
 
-If you have a problem displaying demo map content in your browser, it could be due to using MS4W's Apache server on port 80 and grunt serving GeoMoose files on port 4000.  This can be caused by a Cross Origin Resource Sharing (CORS) restriction in your Apache configuration.  You can remove the restriction by editing the `C:\ms4w\Apache\conf\httpd.conf` file and adding the lines starting with `Header`:
+If you have a problem displaying demo map content in your browser, it could be due to using MS4W's Apache server on port 80 and Webpack serving GeoMoose files on port 4000.  This can be caused by a Cross Origin Resource Sharing (CORS) restriction in your Apache configuration.  You can remove the restriction by editing the `C:\ms4w\Apache\conf\httpd.conf` file and adding the lines starting with `Header`:
 ```
 #
 # Configure MS4W locations and directories
@@ -81,7 +74,7 @@ If you have a problem displaying demo map content in your browser, it could be d
 <Location "/cgi-bin">
     Options None
     Require all granted
-   
+
     Header always set Access-Control-Allow-Origin "*"
     Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
     Header always set Access-Control-Max-Age "1000"
