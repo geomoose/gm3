@@ -11,7 +11,7 @@ This is the quickstart to *development* guide. If you are looking for a quicksta
 
 * Git
 * Docker or MapServer 7.0+ or Newer
-* [NodeJS with Npm](https://nodejs.org/) v6.10.2 or Newer
+* [NodeJS with Npm](https://nodejs.org/) v10 or Newer
 
 ## Node Version Manager
 
@@ -66,9 +66,9 @@ npm install
 
 ## Build the GeoMoose package
 
-This will create the combined `geomoose.js` file.
+This will create the combined `geomoose.min.js` file.
 ```
-grunt build
+npm run build
 ```
 
 ## Create a config.js file
@@ -95,9 +95,9 @@ npm test
 
 If the test are working then let's open up GeoMoose!
 ```
-grunt serve
+npm start
 ```
 
-Open GeoMoose in a browser: [http://localhost:4000/examples/desktop/debug.html](http://localhost:4000/examples/desktop/debug.html)
+Open GeoMoose in a browser: [http://localhost:4000/examples/desktop/index.html](http://localhost:4000/examples/desktop/index.html)
 
 
