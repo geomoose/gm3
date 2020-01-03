@@ -31,9 +31,9 @@ node_js:
 before_install:
     - sudo apt-get -qq update
     - sudo apt-get install -y libgif-dev libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev g++
-    # Install libraries needed for testing (that need a compiler to build).
-    - ./install_test_deps.sh
 
 # ensure the code lints clean.
 before_script:
     - npm run build
+    # Install libraries needed for testing (that need a compiler to build).
+    - ./install_test_deps.sh
