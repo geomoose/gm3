@@ -81,3 +81,24 @@ export {
     util,
     jsts,
 };
+
+
+// fix for dynamic import() path resolution
+function setPublicPath() {
+    var scriptTags = document.getElementsByTagName('script');
+    var distPath = '/';
+    for (var i = 0; i < scriptTags.length; i++) {
+        var src = scriptTags[i].getAttribute('src');
+        if (src.indexOf('geomoose.js') >= 0 || src.indexOf('geomoose.min.js') >= 0) {
+            distPath = src.split('/').slice(0, -1).join('/');
+        }
+    }
+
+    // ensure dist path ends in a slash.
+    if (distPath.slice(-1) !== '/') {
+        distPath += '/';
+    }
+    __webpack_public_path__ = distPath;
+}
+
+setPublicPath();

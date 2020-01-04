@@ -49,12 +49,24 @@ import DefaultLayouts from './printLayouts';
 import GeoPdfPlugin from './geopdf';
 import { getScalelineInfo } from '../scaleline';
 
+function loadFonts(fontsUrl) {
+    if (fontsUrl) {
+        // use fetch
+        fetch(fontsUrl, {
+            crossOrigin: 'anonymous',
+        })
+            .then(r => r.json())
+    } else {
+        // use the dynamic imports to load the default
+        //  fonts.
+        return import(/* webpackChunkName: "print-fonts" */ './fonts');
+    }
+}
 
 export default class PrintModal extends Modal {
 
     constructor(props) {
         super(props);
-
         this.state = {
             mapTitle: '',
             layout: 0,
@@ -97,8 +109,8 @@ export default class PrintModal extends Modal {
         const defaults = {
             size: 13,
             color: [0, 0, 0],
-            font: 'helvetica',
-            fontStyle: 'normal'
+            font: 'NotoSans',
+            fontStyle: 'regular'
         };
 
         // create a new font definition object based on
@@ -276,7 +288,21 @@ export default class PrintModal extends Modal {
         }
         // new PDF document
         const doc = new jsPDF(layout.orientation, layout.units, layout.page);
+        loadFonts(this.props.fontIndexUrl)
+            .then(fontIndex => {
+                for (const fontName in fontIndex.FONTS) {
+                    // add the file to the VFS
+                    doc.addFileToVFS(fontName, fontIndex.FONTS[fontName]);
+                    // add the font.
+                    const parts = fontName.replace('.ttf', '').split('-');
+                    doc.addFont(fontName, parts[0], parts[1].toLowerCase());
+                }
 
+                this.paintPDF(doc, layout);
+            });
+    }
+
+    paintPDF(doc, layout) {
         // iterate through the elements of the layout
         //  and place them in the document.
         for(const element of layout.elements) {
