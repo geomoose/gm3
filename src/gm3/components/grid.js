@@ -560,20 +560,20 @@ class Grid extends React.Component {
         return (
             <div className='gm-grid'>
                 <div className='toolbar'>
-                    <button
+                    <span
                         onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
                         className={'tool download'}
                         title='Download results as CSV'
                     >
                         <i className='icon download'></i>
-                    </button>
-                    <button
+                    </span>
+                    <span
                         onClick={ toggle_grid }
                         className={'tool ' + min_btn_class}
                         title='Min/Maximize Grid'
                     >
                         <i className={'icon ' + min_btn_class}></i>
-                    </button>
+                    </span>
                 </div>
                 <div className={'grid-display ' + grid_class}>
                     <table>

@@ -36,30 +36,37 @@
     -->
 </head>
 <body>
-    <div id="header">
-        <img height="50" src="logo.png">
-        <div id="toolbar"></div>
-    </div>
-
-    <div id="tabs" class="tab-parent">
-        <div class="tabs">
-            <span id="catalog-tab" class="tab show" onclick="showTab('catalog', event)">Catalog</span>
-            <span id="favorites-tab" class="tab" onclick="showTab('favorites', event)">Favorites</span>
-            <span id="visible-layers-tab" class="tab" onclick="showTab('visible-layers', event)">Visible</span>
-            <span id="service-tab-tab" class="tab" onclick="showTab('service-tab', event)">Super Tab</span>
+    <div id="main">
+        <div id="header">
+            <img height="50" src="logo.png">
+            <div id="toolbar"></div>
         </div>
-        <div class="tab-content" id="catalog"></div>
-        <div class="tab-content" id="favorites"></div>
-        <div class="tab-content" id="visible-layers"></div>
-        <div class="tab-content" id="service-tab"></div>
-    </div>
-    <button class="tab-toggler" onclick="toggleTabs('tabs')"><i class="tab-toggler-icon"></i></button>
-    <div id="map"></div>
-    <div id="results-grid"></div>
-    <div id="footer">
-        <span id="version"></span>
-        <span id="coordinate-display"></span>
-        <span id="jump-to-extent"></span>
+        <div id="middle">
+            <div id="tabs" class="tab-parent">
+                <div class="tabs">
+                    <span id="catalog-tab" class="tab show" onclick="showTab('catalog', event)">Catalog</span>
+                    <span id="favorites-tab" class="tab" onclick="showTab('favorites', event)">Favorites</span>
+                    <span id="visible-layers-tab" class="tab" onclick="showTab('visible-layers', event)">Visible</span>
+                    <span id="service-tab-tab" class="tab" onclick="showTab('service-tab', event)">Super Tab</span>
+                </div>
+                <div class="tab-content" id="catalog"></div>
+                <div class="tab-content" id="favorites"></div>
+                <div class="tab-content" id="visible-layers"></div>
+                <div class="tab-content" id="service-tab"></div>
+            </div>
+            <span class="tab-toggler" onclick="toggleTabs('tabs')"><i class="tab-toggler-icon"></i></span>
+            <div id="map-pane">
+                <div id="map-container">
+                    <div id="map"></div>
+                </div>
+                <div id="results-grid"></div>
+            </div>
+        </div>
+        <div id="footer">
+            <span id="version"></span>
+            <span id="coordinate-display"></span>
+            <span id="jump-to-extent"></span>
+        </div>
     </div>
 
     <div id="print-preview"></div>

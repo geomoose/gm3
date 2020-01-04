@@ -96,6 +96,7 @@
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
     "react-redux": "^5.0.7",
+    "react-resize-detector": "^4.2.1",
     "redux": "^3.7.2",
     "reqwest": "^2.0.5",
     "uglifyjs-webpack-plugin": "^1.2.4",

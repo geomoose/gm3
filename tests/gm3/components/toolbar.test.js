@@ -146,7 +146,7 @@ describe('Toolbar component tests', () => {
         };
 
         const btn = mount(<Provider store={store}><SmartToolbarButton tool={tool} /></Provider>);
-        btn.find('button').simulate('click');
+        btn.find('span.tool').simulate('click');
 
         const state = store.getState();
         expect(state.query.service).toBe('sample0');
@@ -165,7 +165,7 @@ describe('Toolbar component tests', () => {
         };
 
         const btn = mount(<SmartToolbarButton tool={tool} store={store} />);
-        btn.find('button').simulate('click');
+        btn.find('span.tool').simulate('click');
 
         expect(store.getState().ui.action).toBe('sample0');
     });

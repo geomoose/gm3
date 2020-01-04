@@ -40,14 +40,11 @@
 
 .tab-toggler {
     position: absolute;
+    cursor: pointer;
     bottom: 50%;
-    background-color: white;
-    border-radius: 15px;
-    border: solid 1px black;
     z-index: 1000;
-    width: 30px;
-    padding: 1px;
-    transition: left linear 500ms;
+    transform: rotate(0deg);
+    transition: left ease 500ms, transform ease 500ms;
 }
 
 .tabs-closed .tab-toggler {
@@ -62,12 +59,8 @@
     padding-left: 0px;
 }
 
-.tabs-closed .tab-toggler .tab-toggler-icon:before {
-    content: "\f0a9";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-size: 1.3em;
-    padding-left: 0px;
+.tabs-closed .tab-toggler {
+    transform: rotate(180deg);
 }
 
 .tabs-closed .tab-content, .tabs-closed .tabs {

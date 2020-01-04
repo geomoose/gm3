@@ -30,8 +30,8 @@
  */
 
 import React from 'react';
-
 import { connect } from 'react-redux';
+import ReactResizeDetector from 'react-resize-detector';
 
 import uuid from 'uuid';
 import md5 from 'md5/md5';
@@ -881,13 +881,7 @@ class Map extends React.Component {
                 {
                     'id': 'dummy',
                     'source': 'dummy-source',
-                    'paint': {
-                        'fill-color': '#ff0000',
-                        'line-color': '#00ff00',
-                        'circle-radius': 4,
-                        'circle-color': '#ff00ff',
-                        'circle-stroke-color': '#ff0000'
-                    }
+                    'paint': this.props.selectionStyle,
                 }
             ],
             'dummy-source': [
@@ -1336,6 +1330,7 @@ class Map extends React.Component {
                 }}
             >
                 <AttributionDisplay store={this.props.store} />
+                <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
                 {enableZoomJump && <JumpToZoom store={this.props.store} />}
             </div>
         )
@@ -1348,6 +1343,7 @@ function mapState(state) {
         mapView: state.map,
         queries: state.query,
         config: state.config.map || {},
+        selectionStyle: state.config.selectionStyle,
     }
 }
 

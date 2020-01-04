@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-@folder-color: #FFDC29;
+@folder-color: #333333;
 @refresh-icon-disabled-color: #82A984;
 @refresh-icon-enabled-color: #5DF265;
 @icon-size: 20px;
@@ -177,15 +177,14 @@
 
 .icon.folder {
     color: @folder-color;
+    transition: transform linear 300ms;
     &:before {
-        content: @fa-var-folder;
+        content: @fa-var-caret-right;
     }
 }
 
 .icon.folder.open {
-    &:before {
-        content: @fa-var-folder-open;
-    }
+    transform: rotate(90deg);
 }
 
 .icon.refresh {

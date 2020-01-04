@@ -188,7 +188,9 @@ class ServiceManager extends React.Component {
 
                 <div className='results-info-item zoomto'>
                     <div className='label'>Zoom to results</div>
-                    <div className='value icon zoomto' onClick={() => { this.props.zoomToResults(query); }}></div>
+                    <div className='value' onClick={() => { this.props.zoomToResults(query); }}>
+                        <span className='icon zoomto'></span>
+                    </div>
                 </div>
             </div>
         );
