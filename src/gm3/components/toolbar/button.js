@@ -38,7 +38,7 @@ export class ToolbarButton extends React.Component {
         const tool = this.props.tool;
 
         return (
-            <button
+            <span
                 onClick={() => {
                     this.props.onClick(tool);
                 }}
@@ -47,7 +47,7 @@ export class ToolbarButton extends React.Component {
                 title={tool.label}
             >
                 <span className='icon'></span><span className='label'>{tool.label}</span>
-            </button>
+            </span>
         );
     }
 }

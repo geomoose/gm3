@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+@import 'normalize.css';
+@import 'skeleton.css';
 @import 'tabs.css';
 @import 'grid.css';
 
@@ -29,39 +31,53 @@ body {
     font-family: sans-serif;
 }
 
-#tabs, #map, #results-grid{
+#main {
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    top: 75px; left: 0;
-}
-
-#map, #results-grid {
-    overflow: auto;
-}
-
-#map {
-    bottom: 20px;
-    border-left: solid black 1px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 #header {
-    top: 0; left: 0;
-    width: 100%;
-
-    position: absolute;
     border-bottom: solid 1px black;
-
     background-color: #eee;
+}
 
-    height: 75px;
+#middle {
+    display: flex;
+    flex: 7;
+}
+
+#footer {
+    border-top: solid 1px black;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#tabs {
+    position: relative;
+    min-width: 350px;
+    transition: min-width ease 500ms;
+}
+
+#map-pane {
+    flex: 1;
+    border-left: solid black 1px;
+    flex-direction: column;
+    display: flex;
+}
+
+#map-container {
+    flex: 1;
+    position: relative;
 }
 
 #header img {
     display: inline;
-}
-
-#tabs {
-    bottom: 20px;
-    border-top: solid 1px black;
 }
 
 #map .map {
@@ -71,25 +87,7 @@ body {
     height: 100%;
 }
 
-#results-grid {
-    z-index: 100;
-    bottom: 20px; top: auto;
-    background-color: #eee;
-}
-
-#footer {
-    position: absolute;
-    bottom: 0;
-    height: 20px;
-    left: 0; width: 100%;
-    border-top: solid 1px black;
-    overflow: hidden;
-}
-
 #version {
-    float: left;
-    width: 15%;
-
     padding-left: 20px;
     background-image: url(logo-mini.png);
     background-repeat: no-repeat;
@@ -99,63 +97,50 @@ body {
 }
 
 #coordinate-display {
-    float: left;
-    width: 68%;
+    flex: 1;
     text-align: center;
     overflow: hidden;
 }
 
 #jump-to-extent {
-    float: right;
-    width: 14%;
+    text-align: right;
 }
 
-#map, #results-grid {
-    right: 0;
+#jump-to-extent select {
+    margin: auto;
 }
 
 .tabs-closed #tabs {
     width: 0px;
-}
-
-.tabs-closed #map, .tabs-closed #results-grid {
-    left: 0px;
+    min-width: 0px;
 }
 
 
 /* This is the main "layout" code that handles the split
  * between the map, grid, and tabs.
  */
-
 @media screen and (max-width: 500px) {
     body {
         font-size: 60%;
     }
 
     #tabs {
-        width: 220px;
+        min-width: 220px;
     }
 
     .tab-toggler {
-        left: 205px;
+        left: 218px;
     }
 
-    #map, #results-grid {
-        left: 220px;
-    }
 }
 
 @media screen and (min-width: 500px) {
     #tabs {
-        width: 350px;
+        min-width: 350px;
     }
 
     .tab-toggler {
-        left: 335px;
-    }
-
-    #map, #results-grid {
-        left: 350px;
+        left: 348px;
     }
 }
 

@@ -67,9 +67,32 @@ import * as util from './util';
 
 import { HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
 
+function hydrateConfig(userConfig) {
+    const config = Object.assign({}, userConfig);
+    // the depth of resultsStyle makes this slightly trickier to
+    //  set the defaults, so it's handled individually.
+    if (userConfig.resultsStyle) {
+        config.resultsStyle = {
+            highlight: Object.assign({}, HIGHLIGHT_STYLE, userConfig.resultsStyle.highlight),
+            hot: Object.assign({}, HIGHLIGHT_HOT_STYLE, userConfig.resultsStyle.hot),
+        };
+    } else {
+        config.resultsStyle = {
+            highlight: HIGHLIGHT_STYLE,
+            hot: HIGHLIGHT_HOT_STYLE,
+        };
+    }
+
+    config.selectionStyle = Object.assign({}, SELECTION_STYLE, userConfig.selectionStyle);
+
+    return config;
+}
+
 class Application {
 
-    constructor(config = {}) {
+    constructor(userConfig = {}) {
+        const config = hydrateConfig(userConfig);
+
         this.elements = [];
 
         this.services = {};
@@ -167,7 +190,6 @@ class Application {
             style: hot_style,
             filter: ['==', 'displayClass', 'hot']
         }));
-
     }
 
     configureSelectionLayer(selectionStyle) {
