@@ -353,6 +353,16 @@ class ServiceManager extends React.Component {
         } else {
             const service_name = this.state.lastService;
             const service_def = nextProps.services[service_name];
+
+            if (service_def &&
+                service_def.tools &&
+                service_def.tools.default !== this.props.map.interactionType) {
+                // TODO: The last tool state for a service should be saved so
+                //       as much interaction state as possible can be restored.
+                // restore the default tool when re-clicking the service.
+                this.props.changeDrawTool(service_def.tools.default);
+            }
+
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
             if(service_def && service_def.autoGo) {
