@@ -250,7 +250,7 @@ export class MeasureTool extends Component {
                 </div>
             );
         } else if (g.type === 'Point') {
-            return ( <CoordinateDisplay coords={ g.coordinates } projections={ this.props.pointProjections } /> );
+            return ( <CoordinateDisplay coords={ g.coordinates } projections={ this.props.pointProjections } resolution={ this.props.map.resolution } /> );
         } else if (g.type === 'LineString') {
             return this.renderSegments(g);
         } else if (g.type === 'Polygon') {
