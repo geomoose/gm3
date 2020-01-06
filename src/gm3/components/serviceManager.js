@@ -356,6 +356,7 @@ class ServiceManager extends React.Component {
 
             if (service_def &&
                 service_def.tools &&
+                this.props.map.interactionType == null &&
                 service_def.tools.default !== this.props.map.interactionType) {
                 // TODO: The last tool state for a service should be saved so
                 //       as much interaction state as possible can be restored.
