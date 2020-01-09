@@ -67,6 +67,11 @@ export default class PrintModal extends Modal {
 
     constructor(props) {
         super(props);
+        this.BodyProps = {
+            style: {
+                maxHeight: '500px',
+            },
+        };
         this.state = {
             mapTitle: '',
             layout: 0,

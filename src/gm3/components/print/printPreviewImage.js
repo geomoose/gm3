@@ -40,11 +40,6 @@ class PrintPreviewImage extends React.Component {
     }
 
     render() {
-        const image_style = {
-            display: 'block',
-            width: '100%'
-        };
-
         const print_data = this.props.print.printData;
 
         if(print_data) {
@@ -63,11 +58,28 @@ class PrintPreviewImage extends React.Component {
                     </ol>
                 </div>);
             } else {
-                return (<img alt='map preview' style={image_style} src={print_data}/>);
+                return (
+                    <div style={{textAlign: 'center'}}>
+                        <img
+                            height={150} style={{border: 'solid 1px #333', maxWidth: '100%'}} alt='map preview' src={print_data}
+                        />
+                    </div>
+                );
             }
 
         }
-        return false;
+        return (
+            <div style={{textAlign: 'center'}}>
+                <div
+                    style={{
+                        border: 'solid 1px black',
+                        width: '100px',
+                        height: '150px',
+                    }}
+                >
+                </div>
+            </div>
+        );
     }
 }
 
