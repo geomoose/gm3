@@ -321,8 +321,6 @@ class ServiceManager extends React.Component {
 
         if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
-            const service_def = nextProps.services[nextProps.queries.service];
-
             // some 'internal' services won't have a bespoke service_def,
             //  e.g. measure.
             if(nextProps.queries.service === 'measure') {

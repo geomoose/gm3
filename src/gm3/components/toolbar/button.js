@@ -80,7 +80,6 @@ function mapDispatch(dispatch, ownProps) {
                 }
                 if (ownProps.serviceDef && ownProps.serviceDef.tools && ownProps.serviceDef.tools.default) {
                     // switch to the default tool if the current tool is null or not supported.
-                    const defaultTool = ownProps.serviceDef.tools.default;
                     if (currentDrawTool === null || !ownProps.serviceDef.tools[currentDrawTool]) {
                         dispatch(changeTool(ownProps.serviceDef.tools.default));
                     }
