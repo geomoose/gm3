@@ -35,6 +35,7 @@ import SmartToolbar from 'gm3/components/toolbar';
 
 import toolbarReducer from 'gm3/reducers/toolbar';
 import queryReducer from 'gm3/reducers/query';
+import mapReducer from 'gm3/reducers/map';
 import * as actions from 'gm3/actions/toolbar';
 
 import uiReducer from 'gm3/reducers/ui';
@@ -85,6 +86,7 @@ describe('Toolbar component tests', () => {
 
         const store = createStore(combineReducers({
             toolbar: toolbarReducer,
+            map: mapReducer,
         }));
 
         shallow(<Toolbar store={store} toolbar={toolbar} />);
@@ -92,7 +94,9 @@ describe('Toolbar component tests', () => {
 
     it('renders a toolbar from the store', function() {
         const store = createStore(combineReducers({
-            toolbar: toolbarReducer
+            toolbar: toolbarReducer,
+            map: mapReducer,
+            query: queryReducer,
         }));
         store.dispatch(actions.addDrawer('root', {
             name: 'drawer0', label: 'Drawer 0',
@@ -137,6 +141,7 @@ describe('Toolbar component tests', () => {
         const store = createStore(combineReducers({
             toolbar: toolbarReducer,
             query: queryReducer,
+            map: mapReducer,
         }));
 
         const tool = {
@@ -156,6 +161,8 @@ describe('Toolbar component tests', () => {
         const store = createStore(combineReducers({
             toolbar: toolbarReducer,
             ui: uiReducer,
+            map: mapReducer,
+            query: queryReducer,
         }));
 
         const tool = {

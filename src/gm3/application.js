@@ -273,12 +273,9 @@ class Application {
 
     add(component, domId, inProps = {}) {
         const props = Object.assign({
-            store: this.store
+            store: this.store,
         }, inProps);
-
-        if(inProps.services) {
-            props.services = this.services;
-        }
+        props.services = this.services;
 
         const e = React.createElement(component, props);
         return ReactDOM.render(e, document.getElementById(domId));

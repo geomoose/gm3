@@ -32,6 +32,7 @@ import { connect } from 'react-redux';
 
 import { startService } from '../../actions/service';
 import { runAction, setUiHint } from '../../actions/ui';
+import { setSelectionBuffer, changeTool } from '../../actions/map';
 
 export class ToolbarButton extends React.Component {
     render() {
@@ -40,7 +41,7 @@ export class ToolbarButton extends React.Component {
         return (
             <span
                 onClick={() => {
-                    this.props.onClick(tool);
+                    this.props.onClick(tool, this.props.currentService, this.props.currentDrawTool);
                 }}
                 key={tool.name}
                 className={'tool ' + tool.name}
@@ -53,7 +54,7 @@ export class ToolbarButton extends React.Component {
 }
 
 ToolbarButton.defaultProps = {
-    onClick: (tool) => {
+    onClick: (tool, currentService) => {
     },
 };
 
@@ -62,12 +63,27 @@ ToolbarButton.propTypes = {
     onClick: PropTypes.func,
 };
 
-function mapDispatch(dispatch) {
+const mapState = state => ({
+    currentService: state.query.service,
+    currentDrawTool: state.map.interactionType,
+});
+
+function mapDispatch(dispatch, ownProps) {
     return {
-        onClick: (tool) => {
+        onClick: (tool, currentService, currentDrawTool) => {
             if(tool.actionType === 'service') {
                 // start the service
                 dispatch(startService(tool.name));
+                // reset the buffer if changing tools
+                if (tool.name !== currentService) {
+                    dispatch(setSelectionBuffer(0));
+                }
+                if (ownProps.serviceDef && ownProps.serviceDef.tools && ownProps.serviceDef.tools.default) {
+                    // switch to the default tool if the current tool is null or not supported.
+                    if (currentDrawTool === null || !ownProps.serviceDef.tools[currentDrawTool]) {
+                        dispatch(changeTool(ownProps.serviceDef.tools.default));
+                    }
+                }
                 // give an indication that a new service has been started
                 dispatch(setUiHint('service-start'));
             } else if(tool.actionType === 'action') {
@@ -77,4 +93,4 @@ function mapDispatch(dispatch) {
     };
 }
 
-export default connect(undefined, mapDispatch)(ToolbarButton);
+export default connect(mapState, mapDispatch)(ToolbarButton);
