@@ -325,11 +325,7 @@ class ServiceManager extends React.Component {
 
             // some 'internal' services won't have a bespoke service_def,
             //  e.g. measure.
-            if(service_def) {
-                // clear out the previous drawing tool when
-                //  changing services.
-                this.props.changeDrawTool(service_def.tools.default);
-            } else if(nextProps.queries.service === 'measure') {
+            if(nextProps.queries.service === 'measure') {
                 // handle the measure tool special case and default
                 //  it to Lines...
                 this.props.changeDrawTool('LineString');
@@ -343,26 +339,9 @@ class ServiceManager extends React.Component {
             if(!this.fieldValues[nextProps.queries.service]) {
                 this.fieldValues[nextProps.queries.service] = {};
             }
-
-            // when the seleciton buffer zero, and the service
-            //  does not actually support buffering, remove the buffer.
-            if(this.props.map.selectionBuffer !== 0
-               && (!service_def || !service_def.bufferAvailable)) {
-                this.props.setBuffer(0);
-            }
         } else {
             const service_name = this.state.lastService;
             const service_def = nextProps.services[service_name];
-
-            if (service_def &&
-                service_def.tools &&
-                this.props.map.interactionType === null &&
-                service_def.tools.default !== this.props.map.interactionType) {
-                // TODO: The last tool state for a service should be saved so
-                //       as much interaction state as possible can be restored.
-                // restore the default tool when re-clicking the service.
-                this.props.changeDrawTool(service_def.tools.default);
-            }
 
             // if this service has 'autoGo' and the feature is different
             //  than the last one, then execute the query.
@@ -442,9 +421,14 @@ class ServiceManager extends React.Component {
                     serviceName={service_name}
                     serviceDef={service_def}
                     onSubmit={(values) => {
+                        if (service_def.autoGo !== true) {
+                            // end the drawing
+                            this.props.changeDrawTool(null);
+                        }
                         this.props.startQuery(this.props.map.selectionFeatures, service_def, values);
                     }}
                     onCancel={() => {
+                        this.props.changeDrawTool(null);
                         this.props.onServiceFinished();
                     }}
                 />
@@ -541,9 +525,6 @@ function mapDispatch(dispatch, ownProps) {
         clearSelectionFeatures: () => {
             dispatch(mapActions.clearSelectionFeatures());
             dispatch(clearFeatures('selection'));
-        },
-        setBuffer: (distance) => {
-            dispatch(mapActions.setSelectionBuffer(distance));
         },
         onServiceFinished: () => {
             dispatch(finishService());
