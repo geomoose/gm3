@@ -103,7 +103,7 @@ export default class ModalDialog extends React.Component {
                     <div className='modal-title'>
                         <h3>{ this.getTitle() }</h3>
                     </div>
-                    <div className='modal-body'>
+                    <div className='modal-body' style={this.BodyProps && this.BodyProps.style}>
                         { this.renderBody() }
                     </div>
 
