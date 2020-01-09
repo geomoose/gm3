@@ -18,7 +18,7 @@ This Quickstart is intended for *developers* who are looking to delve into GeoMo
 
 ```
 npm install
-grunt build
+npm run build
 ```
 
 ## Running Tests
