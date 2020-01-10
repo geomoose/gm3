@@ -6,6 +6,10 @@ This is covered by the MIT license for the GeoMoose project.
 
 ## NotoSans font files
 
-More information on Noto Sans and its license can be found here:
+The Noto Sans TTF files are Copyright 2012 Google Inc. All Rights Reserved and
+used under the Apache License, Version 2.0 (See NotoSans-LICENSE.txt).
+
+More information on Noto Sans can be found here:
 
  - https://fonts.google.com/specimen/Noto+Sans
+
