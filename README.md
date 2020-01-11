@@ -3,7 +3,7 @@
 This is the main repository for the new GeoMoose3 library/application. To learn more about GeoMoose [visit the homepage.](http://www.geomoose.org)
 
 [![Build Status](https://api.travis-ci.org/geomoose/gm3.svg?branch=master)](https://travis-ci.org/geomoose/gm3)
-[![BrowserStack Status](https://api.browserstack.com/automate/badge.svg?badge_key=MWMxZXdqRFR1N21rUUVGR1pTMFBMK05aNjBiWGFrY3JEMXZWakdCZ0ZLMD0tLXdrVnpJV1FlVjA5bkRNRWoyTzF1cVE9PQ==--9b6c66c4c5090287ff47ca1fb730d35494b1cdc3)](https://api.browserstack.com/automate/public-build/MWMxZXdqRFR1N21rUUVGR1pTMFBMK05aNjBiWGFrY3JEMXZWakdCZ0ZLMD0tLXdrVnpJV1FlVjA5bkRNRWoyTzF1cVE9PQ==--9b6c66c4c5090287ff47ca1fb730d35494b1cdc3)
+[![BrowserStack Status](https://api.browserstack.com/automate/badge.svg?badge_key=cERGdUNyMFlMOEhKbW5OeEtlTm9LS212UVoxNlYyWHdpS2ZHMGpFUExDOD0tLTFOYnBBWHk0Nkdodk5xNlFUZnZiSEE9PQ==--65689ed559d4b9f50fa15a378d55d5a5c2f3d254)](https://api.browserstack.com/automate/public-build/cERGdUNyMFlMOEhKbW5OeEtlTm9LS212UVoxNlYyWHdpS2ZHMGpFUExDOD0tLTFOYnBBWHk0Nkdodk5xNlFUZnZiSEE9PQ==--65689ed559d4b9f50fa15a378d55d5a5c2f3d254)
 
 
 ## Quickstart
