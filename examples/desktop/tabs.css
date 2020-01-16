@@ -45,10 +45,15 @@
     z-index: 1000;
     transform: rotate(0deg);
     transition: left ease 500ms, transform ease 500ms;
+    background-color: white;
+    border: solid 1px black;
+    border-radius: 0px 10px 10px 0px;
+    padding: 1px;
+    margin-left: 2px;
 }
 
 .tabs-closed .tab-toggler {
-    left: 0;
+    left: -2px;
 }
 
 .tab-toggler .tab-toggler-icon:before {
@@ -59,8 +64,12 @@
     padding-left: 0px;
 }
 
-.tabs-closed .tab-toggler {
-    transform: rotate(180deg);
+.tabs-closed .tab-toggler-icon:before {
+    content: "\f0a9";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-size: 1.3em;
+    padding-left: 0px;
 }
 
 .tabs-closed .tab-content, .tabs-closed .tabs {
