@@ -66,7 +66,7 @@ function parseGroup(groupXml) {
  *
  * @returns Object representing the layer
  */
-function parseLayer(store, layerXml) {
+function parseLayer(store, layerXml, exclusive = false) {
     const new_layer = {
         id: layerXml.getAttribute('uuid'),
         label: layerXml.getAttribute('title'),
@@ -78,6 +78,7 @@ function parseLayer(store, layerXml) {
         metadata_url: null,
         tools: [],
         tip: layerXml.getAttribute('tip'),
+        exclusive,
     };
 
     // This is the first attempt at a new model
@@ -187,17 +188,14 @@ function subtreeActions(store, parent, subtreeXml) {
             // build the tree by recursion.
             actions = actions.concat(subtreeActions(store, group, childNode));
         } else if(childNode.tagName === 'layer') {
-            const layer = parseLayer(store, childNode);
-            actions.push({type: CATALOG.ADD_LAYER, child: layer})
+            const layer = parseLayer(store, childNode, parent && parent.multiple === false);
+            actions.push({type: CATALOG.ADD_LAYER, child: layer});
             child = layer;
         }
-
-
         if(child && child.id) {
             actions.push({type: CATALOG.ADD_CHILD, parentId: parent_id, childId: child.id});
         }
     }
-
     return actions;
 }
 

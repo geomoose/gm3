@@ -32,6 +32,9 @@ import { isLayerOn } from '../../util';
 class LayerCheckbox extends React.Component {
     render() {
         let classes = 'checkbox icon';
+        if(this.props.layer.exclusive === true) {
+            classes = 'radio icon';
+        }
         if(this.props.on) {
             classes += ' on';
         }
@@ -40,7 +43,7 @@ class LayerCheckbox extends React.Component {
             <i
                 className={ classes }
                 onClick={() => {
-                    this.props.onChange(!this.props.on);
+                    this.props.onChange(!this.props.on, this.props.neighbors);
                 }}
             />
         );
@@ -48,20 +51,50 @@ class LayerCheckbox extends React.Component {
     }
 }
 
+function getNeighboringLayers(catalog, layer) {
+    // get the parent node
+    const parent = catalog[layer.parent];
+    let srcs = [];
+    for (let c = 0, cc = parent.children.length; c < cc; c++) {
+        const node = catalog[parent.children[c]];
+        if (node.id !== layer.id && (!node.children || node.children.length === 0)) {
+            srcs = srcs.concat(node.src);
+        }
+    }
+    return srcs;
+}
+
 function mapStateProps(state, ownProps) {
     return {
         on: isLayerOn(state.mapSources, ownProps.layer),
+        // group is only needed when a layer is exclusive
+        neighbors: ownProps.layer.exclusive === true ?
+            getNeighboringLayers(state.catalog, ownProps.layer) : [],
     };
 }
 
 function mapDispatchProps(dispatch, ownProps) {
     return {
-        onChange: (on) => {
+        onChange: (on, neighbors) => {
             const layer = ownProps.layer;
-
-            for(let s = 0, ss = layer.src.length; s < ss; s++) {
-                const src = layer.src[s];
-                dispatch(setLayerVisibility(src.mapSourceName, src.layerName, on));
+            if (layer.exclusive !== true) {
+                // do toggling
+                for (let s = 0, ss = layer.src.length; s < ss; s++) {
+                    const src = layer.src[s];
+                    dispatch(setLayerVisibility(src.mapSourceName, src.layerName, on));
+                }
+            } else {
+                // ensure a click means turning on
+                for (let s = 0, ss = layer.src.length; s < ss; s++) {
+                    const src = layer.src[s];
+                    dispatch(setLayerVisibility(src.mapSourceName, src.layerName, true));
+                }
+                // turn off all the other sources for
+                //  every other layer in the group
+                for (let n = 0, nn = neighbors.length; n < nn; n++) {
+                    const src = neighbors[n];
+                    dispatch(setLayerVisibility(src.mapSourceName, src.layerName, false));
+                }
             }
         },
     }

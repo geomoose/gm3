@@ -503,7 +503,7 @@
             <layer title="1 mile grid" src="grids/grid_1mile"/>
         </group>
 
-        <group title="Backgrounds" expand="true">
+        <group title="Backgrounds" expand="true" multiple="false">
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
             <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
