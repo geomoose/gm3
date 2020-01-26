@@ -38,3 +38,37 @@ In order to remove specific options, simply switch true to false for the specifi
         'buffer': true
     };
 ```
+
+## Configuring Auto-go
+
+The select tool can also be configured to automatically select after entering a selection geometry, without requiring users to click GO. This option is only compatible with selection options that don't require additional user input. These options are Box, Point, Line, and Polygon. 
+
+
+To configure auto-go, modify autoGo to true in `select.js`:
+
+```html
+    this.autoGo = true;
+```
+
+Selection options that are not compatible with autoGo need to be turned off:
+
+```html
+    /** Limit the number of selection tools available */
+    this.tools = {
+        'Box': true,
+        'Point': true,
+        'MultiPoint': false,
+        'Polygon': true,
+        'LineString': true,
+        'Select': false,
+        'Modify': false,
+        'default': 'Polygon',
+        'buffer': false
+    };
+```
+
+Buffer also needs to specifically be turned off in `select.js`:
+
+```html
+    this.bufferAvailable = false;
+```
