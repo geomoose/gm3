@@ -71,7 +71,11 @@
             }
             ]]></style>
             <template name="search"><![CDATA[
-                <div class="search-result">
+                <div
+                    class="search-result"
+                    onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+                    onmouseleave="app.clearHighlight()"
+                >
                     <div class="search-label">
                         {{ properties.OWNER_NAME }}
                     </div>
