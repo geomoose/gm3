@@ -56,3 +56,4 @@ In the `mapbook.xml`:
     ```xml
     <tool name="search-firestations" title="Search Firestations" type="service"/>
     ```
+
