@@ -73,6 +73,24 @@ export default class ServiceForm extends React.Component {
         };
     }
 
+    submit() {
+        const service_def = this.props.serviceDef;
+
+        // validate field values
+        let validateFieldValuesResultValid = true;
+        let validateFieldValuesResultMessage = null;
+        if (service_def.validateFieldValues) {
+            const validateFieldValuesResult = service_def.validateFieldValues(this.state.values);
+            validateFieldValuesResultValid = validateFieldValuesResult.valid;
+            validateFieldValuesResultMessage = validateFieldValuesResult.message;
+        }
+        if (validateFieldValuesResultValid) {
+            this.props.onSubmit(this.state.values);
+        }
+        // update state validation message
+        this.setState( {validateFieldValuesResultMessage} );
+    }
+
     /** Function to handle bashing 'Enter' and causing
      *  the service form to submit.
      *
@@ -82,7 +100,7 @@ export default class ServiceForm extends React.Component {
     handleKeyboardShortcuts(evt) {
         const code = evt.which;
         if(code === 13) {
-            this.props.onSubmit(this.state.values);
+            this.submit();
         } else if(code === 27) {
             this.props.onCancel();
         }
@@ -160,22 +178,14 @@ export default class ServiceForm extends React.Component {
                 }
                 <div className='tab-controls'>
                     <button className='close-button' onClick={() => { this.props.onCancel(); }}><i className='close-icon'></i> Close</button>
-                    <button className='go-button' onClick={() =>
-                    {
-                        // validate field values
-                        let validateFieldValuesResultValid = true;
-                        let validateFieldValuesResultMessage = null;
-                        if (service_def.validateFieldValues) {
-                            const validateFieldValuesResult = service_def.validateFieldValues(this.state.values);
-                            validateFieldValuesResultValid = validateFieldValuesResult.valid;
-                            validateFieldValuesResultMessage = validateFieldValuesResult.message;
-                        }
-                        if (validateFieldValuesResultValid) {
-                            this.props.onSubmit(this.state.values);
-                        }
-                        // update state validation message
-                        this.setState( {validateFieldValuesResultMessage} );
-                    }}><i className='go-icon'></i> Go</button>
+                    <button
+                        className='go-button'
+                        onClick={() => {
+                            this.submit();
+                        }}
+                    >
+                        <i className='go-icon'></i> Go
+                    </button>
                 </div>
             </div>
         );
