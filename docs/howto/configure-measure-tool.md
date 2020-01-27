@@ -27,3 +27,17 @@ Here's the example from the demo:
   * `ch` for chains.
   * `a` for acres.
   * `h` for hectares.
+
+## Example of setting the default units to meters
+
+The code below will set the default the measurement units to meters instead of feet.
+
+```javascript
+    app.add(gm3.components.ServiceManager, 'service-tab', {
+        services: true,
+        measureToolOptions: {
+            pointProjections: point_projections,
+            initialUnits: 'm'
+        }
+    });
+```

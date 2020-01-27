@@ -152,7 +152,8 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.add(gm3.components.ServiceManager, 'service-tab', {
         services: true,
         measureToolOptions: {
-            pointProjections: point_projections
+            pointProjections: point_projections,
+            initialUnits: 'mi'
         }
     });
 
