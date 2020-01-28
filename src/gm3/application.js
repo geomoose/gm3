@@ -283,6 +283,18 @@ class Application {
         return ReactDOM.render(e, document.getElementById(domId));
     }
 
+    addPlugin(component, domId, inProps = {}) {
+        const props = Object.assign({
+            store: this.store,
+            React: React,
+            ReactDOM: ReactDOM,
+        }, inProps);
+        props.services = this.services;
+
+        const e = React.createElement(component, props);
+        return ReactDOM.render(e, document.getElementById(domId));
+    }
+
 
     /** Run a query against the listed map-sources.
      *

@@ -38,7 +38,7 @@ module.exports = env => {
         new webpack.BannerPlugin(license_text),
         new webpack.DefinePlugin({
             GM_VERSION: JSON.stringify(package.version)
-        })
+        }),
     ];
 
     let filename = env && env.outfile ? env.outfile : 'geomoose.js';
