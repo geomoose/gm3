@@ -37,3 +37,10 @@ before_script:
     - npm run build
     # Install libraries needed for testing (that need a compiler to build).
     - ./install_test_deps.sh
+  
+# send notifications of changes
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#geomoose"
+    use_notice: true    
