@@ -41,6 +41,9 @@ function renderServiceField(fieldDef, value, onChange) {
         InputClass = LengthInput;
     } else if (fieldDef.type === 'layers-list') {
         InputClass = LayersInput;
+    } else if(fieldDef.type === 'hidden') {
+        // render nothing and like it.
+        return false;
     }
 
     return (
