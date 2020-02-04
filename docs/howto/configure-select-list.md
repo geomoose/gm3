@@ -14,6 +14,9 @@ Now you need to add your new select service to your `app.js ` configuration file
 ```javascript
     // specify service with list of available selections:
             app.registerService('select-list', SelectService, {
+            
+           // Uncomment title parameter if you wish to change the service title
+           // title: 'Select Taxlots',
  
               fields: [{
                 type: 'select',
