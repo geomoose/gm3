@@ -9,6 +9,7 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
         * [How-to configure a search to require field completion](./configure-search-fieldrequired.md)
     * [How-to add a layer to select](./add-select.md)
         * [How-to modify select options](./configure-select-options.md)
+        * [How-to select from list of layers](./configure-select-list.md)
 
 * [How-to add a GeoJSON layer](./add-geojson.md)
 * [How-to use GeoJSON/WFS](./geojson-wfs.md)
