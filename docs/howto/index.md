@@ -6,6 +6,7 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
 
     * [How-to add identify to a layer](./add-identify.md)
     * [How-to add a layer search](./add-search.md)
+        * [How-to configure a search to require field completion](./configure-search-fieldrequired.md)
     * [How-to add a layer to select](./add-select.md)
         * [How-to modify select options](./configure-select-options.md)
 
