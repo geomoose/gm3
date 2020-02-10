@@ -644,6 +644,9 @@ class Application {
      */
     startService(serviceName, options) {
         this.store.dispatch(serviceActions.startService(serviceName));
+        if (options.changeTool) {
+            this.store.dispatch(mapActions.changeTool(options.changeTool));
+        }
     }
 
     /** Handle updating the UI, does nothing in vanilla form.
