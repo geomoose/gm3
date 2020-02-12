@@ -93,7 +93,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     // kick off an idenify.
     $('#identify-btn').on('click', function() {
-        app.startService('identify');
+        app.startService('identify', {changeTool: 'Point'});
         changeTab('map');
     });
 
