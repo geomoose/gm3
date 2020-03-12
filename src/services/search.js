@@ -36,8 +36,14 @@ function SearchService(Application, options) {
     /** Title to show at the top of the results. */
     this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Search Results';
 
+    /** Header template for rendering before features. */
+    this.headerTemplate = options.headerTemplate ? options.headerTemplate : '@search-header';
+
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@search';
+
+    /** Footer template for rendering before features. */
+    this.footerTemplate = options.footerTemplate ? options.footerTemplate : '@search-footer';
 
     /** Name will be set by the application when the service is registered. */
     this.name = '';
@@ -124,6 +130,9 @@ function SearchService(Application, options) {
             // short-handing the item in the loop.
             var path = query.layers[i];
 
+            // add the header contents
+            html += Application.renderTemplate(path, this.headerTemplate, query);
+
             // check to see that the layer has results and features were returned.
             if(query.results[path]) {
                 // renderFeaturesWithTemplate will take the query, the layer specified by path,
@@ -133,6 +142,10 @@ function SearchService(Application, options) {
                 //  child which will be rendered here..
                 html += Application.renderFeaturesWithTemplate(query, path, this.template);
             }
+
+            // and footer contents.
+            html += Application.renderTemplate(path, this.footerTemplate, query);
+            
         }
 
         // return the html for rendering.
