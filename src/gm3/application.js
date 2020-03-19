@@ -644,7 +644,7 @@ class Application {
      */
     startService(serviceName, options) {
         this.store.dispatch(serviceActions.startService(serviceName));
-        if (options.changeTool) {
+        if (options && options.changeTool) {
             this.store.dispatch(mapActions.changeTool(options.changeTool));
         }
     }
