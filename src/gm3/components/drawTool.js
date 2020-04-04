@@ -36,7 +36,6 @@ class DrawTool extends React.Component {
     constructor(props) {
         super(props);
 
-        this.changeDrawTool = this.changeDrawTool.bind(this);
         this.changeSelectLayer = this.changeSelectLayer.bind(this);
 
         this.state = {
@@ -47,10 +46,6 @@ class DrawTool extends React.Component {
             this.state.selectLayer = this.props.selectableLayers[0];
         }
 
-    }
-
-    changeDrawTool(type) {
-        this.props.store.dispatch(changeTool(type, this.state.selectLayer));
     }
 
     changeSelectLayer(event) {
@@ -72,6 +67,17 @@ class DrawTool extends React.Component {
         }
 
         return options;
+    }
+
+    componentDidMount() {
+        // if starting up with the select tool,
+        //  ensure there is a valid active layer.
+        if (this.props.geomType === 'Select') {
+            // this.changeSelectLayer(this.props.selectableLayers[0]);
+            const firstLayer = this.props.selectableLayers[0];
+            this.setState({selectLayer: firstLayer});
+            this.props.onChange('Select', firstLayer);
+        }
     }
 
     render() {
