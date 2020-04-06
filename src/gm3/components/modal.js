@@ -49,12 +49,16 @@ export default class ModalDialog extends React.Component {
 
     renderOption(option) {
         return (
-            <button
+            <div
+                className="button-parent"
                 key={option.value }
-                onClick={ () => { this.close(option.value) } }
             >
-                { option.label }
-            </button>
+                <button
+                    onClick={ () => { this.close(option.value) } }
+                >
+                    { option.label }
+                </button>
+            </div>
         );
     }
 
