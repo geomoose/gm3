@@ -37,10 +37,20 @@ import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { createXYZ } from 'ol/tilegrid';
 
-import applyStyleFunction from 'mapbox-to-ol-style';
+// WARNING! This is a monkey patch in order to
+// allow rendering labels outside of a polygon's
+// area. The default behaviour for this is to limit the
+// label to insde the polygon.
+import Text from 'ol/style/Text';
+import {applyStyle as applyStyleFunction} from 'ol-mapbox-style';
+import {latest as spec} from '@mapbox/mapbox-gl-style-spec';
 
 // for JSONP support
 import request from 'reqwest';
+
+Text.prototype.getOverflow = () => {
+    return true;
+};
 
 /** Create the parameters for a Vector layer.
  *
@@ -198,26 +208,57 @@ function defineSource(mapSource) {
 /** Return a style function for the layer.
  *
  */
-function applyStyle(vectorLayer, mapSource) {
+export function applyStyle(vectorLayer, mapSource) {
     const layers = [];
     for(const layer of mapSource.layers) {
         if(layer.on === true) {
-            const layer_def = {
-                id: layer.name,
-                // source is a contant that is used to dummy up
-                //  the Mapbox styles
-                source: 'dummy-source',
-                paint: layer.style,
-            };
+            // check for the different types of mapbox-gl layers
+            //  GeoMoose lets the user define all the properties at once!
+            const order = ['fill', 'line', 'circle', 'symbol'];
 
-            // check to see if there is a filter
-            //  set on the layer.  This uses the Mapbox GL/JS
-            //  filters.
-            if(layer.filter !== undefined) {
-                layer_def.filter = layer.filter;
+            for (let o = 0, oo = order.length; o < oo; o++) {
+                const glLayerType = order[o];
+                let filterFn = n => (n.indexOf(glLayerType) === 0);
+                if (glLayerType === 'symbol') {
+                    filterFn = n => (
+                        n.indexOf('symbol') === 0 ||
+                        n.indexOf('text') === 0
+                    );
+                }
+                const validKeys = Object.keys(layer.style)
+                    .filter(filterFn);
+                if (validKeys.length > 0) {
+                    const layer_def = {
+                        id: `${layer.name}-${glLayerType}`,
+                        type: glLayerType,
+                        // source is a contant that is used to dummy up
+                        //  the Mapbox styles
+                        source: 'dummy-source',
+                        paint: {},
+                        layout: {},
+                    };
+
+                    // TODO: if updates are slow then this likely needs
+                    //  optimized with real for loops.
+                    ['paint', 'layout'].forEach(section => {
+                        Object.keys(spec[`${section}_${glLayerType}`])
+                            .forEach(key => {
+                                if (layer.style[key]) {
+                                    layer_def[section][key] = layer.style[key];
+                                }
+                            });
+                    });
+
+                    // check to see if there is a filter
+                    //  set on the layer.  This uses the Mapbox GL/JS
+                    //  filters.
+                    if(layer.filter !== undefined) {
+                        layer_def.filter = layer.filter;
+                    }
+
+                    layers.push(layer_def);
+                }
             }
-
-            layers.push(layer_def);
         }
     }
 
@@ -225,11 +266,11 @@ function applyStyle(vectorLayer, mapSource) {
     applyStyleFunction(vectorLayer, {
         'version': 8,
         'layers': layers,
-        'dummy-source': [
-            {
+        'sources': {
+            'dummy-source': {
                 'type': 'vector'
             }
-        ]
+        },
     }, 'dummy-source');
 }
 

@@ -178,7 +178,7 @@ class Application {
             label: 'Results',
             selectable: true,
             style: results_style,
-            filter: null,
+            // filter: null,
         }));
 
         // the "hot" layer shows the features as red on the map,
@@ -188,7 +188,7 @@ class Application {
             name: 'results-hot',
             on: true,
             style: hot_style,
-            filter: ['==', 'displayClass', 'hot']
+            filter: ['==', 'displayClass', 'hot'],
         }));
     }
 

@@ -26,7 +26,7 @@ import Request from 'reqwest';
 
 import GeoJSONFormat from 'ol/format/GeoJSON';
 
-import createFilter from '@mapbox/mapbox-gl-style-spec/feature_filter';
+import {featureFilter as createFilter} from '@mapbox/mapbox-gl-style-spec';
 
 /** Collection of handy functions
  */
@@ -318,11 +318,11 @@ export function filterFeatures(features, filter, inverse = true) {
     let filter_function = function() { return true; };
 
     if (filter !== undefined && filter !== null ) {
-        filter_function = createFilter(['all'].concat(filter));
+        filter_function = createFilter(['all'].concat(filter)).filter;
     }
 
     for(const feature of features) {
-        if(inverse !== filter_function(feature)) {
+        if(inverse !== filter_function({zoom: 15}, feature)) {
             new_features.push(feature);
         }
     }
