@@ -1,6 +1,6 @@
 {
   "name": "@geomoose/gm3",
-  "version": "3.5.1-beta",
+  "version": "3.5.2-beta",
   "repository": "https://github.com/geomoose/gm3.git",
   "description": "GeoMoose is a Web Client JavaScript Framework for displaying distributed cartographic data.",
   "main": "dist/geomoose.js",
@@ -104,6 +104,7 @@
     "uuid": "^3.2.1",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1"
+    "webpack-dev-server": "^3.10.1",
+    "whatwg-fetch": "^3.0.0"
   }
 }

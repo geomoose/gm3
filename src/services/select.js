@@ -111,8 +111,9 @@ function SelectService(Application, options) {
             // throw up this handy dialog.
             var msg = 'A selection geometry is required for this query.';
             var service_name = this.name;
+            var self = this;
             var on_close = function() {
-                Application.startService(service_name);
+                Application.startService(service_name, {changeTool: self.tools.default});
             };
 
             Application.alert('selection-required', msg, on_close);

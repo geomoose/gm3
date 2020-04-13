@@ -48,7 +48,10 @@ const default_query = {
 function queryProgress(queryId, state, progress) {
     const query = state[queryId];
     const new_state = {};
-    new_state[queryId] = Object.assign({}, query, {progress});
+    new_state[queryId] = Object.assign({}, query, {
+        progress,
+        counter: query.counter === undefined ? 0 : query.counter + 1,
+    });
     return new_state;
 }
 

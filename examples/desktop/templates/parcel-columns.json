@@ -1,8 +1,5 @@
 [
     {
-        "title": ""
-    },
-    {
         "title": "PIN",
         "property" : "PIN",
         "filter" : {
@@ -29,5 +26,8 @@
         "filter" : {
             "type" : "range"
         }
+    },
+    {
+        "title" : ""
     }
 ]

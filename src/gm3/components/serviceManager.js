@@ -225,12 +225,18 @@ class ServiceManager extends React.Component {
         }
 
         for(const query_id of nextProps.queries.order) {
-            if(!this.finishedQueries[query_id]) {
-                const query = nextProps.queries[query_id];
-                if(query && query.progress === 'finished') {
+            const query = nextProps.queries[query_id];
+            const oldQuery = this.props.queries[query_id] || {};
+
+            if (oldQuery.counter !== query.counter) {
+                return true;
+            }
+
+            if (!this.finishedQueries[query_id]) {
+                if (query && query.progress === 'finished') {
                     this.finishedQueries[query_id] = true;
                     const service = this.props.services[query.service];
-                    if(service.renderQueryResults) {
+                    if (service.renderQueryResults) {
                         service.renderQueryResults(query_id, query);
                     }
                 }

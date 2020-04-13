@@ -576,10 +576,22 @@ class Application {
 
     /** Removes features from a query.
      */
-    removeQueryResults(queryId, filter) {
-        this.store.dispatch(mapActions.queryProgress(queryId));
-        this.store.dispatch(mapActions.removeQueryResults(queryId, filter));
-        this.store.dispatch(mapActions.finishQuery(queryId));
+    removeQueryResults(queryId, filter, options = {}) {
+        const execRemove = choice => {
+            if (choice === 'confirm') {
+                this.store.dispatch(mapActions.queryProgress(queryId));
+                this.store.dispatch(mapActions.removeQueryResults(queryId, filter));
+                // also remove the features from the results layer.
+                this.removeFeatures('results/results', filter);
+                this.store.dispatch(mapActions.finishQuery(queryId));
+            }
+        };
+
+        if (options.withConfirm) {
+            this.confirm('remove-feature', 'Remove feature?', execRemove);
+        } else {
+            execRemove('confirm');
+        }
     }
 
     /** Remove features from a vector layer (with a filter)
@@ -644,7 +656,7 @@ class Application {
      */
     startService(serviceName, options) {
         this.store.dispatch(serviceActions.startService(serviceName));
-        if (options.changeTool) {
+        if (options && options.changeTool) {
             this.store.dispatch(mapActions.changeTool(options.changeTool));
         }
     }
