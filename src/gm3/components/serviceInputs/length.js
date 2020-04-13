@@ -118,10 +118,20 @@ export default class LengthInput extends TextInput {
         const id = this.getId();
 
         return (
-            <div className='service-input'>
+            <div className="service-input length">
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input onChange={ this.valueChanged } type="number" id={ 'input-' + id } value={ this.state.value }/>
-                <select onChange={ this.unitsChanged } value={ this.selected_units }>
+                <input
+                    className="measure"
+                    onChange={ this.valueChanged }
+                    type="number"
+                    id={ 'input-' + id }
+                    value={ this.state.value }
+                />
+                <select
+                    className="units"
+                    onChange={ this.unitsChanged }
+                    value={ this.selected_units }
+                >
                     { this.units.map(this.renderOption) }
                 </select>
             </div>

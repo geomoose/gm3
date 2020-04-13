@@ -21,14 +21,12 @@ export class BufferInput extends React.Component {
         };
 
         return (
-            <div>
-                <LengthInput
-                    setValue={(name, value) => {
-                        this.props.setBuffer(value);
-                    }}
-                    field={ mock_field }
-                />
-            </div>
+            <LengthInput
+                setValue={(name, value) => {
+                    this.props.setBuffer(value);
+                }}
+                field={ mock_field }
+            />
         );
     }
 }
