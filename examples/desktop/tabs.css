@@ -45,6 +45,9 @@
     z-index: 1000;
     transform: rotate(0deg);
     transition: left ease 500ms, transform ease 500ms;
+    border-radius: 10px;
+    background-color: white;
+    line-height: 10px;
 }
 
 .tabs-closed .tab-toggler {
