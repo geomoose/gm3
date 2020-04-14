@@ -17,7 +17,7 @@ const mapDispatch = dispatch => ({
     onClose: (action, source, feature) => {
         if (action === 'save') {
             const properties = feature.properties;
-            const filter = {'_uuid' : properties._uuid};
+            const filter = {'_uuid': properties._uuid}; // eslint-disable-line
             dispatch(changeFeatures(source, filter, properties));
         }
         dispatch(finishEditing());

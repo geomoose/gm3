@@ -52,21 +52,21 @@ export class EditorModal extends Modal {
     renderBody() {
         return (
             <div className='editor-list'>
-            {this.props.properties.map(attr => (
-                <div key={attr.name} className='editor-attribute'>
-                    <label>{attr.label}</label>
-                    <input
-                        value={this.state.properties[attr.name] || ''}
-                        onChange={evt => {
-                            const properties = Object.assign({},
-                                this.state.properties, {
-                                    [attr.name]: evt.target.value,
-                                });
-                            this.setState({properties});
-                        }}
-                    />
-                </div>
-            ))}
+                {this.props.properties.map(attr => (
+                    <div key={attr.name} className='editor-attribute'>
+                        <label>{attr.label}</label>
+                        <input
+                            value={this.state.properties[attr.name] || ''}
+                            onChange={evt => {
+                                const properties = Object.assign({},
+                                    this.state.properties, {
+                                        [attr.name]: evt.target.value,
+                                    });
+                                this.setState({properties});
+                            }}
+                        />
+                    </div>
+                ))}
             </div>
         );
     }

@@ -40,6 +40,7 @@ it('renders a one button Modal Dialog', () => {
     // create the dialog.
     const dialog = shallow(
         <Modal title='Title' message='Testing message for dialog'
+            open
             options={ [{label: 'Okay', value: 'okay'}] }
             onClose={ callback } />
     );

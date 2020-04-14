@@ -73,6 +73,7 @@ export default class PrintModal extends Modal {
             },
         };
         this.state = {
+            open: false,
             mapTitle: '',
             layout: 0,
             resolution: 1,
@@ -476,4 +477,14 @@ export default class PrintModal extends Modal {
 
     }
 
+    render() {
+        if (!this.state.open) {
+            return false;
+        }
+        return super.render();
+    }
 }
+
+PrintModal.defaultProps = {
+    open: true,
+};

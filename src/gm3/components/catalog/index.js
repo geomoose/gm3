@@ -137,7 +137,7 @@ export class Catalog extends React.Component {
                             this.props.catalog.root.children.map(child_id => renderTree(this.props.dispatch, this.props.catalog, child_id)) :
                             this.props.catalog.root.children.map(child_id => renderFlatTree(this.props.dispatch, this.props.catalog, child_id, filter))
                     }
-                <EditorModal />
+                    <EditorModal />
                 </div>
             </Provider>
         );
