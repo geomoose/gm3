@@ -32,6 +32,10 @@
 
             <template name="identify" auto="true" />
         </layer>
+
+        <properties>
+            <property name="label" label="Sketch label" />
+        </properties>
     </map-source>
 
     <map-source name="places" type="geojson" title="Cities and Villages" minresolution="100" maxresolution="5000">

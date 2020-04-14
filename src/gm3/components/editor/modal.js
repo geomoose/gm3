@@ -52,7 +52,7 @@ export class EditorModal extends Modal {
     renderBody() {
         return (
             <div className='editor-list'>
-            {this.props.attributes.map(attr => (
+            {this.props.properties.map(attr => (
                 <div key={attr.name} className='editor-attribute'>
                     <label>{attr.label}</label>
                     <input
@@ -73,9 +73,7 @@ export class EditorModal extends Modal {
 }
 
 EditorModal.defaultProps = {
-    attributes: [
-        {label: 'Feature label', name: 'label', type: 'text'},
-    ],
+    attributes: [],
     options: [
         {label: 'Close', value: 'close'},
         {label: 'Save changes', value: 'save'},

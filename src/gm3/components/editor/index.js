@@ -4,9 +4,13 @@ import {changeFeatures} from '../../actions/mapSource';
 import Modal from './modal';
 
 const mapState = state => ({
+    title: 'Edit feature properties',
     open: state.editor && state.editor.feature !== null,
     feature: state.editor.feature,
     source: state.editor.source,
+    properties: state.mapSources[state.editor.source] ?
+        state.mapSources[state.editor.source].properties :
+        [],
 });
 
 const mapDispatch = dispatch => ({
