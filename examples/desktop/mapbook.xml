@@ -15,7 +15,9 @@
                 "line-color": "#d95f0e",
                 "line-width": 4,
                 "fill-opacity": 0.60,
-                "line-opacity": 0.80
+                "line-opacity": 0.80,
+                "text-field": "{label}",
+                "text-color": "#000000"
             }
             ]]></style>
 

@@ -32,7 +32,7 @@ export function setEditFeature(source, feature) {
     };
 }
 
-export function finsihEditing() {
+export function finishEditing() {
     return {
         type: EDITOR.FINISH_EDIT,
     };

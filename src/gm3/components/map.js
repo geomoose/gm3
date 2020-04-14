@@ -38,6 +38,7 @@ import md5 from 'md5/md5';
 
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
+import {setEditFeature} from '../actions/edit';
 
 import * as util from '../util';
 import * as jsts from '../jsts';
@@ -1074,9 +1075,11 @@ class Map extends React.Component {
                 });
 
                 this.drawTool.on('select', (evt) => {
-                    const geojson = new GeoJSONFormat();
-                    const feature = geojson.writeFeatureObject(evt.selected[0]);
-                    this.props.onEditProperties(feature);
+                    if (evt.selected[0]) {
+                        const geojson = new GeoJSONFormat();
+                        const feature = geojson.writeFeatureObject(evt.selected[0]);
+                        this.props.onEditProperties(map_source_name, feature);
+                    }
                 });
             } else if(type === 'Remove') {
                 // setup the select tool to allow the user
@@ -1353,9 +1356,9 @@ function mapDispatch(dispatch) {
         finishQuery: (queryId) => {
             dispatch(mapActions.finishQuery(queryId));
         },
-        onEditProperties: feature => {
-            console.log('FEATURE?', feature);
-        }
+        onEditProperties: (source, feature) => {
+            dispatch(setEditFeature(source, feature));
+        },
     };
 }
 

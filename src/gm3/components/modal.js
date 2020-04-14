@@ -30,10 +30,6 @@ export default class ModalDialog extends React.Component {
         super(props);
         this.renderBody = this.renderBody.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
-
-        this.state = {
-            open: props.open,
-        };
     }
 
     getTitle() {
@@ -89,15 +85,13 @@ export default class ModalDialog extends React.Component {
     }
 
     close(response) {
-        this.setState({open: false});
-
         if(this.props.onClose) {
             this.props.onClose(response);
         }
     }
 
     render() {
-        if(!this.state.open) {
+        if (!this.props.open) {
             return false;
         }
 
