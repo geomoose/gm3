@@ -51,6 +51,7 @@ import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
 import printReducer from './reducers/print';
 import configReducer from './reducers/config';
+import editorReducer from './reducers/editor';
 
 import Modal from './components/modal';
 
@@ -114,6 +115,7 @@ class Application {
             'cursor': cursorReducer,
             'print': printReducer,
             'config': configReducer,
+            'editor': editorReducer,
         }));
 
         this.store.dispatch(setConfig(config));

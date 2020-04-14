@@ -394,7 +394,7 @@
         <layer src="sketch/default"
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
-               draw-modify="true" draw-remove="true" />
+               draw-modify="true" draw-remove="true" draw-edit="true" />
 
         <group title="Overlays" expand="true">
             <group title="County Layers">

@@ -1067,6 +1067,17 @@ class Map extends React.Component {
                         selection_src.addFeature(evt.selected[0]);
                     }
                 });
+            } else if(type === 'Edit') {
+                this.drawTool = new olSelectInteraction({
+                    toggleCondition: olEventConditions.never,
+                    layers: [this.olLayers[map_source_name]]
+                });
+
+                this.drawTool.on('select', (evt) => {
+                    const geojson = new GeoJSONFormat();
+                    const feature = geojson.writeFeatureObject(evt.selected[0]);
+                    this.props.onEditProperties(feature);
+                });
             } else if(type === 'Remove') {
                 // setup the select tool to allow the user
                 //  to pick a feature from the layer.
@@ -1342,6 +1353,9 @@ function mapDispatch(dispatch) {
         finishQuery: (queryId) => {
             dispatch(mapActions.finishQuery(queryId));
         },
+        onEditProperties: feature => {
+            console.log('FEATURE?', feature);
+        }
     };
 }
 

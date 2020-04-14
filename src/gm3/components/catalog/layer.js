@@ -81,6 +81,7 @@ export class CatalogLayer extends React.Component {
                 case 'draw-line':
                 case 'draw-modify':
                 case 'draw-remove':
+                case 'draw-edit':
                     const draw_type = tool_name.split('-')[1];
                     tools.push(<DrawTool drawType={draw_type} key={key} layer={layer} />);
                     break;

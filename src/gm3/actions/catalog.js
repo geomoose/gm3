@@ -91,6 +91,7 @@ function parseLayer(store, layerXml) {
         'legend-toggle',
         'draw-point', 'draw-line', 'draw-polygon',
         'draw-modify', 'draw-remove',
+        'draw-edit',
         'clear'
     ];
 
