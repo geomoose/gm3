@@ -30,6 +30,7 @@ export default class ModalDialog extends React.Component {
         super(props);
         this.renderBody = this.renderBody.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
+        this.state = {};
     }
 
     getTitle() {
