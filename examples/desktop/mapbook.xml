@@ -463,6 +463,7 @@
 
         <drawer name="searches" title="Search">
             <tool name="search" title="Search Parcels" type="service"/>
+            <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
             <tool name="geocode" title="Geocode an Address" type="service"/>
         </drawer>
 

@@ -61,7 +61,8 @@ function parseTool(toolXml) {
         name: toolXml.getAttribute('name'),
         label: toolXml.getAttribute('title'),
         actionType: toolXml.getAttribute('type'),
-        actionDetail: toolXml.getAttribute('action')
+        actionDetail: toolXml.getAttribute('action'),
+        cssClass: toolXml.getAttribute('css-class'),
     }
 }
 

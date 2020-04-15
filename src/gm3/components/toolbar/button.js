@@ -44,7 +44,7 @@ export class ToolbarButton extends React.Component {
                     this.props.onClick(tool, this.props.currentService, this.props.currentDrawTool);
                 }}
                 key={tool.name}
-                className={'tool ' + tool.name}
+                className={tool.cssClass || 'tool ' + tool.name}
                 title={tool.label}
             >
                 <span className='icon'></span><span className='label'>{tool.label}</span>
