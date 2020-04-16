@@ -103,6 +103,42 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     });
 
+    app.registerService('single-search', SearchService, {
+        // The input fields are defined only using one field
+        fields: [
+            {type: 'text', label: 'Search', name: 'TERM'},
+        ],
+        prepareFields: function (fields) {
+            // this pulls out the term from the search
+            const searchTerm = fields[0].value;
+            // this is the list of fields in the layer which will be searched.
+            const searchFields = ['OWNER_NAME', 'OWN_ADD_L1', 'OWN_ADD_L2'];
+            // this switched to matching any field
+            var query = ['or'];
+            for(var i = 0, ii = searchFields.length; i < ii; i++) {
+                query.push({
+                    comparitor: 'ilike',
+                    name: searchFields[i],
+                    value: '%' + searchTerm + '%'
+                });
+            }
+            return [query];
+        },
+        searchLayers: ['vector-parcels/parcels'],
+        validateFieldValues: function (fields) {
+            const validateFieldValuesResult = {
+                valid: true,
+                message: null
+            };
+            if (fields['TERM'] === undefined || fields['TERM'] === '') {
+                validateFieldValuesResult.valid = false;
+                validateFieldValuesResult.message = 'Please complete at least one field.'
+            }
+            return validateFieldValuesResult;
+        }
+    });
+
+
     app.registerService('search-firestations', SearchService, {
         searchLayers: ['firestations/fire_stations'],
         fields: [
