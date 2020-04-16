@@ -36,8 +36,6 @@ import ReactResizeDetector from 'react-resize-detector';
 import uuid from 'uuid';
 import md5 from 'md5/md5';
 
-import applyStyleFunction from 'mapbox-to-ol-style';
-
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
 
@@ -227,7 +225,7 @@ class Map extends React.Component {
             'INFO_FORMAT': 'application/vnd.ogc.gml'
         };
 
-        const info_url = src.getGetFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
+        const info_url = src.getFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
         fetch(info_url, {
             headers: {
                 'Access-Control-Request-Headers': '*',
@@ -875,21 +873,13 @@ class Map extends React.Component {
             source: src_selection,
         });
 
-        applyStyleFunction(this.selectionLayer, {
-            'version': 8,
-            'layers': [
-                {
-                    'id': 'dummy',
-                    'source': 'dummy-source',
-                    'paint': this.props.selectionStyle,
-                }
+        // Fake a GeoMoose style source + layer definition
+        //  to bootstrap the style
+        vectorLayer.applyStyle(this.selectionLayer, {
+            layers: [
+                {on: true, style: this.props.selectionStyle},
             ],
-            'dummy-source': [
-                {
-                    'type': 'vector'
-                }
-            ]
-        }, 'dummy-source');
+        });
 
         // whenever a feature has been added or changed on the selection layer,
         //  reflect that in the selection.
@@ -1343,7 +1333,7 @@ function mapState(state) {
         mapView: state.map,
         queries: state.query,
         config: state.config.map || {},
-        selectionStyle: state.config.selectionStyle,
+        selectionStyle: state.config.selectionStyle || {},
     }
 }
 

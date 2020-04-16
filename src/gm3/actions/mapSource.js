@@ -32,14 +32,21 @@ import * as util from '../util';
 
 let MS_Z_INDEX = 100000;
 
+const SOURCE_DEFAULTS = {
+    opacity: 1.0,
+};
+
 /** Add a map-source using a MapSource
  *  object.
  */
-export function add(mapSource) {
-    if(typeof(mapSource.zIndex) !== 'number') {
-        mapSource.zIndex = MS_Z_INDEX;
+export function add(mapSourceIn) {
+    if(typeof(mapSourceIn.zIndex) !== 'number') {
+        mapSourceIn.zIndex = MS_Z_INDEX;
         MS_Z_INDEX--;
     }
+
+    const mapSource = Object.assign({}, SOURCE_DEFAULTS, mapSourceIn);
+
     return {
         type: MAPSOURCE.ADD,
         mapSource
