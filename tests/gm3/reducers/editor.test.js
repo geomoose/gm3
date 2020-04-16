@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,35 @@
  * SOFTWARE.
  */
 
-import React from 'react';
+import { createStore, combineReducers } from 'redux';
 
-import Modal from 'gm3/components/modal';
+import reducer from 'gm3/reducers/editor'
+import {setEditFeature, finishEditing} from 'gm3/actions/edit'
 
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+describe('test the `edit` reducer', () => {
+    it('sets and clears the editing feature', () => {
+        const fakeFeature = {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [0, 0],
+            },
+            properties: {},
+        };
+        const fakeSource = 'fake-source';
 
-Enzyme.configure({ adapter: new Adapter() });
+        let nextState = reducer();
 
+        nextState = reducer(nextState, setEditFeature(fakeSource, fakeFeature));
+        expect(nextState).toEqual({
+            source: fakeSource,
+            feature: fakeFeature,
+        });
 
-it('renders a one button Modal Dialog', () => {
-    // create a dummy call back that can be monitored
-    //  by the testing suite.
-    const callback = jest.fn();
-
-    // create the dialog.
-    const dialog = shallow(
-        <Modal title='Title' message='Testing message for dialog'
-            open
-            options={ [{label: 'Okay', value: 'okay'}] }
-            onClose={ callback } />
-    );
-
-    // open the dialog.
-    dialog.setState({open: true});
-
-    // close the dialog by simulating a click on the button.
-    dialog.find('button').simulate('click');
-
-    // ensure the call back was called with the closing value.
-    expect(callback).toBeCalledWith('okay');
+        nextState = reducer(nextState, finishEditing());
+        expect(nextState).toEqual({
+            source: '',
+            feature: null,
+        });
+    });
 });

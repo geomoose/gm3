@@ -15,7 +15,9 @@
                 "line-color": "#d95f0e",
                 "line-width": 4,
                 "fill-opacity": 0.60,
-                "line-opacity": 0.80
+                "line-opacity": 0.80,
+                "text-field": "{label}",
+                "text-color": "#000000"
             }
             ]]></style>
 
@@ -30,6 +32,10 @@
 
             <template name="identify" auto="true" />
         </layer>
+
+        <properties>
+            <property name="label" label="Sketch label" />
+        </properties>
     </map-source>
 
     <map-source name="places" type="geojson" title="Cities and Villages" minresolution="100" maxresolution="5000">
@@ -394,7 +400,7 @@
         <layer src="sketch/default"
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
-               draw-modify="true" draw-remove="true" />
+               draw-modify="true" draw-remove="true" draw-edit="true" />
 
         <group title="Overlays" expand="true">
             <group title="County Layers">

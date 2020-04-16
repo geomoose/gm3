@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2020 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,18 @@
  * SOFTWARE.
  */
 
-import React from 'react';
+import { EDITOR } from '../actionTypes';
 
-import Modal from 'gm3/components/modal';
+export function setEditFeature(source, feature) {
+    return {
+        type: EDITOR.START_EDIT,
+        source,
+        feature,
+    };
+}
 
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
-Enzyme.configure({ adapter: new Adapter() });
-
-
-it('renders a one button Modal Dialog', () => {
-    // create a dummy call back that can be monitored
-    //  by the testing suite.
-    const callback = jest.fn();
-
-    // create the dialog.
-    const dialog = shallow(
-        <Modal title='Title' message='Testing message for dialog'
-            open
-            options={ [{label: 'Okay', value: 'okay'}] }
-            onClose={ callback } />
-    );
-
-    // open the dialog.
-    dialog.setState({open: true});
-
-    // close the dialog by simulating a click on the button.
-    dialog.find('button').simulate('click');
-
-    // ensure the call back was called with the closing value.
-    expect(callback).toBeCalledWith('okay');
-});
+export function finishEditing() {
+    return {
+        type: EDITOR.FINISH_EDIT,
+    };
+}

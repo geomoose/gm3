@@ -80,6 +80,34 @@ function parseParams(msXml) {
     return params_obj;
 }
 
+/** Convert app the <property> tages of <properties> in <map-source>
+ *  into an object.
+ *
+ *  @param msXml The MapSource XML
+ *
+ *  @returns Object containing the propeties
+ */
+function parseProperties(msXml) {
+    const props = [];
+    const propsParent = msXml.getElementsByTagName('properties')[0];
+
+    if (propsParent) {
+        const propXmls = propsParent
+            .getElementsByTagName('property');
+
+        for (let i = 0, ii = propXmls.length; i < ii; i++) {
+            const prop = propXmls[i];
+            props.push({
+                name: prop.getAttribute('name'),
+                label: prop.getAttribute('label'),
+                type: prop.getAttribute('type'),
+                default: prop.getAttribute('default'),
+            });
+        }
+    }
+    return props;
+}
+
 /** Set a map-source's layer as a favorite.
  *
  *  @param mapSourceName  The name of the map source
@@ -177,8 +205,9 @@ export function addFromXml(xml, config) {
         refresh: null,
         layers: [],
         transforms: {},
-        params: {}
-    }
+        params: {},
+        properties: [],
+    };
 
     // handle setting up the zIndex
     if(map_source.zIndex) {
@@ -223,6 +252,9 @@ export function addFromXml(xml, config) {
 
     // mix in the params
     Object.assign(map_source.params, parseParams(xml));
+
+    // and lets get some properties
+    Object.assign(map_source.properties, parseProperties(xml));
 
     // add all of the layers.
     const map_layers = [];

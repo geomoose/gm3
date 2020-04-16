@@ -38,6 +38,7 @@ import md5 from 'md5/md5';
 
 import * as mapSourceActions from '../actions/mapSource';
 import * as mapActions from '../actions/map';
+import {setEditFeature} from '../actions/edit';
 
 import * as util from '../util';
 import * as jsts from '../jsts';
@@ -1067,6 +1068,19 @@ class Map extends React.Component {
                         selection_src.addFeature(evt.selected[0]);
                     }
                 });
+            } else if(type === 'Edit') {
+                this.drawTool = new olSelectInteraction({
+                    toggleCondition: olEventConditions.never,
+                    layers: [this.olLayers[map_source_name]]
+                });
+
+                this.drawTool.on('select', (evt) => {
+                    if (evt.selected[0]) {
+                        const geojson = new GeoJSONFormat();
+                        const feature = geojson.writeFeatureObject(evt.selected[0]);
+                        this.props.onEditProperties(map_source_name, feature);
+                    }
+                });
             } else if(type === 'Remove') {
                 // setup the select tool to allow the user
                 //  to pick a feature from the layer.
@@ -1341,6 +1355,9 @@ function mapDispatch(dispatch) {
     return {
         finishQuery: (queryId) => {
             dispatch(mapActions.finishQuery(queryId));
+        },
+        onEditProperties: (source, feature) => {
+            dispatch(setEditFeature(source, feature));
         },
     };
 }
