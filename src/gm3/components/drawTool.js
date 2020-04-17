@@ -72,8 +72,7 @@ class DrawTool extends React.Component {
     componentDidMount() {
         // if starting up with the select tool,
         //  ensure there is a valid active layer.
-        if (this.props.geomType === 'Select') {
-            // this.changeSelectLayer(this.props.selectableLayers[0]);
+        if (this.props.interactionType === 'Select' && this.props.geomType === 'Select') {
             const firstLayer = this.props.selectableLayers[0];
             this.setState({selectLayer: firstLayer});
             this.props.onChange('Select', firstLayer);
