@@ -214,91 +214,6 @@ class ServiceManager extends React.Component {
         this.props.store.dispatch(finishService());
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        // when the drawing type changes this needs to
-        //  update the service 'page' because those elements
-        //  are tied to the state of the interactionType.
-        if(this.props.map.interactionType !== nextProps.map.interactionType
-           && nextProps.map.interactionType !== null
-           && nextProps.map.activeSource === null) {
-            return true;
-        }
-
-        for(const query_id of nextProps.queries.order) {
-            const query = nextProps.queries[query_id];
-            const oldQuery = this.props.queries[query_id] || {};
-
-            if (oldQuery.counter !== query.counter) {
-                return true;
-            }
-
-            if (!this.finishedQueries[query_id]) {
-                if (query && query.progress === 'finished') {
-                    this.finishedQueries[query_id] = true;
-                    const service = this.props.services[query.service];
-                    if (service.renderQueryResults) {
-                        service.renderQueryResults(query_id, query);
-                    }
-                }
-            }
-        }
-
-        if(this.props.queries.service !== nextProps.queries.service) {
-            return true;
-        }
-
-        // compare to the two sets of queries.
-        const old_queries = this.props.queries;
-        const new_queries = nextProps.queries;
-        const old_keys = Object.keys(old_queries);
-        const new_keys = Object.keys(new_queries);
-        // quicky check
-        if(old_keys.length !== new_keys.length) {
-            return true;
-        }
-
-        // each array is the same length (see the test above)
-        const len = old_keys.length;
-        // the arrays are un-sorted so go through each and
-        //   if there is any missing keys, then kick back a true
-        for(let i = 0; i < len; i++) {
-            let found = false;
-            for(let j = 0; j < len && !found; j++) {
-                if(new_keys[i] === old_keys[j]) {
-                    const old_q = old_queries[old_keys[j]];
-                    const new_q = new_queries[new_keys[j]];
-                    // these are the same
-                    if(old_q === null && new_q === null) {
-                        found = true;
-                    } else if(old_q === null || new_q === null) {
-                        // these differ, this check prevents the
-                        //  next check from happening and this should
-                        //  actually keep found set to false.
-                        found = false;
-                    } else if(old_q.progress === new_q.progress) {
-                        found = true;
-                    }
-                }
-            }
-            if(!found) { return true; }
-        }
-
-        // check to see if the selection features have changed.
-        const old_features = this.props.map.selectionFeatures;
-        const new_features = nextProps.map.selectionFeatures;
-        if(old_features.length !== new_features.length) {
-            return true;
-        } else {
-            // TODO: do a better list-against-list matching check.
-            for(let i = 0, ii = old_features.length; i < ii; i++) {
-                if(old_features[i].properties.id !== new_features[i].properties.id) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     /** Iterate through all of the queries and execute
      *  the service's 'runQuery' method if the query is
      *  in the appropriate state.
@@ -321,9 +236,6 @@ class ServiceManager extends React.Component {
     }
 
     UNSAFE_componentWillUpdate(nextProps, nextState) {
-        // anytime this updates, the user should really be seeing the service
-        //  tab.
-        this.props.store.dispatch(setUiHint('service-manager'));
 
         if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
@@ -358,16 +270,6 @@ class ServiceManager extends React.Component {
                     // Don't allow the user to "autoGo" if there are
                     // fields which are required.
                     console.error('Misconfigured service. This service has been configured with autoGo but has required fields');
-                } else {
-                    const selection = nextProps.store.getState().map.selectionFeatures;
-                    if(selection.length > 0) {
-                        // okay, there *is* a selection feature.
-                        const fid = selection[0].properties.id;
-                        if(nextState.lastFeature !== fid) {
-                            this.setState({lastFeature: fid});
-                            this.props.startQuery(selection, this.props.services[service_name], this.state.values);
-                        }
-                    }
                 }
             }
         }
@@ -394,8 +296,14 @@ class ServiceManager extends React.Component {
     /** Implement a small post-render hack to focus on the first
      *  input element of a service form.
      */
-    componentDidUpdate() {
-        if(this.props.queries.service !== null) {
+    componentDidUpdate(prevProps) {
+        if(this.props.queries.service !== prevProps.service) {
+            // anytime this updates, the user should really be seeing the service
+            //  tab.
+            if (prevProps.service !== undefined) {
+                this.props.setUiHint('service-manager');
+            }
+
             // look for an input in the service form and then
             //  focus on the first one, as available.
             if(this.refs.serviceForm) {
@@ -403,6 +311,23 @@ class ServiceManager extends React.Component {
                 if(inputs.length > 0) {
                     inputs[0].focus();
                 }
+            }
+        }
+
+        const serviceName = this.props.queries.service || this.state.lastService;
+        if (serviceName) {
+            const serviceDef = this.props.services[serviceName];
+            if (
+                serviceDef &&
+                serviceDef.autoGo === true &&
+                this.props.selectionFeatures !== prevProps.selectionFeatures &&
+                this.props.selectionFeatures.length > 0
+            ) {
+                this.props.startQuery(
+                    this.props.selectionFeatures,
+                    this.props.services[serviceName],
+                    this.state.values
+                );
             }
         }
     }
@@ -428,8 +353,9 @@ class ServiceManager extends React.Component {
                         if (service_def.autoGo !== true) {
                             // end the drawing
                             this.props.changeDrawTool(null);
+                            this.props.startQuery(this.props.selectionFeatures, service_def, values);
                         }
-                        this.props.startQuery(this.props.map.selectionFeatures, service_def, values);
+                        this.setState({values, });
                     }}
                     onCancel={() => {
                         this.props.changeDrawTool(null);
@@ -448,9 +374,8 @@ class ServiceManager extends React.Component {
                 // when there are no queries but a selection is left
                 //  allow the user to remove the selection
                 let enable_clear = false;
-                if(this.props.selectionSrc
-                  && this.props.selectionSrc.features
-                  && this.props.selectionSrc.features.length > 0) {
+                if (this.props.selectionFeatures &&
+                    this.props.selectionFeatures.length > 0) {
                     enable_clear = true;
                 }
 
@@ -485,13 +410,11 @@ class ServiceManager extends React.Component {
 
 }
 
-const mapToProps = function(store) {
-    return {
-        queries: store.query,
-        map: store.map,
-        selectionSrc: store.mapSources.selection
-    }
-}
+const mapState = state => ({
+    queries: state.query,
+    map: state.map,
+    selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
+});
 
 function mapDispatch(dispatch, ownProps) {
     return {
@@ -533,6 +456,9 @@ function mapDispatch(dispatch, ownProps) {
         onServiceFinished: () => {
             dispatch(finishService());
         },
+        setUiHint: hint => {
+            dispatch(setUiHint(hint));
+        },
     };
 }
-export default connect(mapToProps, mapDispatch)(ServiceManager);
+export default connect(mapState, mapDispatch)(ServiceManager);

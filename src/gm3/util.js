@@ -204,7 +204,8 @@ export const FORMAT_OPTIONS = {
     pipes: {
         localize: function(n) {
             return n.toLocaleString();
-        }
+        },
+        json: obj => JSON.stringify(obj),
     }
 }
 

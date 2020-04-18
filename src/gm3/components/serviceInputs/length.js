@@ -31,110 +31,136 @@
  * @extends TextInput
  */
 
-import React from 'react';
-import TextInput from './text';
-import { convertLength } from '../../util';
+import React, {useState, useEffect} from 'react';
+import TextInput, {getId} from './text';
+
+const UNITS = [{
+    label: 'Feet',
+    value: 'ft'
+}, {
+    label: 'Yards',
+    value: 'yd'
+}, {
+    label: 'Miles',
+    value: 'mi'
+}, {
+    label: 'Inches',
+    value: 'in'
+}, {
+    label: 'Meters',
+    value: 'm'
+}, {
+    label: 'Kilometers',
+    value: 'km'
+}, {
+    label: 'Chains',
+    value: 'ch'
+}];
+
+export const LengthInputBase = ({label, value, units, onChange}) => {
+    const id = 'input-' + getId();
+    const [tmpValue, setValue] = useState(value);
+
+    useEffect(() => {
+        setValue(value);
+    }, [value]);
+
+    return (
+        <div className="service-input length">
+            <label htmlFor={id}>{label}</label>
+            <input
+                className="measure"
+                onChange={evt => {
+                    setValue(evt.target.value);
+                    const asFloat = parseFloat(evt.target.value);
+                    if (!isNaN(asFloat)) {
+                        onChange(asFloat, units);
+                    }
+                }}
+                id={id}
+                value={tmpValue}
+            />
+            <select
+                className="units"
+                onChange={evt => {
+                    onChange(value, evt.target.value);
+                }}
+                value={units}
+            >
+                {UNITS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+            </select>
+        </div>
+    );
+}
+
 
 export default class LengthInput extends TextInput {
     constructor(props) {
         super(props);
-        this.units = [{
-            label: 'Feet',
-            value: 'ft'
-        }, {
-            label: 'Yards',
-            value: 'yd'
-        }, {
-            label: 'Miles',
-            value: 'mi'
-        }, {
-            label: 'Inches',
-            value: 'in'
-        }, {
-            label: 'Meters',
-            value: 'm'
-        }, {
-            label: 'Kilometers',
-            value: 'km'
-        }, {
-            label: 'Chains',
-            value: 'ch'
-        }];
 
         // default the units to feet, if nothing is specified.
         const default_units = props.field.units ? props.field.units : 'ft';
-        let default_value = props.field.default ? props.field.default : 0;
-
-        // ensure that the units on display are the units that match
-        //  what will be in the drop down and not just meters.
-        default_value = convertLength(default_value, 'm', default_units)
+        const default_value = props.field.default ? props.field.default : 0;
 
         this.value = default_value;
         this.selected_units = default_units;
 
-        this.unitsChanged = this.unitsChanged.bind(this);
-        this.valueChanged = this.valueChanged.bind(this);
+        this.onUnitsChanged = this.onUnitsChanged.bind(this);
+        this.onValueChanged = this.onValueChanged.bind(this);
 
         this.state = {
-            value: default_value
+            value: default_value,
+            units: default_units,
         };
     }
 
-    onChange() {
-        const meters = convertLength(this.value, this.selected_units, 'm');
-        if(!isNaN(meters)) {
-            this.setValue(this.getName(), meters);
+    onChange(value, units) {
+        if(!isNaN(this.state.value)) {
+            this.setValue(this.getName(), {
+                distance: this.state.value,
+                units: this.state.units,
+            });
         }
-    }
-
-    /**
-     * Renders individual units of length as options within length select input
-     * @param {Object} opt - Unit to be rendered
-     * @param {string} opt.label - Unit Label, to be displayed in select
-     * @param {string} opt.value - Unit abbreviated ID
-     * @return {ReactElement} option to render
-     */
-    renderOption(opt) {
-        return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
     }
 
     /** Whenever the units change, update the units setting.
      */
-    unitsChanged(evt) {
-        this.selected_units = evt.target.value;
-        this.onChange();
+    onUnitsChanged(evt) {
+        const units = evt.target.value;
+        this.onChange(this.state.value, units);
+        this.setState({units, });
     }
 
     /** Whenever the input box changes, parse the value and update it.
      */
-    valueChanged(evt) {
-        const new_value = parseFloat(evt.target.value);
-        this.setState({value: new_value});
-        this.value = new_value;
-        this.onChange();
+    onValueChanged(evt) {
+        const value = parseFloat(evt.target.value);
+        this.onChange(value, this.state.units);
+        this.setState({value, });
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.field !== this.props.field) {
+            this.setState({
+                value: this.props.field.default,
+                units: this.props.field.units,
+            });
+        }
     }
 
     render() {
-        const id = this.getId();
-
         return (
-            <div className="service-input length">
-                <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input
-                    className="measure"
-                    onChange={ this.valueChanged }
-                    type="number"
-                    id={ 'input-' + id }
-                    value={ this.state.value }
-                />
-                <select
-                    className="units"
-                    onChange={ this.unitsChanged }
-                    value={ this.selected_units }
-                >
-                    { this.units.map(this.renderOption) }
-                </select>
-            </div>
+            <LengthInputBase
+                label={this.props.field.label}
+                value={this.state.value}
+                units={this.state.units}
+                onChange={(value, units) => {
+                    this.onChange(value, units);
+                    this.setState({value, units});
+                }}
+            />
         );
     }
 }

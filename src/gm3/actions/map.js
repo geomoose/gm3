@@ -176,13 +176,15 @@ export function setView(view) {
 
 /* Set a buffer for selection features.
  *
- * @param meters {Float} Distance in meters to buffer the features.
+ * @param distance {Float} Distance to buffer features
+ * @param units {String} Units of the buffer, defaults to meters in the reducer
  *
  * @return action definition
  */
-export function setSelectionBuffer(meters) {
+export function setSelectionBuffer(distance, units) {
     return {
         type: MAP.BUFFER_SELECTION_FEATURES,
-        meters
+        distance,
+        units,
     };
 }

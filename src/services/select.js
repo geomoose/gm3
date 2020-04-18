@@ -53,7 +53,7 @@ function SelectService(Application, options) {
     this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
 
     /** Limit the number of selection tools available */
-    this.tools = {
+    this.tools = options.tools ? options.tools : {
         'Box': true,
         'Point': true,
         'MultiPoint': true,

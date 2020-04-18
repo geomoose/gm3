@@ -96,6 +96,8 @@ function getControls(mapConfig) {
     return controls;
 }
 
+const GEOJSON_FORMAT = new GeoJSONFormat();
+
 
 class Map extends React.Component {
 
@@ -107,7 +109,6 @@ class Map extends React.Component {
 
         // the current 'active' interaction
         this.currentInteraction = null;
-        this.activeSource = null;
 
         // a hash of interval timers for layers that
         //  are set to auto-refresh
@@ -187,7 +188,6 @@ class Map extends React.Component {
     wmsGetFeatureInfoQuery(queryId, selection, queryLayer) {
         const map_projection = this.map.getView().getProjection();
 
-        const geojson = new GeoJSONFormat();
         const view = this.props.mapView;
 
         // get the map source
@@ -239,7 +239,7 @@ class Map extends React.Component {
                 if(responseText) {
                     const gml_format = new WMSGetFeatureInfoFormat();
                     const features = gml_format.readFeatures(responseText);
-                    const js_features = geojson.writeFeaturesObject(features).features;
+                    const js_features = GEOJSON_FORMAT.writeFeaturesObject(features).features;
 
                     this.props.store.dispatch(
                         mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
@@ -452,7 +452,6 @@ class Map extends React.Component {
 
         // setup the necessary format converters.
         const esri_format = new EsriJSONFormat();
-        const geojson_format = new GeoJSONFormat();
 
         const query_params = {
             f: 'json',
@@ -466,7 +465,7 @@ class Map extends React.Component {
 
         if(query.selection && query.selection.geometry) {
             // make this an E**I geometry.
-            const ol_geom = geojson_format.readGeometry(query.selection.geometry);
+            const ol_geom = GEOJSON_FORMAT.readGeometry(query.selection.geometry);
 
             // translate the geometry to E**I-ish
             const geom_type_lookup = {
@@ -812,56 +811,39 @@ class Map extends React.Component {
 
     /** Add features to the selection layer.
      *
-     *  @param feature  An ol.Feature
-     *  @param buffer   A buffer distance to apply.
+     *  @param inFeatures Current list of features
+     *  @param inBuffer   A buffer distance to apply.
      *
      */
-    addSelectionFeature(feature, buffer) {
-        const geojson = new GeoJSONFormat();
+    addSelectionFeatures(inFeatures, inBuffer) {
+        const features = inFeatures
+            .map(feature => GEOJSON_FORMAT.writeFeatureObject(feature));
+        const buffer = inBuffer !== 0 && !isNaN(inBuffer) ? inBuffer : 0;
 
-        let json_feature = geojson.writeFeatureObject(feature);
+        let bufferedFeature = features;
 
-        if(buffer !== 0 && !isNaN(buffer)) {
-            // create an array of the drawn features.
-            const selection_src = this.selectionLayer.getSource();
-            const drawn_features = selection_src.getFeatures();
-            let json_features = [];
-            for(let i = 0, ii = drawn_features.length; i < ii; i++) {
-                json_features.push(geojson.writeFeatureObject(drawn_features[i]));
-            }
-
-            json_features = util.projectFeatures(json_features, 'EPSG:3857', 'EPSG:4326');
+        if (buffer !== 0) {
+            // buffer + union the features
+            const wgs84Features = util.projectFeatures(features, 'EPSG:3857', 'EPSG:4326');
 
             // buffer those features.
-            const buffered_geom = jsts.bufferAndUnion(json_features, buffer)
-
-            const buffered_feature = {
+            const bufferedGeom = jsts.bufferAndUnion(wgs84Features, buffer);
+            bufferedFeature = util.projectFeatures([{
                 type: 'Feature',
-                geometry: buffered_geom,
+                geometry: bufferedGeom,
                 properties: {
-                    buffer: true
+                    buffer: true,
                 }
-            };
-
-            json_feature = util.projectFeatures([buffered_feature], 'EPSG:4326', 'EPSG:3857')[0];
+            }], 'EPSG:4326', 'EPSG:3857')[0];
         }
 
 
-        // assign the feature a UUID.
-        json_feature.properties = Object.assign({
-            id: uuid.v4()
-        }, json_feature.properties);
+        // the selection feature(s) are the original, as-drawn feature.
+        this.props.setSelectionFeatures(features);
 
-        this.props.store.dispatch(mapActions.addSelectionFeature(json_feature));
-
-        this.props.store.dispatch(
-            mapSourceActions.clearFeatures('selection')
-        );
-
-        this.props.store.dispatch(
-            mapSourceActions.addFeatures('selection', [json_feature])
-        );
-
+        // the feature(s) stored in the selection are what will
+        //  be used for querying.
+        this.props.setFeatures('selection', bufferedFeature);
     }
 
     /** Create a selection layer for temporary selection features.
@@ -881,13 +863,6 @@ class Map extends React.Component {
                 {on: true, style: this.props.selectionStyle},
             ],
         });
-
-        // whenever a feature has been added or changed on the selection layer,
-        //  reflect that in the selection.
-        const feature_change_fn = (evt) => {
-            this.addSelectionFeature(evt.feature, this.props.mapView.selectionBuffer);
-        };
-        src_selection.on('addfeature', feature_change_fn);
     }
 
     /** This is called after the first render.
@@ -1044,7 +1019,6 @@ class Map extends React.Component {
 
         // make sure the type is set.
         this.currentInteraction = type;
-        this.activeSource = this.props.mapView.activeSource;
 
         // "null" interaction mean no more drawing.
         if(type !== null) {
@@ -1060,13 +1034,7 @@ class Map extends React.Component {
                 });
 
                 this.drawTool.on('select', (evt) => {
-                    const selection_src = this.selectionLayer.getSource();
-                    // clear out previously selected objects.
-                    selection_src.clear();
-                    // add the selected feature.
-                    if(evt.selected.length > 0) {
-                        selection_src.addFeature(evt.selected[0]);
-                    }
+                    this.addSelectionFeatures(evt.selected, this.props.selectionBuffer);
                 });
             } else if(type === 'Edit') {
                 this.drawTool = new olSelectInteraction({
@@ -1076,8 +1044,7 @@ class Map extends React.Component {
 
                 this.drawTool.on('select', (evt) => {
                     if (evt.selected[0]) {
-                        const geojson = new GeoJSONFormat();
-                        const feature = geojson.writeFeatureObject(evt.selected[0]);
+                        const feature = GEOJSON_FORMAT.writeFeatureObject(evt.selected[0]);
                         this.props.onEditProperties(map_source_name, feature);
                     }
                 });
@@ -1109,7 +1076,7 @@ class Map extends React.Component {
                 if(is_selection) {
                     this.drawTool.on('modifyend', (evt) => {
                         const features = evt.features.getArray();
-                        this.addSelectionFeature(features[0], this.props.mapView.selectionBuffer);
+                        this.addSelectionFeatures(features, this.props.mapView.selectionBuffer);
                     });
                 } else {
                     this.drawTool.on('modifyend', (evt) => {
@@ -1155,8 +1122,7 @@ class Map extends React.Component {
 
                 if(!is_selection) {
                     this.drawTool.on('drawend', (evt) => {
-                        const geojson = new GeoJSONFormat();
-                        const json_feature = geojson.writeFeatureObject(evt.feature);
+                        const json_feature = GEOJSON_FORMAT.writeFeatureObject(evt.feature);
 
                         this.props.store.dispatch(
                             mapSourceActions.addFeatures(map_source_name, [json_feature])
@@ -1171,6 +1137,14 @@ class Map extends React.Component {
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
                         this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+
+                        let nextFeatures = [evt.feature];
+                        if (type === 'MultiPoint') {
+                            nextFeatures = this.selectionLayer.getSource().getFeatures();
+                            nextFeatures.push(evt.feature);
+                        }
+
+                        this.addSelectionFeatures(nextFeatures, this.props.selectionBuffer);
                     });
                 }
             }
@@ -1251,14 +1225,6 @@ class Map extends React.Component {
             }
         }
 
-        // ensure that the selection features have been 'cleared'
-        //  appropriately.
-        if(this.props.mapView.selectionFeatures.length === 0) {
-            if(this.selectionLayer) {
-                this.selectionLayer.getSource().clear();
-            }
-        }
-
         // this will cause the active drawing tool to *stop*
         //  when the service changes.
         if(this.props.queries.service !== null
@@ -1267,14 +1233,21 @@ class Map extends React.Component {
         }
 
         // handle out of loop buffer distance changes
-        if(this.props.mapView.selectionBuffer !== prevProps.mapView.selectionBuffer) {
-            if(this.selectionLayer && !isNaN(this.props.mapView.selectionBuffer)) {
-                const buffer = this.props.mapView.selectionBuffer;
-                const selection_src = this.selectionLayer.getSource();
-
-                for(const feature of selection_src.getFeatures()) {
-                    this.addSelectionFeature(feature, buffer);
+        if (this.selectionLayer) {
+            if (this.props.selectionBuffer !== prevProps.selectionBuffer) {
+                const features = this.props.selectionFeatures
+                    .map(feature => GEOJSON_FORMAT.readFeature(feature));
+                if (features.length > 0) {
+                    this.addSelectionFeatures(features, this.props.selectionBuffer);
                 }
+            }
+            if (this.props.selectionFeatures !== prevProps.selectionFeatures) {
+                const src = this.selectionLayer.getSource();
+                src.clear();
+                this.props.selectionFeatures
+                    .forEach(feature => {
+                        src.addFeature(GEOJSON_FORMAT.readFeature(feature));
+                    });
             }
         }
 
@@ -1286,9 +1259,11 @@ class Map extends React.Component {
         if(this.map) {
             // refresh all the map sources, as approriate.
             this.refreshMapSources();
+            const interactionType = this.props.mapView.interactionType;
 
-            if(this.props.mapView.interactionType !== this.currentInteraction
-               || this.props.mapView.activeSource !== this.activeSource) {
+            if (interactionType !== prevProps.mapView.interactionType
+               || this.props.mapView.activeSource !== prevProps.mapView.activeSource
+               || this.props.mapView.interactionType !== this.currentInteraction) {
                 // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
@@ -1298,6 +1273,26 @@ class Map extends React.Component {
                     this.props.mapView.activeSource,
                     is_selection
                 );
+
+                // clear out the previous features
+                //  if changing the draw tool type.
+                const drawTypes = ['Polygon', 'LineString', 'Box', 'Point', 'MultiPoint'];
+                if (drawTypes.indexOf(this.props.mapView.interactionType) >= 0) {
+                    const typeDict = {
+                        'Box': 'Polygon',
+                        'MultiPoint': 'Point',
+                    };
+                    const keepers = this.props.selectionFeatures
+                        .filter(feature => (
+                            feature.geometry.type === interactionType ||
+                            (
+                                typeDict[interactionType] !== undefined &&
+                                feature.geometry.type === typeDict[interactionType]
+                            )
+                        ));
+                    this.props.setSelectionFeatures(keepers);
+                    this.props.setFeatures('selection', keepers);
+                }
             }
         }
     }
@@ -1348,6 +1343,9 @@ function mapState(state) {
         queries: state.query,
         config: state.config.map || {},
         selectionStyle: state.config.selectionStyle || {},
+        // resolve this to meters
+        selectionBuffer: util.convertLength(state.map.selectionBuffer, state.map.selectionBufferUnits, 'm'),
+        selectionFeatures: state.map.selectionFeatures,
     }
 }
 
@@ -1358,6 +1356,16 @@ function mapDispatch(dispatch) {
         },
         onEditProperties: (source, feature) => {
             dispatch(setEditFeature(source, feature));
+        },
+        setSelectionFeatures: (features) => {
+            dispatch(mapActions.clearSelectionFeatures());
+            features.forEach(feature => {
+                dispatch(mapActions.addSelectionFeature(feature));
+            });
+        },
+        setFeatures: (mapSourceName, features) => {
+            dispatch(mapSourceActions.clearFeatures(mapSourceName));
+            dispatch(mapSourceActions.addFeatures(mapSourceName, features));
         },
     };
 }

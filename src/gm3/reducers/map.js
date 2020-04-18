@@ -26,7 +26,7 @@
  *
  */
 
-import { MAP } from '../actionTypes';
+import { CONFIG, MAP } from '../actionTypes';
 
 const default_view = {
     center: [0, 0],
@@ -37,7 +37,16 @@ const default_view = {
     interactionType: null,
     selectionFeatures: [],
     selectionBuffer: 0,
+    selectionBufferUnits: 'ft',
 };
+
+function setConfigOptions(state, config) {
+    const mixin = {};
+    if (config.map && config.map.defaultUnits) {
+        mixin.selectionBufferUnits = config.map.defaultUnits;
+    }
+    return Object.assign({}, state, mixin);
+}
 
 export default function mapReducer(state = default_view, action) {
     switch(action.type) {
@@ -71,8 +80,11 @@ export default function mapReducer(state = default_view, action) {
             });
         case MAP.BUFFER_SELECTION_FEATURES:
             return Object.assign({}, state, {
-                selectionBuffer: action.meters
+                selectionBuffer: action.distance,
+                selectionBufferUnits: action.units || state.selectionBufferUnits,
             });
+        case CONFIG.SET:
+            return setConfigOptions(state, action.payload);
         default:
             return state;
     }

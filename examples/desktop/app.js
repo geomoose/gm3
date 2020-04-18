@@ -32,14 +32,12 @@
 var app = new gm3.Application({
     mapserver_url: CONFIG.mapserver_url,
     mapfile_root: CONFIG.mapfile_root,
-
     map: {
         scaleLine: {
             enabled: true,
             units: 'imperial'
         }
     }
-
 });
 
 app.uiUpdate = function(ui) {
@@ -148,6 +146,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('select', SelectService, {
         // set the default layer
         defaultLayer: 'vector-parcels/parcels',
+    });
+
+    app.registerService('buffer-select', SelectService, {
+        tools: {'buffer': true},
     });
 
     // This uses the OpenStreetMap Nominatim geocoder,

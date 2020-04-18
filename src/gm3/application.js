@@ -670,8 +670,21 @@ class Application {
      */
     startService(serviceName, options) {
         this.store.dispatch(serviceActions.startService(serviceName));
-        if (options && options.changeTool) {
-            this.store.dispatch(mapActions.changeTool(options.changeTool));
+        if (options) {
+            if (options.changeTool) {
+                this.store.dispatch(mapActions.changeTool(options.changeTool));
+            }
+            if (options.withFeatures) {
+                // reset the buffer when adding features.
+                this.store.dispatch(mapActions.setSelectionBuffer(0));
+                // dispatch the features
+                this.store.dispatch(mapActions.clearSelectionFeatures());
+                options.withFeatures.forEach(feature => {
+                    this.store.dispatch(mapActions.addSelectionFeature(feature));
+                });
+                this.store.dispatch(mapSourceActions.clearFeatures('selection'));
+                this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
+            }
         }
     }
 
