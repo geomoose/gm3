@@ -149,6 +149,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     });
 
     app.registerService('buffer-select', SelectService, {
+        drawToolsLabel: '',
         tools: {'buffer': true},
     });
 

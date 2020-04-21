@@ -93,7 +93,7 @@ function SelectService(Application, options) {
     this.fieldsFirst = true;
 
     /** When defined, label the draw tools */
-    this.drawToolsLabel = options.drawToolsLabel ? options.drawToolsLabel : 'Using';
+    this.drawToolsLabel = options.drawToolsLabel !== undefined ? options.drawToolsLabel : 'Using';
 
     /** Alow shapes to be buffered. */
     this.bufferAvailable = true;
