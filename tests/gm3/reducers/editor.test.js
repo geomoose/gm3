@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-import { createStore, combineReducers } from 'redux';
-
 import reducer from 'gm3/reducers/editor'
 import {setEditFeature, finishEditing} from 'gm3/actions/edit'
 

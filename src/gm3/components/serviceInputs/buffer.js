@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { setSelectionBuffer } from '../../actions/map';
 
-import LengthInput from './length';
+import {LengthInputBase} from './length';
 
 /* React.Component to control the setting of the buffer distance
  * for selection shapes.
@@ -12,20 +12,14 @@ import LengthInput from './length';
  */
 export class BufferInput extends React.Component {
     render() {
-        // inputs require a 'field' to render their label and
-        // set their value.  This mocks that up.
-        const mock_field = {
-            label: 'With buffer',
-            value: this.props.distance,
-            default: this.props.distance,
-        };
-
         return (
-            <LengthInput
-                setValue={(name, value) => {
-                    this.props.setBuffer(value);
+            <LengthInputBase
+                label={'With buffer'}
+                value={this.props.distance}
+                units={this.props.units}
+                onChange={(distance, units) => {
+                    this.props.setBuffer(distance, units);
                 }}
-                field={ mock_field }
             />
         );
     }
@@ -34,25 +28,27 @@ export class BufferInput extends React.Component {
 
 BufferInput.propTypes = {
     distance: PropTypes.number,
-    setDistance: PropTypes.func,
+    units: PropTypes.string,
+    setBuffer: PropTypes.func,
 }
 
 BufferInput.defaultProps = {
     distsance: 0,
-    setDistance: (distance) => {
+    setBuffer: (distance, units) => {
     },
 }
 
 function mapState(state) {
     return {
         distance: state.map.selectionBuffer,
+        units: state.map.selectionBufferUnits,
     };
 }
 
 function mapDispatch(dispatch) {
     return {
-        setBuffer: (distance) => {
-            dispatch(setSelectionBuffer(distance));
+        setBuffer: (distance, units) => {
+            dispatch(setSelectionBuffer(distance, units));
         },
     }
 }

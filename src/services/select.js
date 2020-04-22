@@ -53,7 +53,7 @@ function SelectService(Application, options) {
     this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
 
     /** Limit the number of selection tools available */
-    this.tools = {
+    this.tools = options.tools ? options.tools : {
         'Box': true,
         'Point': true,
         'MultiPoint': true,
@@ -93,7 +93,7 @@ function SelectService(Application, options) {
     this.fieldsFirst = true;
 
     /** When defined, label the draw tools */
-    this.drawToolsLabel = options.drawToolsLabel ? options.drawToolsLabel : 'Using';
+    this.drawToolsLabel = options.drawToolsLabel !== undefined ? options.drawToolsLabel : 'Using';
 
     /** Alow shapes to be buffered. */
     this.bufferAvailable = true;

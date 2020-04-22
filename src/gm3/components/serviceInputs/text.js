@@ -26,6 +26,8 @@ import React, { Component } from 'react';
 
 import uuid from 'uuid';
 
+export const getId = () => (uuid.v4());
+
 export default class TextInput extends Component {
 
     constructor(props) {
@@ -39,7 +41,7 @@ export default class TextInput extends Component {
     }
 
     getId() {
-        return uuid.v4();
+        return getId();
     }
 
     getValue() {
