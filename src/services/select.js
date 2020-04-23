@@ -73,7 +73,7 @@ function SelectService(Application, options) {
     /** keepAlive = true will keep the service in 'query mode'
      *                   in the background, until it is explictly turned off.
      */
-    this.keepAlive = false;
+    this.keepAlive = (options.keepAlive === true);
 
     /** User input fields, select allows choosing a layer */
     this.fields = options.fields || [{

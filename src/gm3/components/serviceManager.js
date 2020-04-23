@@ -26,7 +26,7 @@ import React from 'react';
 import { Provider, connect } from 'react-redux';
 
 import { removeQuery, changeTool, zoomToExtent } from '../actions/map';
-import { finishService } from '../actions/service';
+import { startService, finishService } from '../actions/service';
 import * as mapActions from '../actions/map';
 import { clearFeatures } from '../actions/mapSource';
 import { setUiHint } from '../actions/ui';
@@ -319,15 +319,18 @@ class ServiceManager extends React.Component {
             const serviceDef = this.props.services[serviceName];
             if (
                 serviceDef &&
-                serviceDef.autoGo === true &&
                 this.props.selectionFeatures !== prevProps.selectionFeatures &&
                 this.props.selectionFeatures.length > 0
             ) {
-                this.props.startQuery(
-                    this.props.selectionFeatures,
-                    this.props.services[serviceName],
-                    this.state.values
-                );
+                if (serviceDef.autoGo === true) {
+                    this.props.startQuery(
+                        this.props.selectionFeatures,
+                        this.props.services[serviceName],
+                        this.state.values
+                    );
+                } else {
+                    this.props.startService(serviceName);
+                }
             }
         }
     }
@@ -352,7 +355,9 @@ class ServiceManager extends React.Component {
                     onSubmit={(values) => {
                         if (service_def.autoGo !== true) {
                             // end the drawing
-                            this.props.changeDrawTool(null);
+                            if (service_def.keepAlive !== true) {
+                                this.props.changeDrawTool(null);
+                            }
                             this.props.startQuery(this.props.selectionFeatures, service_def, values);
                         }
                         this.setState({values, });
@@ -458,6 +463,9 @@ function mapDispatch(dispatch, ownProps) {
         },
         setUiHint: hint => {
             dispatch(setUiHint(hint));
+        },
+        startService: serviceName => {
+            dispatch(startService(serviceName));
         },
     };
 }
