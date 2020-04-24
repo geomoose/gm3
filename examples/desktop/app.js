@@ -146,6 +146,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('select', SelectService, {
         // set the default layer
         defaultLayer: 'vector-parcels/parcels',
+        keepAlive: true,
     });
 
     app.registerService('buffer-select', SelectService, {

@@ -837,7 +837,6 @@ class Map extends React.Component {
             }], 'EPSG:4326', 'EPSG:3857')[0];
         }
 
-
         // the selection feature(s) are the original, as-drawn feature.
         this.props.setSelectionFeatures(features);
 
@@ -1225,13 +1224,6 @@ class Map extends React.Component {
             }
         }
 
-        // this will cause the active drawing tool to *stop*
-        //  when the service changes.
-        if(this.props.queries.service !== null
-           && this.props.queries.service !== prevProps.queries.service) {
-            this.stopDrawing();
-        }
-
         // handle out of loop buffer distance changes
         if (this.selectionLayer) {
             if (this.props.selectionBuffer !== prevProps.selectionBuffer) {
@@ -1263,7 +1255,7 @@ class Map extends React.Component {
 
             if (interactionType !== prevProps.mapView.interactionType
                || this.props.mapView.activeSource !== prevProps.mapView.activeSource
-               || this.props.mapView.interactionType !== this.currentInteraction) {
+               || interactionType !== this.currentInteraction) {
                 // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
