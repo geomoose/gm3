@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2020 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,9 +40,7 @@ import ModalDialog from './modal';
 class FilterModal extends ModalDialog {
     constructor(props) {
         super(props);
-
         this.onChange = this.onChange.bind(this);
-
         this.state = {
             value: ''
         };
@@ -106,7 +104,8 @@ class FilterModal extends ModalDialog {
                 this.setState({value: ''});
             }
         }
-        this.setState({open: false});
+
+        this.props.onClose();
     }
 
     getTitle() {
@@ -286,9 +285,11 @@ class RangeFilterModal extends FilterModal {
 /* Provides a control for filtering a column's values.
  */
 class ColumnFilter extends React.Component {
-
-    showFilterDialog() {
-        this.refs.modal.setState({open: true});
+    constructor(props) {
+        super(props);
+        this.state = {
+            open: false,
+        };
     }
 
     render() {
@@ -298,11 +299,17 @@ class ColumnFilter extends React.Component {
             return false;
         }
 
+        const onClose = () => {
+            this.setState({open: false, });
+        };
+
         let modal = false;
         switch(this.props.column.filter.type) {
             case 'list':
                 modal = (
                     <ListFilterModal
+                        open={this.state.open}
+                        onClose={onClose}
                         ref='modal'
                         column={this.props.column}
                         results={this.props.results}
@@ -314,6 +321,8 @@ class ColumnFilter extends React.Component {
             case 'range':
                 modal = (
                     <RangeFilterModal
+                        open={this.state.open}
+                        onClose={onClose}
                         ref='modal'
                         column={this.props.column}
                         results={this.props.results}
@@ -325,6 +334,8 @@ class ColumnFilter extends React.Component {
             default:
                 modal = (
                     <FilterModal
+                        open={this.state.open}
+                        onClose={onClose}
                         ref='modal'
                         column={this.props.column}
                         results={this.props.results}
@@ -340,7 +351,7 @@ class ColumnFilter extends React.Component {
             <span>
                 <i
                     title={ filter_title}
-                    onClick={ () => { this.showFilterDialog() }}
+                    onClick={ () => { this.setState({open: true}) }}
                     className='filter icon'
                 >
                 </i>
