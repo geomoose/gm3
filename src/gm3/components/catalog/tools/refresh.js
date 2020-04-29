@@ -54,7 +54,7 @@ export class LayerRefresh extends React.Component {
 
         return (
             <Tool
-                tip='Toggle automatic layer refreshing'
+                tip='layer-refresh-tip'
                 iconClass={classes}
                 onClick={() => {
                     this.props.onToggleRefresh(this.props.layer, !refreshing);

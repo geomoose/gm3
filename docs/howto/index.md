@@ -27,3 +27,4 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
 * [How-to display a raster layer and query as a vector layer](./query-as-vector.md)
 * [How-to add Attribution](./add-attribution.md)
 * [How-to change the default buffer units]('./change-buffer-units.md')
+* [How-to add a language](./add-a-language.md)

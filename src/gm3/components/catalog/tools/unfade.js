@@ -28,7 +28,7 @@ export default class UnfadeTool extends FadeTool {
 };
 
 UnfadeTool.defaultProps = {
-    tip: 'Unfade layer',
+    tip: 'unfade-layer',
     iconClass: 'unfade',
     direction: .1,
 };

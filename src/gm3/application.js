@@ -66,6 +66,7 @@ import Mark from 'markup-js';
 
 import * as util from './util';
 
+import i18nConfigure from './i18n';
 import { HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
 
 function hydrateConfig(userConfig) {
@@ -101,6 +102,8 @@ class Application {
         this.actions = {};
 
         this.config = config;
+
+        i18nConfigure(userConfig.lang || {});
 
         register(proj4);
 

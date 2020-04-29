@@ -31,47 +31,38 @@ import { Tool } from '../tools';
 
 /** Tool to "fade" a layer. Aka, take away opacity.
  */
-export class FadeTool extends React.Component {
-    constructor() {
-        super();
-        this.tip = 'Fade layer';
-        this.iconClass = 'fade';
-        this.direction = -.10;
-    }
+export const FadeTool = ({tip, iconClass, layer, mapSources, direction, onFade}) => {
+    return (
+        <Tool
+            tip={tip}
+            iconClass={iconClass}
+            onClick={() => {
+                // collect the map sources
+                const map_sources = {};
+                for(let i = 0, ii = layer.src.length; i < ii; i++) {
+                    const ms_name = layer.src[i].mapSourceName;
+                    map_sources[ms_name] = mapSources[ms_name].opacity;
+                }
 
-    render() {
-        return (
-            <Tool
-                tip={this.props.tip}
-                iconClass={this.props.iconClass}
-                onClick={() => {
-                    // collect the map sources
-                    const map_sources = {};
-                    for(let i = 0, ii = this.props.layer.src.length; i < ii; i++) {
-                        const ms_name = this.props.layer.src[i].mapSourceName;
-                        map_sources[ms_name] = this.props.mapSources[ms_name].opacity;
+                for(const ms_name in map_sources) {
+                    let new_opacity = map_sources[ms_name] += direction;
+
+                    // check the bounds
+                    if(new_opacity < 0) {
+                        new_opacity = 0;
+                    } else if(new_opacity > 1) {
+                        new_opacity = 1;
                     }
 
-                    for(const ms_name in map_sources) {
-                        let new_opacity = map_sources[ms_name] += this.props.direction;
-
-                        // check the bounds
-                        if(new_opacity < 0) {
-                            new_opacity = 0;
-                        } else if(new_opacity > 1) {
-                            new_opacity = 1;
-                        }
-
-                        this.props.onFade(ms_name, new_opacity);
-                    }
-                }}
-            />
-        );
-    }
+                    onFade(ms_name, new_opacity);
+                }
+            }}
+        />
+    );
 }
 
 FadeTool.defaultProps = {
-    tip: 'Fade layer',
+    tip: 'fade-tip',
     iconClass: 'fade',
     direction: -.1,
 };

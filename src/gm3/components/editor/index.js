@@ -4,7 +4,7 @@ import {changeFeatures} from '../../actions/mapSource';
 import Modal from './modal';
 
 const mapState = state => ({
-    title: 'Edit feature properties',
+    title: 'draw-edit-tip',
     open: state.editor && state.editor.feature !== null,
     feature: state.editor.feature,
     source: state.editor.source,

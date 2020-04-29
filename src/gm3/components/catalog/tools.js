@@ -24,22 +24,22 @@
 
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /** Generic class for basic "click this, do this" tools.
  */
-export class Tool extends React.Component {
-    render() {
-        return (
-            <React.Fragment>
-                <i
-                    className={'icon ' + this.props.iconClass}
-                    onClick={this.props.onClick}
-                    title={this.props.tip}>
-                </i>
-                { this.props.children }
-            </React.Fragment>
-        );
-    }
+export const Tool = ({tip, iconClass, onClick, children}) => {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <i
+                className={'icon ' + iconClass}
+                onClick={onClick}
+                title={t(tip)}>
+            </i>
+            { children }
+        </React.Fragment>
+    );
 }
 
 Tool.defaultProps = {

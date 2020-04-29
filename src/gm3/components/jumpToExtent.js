@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { zoomToExtent } from '../actions/map';
 
@@ -37,22 +38,22 @@ import { zoomToExtent } from '../actions/map';
  *      - in the form [minx, miny, maxx, maxy]
  *      - Extent must be in the same projection as the map
  */
-export class JumpToExtent extends React.Component {
-    render() {
-        const options = this.props.locations.map(function(location, index) {
-            return <option key={index} value={index}>{location.label}</option>;
-        });
+export const JumpToExtent = ({locations, onZoomTo}) => {
+    const {t} = useTranslation();
 
-        return (
-            <select value="default" onChange={(evt) => {
-                this.props.onZoomTo(this.props.locations[evt.target.value].extent);
-            }}>
-                <option disabled key="default" value="default">Zoom To Extent...</option>
-                {options}
-            </select>
-        );
-    }
-};
+    const options = locations.map(function(location, index) {
+        return <option key={index} value={index}>{location.label}</option>;
+    });
+
+    return (
+        <select value="default" onChange={(evt) => {
+            onZoomTo(locations[evt.target.value].extent);
+        }}>
+            <option disabled key="default" value="default">{t('zoomto-extent')}</option>
+            {options}
+        </select>
+    );
+}
 
 JumpToExtent.defaultProps = {
     locations: [],

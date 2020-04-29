@@ -30,6 +30,7 @@
  */
 
 import React from 'react';
+import { Translation } from 'react-i18next';
 
 import { connect, Provider } from 'react-redux';
 
@@ -125,12 +126,16 @@ export class Catalog extends React.Component {
             <Provider store={this.props.store}>
                 <div className={ catalog_classes }>
                     <div className='searchbox'>
-                        <input
-                            onChange={(evt) => {
-                                this.setState({searchFilter: evt.target.value.toLowerCase()});
-                            }}
-                            placeholder='Search catalog'
-                        />
+                        <Translation>
+                            {t => (
+                                <input
+                                    onChange={(evt) => {
+                                        this.setState({searchFilter: evt.target.value.toLowerCase()});
+                                    }}
+                                    placeholder={t('search-catalog')}
+                                />
+                            )}
+                        </Translation>
                     </div>
                     {
                         this.state.searchFilter === '' ?

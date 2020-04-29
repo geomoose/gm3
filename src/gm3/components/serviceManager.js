@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { Provider, connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import { removeQuery, changeTool, zoomToExtent } from '../actions/map';
 import { startService, finishService } from '../actions/service';
@@ -177,17 +178,17 @@ class ServiceManager extends React.Component {
         const info_header = (
             <div className='results-info'>
                 <div className='results-info-item features-count'>
-                    <div className='label'>Features</div>
+                    <div className='label'>{this.props.t('features')}</div>
                     <div className='value'>{ feature_count }</div>
                 </div>
 
                 <div className='results-info-item layers-count'>
-                    <div className='label'>Layers</div>
+                    <div className='label'>{this.props.t('layers')}</div>
                     <div className='value'>{ layer_count }</div>
                 </div>
 
                 <div className='results-info-item zoomto'>
-                    <div className='label'>Zoom to results</div>
+                    <div className='label'>{this.props.t('zoomto-results')}</div>
                     <div className='value' onClick={() => { this.props.zoomToResults(query); }}>
                         <span className='icon zoomto'></span>
                     </div>
@@ -198,7 +199,7 @@ class ServiceManager extends React.Component {
         return (
             <div key={queryId}>
                 <div className='results-header'>
-                    { service_title }
+                    { this.props.t(service_title) }
                     <div className='results-tools'>
                         <i className='icon clear' onClick={() => { this.props.removeQuery(queryId); }}></i>
                     </div>
@@ -387,7 +388,7 @@ class ServiceManager extends React.Component {
                 contents = (
                     <React.Fragment>
                         <div className='info-box'>
-                            Nothing available to view. Please click a service to start in the toolbar.
+                            { this.props.t('start-service-help') }
                         </div>
 
                         <div className='clear-controls'>
@@ -396,7 +397,7 @@ class ServiceManager extends React.Component {
                                 className='clear-button'
                                 onClick={ () => { this.props.clearSelectionFeatures(); } }
                             >
-                                <i className='clear icon'></i> Clear previous selections
+                                <i className='clear icon'></i> { this.props.t('clear-previous-selection') }
                             </button>
                         </div>
                     </React.Fragment>
@@ -469,4 +470,4 @@ function mapDispatch(dispatch, ownProps) {
         },
     };
 }
-export default connect(mapState, mapDispatch)(ServiceManager);
+export default connect(mapState, mapDispatch)(withTranslation()(ServiceManager));

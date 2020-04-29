@@ -29,28 +29,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { startService } from '../../actions/service';
 import { runAction, setUiHint } from '../../actions/ui';
 import { setSelectionBuffer, changeTool } from '../../actions/map';
 
-export class ToolbarButton extends React.Component {
-    render() {
-        const tool = this.props.tool;
+export const ToolbarButton = ({tool, onClick, currentService, currentDrawTool}) => {
+    const {t} = useTranslation();
+    const label = t(tool.label);
 
-        return (
-            <span
-                onClick={() => {
-                    this.props.onClick(tool, this.props.currentService, this.props.currentDrawTool);
-                }}
-                key={tool.name}
-                className={tool.cssClass || 'tool ' + tool.name}
-                title={tool.label}
-            >
-                <span className='icon'></span><span className='label'>{tool.label}</span>
-            </span>
-        );
-    }
+    return (
+        <span
+            onClick={() => {
+                onClick(tool, currentService, currentDrawTool);
+            }}
+            key={tool.name}
+            className={tool.cssClass || 'tool ' + tool.name}
+            title={label}
+        >
+            <span className='icon'></span><span className='label'>{label}</span>
+        </span>
+    );
 }
 
 ToolbarButton.defaultProps = {

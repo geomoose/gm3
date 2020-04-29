@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { Provider, connect } from 'react-redux';
+import { Translation } from 'react-i18next';
 
 import { renderFlatTree } from './catalog';
 import { isFavorite } from './catalog/layer-favorite';
@@ -39,19 +40,22 @@ export class FavoriteLayers extends React.Component {
 
         return (
             <Provider store={this.props.store}>
-                <div className="catalog favorites flat">
-                    <div className="info-box">
-                        This tab lists all layers marked as "Favorites".  Favorite layers
-                        can be selected by clicking the <i className="icon favorite"></i> icon
-                        next to the layer name.
-                    </div>
-                    {
-                        favorites.length > 0 ? '' : (
-                            <i>No layers marked as favorite</i>
-                        )
-                    }
-                    { favorites }
-                </div>
+                <Translation>
+                    { t => (
+                        <div className="catalog favorites flat">
+                            <div
+                                className="info-box"
+                                dangerouslySetInnerHTML={{ __html: t('favorites-help') }} >
+                            </div>
+                            {
+                                favorites.length > 0 ? '' : (
+                                    <i>{t('no-favorites')}</i>
+                                )
+                            }
+                            { favorites }
+                        </div>
+                    )}
+                </Translation>
             </Provider>
         );
     }

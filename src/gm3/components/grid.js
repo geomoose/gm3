@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation, useTranslation } from 'react-i18next';
 
 import * as Papa from 'papaparse';
 import Mark from 'markup-js';
@@ -35,6 +36,11 @@ import { addFilter, removeFilter } from '../actions/map';
 import { getLayerFromPath } from '../actions/mapSource';
 
 import ModalDialog from './modal';
+
+const Label = ({l}) => {
+    const {t} = useTranslation();
+    return (<label>{t(l)}</label>);
+};
 
 
 class FilterModal extends ModalDialog {
@@ -123,7 +129,7 @@ class FilterModal extends ModalDialog {
     renderBody() {
         return (
             <div>
-                <label>Value:</label> <input onChange={ this.onChange } value={ this.state.value } ref='input'/>
+                <Label l="label-value"/> <input onChange={ this.onChange } value={ this.state.value } ref='input'/>
             </div>
         );
     }
@@ -269,12 +275,12 @@ class RangeFilterModal extends FilterModal {
         return (
             <div>
                 <div>
-                    <label>Min:</label>
+                    <Label l="label-min" />
                     <input value={this.state.min} onChange={ this.setMin }/>
                 </div>
 
                 <div>
-                    <label>Max:</label>
+                    <Label l="label-max" />
                     <input value={this.state.max} onChange={ this.setMax}/>
                 </div>
             </div>
@@ -350,7 +356,7 @@ class ColumnFilter extends React.Component {
         return (
             <span>
                 <i
-                    title={ filter_title}
+                    title={filter_title}
                     onClick={ () => { this.setState({open: true}) }}
                     className='filter icon'
                 >
@@ -409,7 +415,7 @@ class Grid extends React.Component {
         for(const column_def of headerConf) {
             let sort_tool = null;
             let sort_classes = 'icon sort';
-            const sort_title = 'Click to sort';
+            const sort_title = this.props.t('filter-sort');
 
             if(column_def.sortAs) {
                 if(this.state.sortBy === column_def.property) {
@@ -574,14 +580,14 @@ class Grid extends React.Component {
                     <span
                         onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
                         className={'tool download'}
-                        title='Download results as CSV'
+                        title={ this.props.t('grid-download-csv')}
                     >
                         <i className='icon download'></i>
                     </span>
                     <span
                         onClick={ toggle_grid }
                         className={'tool ' + min_btn_class}
-                        title='Min/Maximize Grid'
+                        title={ this.props.t('grid-min-max') }
                     >
                         <i className={'icon ' + min_btn_class}></i>
                     </span>
@@ -608,4 +614,4 @@ const mapToProps = function(store) {
         mapSources: store.mapSources,
     }
 }
-export default connect(mapToProps)(Grid);
+export default connect(mapToProps)(withTranslation()(Grid));

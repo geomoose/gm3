@@ -42,19 +42,10 @@ export const DrawTool = ({layer, drawType, changeTool}) => {
     const src = layer.src[0];
     const path = src.mapSourceName + '/' + src.layerName;
 
-    let tip = `Add a ${drawType} to the layer`;
-    if (drawType === 'modify') {
-        tip = 'Modify a drawn feature';
-    } else if (drawType === 'remove') {
-        tip = 'Remove a feature from the layer';
-    } else if (drawType === 'edit') {
-        tip = 'Edit feature properties';
-    }
-
     return (
         <Tool
             iconClass={drawType}
-            tip={tip}
+            tip={`draw-${drawType}-tip`}
             onClick={() => {
                 changeTool(DRAW_TYPES[drawType], path);
             }}

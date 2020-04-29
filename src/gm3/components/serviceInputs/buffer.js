@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { setSelectionBuffer } from '../../actions/map';
 
@@ -10,19 +11,18 @@ import {LengthInputBase} from './length';
  * for selection shapes.
  *
  */
-export class BufferInput extends React.Component {
-    render() {
-        return (
-            <LengthInputBase
-                label={'With buffer'}
-                value={this.props.distance}
-                units={this.props.units}
-                onChange={(distance, units) => {
-                    this.props.setBuffer(distance, units);
-                }}
-            />
-        );
-    }
+export const BufferInput = ({distance, units, setBuffer}) => {
+    const {t} = useTranslation();
+    return (
+        <LengthInputBase
+            label={t('with-buffer')}
+            value={distance}
+            units={units}
+            onChange={(distance, units) => {
+                setBuffer(distance, units);
+            }}
+        />
+    );
 }
 
 

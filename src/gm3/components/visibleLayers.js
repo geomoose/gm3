@@ -23,6 +23,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Provider, connect } from 'react-redux';
 
 import CatalogLayer from './catalog/layer';
@@ -33,44 +34,42 @@ import { getLayersByZOrder } from '../util';
  * Displays layers in their map layer order.
  *
  */
-class VisibleLayers extends React.Component {
-    render() {
-        // get the list of layers order'd by the stack order
-        const layers = getLayersByZOrder(this.props.catalog, this.props.mapSources);
-        const n_layers = layers.length;
+const VisibleLayers = ({store, catalog, mapSources}) => {
+    const {t} = useTranslation();
 
-        let contents;
+    // get the list of layers order'd by the stack order
+    const layers = getLayersByZOrder(catalog, mapSources);
+    const n_layers = layers.length;
 
-        if(n_layers > 0) {
-            const catalog_layers = [];
-            for(let i = 0, ii = layers.length; i < ii; i++) {
-                const layer = layers[i];
-                catalog_layers.push(
-                    <CatalogLayer
-                        key={'layer-' + i}
-                        layer={layer.layer}
-                        forceTools={['up', 'down']}
-                    />
-                );
-            }
-            contents = catalog_layers;
-        } else {
-            contents = (<i>No layers are visible</i>);
+    let contents;
+
+    if(n_layers > 0) {
+        const catalog_layers = [];
+        for(let i = 0, ii = layers.length; i < ii; i++) {
+            const layer = layers[i];
+            catalog_layers.push(
+                <CatalogLayer
+                    key={'layer-' + i}
+                    layer={layer.layer}
+                    forceTools={['up', 'down']}
+                />
+            );
         }
-
-        return (
-            <Provider store={this.props.store}>
-                <div className="catalog visble-layers visible-layers flat">
-                    <div className="info-box">
-                    This tab lists all of the visible layers. Checking a layer
-                    from the Catalog will cause the layer to appear here. Unchecking a
-                    layer's checkbox will cause it to disappear from this list.
-                    </div>
-                    { contents }
-                </div>
-            </Provider>
-        );
+        contents = catalog_layers;
+    } else {
+        contents = (<i>No layers are visible</i>);
     }
+
+    return (
+        <Provider store={store}>
+            <div className="catalog visble-layers visible-layers flat">
+                <div className="info-box">
+                    { t('visible-layers-help') }
+                </div>
+                { contents }
+            </div>
+        </Provider>
+    );
 }
 
 

@@ -32,6 +32,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ReactResizeDetector from 'react-resize-detector';
+import { withTranslation } from 'react-i18next';
 
 import uuid from 'uuid';
 import md5 from 'md5/md5';
@@ -943,17 +944,17 @@ class Map extends React.Component {
      */
     createStopTool(type) {
         // "translate" a description of the tool
-        let tool_desc = {
-            Polygon: 'End Drawing',
-            LineString: 'End Drawing',
-            Point: 'End Drawing',
-            Select: 'End Selection',
-        }[type];
+        let tool_desc = this.props.t({
+            Polygon: 'end-drawing',
+            LineString: 'end-drawing',
+            Point: 'end-drawing',
+            Select: 'end-selection',
+        }[type]);
 
         // helpful default behaviour for when the description
         //  is not defined.
         if(typeof(tool_desc) === 'undefined') {
-            tool_desc = 'End ' + type;
+            tool_desc = this.props.t('finish') + ' ' + type;
         }
 
         // yikes this is super not-reacty.
@@ -1362,7 +1363,7 @@ function mapDispatch(dispatch) {
     };
 }
 
-export default connect(mapState, mapDispatch)(Map);
+export default connect(mapState, mapDispatch)(withTranslation()(Map));
 
 
 export function getLegend(mapSource, mapView, layerName) {

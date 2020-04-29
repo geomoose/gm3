@@ -31,6 +31,7 @@
  * that image is ready.
  */
 import React from 'react';
+import {Translation} from 'react-i18next';
 
 import View from 'ol/View';
 
@@ -375,7 +376,7 @@ export default class PrintModal extends Modal {
 
     /** Render a select box with the layouts.
      */
-    renderLayoutSelect() {
+    renderLayoutSelect(t) {
         return (
             <select
                 onChange={evt => {
@@ -385,7 +386,7 @@ export default class PrintModal extends Modal {
             >
                 {
                     this.state.layouts.map((layout, idx) => (
-                        <option key={layout.label} value={idx}>{ layout.label }</option>
+                        <option key={layout.label} value={idx}>{t(`page-${layout.label}`)}</option>
                     ))
                 }
             </select>
@@ -395,7 +396,7 @@ export default class PrintModal extends Modal {
     /** Render a select drop down that allows the user
      *  to up the DPI.
      */
-    renderResolutionSelect() {
+    renderResolutionSelect(t) {
         return (
             <select
                 onChange={evt => {
@@ -405,9 +406,9 @@ export default class PrintModal extends Modal {
                 }}
                 value={this.state.resolution}
             >
-                <option value='1'>Normal</option>
-                <option value='1.5'>Higher</option>
-                <option value='2'>Highest</option>
+                <option value='1'>{t('resolution-normal')}</option>
+                <option value='1.5'>{t('resolution-higher')}</option>
+                <option value='2'>{t('resolution-highest')}</option>
             </select>
         );
     }
@@ -447,24 +448,30 @@ export default class PrintModal extends Modal {
             <div>
                 {print_warning}
 
-                <p>
-                    <label>Map title:</label>
-                    <input
-                        placeholder="Map title"
-                        value={ this.state.mapTitle }
-                        onChange={evt => {
-                            this.setState({mapTitle: evt.target.value});
-                        }}
-                    />
-                </p>
-                <p>
-                    <label>Page layout:</label>
-                    { this.renderLayoutSelect() }
-                </p>
-                <p>
-                    <label>Resolution:</label>
-                    { this.renderResolutionSelect() }
-                </p>
+                <Translation>
+                    {t => (
+                        <div>
+                            <p>
+                                <label>{`${t('map-title')}:`}</label>
+                                <input
+                                    placeholder={t('map-title')}
+                                    value={ this.state.mapTitle }
+                                    onChange={evt => {
+                                        this.setState({mapTitle: evt.target.value});
+                                    }}
+                                />
+                            </p>
+                            <p>
+                                <label>{`${t('page-layout')}:`}</label>
+                                { this.renderLayoutSelect(t) }
+                            </p>
+                            <p>
+                                <label>{`${t('resolution')}:`}</label>
+                                { this.renderResolutionSelect(t) }
+                            </p>
+                        </div>
+                    )}
+                </Translation>
                 <div>
                     <PrintPreviewImage store={this.props.store}/>
                 </div>

@@ -38,7 +38,6 @@ import { Tool } from '../tools';
 export class ClearTool extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             open: false,
         };
@@ -47,7 +46,7 @@ export class ClearTool extends React.Component {
     render() {
         return (
             <Tool
-                tip='Clear all features from the layer.'
+                tip='clear-features-tip'
                 iconClass='clear'
                 onClick={() => {
                     this.setState({open: true});

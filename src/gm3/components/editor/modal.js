@@ -1,4 +1,5 @@
 import React from 'react';
+import {withTranslation} from 'react-i18next';
 
 import Modal from '../modal';
 
@@ -42,7 +43,7 @@ export class EditorModal extends Modal {
                         );
                     }}
                 >
-                    { option.label }
+                    { this.props.t(option.label) }
                 </button>
             </div>
         );
@@ -76,8 +77,8 @@ EditorModal.defaultProps = {
     attributes: [],
     options: [
         {label: 'Close', value: 'close'},
-        {label: 'Save changes', value: 'save'},
+        {label: 'save-changes', value: 'save'},
     ],
 };
 
-export default EditorModal;
+export default withTranslation()(EditorModal);

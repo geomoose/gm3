@@ -28,7 +28,7 @@
 
 const LAYOUTS = [
     {
-        label: 'Letter - Landscape',
+        label: 'letter-landscape',
         orientation: 'landscape',
         page: 'letter',
         units: 'in',
@@ -56,7 +56,7 @@ const LAYOUTS = [
         ]
     },
     {
-        label: 'Letter - Portrait',
+        label: 'letter-portrait',
         orientation: 'portrait',
         page: 'letter',
         units: 'in',
@@ -84,7 +84,7 @@ const LAYOUTS = [
         ]
     },
     {
-        label: '11x17 - Landscape',
+        label: 'tabloid-landscape',
         orientation: 'landscape',
         page: 'tabloid',
         units: 'in',
