@@ -34,7 +34,7 @@ var app = new gm3.Application({
 
 ## 4. Test your language in the application
 
-Any language can be tested regardless of browser settings. Between `.html` and `#` add `lng=[language code]`. For our example the URL would look like the following:
+Any language can be tested regardless of browser settings. Between `.html` and `#` add `?lng=[language code]`. For our example the URL would look like the following:
 
 ```
 .../desktop.index.html?lng=pirate#on=sketch/on....
