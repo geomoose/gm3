@@ -32,34 +32,18 @@
  */
 
 import React, {useState, useEffect} from 'react';
+import { useTranslation } from 'react-i18next';
+
 import TextInput, {getId} from './text';
 
-const UNITS = [{
-    label: 'Feet',
-    value: 'ft'
-}, {
-    label: 'Yards',
-    value: 'yd'
-}, {
-    label: 'Miles',
-    value: 'mi'
-}, {
-    label: 'Inches',
-    value: 'in'
-}, {
-    label: 'Meters',
-    value: 'm'
-}, {
-    label: 'Kilometers',
-    value: 'km'
-}, {
-    label: 'Chains',
-    value: 'ch'
-}];
+const UNITS = [
+    'ft', 'yd', 'mi', 'in', 'm', 'km', 'ch'
+];
 
 export const LengthInputBase = ({label, value, units, onChange}) => {
     const id = 'input-' + getId();
     const [tmpValue, setValue] = useState(value);
+    const {t} = useTranslation();
 
     useEffect(() => {
         setValue(value);
@@ -87,8 +71,8 @@ export const LengthInputBase = ({label, value, units, onChange}) => {
                 }}
                 value={units}
             >
-                {UNITS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                {UNITS.map(unit => (
+                    <option key={unit} value={unit}>{t(`units-${unit}`)}</option>
                 ))}
             </select>
         </div>

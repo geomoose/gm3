@@ -38,7 +38,7 @@ export class ZoomToTool extends React.Component {
     render() {
         return (
             <Tool
-                tip='Zoom to layer extents.'
+                tip='zoomto-tip'
                 iconClass='zoomto'
                 onClick={() => {
                     const src = this.props.layer.src[0];

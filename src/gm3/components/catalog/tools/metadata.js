@@ -22,15 +22,18 @@
  * SOFTWARE.
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-export default class MetadataTool extends React.Component {
-    render() {
-        return (
-            <a className='metadata' href={ this.props.href } target='_blank'
-                rel='noopener noreferrer'
-                title='View metadata - opens new window'>
-                <i className='icon metadata'></i>
-            </a>
-        );
-    }
+const MetadataTool = ({href}) => {
+    const {t} = useTranslation();
+    return (
+        <a className='metadata' href={ href } target='_blank'
+            rel='noopener noreferrer'
+            title={t('view-metadata-tip')}
+        >
+            <i className='icon metadata'></i>
+        </a>
+    );
 }
+
+export default MetadataTool;

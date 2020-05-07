@@ -75,7 +75,7 @@ export class UpTool extends React.Component {
 }
 
 UpTool.defaultProps = {
-    tip: 'Move layer up in the order',
+    tip: 'layer-up-tip',
     iconClass: 'up',
     direction: -1,
     setZIndex: function() {

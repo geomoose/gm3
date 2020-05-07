@@ -30,27 +30,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import ToolbarButton from './button';
+import { useTranslation } from 'react-i18next';
 
-export default class ToolbarDrawer extends React.Component {
-    render() {
-        return (
-            <div className='drawer tool'>
-                <span className='drawer icon'></span><span className='label'>{this.props.label}</span>
-                <div className='drawer-contents'>
-                    {
-                        this.props.tools.map((tool, i) => {
-                            return (
-                                <ToolbarButton
-                                    key={`btn${i}`}
-                                    tool={tool}
-                                />
-                            );
-                        })
-                    }
-                </div>
+const ToolbarDrawer = ({label, tools}) => {
+    const {t} = useTranslation();
+    return (
+        <div className='drawer tool'>
+            <span className='drawer icon'></span><span className='label'>{t(label)}</span>
+            <div className='drawer-contents'>
+                {
+                    tools.map((tool, i) => {
+                        return (
+                            <ToolbarButton
+                                key={`btn${i}`}
+                                tool={tool}
+                            />
+                        );
+                    })
+                }
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 ToolbarDrawer.defaultProps = {
@@ -62,3 +62,5 @@ ToolbarDrawer.propTypes = {
     label: PropTypes.string,
     tools: PropTypes.array,
 }
+
+export default ToolbarDrawer;

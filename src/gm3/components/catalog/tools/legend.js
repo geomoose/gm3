@@ -36,7 +36,7 @@ export class LegendToggle extends React.Component {
     render() {
         return (
             <Tool
-                tip='Toggle legend visibility.'
+                tip='toggle-legend-tip'
                 iconClass='legend'
                 onClick={() => {
                     this.props.onToggleLegend(this.props.layer);

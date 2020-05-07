@@ -27,8 +27,6 @@ import TextInput from './text';
 
 
 export default class SelectInput extends TextInput {
-
-
     renderOption(opt) {
         return (<option key={opt.value} value={opt.value}>{opt.label}</option>);
     }
