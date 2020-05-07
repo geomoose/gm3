@@ -111,7 +111,7 @@ export const DownloadTool = ({layer, mapSources, onDownload}) => {
                         { t('download-help') }
                     </p>
                     <p>
-                        <label>Download format: </label>
+                        <label>{`${t('download-format')} `}</label>
                         <select
                             value={ downloadFormat }
                             onChange={(evt) => {

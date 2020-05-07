@@ -192,7 +192,7 @@ export class MeasureTool extends Component {
             <table className='measured-segments'>
                 <tbody>
                     <tr key='header'>
-                        <th></th><th>{this.props.t('segment-length')} ({this.props.t(`measure-${this.state.units}`)})</th><th>Bearing</th>
+                        <th></th><th>{this.props.t('measure-segment-length')} ({this.props.t(`units-${this.state.units}`)})</th><th>Bearing</th>
                     </tr>
                     { segment_html }
                 </tbody>
@@ -245,11 +245,8 @@ export class MeasureTool extends Component {
             (g.type === 'LineString' && g.coordinates.length < 2) ||
             (g.type === 'Polygon' && g.coordinates[0].length < 3)
         ) {
-            return (
-                <div className='help-text'>
-                    Please draw a feature on the map to measure.
-                </div>
-            );
+            // swallow the measurement until the feature is ready.
+            return false;
         } else if (g.type === 'Point') {
             return ( <CoordinateDisplay coords={ g.coordinates } projections={ this.props.pointProjections } resolution={ this.props.map.resolution } /> );
         } else if (g.type === 'LineString') {

@@ -168,7 +168,7 @@ class ServiceForm extends React.Component {
                 }}
             >
 
-                <h3>{service_def.title}</h3>
+                <h3>{this.props.t(service_def.title)}</h3>
                 { inputs }
                 {
                     !this.state.validateFieldValuesResultMessage ? false : (

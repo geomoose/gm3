@@ -17,6 +17,7 @@
   "clear-previous-selection" : "Clear previous selection",
   "download-features" : "Download features",
   "download-features-tip" : "Download Features to a file.",
+  "download-format": "Download format",
   "download-help" : "Choose a format then click 'Okay' to download layer features in that format.",
   "draw-box-label" : "Draw Box",
   "draw-edit-tip" : "Edit feature properties",
