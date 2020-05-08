@@ -56,7 +56,7 @@
     "test": "tests"
   },
   "devDependencies": {
-    "@mapbox/mapbox-gl-style-spec": "^13.6.0",
+    "@mapbox/mapbox-gl-style-spec": "^13.14.0",
     "@turf/buffer": "^5.1.5",
     "@turf/union": "^5.0.0",
     "babel-cli": "^6.26.0",
