@@ -108,17 +108,22 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         ],
         prepareFields: function (fields) {
             // this pulls out the term from the search
-            const searchTerm = fields[0].value;
+            const searchTerms = fields[0].value.split(' ');
             // this is the list of fields in the layer which will be searched.
             const searchFields = ['OWNER_NAME', 'OWN_ADD_L1', 'OWN_ADD_L2'];
             // this switched to matching any field
             var query = ['or'];
-            for(var i = 0, ii = searchFields.length; i < ii; i++) {
-                query.push({
-                    comparitor: 'ilike',
-                    name: searchFields[i],
-                    value: '%' + searchTerm + '%'
-                });
+            for (var i = 0, ii = searchFields.length; i < ii; i++) {
+                const subquery = ['and'];
+                for (var v = 0, vv = searchTerms.length; v < vv; v++) {
+                    const searchTerm = searchTerms[v];
+                    subquery.push({
+                        comparitor: 'ilike',
+                        name: searchFields[i],
+                        value: '%' + searchTerm + '%'
+                    });
+                }
+                query.push(subquery);
             }
             return [query];
         },
