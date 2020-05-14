@@ -90,6 +90,15 @@ function hydrateConfig(userConfig) {
     return config;
 }
 
+function getServiceRunOptions(serviceDef) {
+    const runOpts = {};
+    const boolKeys = ['zoomToResults'];
+    boolKeys.forEach(key => {
+        runOpts[key] = serviceDef[key] === true;
+    });
+    return runOpts;
+}
+
 class Application {
 
     constructor(userConfig = {}) {
@@ -326,10 +335,13 @@ class Application {
             }
         }
 
+        const serviceDef = this.services[service];
+        const runOptions = getServiceRunOptions(serviceDef);
+
         // require all the promises complete,
         //  then dispatch the store.
         Promise.all(template_promises).then(() => {
-            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query));
+            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query, runOptions));
         });
     }
 

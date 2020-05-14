@@ -281,6 +281,9 @@ class Map extends React.Component {
         }
 
         if(all_completed) {
+            if (query.runOptions && query.runOptions.zoomToResults) {
+                this.props.zoomToResults(query);
+            }
             this.props.store.dispatch(mapActions.finishQuery(queryId));
         }
     }
@@ -1359,6 +1362,12 @@ function mapDispatch(dispatch) {
         setFeatures: (mapSourceName, features) => {
             dispatch(mapSourceActions.clearFeatures(mapSourceName));
             dispatch(mapSourceActions.addFeatures(mapSourceName, features));
+        },
+        zoomToResults: (query) => {
+            const extent = util.getExtentForQuery(query.results);
+            if (extent) {
+                dispatch(mapActions.zoomToExtent(extent));
+            }
         },
     };
 }
