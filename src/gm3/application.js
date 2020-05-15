@@ -92,7 +92,7 @@ function hydrateConfig(userConfig) {
 
 function getServiceRunOptions(serviceDef) {
     const runOpts = {};
-    const boolKeys = ['zoomToResults'];
+    const boolKeys = ['zoomToResults', 'gridMinimized'];
     boolKeys.forEach(key => {
         runOpts[key] = serviceDef[key] === true;
     });

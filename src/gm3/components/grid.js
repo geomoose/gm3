@@ -514,6 +514,17 @@ class Grid extends React.Component {
         FileSaver.saveAs(csv_blob, csv_name);
     }
 
+    componentDidUpdate(prevProps) {
+        // check to see if the grid should start open minimized.
+        if (prevProps.queries.order[0] !== this.props.queries.order[0]) {
+            const queryId = this.props.queries.order[0];
+            const query = this.props.queries[queryId];
+            if (query.runOptions && query.runOptions.gridMinimized === true) {
+                this.setState({minimized: true});
+            }
+        }
+    }
+
     render() {
         let features = [];
         let display_table = false;
