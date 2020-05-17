@@ -777,3 +777,19 @@ export function getExtentForQuery(results, minSize = 150) {
 
     return extent;
 }
+
+/**
+ * Calculate the scale based on the projection and resolution.
+ * Very much inspired by ol/source/ImageWMS
+ *
+ * @params resolution - Resolution from the map
+ * @params projection - Map projection
+ *
+ * @returns Number. The scale.
+ */
+export function getScale(resolution, projection) {
+    const mpu = projection ? projection.getMetersPerUnit() : 1;
+    const dpi = 25.4 / 0.28;
+    const inchesPerMeter = 39.37;
+    return resolution * mpu * inchesPerMeter * dpi;
+}
