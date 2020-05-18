@@ -50,11 +50,11 @@ export function changeTool(tool, src = null) {
     }
 }
 
-export function createQuery(service, selection, fields, layers, single) {
+export function createQuery(service, selection, fields, layers, single, runOptions = {}) {
     return {
         type: MAP.QUERY_NEW,
         query: {
-            service, selection, fields, layers
+            service, selection, fields, layers, runOptions,
         },
         singleQuery: single
     };

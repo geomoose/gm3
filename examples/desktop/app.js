@@ -138,7 +138,8 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
                 validateFieldValuesResult.message = 'Please complete at least one field.'
             }
             return validateFieldValuesResult;
-        }
+        },
+        zoomToResults: true
     });
 
 

@@ -75,6 +75,12 @@ function SelectService(Application, options) {
      */
     this.keepAlive = (options.keepAlive === true);
 
+    /** Automatically zoom to results */
+    this.zoomToResults = options.zoomToResults === true;
+
+    /** Minimize the grid at results time */
+    this.gridMinimized = options.gridMinimized === true;
+
     /** User input fields, select allows choosing a layer */
     this.fields = options.fields || [{
         type: 'layers-list',

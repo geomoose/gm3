@@ -31,6 +31,7 @@ import { startService, finishService } from '../actions/service';
 import * as mapActions from '../actions/map';
 import { clearFeatures } from '../actions/mapSource';
 import { setUiHint } from '../actions/ui';
+import { getExtentForQuery } from '../util';
 
 import MeasureTool from './measure';
 
@@ -61,43 +62,6 @@ function normalizeSelection(selectionFeatures) {
     }
     return selectionFeatures[0];
 }
-
-/** Get the extent of a query's results.
- *  All features must have a boundedBy property.
- */
-function getExtentForQuery(results, minSize = 150) {
-    let extent = null;
-
-    for(const path in results) {
-        const features = results[path];
-        if(features.length > 0) {
-            if(extent === null) {
-                extent = features[0].properties.boundedBy.slice();
-            }
-            for(let i = 1, ii = features.length; i < ii; i++) {
-                const e = features[i].properties.boundedBy;
-                extent[0] = Math.min(extent[0], e[0]);
-                extent[1] = Math.min(extent[1], e[1]);
-                extent[2] = Math.max(extent[2], e[2]);
-                extent[3] = Math.max(extent[3], e[3]);
-            }
-        }
-    }
-
-    if (extent[2] - extent[0] < minSize) {
-        const mid_x = (extent[0] + extent[2]) / 2;
-        extent[0] = mid_x - minSize;
-        extent[2] = mid_x + minSize;
-    }
-    if (extent[3] - extent[1] < minSize) {
-        const mid_y = (extent[1] + extent[3]) / 2;
-        extent[1] = mid_y - minSize;
-        extent[3] = mid_y + minSize;
-    }
-
-    return extent;
-}
-
 
 class ServiceManager extends React.Component {
 
