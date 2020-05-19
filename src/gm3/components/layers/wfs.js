@@ -82,13 +82,22 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
     }
 
     const filters = [];
-    if(query.selection && query.selection.geometry) {
-        // convert the geojson geometry into a ol geometry.
-        const ol_geom = (new GeoJSONFormat()).readGeometry(query.selection.geometry);
-        // convert the geometry to the query projection
-        ol_geom.transform(mapProjection, query_projection);
-        // add the intersection filter to the filter stack.
-        filters.push(ol_filters.intersects(geom_field, ol_geom));
+    if(query.selection && query.selection.length > 0) {
+        const geoFilters = query.selection.map(selectionFeature => {
+            // convert the geojson geometry into a ol geometry.
+            const ol_geom = (new GeoJSONFormat()).readGeometry(selectionFeature.geometry);
+            // convert the geometry to the query projection
+            ol_geom.transform(mapProjection, query_projection);
+
+            // add the intersection filter to the filter stack.
+            return ol_filters.intersects(geom_field, ol_geom);
+        });
+
+        if (geoFilters.length === 1) {
+            filters.push(geoFilters[0]);
+        } else {
+            filters.push(chainFilters(FILTER_OPERATORS.or, geoFilters));
+        }
     }
 
     mapFilters(query.fields).forEach(f => filters.push(f));

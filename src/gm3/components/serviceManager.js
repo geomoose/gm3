@@ -50,17 +50,17 @@ function normalizeSelection(selectionFeatures) {
                     all_coords.push(feature.geometry.coordinates[0]);
                 }
             }
-            return {
+            return [{
                 type: 'Feature',
                 properties: {},
                 geometry: {
                     type: 'MultiPoint',
                     coordinates: all_coords
                 }
-            };
+            }];
         }
     }
-    return selectionFeatures[0];
+    return selectionFeatures;
 }
 
 class ServiceManager extends React.Component {
