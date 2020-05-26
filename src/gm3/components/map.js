@@ -942,12 +942,7 @@ class Map extends React.Component {
      */
     createStopTool(type) {
         // "translate" a description of the tool
-        let tool_desc = this.props.t({
-            Polygon: 'end-drawing',
-            LineString: 'end-drawing',
-            Point: 'end-drawing',
-            Select: 'end-selection',
-        }[type]);
+        let tool_desc = this.props.t(type === 'Select' ? 'end-select' : 'end-drawing');
 
         // helpful default behaviour for when the description
         //  is not defined.
