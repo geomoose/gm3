@@ -804,15 +804,6 @@ class Map extends React.Component {
         // this.sortOlLayers();
     }
 
-    /** Add a buffer to the features in the selection set.
-     *
-     *  @param buffer Buffer distance to apply.
-     *
-     *  @returns a GeoJSON feature of the union of the above features.
-     */
-    bufferSelectionFeatures(buffer) {
-    }
-
     /** Add features to the selection layer.
      *
      *  @param inFeatures Current list of features
@@ -831,14 +822,18 @@ class Map extends React.Component {
             const wgs84Features = util.projectFeatures(features, 'EPSG:3857', 'EPSG:4326');
 
             // buffer those features.
-            const bufferedGeom = jsts.bufferAndUnion(wgs84Features, buffer);
-            bufferedFeature = util.projectFeatures([{
-                type: 'Feature',
-                geometry: bufferedGeom,
-                properties: {
-                    buffer: true,
-                }
-            }], 'EPSG:4326', 'EPSG:3857')[0];
+            bufferedFeature =
+                util.projectFeatures(
+                    wgs84Features.map(feature => {
+                        const buffered = jsts.bufferFeature(feature, buffer);
+                        buffered.properties = {
+                            buffer: true,
+                        };
+                        return buffered;
+                    }),
+                    'EPSG:4326',
+                    'EPSG:3857'
+                );
         }
 
         // the selection feature(s) are the original, as-drawn feature.
@@ -1032,12 +1027,14 @@ class Map extends React.Component {
             // switch to the new drawing tool.
             if(type === 'Select') {
                 this.drawTool = new olSelectInteraction({
-                    toggleCondition: olEventConditions.never,
+                    // toggleCondition: olEventConditions.never,
+                    toggleCondition: olEventConditions.shiftKeyOnly,
                     layers: [this.olLayers[map_source_name]]
                 });
 
                 this.drawTool.on('select', (evt) => {
-                    this.addSelectionFeatures(evt.selected, this.props.selectionBuffer);
+                    const selectedFeatures = evt.target.getFeatures();
+                    this.addSelectionFeatures(selectedFeatures.getArray(), this.props.selectionBuffer);
                 });
             } else if(type === 'Edit') {
                 this.drawTool = new olSelectInteraction({

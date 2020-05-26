@@ -39,7 +39,7 @@ export function buffer(feature, meters) {
     return bufferFeature(feature, meters).geometry;
 }
 
-function bufferFeature(feature, meters) {
+export function bufferFeature(feature, meters) {
     // Start on null island.
     let pos_pt = [0, 0];
 
