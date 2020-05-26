@@ -35,7 +35,11 @@ describe('WMS Layer Tests', function() {
             params: {},
         };
 
-        const legend_def = WmsLayer.getLegend(mapSource, null, 'test');
+        const mapView = {
+            resolution: 30,
+        };
+
+        const legend_def = WmsLayer.getLegend(mapSource, mapView, 'test');
 
         expect(legend_def.images[0].indexOf('??')).toBeLessThan(0);
     });
