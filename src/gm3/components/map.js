@@ -1215,7 +1215,8 @@ class Map extends React.Component {
                 this.map.getView().setResolution(view.resolution);
             }
 
-            if(map_view.getZoom() !== view.zoom) {
+            // ensure zoom is defined.
+            if (view.zoom && map_view.getZoom() !== view.zoom) {
                 this.map.getView().setZoom(view.zoom);
             }
         }
