@@ -208,15 +208,18 @@ class Map extends React.Component {
             }, 200);
         };
 
+        const selectionPoints = selection.filter(feature =>
+            feature.geometry && feature.geometry.type === 'Point');
+
         // check that we have a geometry, if not fail.
-        if (!selection || !selection.geometry || selection.geometry.type !== 'Point') {
+        if (selectionPoints.length === 0) {
             // set the failure
             fail_layer('No valid selection geometry.');
             // leave the function.
             return;
         }
 
-        const coords = selection.geometry.coordinates;
+        const coords = selectionPoints[0].geometry.coordinates;
         const src = this.olLayers[ms_name].getSource();
 
         // TODO: Allow the configuration to specify GML vs GeoJSON,
