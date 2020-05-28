@@ -516,10 +516,10 @@ class Grid extends React.Component {
 
     componentDidUpdate(prevProps) {
         // check to see if the grid should start open minimized.
-        if (prevProps.queries.order[0] !== this.props.queries.order[0]) {
+        if (prevProps.queries.order[0] !== this.props.queries.order[0] && this.props.queries.order[0]) {
             const queryId = this.props.queries.order[0];
             const query = this.props.queries[queryId];
-            if (query.runOptions && query.runOptions.gridMinimized === true) {
+            if (query && query.runOptions && query.runOptions.gridMinimized === true) {
                 this.setState({minimized: true});
             }
         }
