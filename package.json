@@ -1,6 +1,6 @@
 {
   "name": "@geomoose/gm3",
-  "version": "3.6.0",
+  "version": "3.6.1-beta",
   "repository": "https://github.com/geomoose/gm3.git",
   "description": "GeoMoose is a Web Client JavaScript Framework for displaying distributed cartographic data.",
   "main": "dist/geomoose.js",
