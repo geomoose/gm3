@@ -28,3 +28,4 @@ These are intended to be quick helpers for enhancing a GeoMoose application.
 * [How-to add Attribution](./add-attribution.md)
 * [How-to change the default buffer units]('./change-buffer-units.md')
 * [How-to add a language](./add-a-language.md)
+* [How-to add a plugin](./add-a-plugin.md)
