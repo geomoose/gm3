@@ -357,16 +357,6 @@
         <param name="cross-origin" value="anonymous"/>
     </map-source>
 
-    <map-source name="wmflabs" type="xyz" printable="false">
-        <layer name="osm_black_n_white">
-            <attribution><![CDATA[
-            Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
-            <br><br>
-            ]]></attribution>
-        </layer>
-        <url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-    </map-source>
-
     <map-source name="usgs" type="mapserver">
         <file>./demo/wms/wms_proxy.map</file>
         <layer name="usgs_imagery"/>
@@ -434,9 +424,7 @@
         <group title="Backgrounds" expand="true">
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
-            <layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
-            <layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
-
+            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
             <!-- These layers can be *very* slow, they are left here
               -  for demonstration purposes.
             <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
