@@ -204,12 +204,6 @@
                 "line-width" : 2
             }
             ]]></style>
-            <template name="identify"><![CDATA[
-                <div class="identify-result">
-                    <div class="feature-class">Dakota County Rail</div>
-                    <div class="item"><label>Name:</label> {{ properties.FEAT_NM1 }}</div>
-                </div>
-            ]]></template>
             <template name="search"><![CDATA[
                 <div class="search-result">
                     <div class="search-label">

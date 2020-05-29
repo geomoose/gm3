@@ -459,7 +459,6 @@ class Map extends React.Component {
 
         // setup the necessary format converters.
         const esri_format = new EsriJSONFormat();
-
         const query_params = {
             f: 'json',
             returnGeometry: 'true',
@@ -470,9 +469,10 @@ class Map extends React.Component {
             outFields: '*',
         };
 
-        if(query.selection && query.selection.geometry) {
+        if (query.selection.length > 0) {
+            const queryGeometry = query.selection[0].geometry;
             // make this an E**I geometry.
-            const ol_geom = GEOJSON_FORMAT.readGeometry(query.selection.geometry);
+            const ol_geom = GEOJSON_FORMAT.readGeometry(queryGeometry);
 
             // translate the geometry to E**I-ish
             const geom_type_lookup = {
@@ -483,7 +483,7 @@ class Map extends React.Component {
             };
 
             // setup the spatial filter.
-            query_params.geometryType = geom_type_lookup[query.selection.geometry.type];
+            query_params.geometryType = geom_type_lookup[queryGeometry.type];
             query_params.geometry = esri_format.writeGeometry(ol_geom);
             query_params.spatialRel = 'esriSpatialRelIntersects';
         }
