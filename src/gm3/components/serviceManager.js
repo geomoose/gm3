@@ -165,7 +165,13 @@ class ServiceManager extends React.Component {
                 <div className='results-header'>
                     { this.props.t(service_title) }
                     <div className='results-tools'>
-                        <i className='icon clear' onClick={() => { this.props.removeQuery(queryId); }}></i>
+                        <i
+                            title={this.props.t('results-clear')}
+                            className='icon clear'
+                            onClick={() => {
+                                this.props.removeQuery(queryId);
+                            }}>
+                        </i>
                     </div>
                 </div>
                 <div className='results-query-id'>{ queryId }</div>
@@ -417,7 +423,9 @@ function mapDispatch(dispatch, ownProps) {
         },
         zoomToResults: (query) => {
             const extent = getExtentForQuery(query.results);
-            dispatch(zoomToExtent(extent));
+            if (extent) {
+                dispatch(zoomToExtent(extent));
+            }
         },
         clearSelectionFeatures: () => {
             dispatch(mapActions.clearSelectionFeatures());
