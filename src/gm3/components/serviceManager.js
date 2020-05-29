@@ -417,7 +417,9 @@ function mapDispatch(dispatch, ownProps) {
         },
         zoomToResults: (query) => {
             const extent = getExtentForQuery(query.results);
-            dispatch(zoomToExtent(extent));
+            if (extent) {
+                dispatch(zoomToExtent(extent));
+            }
         },
         clearSelectionFeatures: () => {
             dispatch(mapActions.clearSelectionFeatures());
