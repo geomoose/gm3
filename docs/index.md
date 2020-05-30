@@ -2,8 +2,6 @@
 layout: default
 ---
 
-[comment]: # (This is a comment, it will not be included)
-
 # What Can GeoMoose Do?
 ## Concepts
 ## Exploring the Demo
