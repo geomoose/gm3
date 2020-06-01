@@ -4,6 +4,7 @@
 * [Requirements](#req)
 * [Background](#back)
 * [Install MS4W + GeoMoose using installer](#option1)
+* [Install the GeoMoose software + data separately](#option2)
 
 ## <a name="req"></a>Requirements
 
