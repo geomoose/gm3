@@ -3,8 +3,8 @@
 **TABLE OF CONTENTS**
 * [Requirements](#req)
 * [Background](#back)
-* [Install MS4W + GeoMoose using installer](#option1)
-* [Install the GeoMoose software + data separately](#option2)
+* [Option1: Install MS4W + GeoMoose using installer](#option1)
+* [Option2: Install the GeoMoose software + data separately](#option2)
 * [Test your local GeoMoose application](#test)
 
 ## <a name="req"></a>Requirements
