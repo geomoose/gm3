@@ -9,8 +9,8 @@
 
  * A computer running Windows 7 or newer (Windows 10 is recommended).
  * Download the latest copy of MS4W.  [Download Here.](https://ms4w.com)
- * Download the latest copy of the GeoMoose Demo Data. [Download Here.](https://www.geomoose.org/downloads/gm3-demo-data-3.3.0-ms4w.zip)
- * Download the latest version of the GeoMoose MS4W Package [Download Here.](https://www.geomoose.org/downloads/gm3-examples-3.3.0-ms4w.zip)
+ * Download the latest copy of the GeoMoose Demo Data. Download latest `gm3-demo-data` file [here.](https://www.geomoose.org/downloads/)
+ * Download the latest version of the GeoMoose MS4W package (`gm3-examples`) [here.](https://www.geomoose.org/downloads/)
 
 ## <a name="back"></a>Background
 
@@ -21,7 +21,7 @@ includes both software and demo data (this is Option2 below).  As well, the offi
 has a separate MS4W package available for download, where one contains the software and the other contains 
 the demo data (this is Option3 below). 
 
-## <a name="option1">Option 1: Install MapServer for Windows + GeoMoose using installer :+1:
+# <a name="option1">Option 1: Install MapServer for Windows + GeoMoose using installer :+1:
 
 MS4W will install the base files required by GeoMoose along with an Apache service to actually serve GeoMoose, and
 you can select GeoMoose inside the installer to install GeoMoose software and demo data (see image below). 
@@ -50,13 +50,15 @@ be greeted by the MS4W introduction and features.
 
 ![working ms4w](ms4w-success.png)
 
-## Install the GeoMoose Demo Data
+# <a name="option2">Option 2: Install MapServer for Windows + GeoMoose using installer
+
+# Install the GeoMoose Demo Data
 
 Extract the `gm3-demo-data-3.3.0-ms4w.zip` to the C directory. This will unzip mapfiles and shapefiles used to power the GeoMoose examples.
 
 ![geomoose extract zip](geomoose-setup-1.png)
 
-## Install GeoMoose
+# Install GeoMoose
 
 Extract the `gm3-examples-3.3.0-ms4w.zip` to the C directory. Everything in it is already set to install where needed within the ms4w subdirectories including Apache, Apps, and httpd.d.
 
