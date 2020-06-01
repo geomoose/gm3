@@ -1,13 +1,18 @@
 # MS4W Quickstart
 
-Requirements:
+**TABLE OF CONTENTS**
+* [Requirements](#req)
+* [Background](#back)
+* [Install MS4W + GeoMoose using installer](#option1)
+
+## <a name="req"></a>Requirements
 
  * A computer running Windows 7 or newer (Windows 10 is recommended).
  * Download the latest copy of MS4W.  [Download Here.](https://ms4w.com)
  * Download the latest copy of the GeoMoose Demo Data. [Download Here.](https://www.geomoose.org/downloads/gm3-demo-data-3.3.0-ms4w.zip)
  * Download the latest version of the GeoMoose MS4W Package [Download Here.](https://www.geomoose.org/downloads/gm3-examples-3.3.0-ms4w.zip)
 
-## Background
+## <a name="back"></a>Background
 
 The MS4W (MapServer for Windows) setup.exe installer includes an option to install GeoMoose (software and
 demo data) through the installer (this is Option1 below).  The [MS4W download](https://ms4w.com/download.html#applications-packaged-for-ms4w) 
@@ -16,7 +21,7 @@ includes both software and demo data (this is Option2 below).  As well, the offi
 has a separate MS4W package available for download, where one contains the software and the other contains 
 the demo data (this is Option3 below). 
 
-## Option 1: Install MapServer for Windows + GeoMoose using installer :+1:
+## <a name="option1">Option 1: Install MapServer for Windows + GeoMoose using installer :+1:
 
 MS4W will install the base files required by GeoMoose along with an Apache service to actually serve GeoMoose, and
 you can select GeoMoose inside the installer to install GeoMoose software and demo data (see image below). 
