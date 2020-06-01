@@ -10,9 +10,9 @@
 ## <a name="req"></a>Requirements
 
  * A computer running Windows 7 or newer (Windows 10 is recommended).
- * Download the latest copy of MS4W.  [Download Here.](https://ms4w.com)
- * Download the latest copy of the GeoMoose Demo Data. (file named `gm3-demo-data` [here.](https://www.geomoose.org/downloads/))
- * Download the latest version of the GeoMoose MS4W package (file named `gm3-examples`) [here.](https://www.geomoose.org/downloads/)
+ * Download the latest copy of MS4W [here](https://ms4w.com).
+ * Download the latest copy of the GeoMoose Demo Data (file named `gm3-demo-data`) [here](https://www.geomoose.org/downloads/).
+ * Download the latest version of the GeoMoose MS4W package (file named `gm3-examples`) [here](https://www.geomoose.org/downloads/).
 
 ## <a name="back"></a>Background
 
