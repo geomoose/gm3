@@ -83,7 +83,7 @@ GeoMoose will now show up on the MS4W localhost page under applications
 
 ![geomoose listing](geomoose-success-1.png)
 
-Click a link to launch the Desktop or Mobile version of GeoMoose.
+Click one of the links to launch the Desktop or Mobile version of GeoMoose.
 
 ![geomoose desktop](geomoose-success-2.png)
 
