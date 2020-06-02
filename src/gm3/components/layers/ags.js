@@ -42,6 +42,7 @@ function defineSource(mapSource) {
 
     return {
         crossOrigin: cx_origin,
+        params: mapSource.params,
         url: mapSource.urls[0]
     }
 }
