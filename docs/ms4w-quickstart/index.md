@@ -59,8 +59,8 @@ You can now test your local GeoMoose application (as [below](#test)).
 The following assumes that you already have MS4W installed.  You are also required to download 
 the following 2 files:
 
- * Download the latest copy of the GeoMoose Demo Data (file named `gm3-demo-data`) [here](https://www.geomoose.org/downloads/).
- * Download the latest version of the GeoMoose MS4W package (file named `gm3-examples`) [here](https://www.geomoose.org/downloads/).
+ * Download the latest copy of the GeoMoose Demo Data for MS4W (file named `gm3-demo-data-x.x.x-ms4w.zip`) [here](https://www.geomoose.org/downloads/).
+ * Download the latest version of the GeoMoose MS4W package (file named `gm3-examples-x.x.x-ms4w.zip`) [here](https://www.geomoose.org/downloads/).
 
 ## Install the GeoMoose Demo Data
 
