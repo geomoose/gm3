@@ -300,6 +300,13 @@ class ServiceManager extends React.Component {
                 }
             }
         }
+
+        if (!this.props.queries.showServiceForm &&
+            this.props.queries.order.length > 0 &&
+            prevProps.queries.order[0] !== this.props.queries.order[0]
+        ) {
+            this.props.setUiHint('new-results');
+        }
     }
 
     render() {
