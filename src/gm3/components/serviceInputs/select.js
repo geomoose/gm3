@@ -35,9 +35,12 @@ export default class SelectInput extends TextInput {
         return this.props.field.options;
     }
 
-    componentWillMount() {
+    componentDidMount() {
         const options = this.getOptions();
-        if(typeof this.props.field.default === 'undefined') {
+        if (
+            this.props.field.default === undefined ||
+            options.filter(v => v.value === this.props.field.default).length < 1
+        ) {
             this.onChange({target: {value: options[0].value}});
         }
     }
