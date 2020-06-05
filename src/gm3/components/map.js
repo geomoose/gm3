@@ -438,7 +438,7 @@ class Map extends React.Component {
                 return name + ' like ' + fix_like(value);
             },
             'ilike': function(name, value) {
-                return name + ' like upper(' + fix_like + ')'
+                return name + " like upper('" + fix_like(value) + "')";
             },
             'eq': function(name, value) {
                 return simple_op('=', name, value);
@@ -496,10 +496,7 @@ class Map extends React.Component {
 
         const where_str = where_statements.join(' and ');
 
-        query_params.layers = JSON.stringify([{
-            layerId: layer_name,
-            'where': where_str,
-        }]);
+        query_params.where = where_str;
 
         // get the query service url.
         const query_url = map_source.urls[0] + '/query/';
@@ -574,8 +571,8 @@ class Map extends React.Component {
         const result_features = [];
 
         const selection = query.selection;
-        if(selection && selection.geometry && selection.geometry.type === 'Point') {
-            const coords = selection.geometry.coordinates;
+        if(selection && selection[0].geometry && selection[0].geometry.type === 'Point') {
+            const coords = selection[0].geometry.coordinates;
             src.forEachFeatureAtCoordinateDirect(coords, (feature) => {
                 result_features.push(format.writeFeatureObject(feature));
             });
