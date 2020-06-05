@@ -269,6 +269,9 @@ class Application {
             return Request({
                 url: options.url,
                 type: 'xml',
+                error: (err)  => {
+                    console.info(err);
+                },
                 success: (response) => {
                     this.populateMapbook(response);
                 }
