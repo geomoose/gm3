@@ -53,7 +53,7 @@ function changeTab(tabName) {
 app.uiUpdate = function(ui) {
     // when the UI hint is set for the service manager
     //  show the service manager tab.
-    if(ui.hint == 'service-manager') {
+    if (ui.hint === 'new-results') {
         changeTab('service-tab');
         app.clearHint();
     }
