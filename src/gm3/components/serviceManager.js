@@ -27,7 +27,7 @@ import { Provider, connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
 import { removeQuery, changeTool, zoomToExtent } from '../actions/map';
-import { startService, finishService } from '../actions/service';
+import { startService, finishService, showServiceForm } from '../actions/service';
 import * as mapActions from '../actions/map';
 import { clearFeatures } from '../actions/mapSource';
 import { setUiHint } from '../actions/ui';
@@ -181,10 +181,6 @@ class ServiceManager extends React.Component {
         );
     }
 
-    closeForm() {
-        this.props.store.dispatch(finishService());
-    }
-
     /** Iterate through all of the queries and execute
      *  the service's 'runQuery' method if the query is
      *  in the appropriate state.
@@ -260,7 +256,7 @@ class ServiceManager extends React.Component {
         const code = evt.which;
         if(code === 13) {
         } else if(code === 27) {
-            this.closeForm();
+            this.props.onServiceFinished();
         }
     }
 
@@ -315,7 +311,7 @@ class ServiceManager extends React.Component {
             //  object constructed above into a useful set of 'props'
             //  for measure tool.
             contents = ( <MeasureTool {...m_tool_props} /> );
-        } else if(this.props.queries.service != null) {
+        } else if(this.props.queries.service !== null && this.props.queries.showServiceForm) {
             const service_name = this.props.queries.service;
             const service_def = this.props.services[service_name];
 
@@ -409,9 +405,10 @@ function mapDispatch(dispatch, ownProps) {
             if(serviceDef.keepAlive !== true) {
                 // shutdown the drawing on the layer.
                 dispatch(changeTool(null));
+                dispatch(finishService());
+            } else {
+                dispatch(showServiceForm(false));
             }
-
-            dispatch(finishService());
 
             ownProps.services[serviceDef.name].query(selection, fields);
         },
@@ -432,6 +429,7 @@ function mapDispatch(dispatch, ownProps) {
             dispatch(clearFeatures('selection'));
         },
         onServiceFinished: () => {
+            dispatch(changeTool(null));
             dispatch(finishService());
         },
         setUiHint: hint => {
@@ -439,6 +437,9 @@ function mapDispatch(dispatch, ownProps) {
         },
         startService: serviceName => {
             dispatch(startService(serviceName));
+        },
+        showServiceForm: show => {
+            dispatch(showServiceForm(show));
         },
     };
 }

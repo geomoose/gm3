@@ -33,6 +33,7 @@
   "draw-polygon-tip" : "Add a Polygon to the layer",
   "draw-remove-tip" : "Remove a feature from the layer",
   "draw-select-label" : "Feature from:",
+  "end" : "End",
   "end-drawing" : "End Drawing",
   "end-select" : "End Selection",
   "fade-tip" : "Fade layer",

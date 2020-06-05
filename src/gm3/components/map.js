@@ -946,11 +946,11 @@ class Map extends React.Component {
     createStopTool(type) {
         // "translate" a description of the tool
         let tool_desc = this.props.t(type === 'Select' ? 'end-select' : 'end-drawing');
-
-        // helpful default behaviour for when the description
-        //  is not defined.
-        if(typeof(tool_desc) === 'undefined') {
-            tool_desc = this.props.t('finish') + ' ' + type;
+        if (this.props.serviceName
+            && this.props.services[this.props.serviceName]
+        ) {
+            const title = this.props.services[this.props.serviceName].title;
+            tool_desc = this.props.t('end') + ' ' + this.props.t(title);
         }
 
         // yikes this is super not-reacty.
@@ -960,6 +960,9 @@ class Map extends React.Component {
         // when the button is clicked, stop drawing.
         button.onclick = () => {
             this.props.store.dispatch(mapActions.changeTool(null));
+
+            if (this.props.serviceName) {
+            }
         };
 
         // create a wrapper div that places the button in the map
@@ -1333,6 +1336,7 @@ function mapState(state) {
         mapSources: state.mapSources,
         mapView: state.map,
         queries: state.query,
+        serviceName: state.query.service,
         config: state.config.map || {},
         selectionStyle: state.config.selectionStyle || {},
         // resolve this to meters

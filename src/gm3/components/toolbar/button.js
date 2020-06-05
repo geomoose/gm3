@@ -74,15 +74,20 @@ function mapDispatch(dispatch, ownProps) {
             if(tool.actionType === 'service') {
                 // start the service
                 dispatch(startService(tool.name));
+                let defaultTool = null;
+                if (ownProps.serviceDef
+                    && ownProps.serviceDef.tools
+                    && ownProps.serviceDef.tools.default
+                ) {
+                    defaultTool = ownProps.serviceDef.tools.default;
+                }
+
                 // reset the buffer if changing tools
                 if (tool.name !== currentService) {
                     dispatch(setSelectionBuffer(0));
-                }
-                if (ownProps.serviceDef && ownProps.serviceDef.tools && ownProps.serviceDef.tools.default) {
-                    // switch to the default tool if the current tool is null or not supported.
-                    if (currentDrawTool === null || !ownProps.serviceDef.tools[currentDrawTool]) {
-                        dispatch(changeTool(ownProps.serviceDef.tools.default));
-                    }
+                    dispatch(changeTool(defaultTool));
+                } else if (currentDrawTool === null) {
+                    dispatch(changeTool(defaultTool));
                 }
                 // give an indication that a new service has been started
                 dispatch(setUiHint('service-start'));
