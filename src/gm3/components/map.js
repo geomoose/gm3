@@ -1331,6 +1331,10 @@ class Map extends React.Component {
     }
 }
 
+Map.defaultProps = {
+    services: {},
+};
+
 function mapState(state) {
     return {
         mapSources: state.mapSources,
