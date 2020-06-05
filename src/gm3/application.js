@@ -790,6 +790,22 @@ class Application {
     clearHighlight() {
         this.highlightFeatures({displayClass: 'hot'}, false);
     }
+
+    /**
+     * Project a point to web mercator.
+     */
+    lonLatToMeters(lon, lat) {
+        return Proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
+    }
+
+    /**
+     * Project a bounding box to web mercator.
+     */
+    bboxToMeters(east, south, west, north) {
+        const [minx, miny] = this.lonLatToMeters(east, south);
+        const [maxx, maxy] = this.lonLatToMeters(west, north);
+        return [minx, miny, maxx, maxy];
+    }
 };
 
 
