@@ -76,7 +76,8 @@ function parseLayer(store, layerXml) {
         refreshEnabled: false,
         refresh: null,
         metadata_url: null,
-        tools: []
+        tools: [],
+        tip: layerXml.getAttribute('tip'),
     };
 
     // This is the first attempt at a new model

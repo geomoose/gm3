@@ -394,7 +394,7 @@
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
                 </layer>
 
-                <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
+                <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10">
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
                     <!--
                     <legend>images/logo_mini.gif</legend>
