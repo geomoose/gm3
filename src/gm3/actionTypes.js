@@ -107,9 +107,9 @@ export const QUERY = {
 
 export const SERVICE = {
     START: 'SERVICE_START',
-    FINISH: 'SERVICE_FINISH'
+    FINISH: 'SERVICE_FINISH',
+    SHOW_FORM: 'SERVICE_SHOW_FORM',
 };
-
 
 export const UI = {
     HINT: 'UI_HINT',

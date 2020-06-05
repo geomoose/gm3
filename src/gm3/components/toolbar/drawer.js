@@ -32,7 +32,7 @@ import PropTypes from 'prop-types';
 import ToolbarButton from './button';
 import { useTranslation } from 'react-i18next';
 
-const ToolbarDrawer = ({label, tools}) => {
+const ToolbarDrawer = ({label, tools, services}) => {
     const {t} = useTranslation();
     return (
         <div className='drawer tool'>
@@ -44,6 +44,9 @@ const ToolbarDrawer = ({label, tools}) => {
                             <ToolbarButton
                                 key={`btn${i}`}
                                 tool={tool}
+                                serviceDef={
+                                    tool.actionType === 'service' ? services[tool.name] : undefined
+                                }
                             />
                         );
                     })

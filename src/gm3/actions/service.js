@@ -36,3 +36,10 @@ export function startService(serviceName) {
         service: serviceName
     }
 }
+
+export function showServiceForm(show) {
+    return {
+        type: SERVICE.SHOW_FORM,
+        show,
+    };
+}

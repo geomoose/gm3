@@ -64,7 +64,7 @@ describe('Toolbar component tests', () => {
             actionType: 'service', actionDetail: 'sample'
         };
 
-        shallow(<ToolbarDrawer label='Drawer Zero' tools={[tool]} />);
+        shallow(<ToolbarDrawer label='Drawer Zero' tools={[tool]} services={{}} />);
     });
 
     it('renders a toolbar', () => {
@@ -89,7 +89,7 @@ describe('Toolbar component tests', () => {
             map: mapReducer,
         }));
 
-        shallow(<Toolbar store={store} toolbar={toolbar} />);
+        shallow(<Toolbar store={store} toolbar={toolbar} services={{}} />);
     });
 
     it('renders a toolbar from the store', function() {
@@ -106,7 +106,7 @@ describe('Toolbar component tests', () => {
             actionType: 'service', actionDetail: 'sample2'
         }));
 
-        mount(<SmartToolbar store={store}/>);
+        mount(<SmartToolbar store={store} services={{}} />);
     });
 
     it('renders a toolbar from a mapbook fragment', function() {
