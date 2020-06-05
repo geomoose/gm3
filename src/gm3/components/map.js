@@ -573,7 +573,7 @@ class Map extends React.Component {
 
         const result_features = [];
 
-        const selection = query.selection;
+        const selection = query.selection[0];
         if(selection && selection.geometry && selection.geometry.type === 'Point') {
             const coords = selection.geometry.coordinates;
             src.forEachFeatureAtCoordinateDirect(coords, (feature) => {
