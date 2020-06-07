@@ -1,0 +1,164 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2017 Dan "Ducky" Little
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+@import 'normalize.css';
+@import 'skeleton.css';
+@import 'tabs.css';
+@import 'grid.css';
+
+body {
+    font-family: sans-serif;
+}
+
+#main {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#header {
+    border-bottom: solid 1px black;
+    background-color: #eee;
+}
+
+#middle {
+    display: flex;
+    flex: 7;
+}
+
+#footer {
+    border-top: solid 1px black;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#tabs {
+    position: relative;
+    min-width: 350px;
+    transition: min-width ease 500ms;
+}
+
+#map-pane {
+    flex: 1;
+    border-left: solid black 1px;
+    flex-direction: column;
+    display: flex;
+}
+
+#map-container {
+    flex: 1;
+    position: relative;
+}
+
+#header img {
+    display: inline;
+}
+
+#map .map {
+    position: absolute;
+    top:0; left:0;
+    width: 100%;
+    height: 100%;
+}
+
+#version {
+    padding-left: 20px;
+    background-image: url(logo-mini.png);
+    background-repeat: no-repeat;
+    background-position: 2px 1px;
+
+    padding-top: 1px;
+}
+
+#coordinate-display {
+    flex: 1;
+    text-align: center;
+    overflow: hidden;
+}
+
+#jump-to-extent {
+    text-align: right;
+}
+
+#jump-to-extent select {
+    margin: auto;
+}
+
+.tabs-closed #tabs {
+    width: 0px;
+    min-width: 0px;
+}
+
+
+/* This is the main "layout" code that handles the split
+ * between the map, grid, and tabs.
+ */
+@media screen and (max-width: 500px) {
+    body {
+        font-size: 60%;
+    }
+
+    #tabs {
+        min-width: 220px;
+    }
+
+    .tab-toggler {
+        left: 218px;
+    }
+
+}
+
+@media screen and (min-width: 500px) {
+    #tabs {
+        min-width: 350px;
+    }
+
+    .tab-toggler {
+        left: 348px;
+    }
+}
+
+.feature-class {
+    background-color: #CFE7B3;
+    padding: 2px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Example of how to add CSS for a specific layer's
+ * identify results.
+ */
+.feature-class.pipelines {
+    background-color: #4894ff;
+}
+
+.search-address {
+    font-size: .85em;
+    padding-left: 1em;
+}

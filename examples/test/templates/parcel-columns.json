@@ -1,0 +1,33 @@
+[
+    {
+        "title": "PIN",
+        "property" : "PIN",
+        "filter" : {
+            "type" : "list"
+        }
+    },
+    {
+        "title" : "Owner Name",
+        "property" : "OWNER_NAME",
+        "sortAs" : "string"
+    },
+    {
+        "title" : "City",
+        "property" : "CITY",
+        "sortAs" : "string",
+        "filter" : {
+            "type" : "list"
+        }
+    },
+    {
+        "title" : "Est. Value",
+        "property" : "EMV_TOTAL",
+        "sortAs" : "number",
+        "filter" : {
+            "type" : "range"
+        }
+    },
+    {
+        "title" : ""
+    }
+]

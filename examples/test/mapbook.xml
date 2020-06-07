@@ -1,0 +1,521 @@
+<?xml version="1.0"?>
+<mapbook version="3.0">
+    <!-- =========================================================
+        The map sources define the servers of the mapping data.
+    =========================================================  -->
+    <!-- - - - - - - -  TYPE = "vector"  - - - - - - - - - - - -->
+    <map-source name="vector-sketch"          type="vector"  title="Sketch">
+        <layer name="default" selectable="true" status="off">
+            <style><![CDATA[
+            {
+                "circle-radius": 4,
+                "circle-color": "#fec44f",
+                "fill-color": "#fec44f",
+                "circle-stroke-color": "#d95f0e",
+                "line-color": "#d95f0e",
+                "line-width": 4,
+                "fill-opacity": 0.60,
+                "line-opacity": 0.80,
+                "text-field": "{label}",
+                "text-color": "#000000"
+            }
+            ]]></style>
+            <legend type="html"><![CDATA[
+            The <b>Drawing and Markup</b> layer can be used to add user defined shapes
+            to the map.<br>
+            <div style='padding-top: 3px; padding-bottom: 5px;'>
+                <div style='vertical-align: middle; display: inline-block; width: 2em; height: 1em; background-color: #fec44f; border: solid 2px #d95f0e;'></div>
+                <b>Drawing</b>
+            </div>
+            ]]></legend>
+            <template name="identify" auto="true" />
+        </layer>
+        <properties>
+            <property name="label" label="Sketch label" />
+        </properties>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "geojson"   - - - - - - - - - - -->
+    <map-source name="geojson-polygons"       type="geojson" title="GeoJSON Polygons" minresolution="100" maxresolution="5000">
+        <url>./places.geojson</url>
+        <layer name="default">
+            <style><![CDATA[
+            {
+                "line-color" : "#9e8647",
+                "line-width" : 5
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "wfs"   - - - - - - - - - - - - -->
+    <map-source name="wfs-polygons"           type="wfs" >
+        <url>http://localhost/cgi-bin/mapserv.exe</url>
+        <param name="map" value="C:/ms4w/apps/gm3-demo-data/demo/parcels/parcels.map"/>
+        <param name="typename" value="ms:parcels"/>
+        <layer name="default" title="wfs Polygons">
+            <style><![CDATA[
+            {
+                "circle-radius": 4,
+                "circle-color": "#fec44f",
+                "fill-color": "#fec44f",
+                "circle-stroke-color": "#d95f0e",
+                "line-color": "blue",
+                "line-width": 2,
+                "fill-opacity": 0.20,
+                "line-opacity": 0.80,
+                "text-field_COMMENTED-OUT": "{OWNER_NAME}",
+                "text-color": "#000000"
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "mapserver-wfs"   - - - - - - - -->
+    <map-source name="mapserver-wfs-polygons" type="mapserver-wfs">
+        <file>./demo/parcels/parcels.map</file>
+        <param name="typename" value="ms:parcels"/>
+        <layer name="parcels" selectable="true" title="mapserver-wfs Polygons">
+            <style><![CDATA[
+            {
+                "line-color" : "#00A138",
+                "line-width" : 2
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+            <template name="search"><![CDATA[
+                <div
+                    class="search-result"
+                    onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+                    onmouseleave="app.clearHighlight()"
+                >
+                    <div class="search-label">
+                        {{ properties.OWNER_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                                {{ properties.PIN }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="search-address">
+                        {{ properties.OWN_ADD_L1 }}<br/>
+                        {{ properties.OWN_ADD_L3 }}<br/>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select-header"><![CDATA[
+            <div class="info">
+            Parcel selection results are shown in the results grid.
+            </div>
+            ]]></template>
+            <template name="gridColumns" src="./templates/parcel-columns.json" />
+            <template name="gridRow"     src="./templates/parcel-row.html" />
+       </layer>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "ags-vector"  - - - - - - - - - -->
+    <map-source name="ags-vector-points"      type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/7</url>
+        <param name="spatialRel" value="esriSpatialRelEnvelopeIntersects"/>
+        <layer name="BusShelters"                 title="Bus Shelters">
+            <style><![CDATA[
+            {
+                "circle-radius": 5,
+                "circle-color": "green",
+                "circle-stroke-color": "Blue",
+                "line-width": 4,
+                "fill-opacity": 0.60,
+                "line-opacity": 0.80,
+                "text-field": "{label}",
+                "text-color": "#000000"
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+    <map-source name="ags-vector-lines"       type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/16</url>
+        <layer name="railroads" selectable="true" title="Railroads">
+            <style><![CDATA[
+            {
+                "line-color" : "#010138",
+                "line-width" : 2
+            }
+            ]]></style>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.FEAT_NM1 }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select" alias="search"/>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "Name",
+                    "property" : "FEAT_NM1",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr
+              onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
+              onmouseleave="app.clearHighlight()"
+            >
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </td>
+                <td>
+                  {{ properties.FEAT_NM1 }}
+                </td>
+            </tr>
+            ]]></template>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+    <!-- This layer is very large.  It will take awhile to load, will slow down the browser
+         once it is loaded.  Thus, it is not "in" the demo, but it is left here because it
+         a good complex example and is a great stress test for the ags-vector driver. -->
+    <!--map-source name="ags-vector-dc20"       type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/20</url>
+        <layer name="roads" selectable="true" title="Streets">
+            <style><![CDATA[
+            {
+                "line-color" : "#A1A138",
+                "line-width" : 2
+            }
+            ]]></style>
+
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Dakota County Streets</div>
+                    <div class="item"><label>Street Name:</label> {{ properties.STREET_NAME }}</div>
+                    <div class="item"><label>City:</label> {{ properties.CITY_L }}</div>
+                </div>
+            ]]></template>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.STREET_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select" alias="search"/>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "Street Name",
+                    "property" : "STREET_NAME",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
+                    "title" : "City Left",
+                    "property" : "CITY_L",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
+                    "title" : "City Right",
+                    "property" : "CITY_R",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr
+              onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
+              onmouseleave="app.clearHighlight()"
+            >
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </td>
+                <td>
+                  {{ properties.STREET_NAME}}
+                </td>
+                <td>{{ properties.CITY_L }}</td>
+                <td>{{ properties.CITY_R }}</td>
+            </tr>
+            ]]></template>
+
+        </layer>
+    </map-source-->
+    <map-source name="ags-vector-polygons"    type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/21</url>
+        <layer name="runways" selectable="true" title="Runways">
+            <style><![CDATA[
+            {
+                "line-color" : "#010138",
+                "line-width" : 2
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.Name }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select" alias="search"/>
+            <template name="gridColumns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "Name",
+                    "property" : "Name",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                }
+            ]
+            ]]></template>
+            <template name="gridRow"><![CDATA[
+            <tr
+              onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
+              onmouseleave="app.clearHighlight()"
+            >
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </td>
+                <td>
+                  {{ properties.Name }}
+                </td>
+            </tr>
+            ]]></template>
+        </layer>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "mapserver"   - - - - - - - - - -->
+    <map-source name="mapserver-points"       type="mapserver" title="Mapserver Points">
+        <file>./demo/parcels/parcels.map</file>
+        <param name="FORMAT" value="image/png"/>
+        <layer name="parcels_points">
+            <template name="identify" auto="true" />
+<!--            <legend type="img">logo-mini.png</legend>  -->
+            <legend type="html"><![CDATA[
+                <img src="logo-mini.png"><span style="color:green">GeoMoose Sightings</span><br>
+                <span style="color:red">&#128014; GeoHorse Sightings</span><br>
+            ]]></legend>
+        </layer>
+    </map-source>
+    <map-source name="mapserver-lines"        type="mapserver" title="Mapserver Lines">
+        <file>./demo/pipelines/pipelines.map</file>
+        <layer name="pipelines" status="off">
+            <template name="identify"><![CDATA[
+            <div>
+                <div class="feature-class pipelines">
+                Pipeline
+                </div>
+                <div class="item">
+                    <label>Name:</label> {{ properties.name }}
+                </div>
+                <div class="item">
+                    <label>Owner:</label> {{ properties.owner }}
+                </div>
+            </div>
+            ]]></template>
+        </layer>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
+    <map-source name="mapserver-polygons"     type="mapserver" title="Mapserver Polygons">
+        <file>./demo/parcels/parcels.map</file>
+        <layer name="parcels" status="on" >
+            <template name="identify" src="./templates/parcels.html" />
+                    </layer>
+        <param name="FORMAT" value="image/png"/>
+    </map-source>
+
+    <map-source name="mapserver-image"        type="mapserver">
+        <file>./demo/wms/wms_proxy.map</file>
+        <layer name="mncomp">
+            <legend type="nolegend"/>
+        </layer>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "wms"   - - - - - - - - - - - - -->
+    <map-source name="wms-image"              type="wms">
+        <url>https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
+        <layer name="nexrad-n0r"/>
+        <param name="FORMAT" value="image/png"/>
+        <param name="TRANSPARENT" value="TRUE"/>
+        <param name="cross-origin" value="anonymous"/>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "ags"   - - - - - - - - - -->
+    <map-source name="ags"                    type="ags">
+        <url>https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer</url>
+        <layer name="NatGeo_World_Map"/>
+        <param name="FORMAT" value="png"/>
+        <param name="cross-origin" value="anonymous"/>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "xyz"   - - - - - - - - - - - - -->
+    <map-source name="openstreetmap"          type="xyz">
+        <layer name="osm_mapnik">
+            <attribution><![CDATA[
+                &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
+            ]]></attribution>
+<!--            <legend type="img">https://c.tile.openstreetmap.org/12/987/1478.png</legend>  -->
+            <legend type="html"><![CDATA[
+                <img width="100" height="100" src="https://c.tile.openstreetmap.org/12/987/1478.png">
+            ]]></legend>
+        </layer>
+        <url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+
+        <param name="cross-origin" value="anonymous"/>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "bing"  - - - - - - - - - - - - -->
+    <map-source name="bing"                   type="bing">
+        <layer name="canvasDark"/>
+        <layer name="canvasLight"/>
+        <layer name="canvasGray"/>
+        <layer name="roads"/>
+        <layer name="aerials"/>
+        <param name="key" value=""/>
+    </map-source>
+
+    <!-- =========================================================
+        The catalog defines how the layers will be displayed in the catalog tab.
+    =========================================================  -->
+    <catalog>
+
+        <group title="Vector with Feature Info" expand="false">
+            <group title="Vector" expand="true">
+                <layer src="vector-sketch/default"
+                       zoomto="true" upload="true" download="true" clear="true"
+                       draw-point="true" draw-line="true" draw-polygon="true"
+                       draw-modify="true" draw-remove="true" draw-edit="true" />
+            </group>
+            <group title="GeoJSON" expand="true">
+                <layer src="geojson-polygons/default"  zoomto="true"  />
+            </group>
+            <group title="WFS" expand="true">
+                <layer title="WFS Polygons" src="wfs-polygons/default"/>
+            </group>
+            <group title="Mapserver WFS" expand="true">
+                <layer title="Mapserver WFS Polygons" src="mapserver-wfs-polygons/parcels"/>
+            </group>
+        </group>
+
+        <group title="Image with Feature Info" expand="true">
+            <group title="AGS-Vector" expand="true">
+               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters"/>
+               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads"/>
+                <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
+                <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways"></layer>
+            </group>
+            <group title="Mapserver" expand="true">
+                <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" up="true" down="true">
+                </layer>
+                <layer src="mapserver-lines/pipelines"    show-legend="true" up="true" down="true">
+                </layer>
+                <layer src="mapserver-polygons/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10" up="true" down="true">
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                </layer>
+            </group>
+        </group>
+
+        <group title="Image Only" expand="true">
+            <group title="Mapserver" expand="true">
+                <layer title="Server-Reprojected Mapserver" src="mapserver-image/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
+            </group>
+            <group title="WMS" expand="true">
+                <layer title="WMS - remote" src="wms-image/nexrad-n0r" />
+            </group>
+            <group title="AGS" expand="true">
+                <layer title="AGS - remote" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+            </group>
+            <group title="XYZ" expand="true">
+                <layer title="XYZ" src="openstreetmap/osm_mapnik" legend-toggle="true" show-legend="true" legend="true" fade="true" unfade="true">
+                </layer>
+            </group>
+            <group title="BING (requires key)" multiple="false" expand="false">
+                <!-- These layers are commented out until enabled with a Bing key.
+                -->
+                <layer title="Bing Dark"         src="bing/canvasDark"       show-legend="false" legend="false" fade="true" unfade="true"/>
+                <layer title="Bing Grey"         src="bing/canvasGray"       show-legend="false" legend="false" fade="true" unfade="true"/>
+                <layer title="Bing Light"        src="bing/canvasLight"      show-legend="false" legend="false" fade="true" unfade="true"/>
+                <layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
+                <layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
+            </group>
+        </group>
+
+    </catalog>
+
+    <!--
+        The toolbar defines which services are referneces in the toolbar
+    -->
+    <toolbar>
+        <tool name="fullextent" title="Zoom to Full Extent" type="action"/>
+        <tool name="measure" title="Measure" type="service"/>
+        <tool name="print" title="Print" type="action"/>
+
+        <tool name="identify" title="Identify" type="service"/>
+
+        <tool name="select" title="Select Features" type="service"/>
+
+        <drawer name="searches" title="Search">
+            <tool name="search-runways" title="Search Runways" type="service"/>
+            <tool name="search" title="Search Parcels" type="service"/>
+            <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
+            <tool name="geocode" title="Geocode an Address" type="service"/>
+        </drawer>
+
+        <tool name="findme" title="Find Me" type="action"/>
+        <tool name="reload" title="Start Over" type="action"/>
+    </toolbar>
+</mapbook>

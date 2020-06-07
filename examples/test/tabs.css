@@ -1,0 +1,71 @@
+.tab-parent {
+    overflow: hidden;
+}
+
+.tab {
+    border: solid 1px black;
+    border-bottom: none;
+    padding: 5px;
+    margin-left: 3px;
+    margin-top: 3px;
+    display: inline-block;
+    background-color: #efefef;
+    cursor: pointer;
+    height: 20px;
+}
+
+.tab.show {
+    background-color: white;
+    border-bottom: solid 1px white;
+}
+
+
+.tabs {
+    height: 34px; /* 20px height + 2 * 5px padding - 1px */
+    border-bottom: solid 1px black;
+}
+
+.tab-content {
+    display: none;
+    position: relative;
+}
+
+.tab-content.show {
+    display: block;
+    overflow: auto;
+    position: absolute;
+    top: 35px; bottom: 0;
+    width: 100%;
+}
+
+.tab-toggler {
+    position: absolute;
+    cursor: pointer;
+    bottom: 50%;
+    z-index: 1000;
+    transform: rotate(0deg);
+    transition: left ease 500ms, transform ease 500ms;
+    border-radius: 10px;
+    background-color: white;
+    line-height: 10px;
+}
+
+.tabs-closed .tab-toggler {
+    left: 0;
+}
+
+.tab-toggler .tab-toggler-icon:before {
+    content: "\f0a8";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-size: 1.3em;
+    padding-left: 0px;
+}
+
+.tabs-closed .tab-toggler {
+    transform: rotate(180deg);
+}
+
+.tabs-closed .tab-content, .tabs-closed .tabs {
+    display: none;
+}

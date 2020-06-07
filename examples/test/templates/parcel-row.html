@@ -1,0 +1,31 @@
+<tr
+  onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+  onmouseleave="app.clearHighlight()"
+>
+    <td>
+      {{ properties.PIN }}
+    </td>
+    <td>{{ properties.OWNER_NAME }}</td>
+    <td>{{ properties.CITY }}</td>
+    <td style="text-align: right">${{ properties.EMV_TOTAL | number | localize }}</td>
+    <td>
+      <a
+        title="Zoom to Parcel"
+        onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])"
+      >
+        <i class="icon zoomto"></i>
+      </a>
+      <a
+        title="Remove from results"
+        onClick="app.removeQueryResults('{{query}}', [['==', 'PIN', '{{properties.PIN}}']], {withConfirm: true})"
+      >
+        <i class="icon clear"></i>
+      </a>
+      <a
+        title="Buffer feature"
+        onClick='app.startService("buffer-select", {withFeatures: [{type: "Feature", properties: {}, geometry: {{geometry|json}}}]})'
+      >
+        <i class="icon buffer"></i>
+      </a>
+    </td>
+</tr>
