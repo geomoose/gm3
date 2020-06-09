@@ -50,31 +50,46 @@ app.uiUpdate = function(ui) {
 }
 
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
-    // set the default view.
+
+    /*     Configure Site-Specific Components
+    ==============================================*/
     app.setView({
-        center: [ -10370351.141856, 5550949.728470501 ],
+        center: app.lonLatToMeters( -93.16, 44.55),
         zoom: 12
     });
-
-    // establish some state trackers
-    var tracker = new gm3.trackers.LocalStorageTracker(app.store);
-    var hash_tracker = new gm3.trackers.HashTracker(app.store);
-
-    tracker.restore();
-    hash_tracker.restore();
-
-    app.addProjection({
-        ref: 'EPSG:26915',
-        def: '+proj=utm +zone=15 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+    app.registerAction('fullextent', ZoomToAction, {
+        extent: [-10742765,5398288,-9920914,6310641]
     });
 
-    app.registerService('identify', IdentifyService);
+    var SW = app.lonLatToMeters(-93.3, 44.4);
+    var NE = app.lonLatToMeters(-93, 44.7);
 
+    app.add(gm3.components.JumpToExtent, 'jump-to-extent', {
+        locations:  [
+            {
+                label: 'Parcel Boundaries',
+//                extent: [minx, miny,maxx, maxy]
+                extent: [SW[0], SW[1], NE[0], NE[1]]
+            },
+            {
+                label: 'Dakota County',
+                extent: [-10381354,5545268,-10328765,5608252]
+            },
+            {
+                label: 'Minnesota',
+                extent: [-10807000,5440700,-9985100,6345700]
+            }
+        ]
+    });
+
+
+    /*      Configure Layer-Specific Services
+    ======================================================*/
     app.registerService('search-runways', SearchService, {
         fields: [
             {type: 'text', label: 'Name', name: 'Name'},
         ],
-        searchLayers: ['ags-vector-dc21/runways'],
+        searchLayers: ['ags-vector-polygon/runways'],
         validateFieldValues: function (fields) {
             let nonEmpty = 0;
             const validateFieldValuesResult = {
@@ -100,7 +115,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
             {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3'}
         ],
-        searchLayers: ['vector-parcels/parcels'],
+        searchLayers: ['mapserver-wfs-polygons/parcels'],
         validateFieldValues: function (fields) {
             let nonEmpty = 0;
             const validateFieldValuesResult = {
@@ -152,7 +167,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
             }
             return [query];
         },
-        searchLayers: ['vector-parcels/parcels'],
+        searchLayers: ['mapserver-wfs-polygons/parcels'],
         validateFieldValues: function (fields) {
             const validateFieldValuesResult = {
                 valid: true,
@@ -167,17 +182,17 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         zoomToResults: true
     });
 
-
-    app.registerService('search-firestations', SearchService, {
-        searchLayers: ['firestations/fire_stations'],
-        fields: [
-            {type: 'text', label: 'Station city', name: 'Dak_GIS__4'}
-        ]
-    });
     app.registerService('select', SelectService, {
         // set the default layer
-        defaultLayer: 'vector-parcels/parcels',
+        defaultLayer: 'mapserver-wfs-polygons/parcels',
         keepAlive: true,
+    });
+
+
+    /*      Configure Generic Components
+    ======================================================*/
+    app.registerService('identify', IdentifyService, {
+        tools : { 'Box': true, 'Point': true, 'default': 'Box'}
     });
 
     app.registerService('buffer-select', SelectService, {
@@ -185,16 +200,16 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         tools: {'buffer': true},
     });
 
+
     // This uses the OpenStreetMap Nominatim geocoder,
     // there is also a BingGeocoder service, but requires
     // signing up for Bing and getting an appropriate usage key.
     app.registerService('geocode', OSMGeocoder, {});
     app.registerAction('findme', FindMeAction);
 
-    app.registerAction('fullextent', ZoomToAction, {
-        extent: [-10742765,5398288,-9920914,6310641]
-    });
 
+    /*      Configure GUI Components
+    ======================================================*/
     app.add(gm3.components.Catalog, 'catalog');
     app.add(gm3.components.Favorites, 'favorites');
     app.add(gm3.components.VisibleLayers, 'visible-layers');
@@ -228,23 +243,6 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     });
 
-    app.add(gm3.components.JumpToExtent, 'jump-to-extent', {
-        locations:  [
-            {
-                label: 'Parcel Boundaries',
-                extent: [-10384071.6,5538681.6,-10356783.6,5563600.1]
-            },
-            {
-                label: 'Dakota County',
-                extent: [-10381354,5545268,-10328765,5608252]
-            },
-            {
-                label: 'Minnesota',
-                extent: [-10807000,5440700,-9985100,6345700]
-            }
-        ]
-    });
-
     app.add(gm3.components.Map, 'map', {});
 
     var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
@@ -266,9 +264,18 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     });
 
+    /*      Configure some URL state trackers
+    ======================================================*/
+    var tracker = new gm3.trackers.LocalStorageTracker(app.store);
+    var hash_tracker = new gm3.trackers.HashTracker(app.store);
+
+    tracker.restore();
+    hash_tracker.restore();
 
     tracker.startTracking();
     hash_tracker.startTracking();
 
+    /*      And Finally
+    ======================================================*/
     showTab('catalog');
 });

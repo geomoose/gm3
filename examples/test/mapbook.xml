@@ -73,6 +73,32 @@
         </layer>
     </map-source>
 
+    <!-- https://mrdata.usgs.gov/services/wfs/sgmc2?service=WFS&version=1.1.0&request=GetCapabilities& -->
+    <!-- Only valid for EPSG:4326 -->
+    <map-source name="wfs-test"           type="wfs" >
+        <url>https://mrdata.usgs.gov/wfs/sgmc2</url>
+        <param name="typename" value="ms:Structure"/>
+        <param name="srsname"  value="EPSG:4326"/>
+        <layer name="default" title="wfs Test">
+            <style><![CDATA[
+            {
+                "circle-radius": 4,
+                "circle-color": "#fec44f",
+                "fill-color": "#fec44f",
+                "circle-stroke-color": "#d95f0e",
+                "line-color": "blue",
+                "line-width": 2,
+                "fill-opacity": 0.20,
+                "line-opacity": 0.80,
+                "text-field_COMMENTED-OUT": "{OWNER_NAME}",
+                "text-color": "#000000"
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+
+
     <!-- - - - - - - -  TYPE = "mapserver-wfs"   - - - - - - - -->
     <map-source name="mapserver-wfs-polygons" type="mapserver-wfs">
         <file>./demo/parcels/parcels.map</file>
@@ -125,9 +151,11 @@
         <layer name="BusShelters"                 title="Bus Shelters">
             <style><![CDATA[
             {
-                "circle-radius": 5,
+                "circle-radius": 10,
                 "circle-color": "green",
-                "circle-stroke-color": "Blue",
+                "circle-opacity": 0.60,
+                "circle-stroke-color": "Black",
+                "circle-stroke-width": 2,
                 "line-width": 4,
                 "fill-opacity": 0.60,
                 "line-opacity": 0.80,
@@ -433,25 +461,26 @@
     =========================================================  -->
     <catalog>
 
-        <group title="Vector with Feature Info" expand="false">
+        <group title="Vector with Feature Info" expand="true">
             <group title="Vector" expand="true">
                 <layer src="vector-sketch/default"
                        zoomto="true" upload="true" download="true" clear="true"
                        draw-point="true" draw-line="true" draw-polygon="true"
                        draw-modify="true" draw-remove="true" draw-edit="true" />
             </group>
-            <group title="GeoJSON" expand="true">
+            <group title="GeoJSON" expand="false">
                 <layer src="geojson-polygons/default"  zoomto="true"  />
             </group>
             <group title="WFS" expand="true">
                 <layer title="WFS Polygons" src="wfs-polygons/default"/>
+                <layer title="WFS Test" src="wfs-test/default"/>
             </group>
-            <group title="Mapserver WFS" expand="true">
+            <group title="Mapserver WFS" expand="false">
                 <layer title="Mapserver WFS Polygons" src="mapserver-wfs-polygons/parcels"/>
             </group>
         </group>
 
-        <group title="Image with Feature Info" expand="true">
+        <group title="Image with Feature Info" expand="false">
             <group title="AGS-Vector" expand="true">
                <layer title="AGS Vector Points" src="ags-vector-points/BusShelters"/>
                <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads"/>
@@ -459,17 +488,17 @@
                 <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways"></layer>
             </group>
             <group title="Mapserver" expand="true">
-                <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" up="true" down="true">
+                <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" >
                 </layer>
-                <layer src="mapserver-lines/pipelines"    show-legend="true" up="true" down="true">
+                <layer src="mapserver-lines/pipelines"    show-legend="true">
                 </layer>
-                <layer src="mapserver-polygons/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10" up="true" down="true">
+                <layer src="mapserver-polygons/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10" >
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
                 </layer>
             </group>
         </group>
 
-        <group title="Image Only" expand="true">
+        <group title="Image Only" expand="false">
             <group title="Mapserver" expand="true">
                 <layer title="Server-Reprojected Mapserver" src="mapserver-image/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
             </group>
@@ -501,21 +530,20 @@
     -->
     <toolbar>
         <tool name="fullextent" title="Zoom to Full Extent" type="action"/>
-        <tool name="measure" title="Measure" type="service"/>
-        <tool name="print" title="Print" type="action"/>
+        <tool name="measure"    title="Measure"             type="service"/>
+        <tool name="print"      title="Print"               type="action"/>
 
-        <tool name="identify" title="Identify" type="service"/>
-
-        <tool name="select" title="Select Features" type="service"/>
+        <tool name="identify"   title="Identify" type="service"/>
+        <tool name="select"     title="Select Features" type="service"/>
 
         <drawer name="searches" title="Search">
-            <tool name="search-runways" title="Search Runways" type="service"/>
-            <tool name="search" title="Search Parcels" type="service"/>
-            <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
-            <tool name="geocode" title="Geocode an Address" type="service"/>
+            <tool name="search-runways" css-class="tool search" title="Search Runways"      type="service"/>
+            <tool name="search"                                 title="Search Parcels"      type="service"/>
+            <tool name="single-search"  css-class="tool search" title="Single field search" type="service"/>
+            <tool name="geocode"                                title="Geocode an Address"  type="service"/>
         </drawer>
 
-        <tool name="findme" title="Find Me" type="action"/>
-        <tool name="reload" title="Start Over" type="action"/>
+        <tool name="findme"     title="Find Me"    type="action"/>
+        <tool name="reload"     title="Start Over" type="action"/>
     </toolbar>
 </mapbook>
