@@ -38,7 +38,7 @@ module.exports = env => {
         new webpack.BannerPlugin(license_text),
         new webpack.DefinePlugin({
             GM_VERSION: JSON.stringify(package.version)
-        })
+        }),
     ];
 
     let filename = env && env.outfile ? env.outfile : 'geomoose.js';
@@ -83,13 +83,17 @@ module.exports = env => {
                     }
                     return true;
                 }
-            }, {
+            },
+            /* JSON loader appears to be working,
+             *  but this was left here for posterity
+            {
                 test: /\.json$/,
                 loader: 'json-loader',
                 exclude: [
                     path.join(__dirname, 'node_modules/'),
                 ]
-            }]
+            }*/
+            ]
         },
         output: {
             path: __dirname + '/dist',

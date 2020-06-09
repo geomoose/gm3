@@ -81,6 +81,7 @@ export class CatalogLayer extends React.Component {
                 case 'draw-line':
                 case 'draw-modify':
                 case 'draw-remove':
+                case 'draw-edit':
                     const draw_type = tool_name.split('-')[1];
                     tools.push(<DrawTool drawType={draw_type} key={key} layer={layer} />);
                     break;
@@ -118,7 +119,7 @@ export class CatalogLayer extends React.Component {
 
         return (
             <div key={layer.id} className={layer_classes.join(' ')}>
-                <div className='layer-label'>
+                <div className='layer-label' title={layer.tip}>
                     <LayerCheckbox layer={layer} />
                     <LayerFavorite layer={layer} />
                     <span>

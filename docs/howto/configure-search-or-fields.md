@@ -64,7 +64,24 @@ Many users are accustomed to search utilities which allow for a single search te
             }
             return [query];
         },
-        searchLayers: ['vector-parcels/parcels']
+        searchLayers: ['vector-parcels/parcels'],
+        validateFieldValues: function (fields) {
+             let nonEmpty = 0;
+             const validateFieldValuesResult = {
+                 valid: true,
+                 message: null
+                };
+
+                if (fields['TERM'] !== undefined && fields['TERM'] !== '') {
+                        nonEmpty++;
+                }
+
+                if (nonEmpty === 0) {
+                    validateFieldValuesResult.valid = false;
+                    validateFieldValuesResult.message = 'Please complete at least one field.'
+                }
+                return validateFieldValuesResult;
+            }
     });
 ```
 

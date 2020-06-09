@@ -26,7 +26,7 @@ import Request from 'reqwest';
 
 import GeoJSONFormat from 'ol/format/GeoJSON';
 
-import createFilter from '@mapbox/mapbox-gl-style-spec/feature_filter';
+import {featureFilter as createFilter} from '@mapbox/mapbox-gl-style-spec';
 
 /** Collection of handy functions
  */
@@ -204,7 +204,8 @@ export const FORMAT_OPTIONS = {
     pipes: {
         localize: function(n) {
             return n.toLocaleString();
-        }
+        },
+        json: obj => JSON.stringify(obj),
     }
 }
 
@@ -318,11 +319,11 @@ export function filterFeatures(features, filter, inverse = true) {
     let filter_function = function() { return true; };
 
     if (filter !== undefined && filter !== null ) {
-        filter_function = createFilter(['all'].concat(filter));
+        filter_function = createFilter(['all'].concat(filter)).filter;
     }
 
     for(const feature of features) {
-        if(inverse !== filter_function(feature)) {
+        if(inverse !== filter_function({zoom: 15}, feature)) {
             new_features.push(feature);
         }
     }
@@ -736,4 +737,59 @@ export function projectFeatures(features, srcProj, destProj) {
  */
 export function jsonEquals(a, b) {
     return JSON.stringify(a) === JSON.stringify(b);
+}
+
+
+/** Get the extent of a query's results.
+ *  All features must have a boundedBy property.
+ */
+export function getExtentForQuery(results, minSize = 150) {
+    let extent = null;
+
+    for(const path in results) {
+        const features = results[path];
+        if(features.length > 0) {
+            if(extent === null) {
+                extent = features[0].properties.boundedBy.slice();
+            }
+            for(let i = 1, ii = features.length; i < ii; i++) {
+                const e = features[i].properties.boundedBy;
+                extent[0] = Math.min(extent[0], e[0]);
+                extent[1] = Math.min(extent[1], e[1]);
+                extent[2] = Math.max(extent[2], e[2]);
+                extent[3] = Math.max(extent[3], e[3]);
+            }
+        }
+    }
+
+    if (extent !== null) {
+        if (extent[2] - extent[0] < minSize) {
+            const mid_x = (extent[0] + extent[2]) / 2;
+            extent[0] = mid_x - minSize;
+            extent[2] = mid_x + minSize;
+        }
+        if (extent[3] - extent[1] < minSize) {
+            const mid_y = (extent[1] + extent[3]) / 2;
+            extent[1] = mid_y - minSize;
+            extent[3] = mid_y + minSize;
+        }
+    }
+
+    return extent;
+}
+
+/**
+ * Calculate the scale based on the projection and resolution.
+ * Very much inspired by ol/source/ImageWMS
+ *
+ * @params resolution - Resolution from the map
+ * @params projection - Map projection
+ *
+ * @returns Number. The scale.
+ */
+export function getScale(resolution, projection) {
+    const mpu = projection ? projection.getMetersPerUnit() : 1;
+    const dpi = 25.4 / 0.28;
+    const inchesPerMeter = 39.37;
+    return resolution * mpu * inchesPerMeter * dpi;
 }

@@ -75,6 +75,12 @@ function SearchService(Application, options) {
         };
     };
 
+    /** Automatically zoom to results */
+    this.zoomToResults = options.zoomToResults === true;
+
+    /** Ensure that if a grid is configured, it's minimized */
+    this.gridMinimized = options.gridMinimized === true;
+
     /** Field transfomation function. */
     this.prepareFields = options.prepareFields ? options.prepareFields : function(fields) {
         // reformat the fields for the query engine,
@@ -145,7 +151,7 @@ function SearchService(Application, options) {
 
             // and footer contents.
             html += Application.renderTemplate(path, this.footerTemplate, query);
-            
+
         }
 
         // return the html for rendering.

@@ -53,7 +53,7 @@ function SelectService(Application, options) {
     this.highlightPath = options.highlightPath ? options.highlightPath : 'highlight/highlight';
 
     /** Limit the number of selection tools available */
-    this.tools = {
+    this.tools = options.tools ? options.tools : {
         'Box': true,
         'Point': true,
         'MultiPoint': true,
@@ -73,7 +73,13 @@ function SelectService(Application, options) {
     /** keepAlive = true will keep the service in 'query mode'
      *                   in the background, until it is explictly turned off.
      */
-    this.keepAlive = false;
+    this.keepAlive = (options.keepAlive === true);
+
+    /** Automatically zoom to results */
+    this.zoomToResults = options.zoomToResults === true;
+
+    /** Minimize the grid at results time */
+    this.gridMinimized = options.gridMinimized === true;
 
     /** User input fields, select allows choosing a layer */
     this.fields = options.fields || [{
@@ -93,7 +99,7 @@ function SelectService(Application, options) {
     this.fieldsFirst = true;
 
     /** When defined, label the draw tools */
-    this.drawToolsLabel = options.drawToolsLabel ? options.drawToolsLabel : 'Using';
+    this.drawToolsLabel = options.drawToolsLabel !== undefined ? options.drawToolsLabel : 'Using';
 
     /** Alow shapes to be buffered. */
     this.bufferAvailable = true;

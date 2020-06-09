@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2020 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation, useTranslation } from 'react-i18next';
 
 import * as Papa from 'papaparse';
 import Mark from 'markup-js';
@@ -36,13 +37,16 @@ import { getLayerFromPath } from '../actions/mapSource';
 
 import ModalDialog from './modal';
 
+const Label = ({l}) => {
+    const {t} = useTranslation();
+    return (<label>{t(l)}</label>);
+};
+
 
 class FilterModal extends ModalDialog {
     constructor(props) {
         super(props);
-
         this.onChange = this.onChange.bind(this);
-
         this.state = {
             value: ''
         };
@@ -106,7 +110,8 @@ class FilterModal extends ModalDialog {
                 this.setState({value: ''});
             }
         }
-        this.setState({open: false});
+
+        this.props.onClose();
     }
 
     getTitle() {
@@ -124,7 +129,7 @@ class FilterModal extends ModalDialog {
     renderBody() {
         return (
             <div>
-                <label>Value:</label> <input onChange={ this.onChange } value={ this.state.value } ref='input'/>
+                <Label l="label-value"/> <input onChange={ this.onChange } value={ this.state.value } ref='input'/>
             </div>
         );
     }
@@ -270,12 +275,12 @@ class RangeFilterModal extends FilterModal {
         return (
             <div>
                 <div>
-                    <label>Min:</label>
+                    <Label l="label-min" />
                     <input value={this.state.min} onChange={ this.setMin }/>
                 </div>
 
                 <div>
-                    <label>Max:</label>
+                    <Label l="label-max" />
                     <input value={this.state.max} onChange={ this.setMax}/>
                 </div>
             </div>
@@ -286,9 +291,11 @@ class RangeFilterModal extends FilterModal {
 /* Provides a control for filtering a column's values.
  */
 class ColumnFilter extends React.Component {
-
-    showFilterDialog() {
-        this.refs.modal.setState({open: true});
+    constructor(props) {
+        super(props);
+        this.state = {
+            open: false,
+        };
     }
 
     render() {
@@ -298,11 +305,17 @@ class ColumnFilter extends React.Component {
             return false;
         }
 
+        const onClose = () => {
+            this.setState({open: false, });
+        };
+
         let modal = false;
         switch(this.props.column.filter.type) {
             case 'list':
                 modal = (
                     <ListFilterModal
+                        open={this.state.open}
+                        onClose={onClose}
                         ref='modal'
                         column={this.props.column}
                         results={this.props.results}
@@ -314,6 +327,8 @@ class ColumnFilter extends React.Component {
             case 'range':
                 modal = (
                     <RangeFilterModal
+                        open={this.state.open}
+                        onClose={onClose}
                         ref='modal'
                         column={this.props.column}
                         results={this.props.results}
@@ -325,6 +340,8 @@ class ColumnFilter extends React.Component {
             default:
                 modal = (
                     <FilterModal
+                        open={this.state.open}
+                        onClose={onClose}
                         ref='modal'
                         column={this.props.column}
                         results={this.props.results}
@@ -339,8 +356,8 @@ class ColumnFilter extends React.Component {
         return (
             <span>
                 <i
-                    title={ filter_title}
-                    onClick={ () => { this.showFilterDialog() }}
+                    title={filter_title}
+                    onClick={ () => { this.setState({open: true}) }}
                     className='filter icon'
                 >
                 </i>
@@ -398,7 +415,7 @@ class Grid extends React.Component {
         for(const column_def of headerConf) {
             let sort_tool = null;
             let sort_classes = 'icon sort';
-            const sort_title = 'Click to sort';
+            const sort_title = this.props.t('filter-sort');
 
             if(column_def.sortAs) {
                 if(this.state.sortBy === column_def.property) {
@@ -497,6 +514,17 @@ class Grid extends React.Component {
         FileSaver.saveAs(csv_blob, csv_name);
     }
 
+    componentDidUpdate(prevProps) {
+        // check to see if the grid should start open minimized.
+        if (prevProps.queries.order[0] !== this.props.queries.order[0] && this.props.queries.order[0]) {
+            const queryId = this.props.queries.order[0];
+            const query = this.props.queries[queryId];
+            if (query && query.runOptions && query.runOptions.gridMinimized === true) {
+                this.setState({minimized: true});
+            }
+        }
+    }
+
     render() {
         let features = [];
         let display_table = false;
@@ -563,14 +591,14 @@ class Grid extends React.Component {
                     <span
                         onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
                         className={'tool download'}
-                        title='Download results as CSV'
+                        title={ this.props.t('grid-download-csv')}
                     >
                         <i className='icon download'></i>
                     </span>
                     <span
                         onClick={ toggle_grid }
                         className={'tool ' + min_btn_class}
-                        title='Min/Maximize Grid'
+                        title={ this.props.t('grid-min-max') }
                     >
                         <i className={'icon ' + min_btn_class}></i>
                     </span>
@@ -597,4 +625,4 @@ const mapToProps = function(store) {
         mapSources: store.mapSources,
     }
 }
-export default connect(mapToProps)(Grid);
+export default connect(mapToProps)(withTranslation()(Grid));

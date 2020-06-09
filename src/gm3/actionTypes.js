@@ -107,9 +107,9 @@ export const QUERY = {
 
 export const SERVICE = {
     START: 'SERVICE_START',
-    FINISH: 'SERVICE_FINISH'
+    FINISH: 'SERVICE_FINISH',
+    SHOW_FORM: 'SERVICE_SHOW_FORM',
 };
-
 
 export const UI = {
     HINT: 'UI_HINT',
@@ -126,4 +126,9 @@ export const PRINT = {
 
 export const CONFIG = {
     SET: 'GM3_CONFIG_SET',
+};
+
+export const EDITOR = {
+    START_EDIT: 'GM3_EDITOR_START_EDIT',
+    FINISH_EDIT: 'GM3_EDITOR_FINISH_EDIT',
 };

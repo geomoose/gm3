@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2020 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,28 @@
  * SOFTWARE.
  */
 
-import React from 'react';
+import {EDITOR} from '../actionTypes';
 
-import Modal from '../modal';
+const defaultState = {
+    feature: null,
+    source: '',
+};
 
-
-export default class AlertDialog extends Modal {
-    renderBody() {
-        return (
-            <div className="alert-message">
-                { this.props.message }
-            </div>
-        );
+const EditorReducer = (state = defaultState, action = {}) => {
+    switch(action.type) {
+        case EDITOR.START_EDIT:
+            return Object.assign({}, state, {
+                feature: action.feature,
+                source: action.source,
+            });
+        case EDITOR.FINISH_EDIT:
+            return Object.assign({}, state, {
+                feature: null,
+                source: '',
+            });
+        default:
+            return state;
     }
+};
 
-    renderFooter() {
-        return (
-            <button onClick={ () => { this.close('dismiss') } }>Okay</button>
-        );
-    }
-}
+export default EditorReducer;

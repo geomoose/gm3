@@ -51,6 +51,7 @@ import uiReducer from './reducers/ui';
 import cursorReducer from './reducers/cursor';
 import printReducer from './reducers/print';
 import configReducer from './reducers/config';
+import editorReducer from './reducers/editor';
 
 import Modal from './components/modal';
 
@@ -65,6 +66,7 @@ import Mark from 'markup-js';
 
 import * as util from './util';
 
+import i18nConfigure from './i18n';
 import { HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
 
 function hydrateConfig(userConfig) {
@@ -88,6 +90,15 @@ function hydrateConfig(userConfig) {
     return config;
 }
 
+function getServiceRunOptions(serviceDef) {
+    const runOpts = {};
+    const boolKeys = ['zoomToResults', 'gridMinimized'];
+    boolKeys.forEach(key => {
+        runOpts[key] = serviceDef[key] === true;
+    });
+    return runOpts;
+}
+
 class Application {
 
     constructor(userConfig = {}) {
@@ -100,6 +111,8 @@ class Application {
         this.actions = {};
 
         this.config = config;
+
+        i18nConfigure(userConfig.lang || {});
 
         register(proj4);
 
@@ -114,6 +127,7 @@ class Application {
             'cursor': cursorReducer,
             'print': printReducer,
             'config': configReducer,
+            'editor': editorReducer,
         }));
 
         this.store.dispatch(setConfig(config));
@@ -178,7 +192,7 @@ class Application {
             label: 'Results',
             selectable: true,
             style: results_style,
-            filter: null,
+            // filter: null,
         }));
 
         // the "hot" layer shows the features as red on the map,
@@ -188,7 +202,7 @@ class Application {
             name: 'results-hot',
             on: true,
             style: hot_style,
-            filter: ['==', 'displayClass', 'hot']
+            filter: ['==', 'displayClass', 'hot'],
         }));
     }
 
@@ -281,6 +295,18 @@ class Application {
         return ReactDOM.render(e, document.getElementById(domId));
     }
 
+    addPlugin(component, domId, inProps = {}) {
+        const props = Object.assign({
+            store: this.store,
+            React: React,
+            ReactDOM: ReactDOM,
+        }, inProps);
+        props.services = this.services;
+
+        const e = React.createElement(component, props);
+        return ReactDOM.render(e, document.getElementById(domId));
+    }
+
 
     /** Run a query against the listed map-sources.
      *
@@ -309,10 +335,13 @@ class Application {
             }
         }
 
+        const serviceDef = this.services[service];
+        const runOptions = getServiceRunOptions(serviceDef);
+
         // require all the promises complete,
         //  then dispatch the store.
         Promise.all(template_promises).then(() => {
-            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query));
+            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query, runOptions));
         });
     }
 
@@ -656,9 +685,26 @@ class Application {
      */
     startService(serviceName, options) {
         this.store.dispatch(serviceActions.startService(serviceName));
-        if (options && options.changeTool) {
-            this.store.dispatch(mapActions.changeTool(options.changeTool));
+
+        const nextTool = (options && options.changeTool)
+            ? options.changeTool
+            : this.services[serviceName].tools.default;
+
+        this.store.dispatch(mapActions.changeTool(nextTool));
+
+        if (options && options.withFeatures) {
+            // reset the buffer when adding features.
+            this.store.dispatch(mapActions.setSelectionBuffer(0));
+            // dispatch the features
+            this.store.dispatch(mapActions.clearSelectionFeatures());
+            options.withFeatures.forEach(feature => {
+                this.store.dispatch(mapActions.addSelectionFeature(feature));
+            });
+            this.store.dispatch(mapSourceActions.clearFeatures('selection'));
+            this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
         }
+
+        this.store.dispatch(uiActions.setUiHint('service-start'));
     }
 
     /** Handle updating the UI, does nothing in vanilla form.
@@ -743,6 +789,22 @@ class Application {
      */
     clearHighlight() {
         this.highlightFeatures({displayClass: 'hot'}, false);
+    }
+
+    /**
+     * Project a point to web mercator.
+     */
+    lonLatToMeters(lon, lat) {
+        return Proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
+    }
+
+    /**
+     * Project a bounding box to web mercator.
+     */
+    bboxToMeters(east, south, west, north) {
+        const [minx, miny] = this.lonLatToMeters(east, south);
+        const [maxx, maxy] = this.lonLatToMeters(west, north);
+        return [minx, miny, maxx, maxy];
     }
 };
 

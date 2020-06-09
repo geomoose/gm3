@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import FileSaver from 'file-saver';
 
@@ -75,68 +76,56 @@ function doDownload(features, downloadFormat) {
  *  Currently supports KML and GeoJSON.
  *
  */
-export class DownloadTool extends React.Component {
-    constructor(props) {
-        super(props);
+export const DownloadTool = ({layer, mapSources, onDownload}) => {
+    const [downloadFormat, setFormat] = useState('kml');
+    const [modalOpen, setModalOpen] = useState(false);
+    const {t} = useTranslation();
 
-        this.state = {
-            downloadFormat: 'kml',
-            open: false,
-        };
-    }
-
-    render() {
-        return (
-            <React.Fragment>
-                <Tool
-                    tip='Download features to a file.'
-                    iconClass='download'
-                    onClick={() => {
-                        this.setState({open: true});
+    return (
+        <React.Fragment>
+            <Tool
+                tip='download-features-tip'
+                iconClass='download'
+                onClick={() => {
+                    setModalOpen(true);
+                }}
+            />
+            { !modalOpen ? false : (
+                <Modal
+                    open
+                    title='download-features'
+                    options={[
+                        {label: 'Cancel', value: 'dismiss'},
+                        {label: 'Okay', value: 'download'}
+                    ]}
+                    onClose={(opt) => {
+                        if(opt === 'download') {
+                            const src = layer.src[0];
+                            const map_source = mapSources[src.mapSourceName];
+                            onDownload(src, map_source, downloadFormat);
+                        }
+                        setModalOpen(false);
                     }}
-                />
-                { !this.state.open ? false : (
-                    <Modal
-                        open
-                        title='Download features'
-                        options={[
-                            {label: 'Cancel', value: 'dismiss'},
-                            {label: 'Okay', value: 'download'}
-                        ]}
-                        onClose={(opt) => {
-                            if(opt === 'download') {
-                                const src = this.props.layer.src[0];
-                                const map_source = this.props.mapSources[src.mapSourceName];
-                                this.props.onDownload(src, map_source, this.state.downloadFormat);
-                            }
-
-                            this.setState({open: false});
-                        }}
-                    >
-                        <p>
-                            { this.props.helpText }
-                        </p>
-                        <p>
-                            <label>Download format: </label>
-                            <select
-                                value={ this.state.downloadFormat }
-                                onChange={(evt) => {
-                                    this.setState({downloadFormat: evt.target.value});
-                                }}
-                            >
-                                <option value="geojson">GeoJSON</option>
-                                <option value="kml">KML</option>
-                            </select>
-                        </p>
-                    </Modal>
-                )}
-            </React.Fragment>
-        );
-    }
-}
-
-DownloadTool.defaultProps = {
-    helpText: 'Choose a format then click "Okay" to download layer features in that format.',
+                >
+                    <p>
+                        { t('download-help') }
+                    </p>
+                    <p>
+                        <label>{`${t('download-format')} `}</label>
+                        <select
+                            value={ downloadFormat }
+                            onChange={(evt) => {
+                                setFormat(evt.target.value);
+                            }}
+                        >
+                            <option value="geojson">GeoJSON</option>
+                            <option value="kml">KML</option>
+                        </select>
+                    </p>
+                </Modal>
+            )}
+        </React.Fragment>
+    );
 }
 
 function mapState(state) {

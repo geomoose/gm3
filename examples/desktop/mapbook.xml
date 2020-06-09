@@ -15,7 +15,9 @@
                 "line-color": "#d95f0e",
                 "line-width": 4,
                 "fill-opacity": 0.60,
-                "line-opacity": 0.80
+                "line-opacity": 0.80,
+                "text-field": "{label}",
+                "text-color": "#000000"
             }
             ]]></style>
 
@@ -30,6 +32,10 @@
 
             <template name="identify" auto="true" />
         </layer>
+
+        <properties>
+            <property name="label" label="Sketch label" />
+        </properties>
     </map-source>
 
     <map-source name="places" type="geojson" title="Cities and Villages" minresolution="100" maxresolution="5000">
@@ -198,12 +204,6 @@
                 "line-width" : 2
             }
             ]]></style>
-            <template name="identify"><![CDATA[
-                <div class="identify-result">
-                    <div class="feature-class">Dakota County Rail</div>
-                    <div class="item"><label>Name:</label> {{ properties.FEAT_NM1 }}</div>
-                </div>
-            ]]></template>
             <template name="search"><![CDATA[
                 <div class="search-result">
                     <div class="search-label">
@@ -351,16 +351,6 @@
         <param name="cross-origin" value="anonymous"/>
     </map-source>
 
-    <map-source name="wmflabs" type="xyz" printable="false">
-        <layer name="osm_black_n_white">
-            <attribution><![CDATA[
-            Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
-            <br><br>
-            ]]></attribution>
-        </layer>
-        <url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-    </map-source>
-
     <map-source name="usgs" type="mapserver">
         <file>./demo/wms/wms_proxy.map</file>
         <layer name="usgs_imagery"/>
@@ -394,7 +384,7 @@
         <layer src="sketch/default"
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
-               draw-modify="true" draw-remove="true" />
+               draw-modify="true" draw-remove="true" draw-edit="true" />
 
         <group title="Overlays" expand="true">
             <group title="County Layers">
@@ -404,7 +394,7 @@
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
                 </layer>
 
-                <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
+                <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10">
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
                     <!--
                     <legend>images/logo_mini.gif</legend>
@@ -428,9 +418,7 @@
         <group title="Backgrounds" expand="true">
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
-            <layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
-            <layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
-
+            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
             <!-- These layers can be *very* slow, they are left here
               -  for demonstration purposes.
             <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
@@ -463,6 +451,7 @@
 
         <drawer name="searches" title="Search">
             <tool name="search" title="Search Parcels" type="service"/>
+            <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
             <tool name="geocode" title="Geocode an Address" type="service"/>
         </drawer>
 

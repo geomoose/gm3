@@ -23,6 +23,7 @@
  */
 
 import React from 'react';
+import {withTranslation} from 'react-i18next';
 
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
@@ -67,7 +68,7 @@ function getDefaultValues(serviceDef) {
 }
 
 
-export default class ServiceForm extends React.Component {
+class ServiceForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -167,7 +168,7 @@ export default class ServiceForm extends React.Component {
                 }}
             >
 
-                <h3>{service_def.title}</h3>
+                <h3>{this.props.t(service_def.title)}</h3>
                 { inputs }
                 {
                     !this.state.validateFieldValuesResultMessage ? false : (
@@ -180,17 +181,26 @@ export default class ServiceForm extends React.Component {
                     )
                 }
                 <div className='tab-controls'>
-                    <button className='close-button' onClick={() => { this.props.onCancel(); }}><i className='close-icon'></i> Close</button>
+                    <button
+                        className='close-button'
+                        onClick={() => {
+                            this.props.onCancel();
+                        }}
+                    >
+                        <i className='close-icon'></i> {this.props.t('Close')}
+                    </button>
                     <button
                         className='go-button'
                         onClick={() => {
                             this.submit();
                         }}
                     >
-                        <i className='go-icon'></i> Go
+                        <i className='go-icon'></i> {this.props.t('go')}
                     </button>
                 </div>
             </div>
         );
     }
 }
+
+export default withTranslation()(ServiceForm);

@@ -55,9 +55,20 @@ const FILTER_MAPPING = {
     'lt': ol_filters.lessThan
 };
 
-function mapFilters(fields) {
-    return fields.map(filter => FILTER_MAPPING[filter.comparitor](filter.name, filter.value));
-}
+const FILTER_OPERATORS = {
+    'and': ol_filters.and,
+    'or': ol_filters.or,
+};
+
+const mapFilters = fields => {
+    return fields.map(field => {
+        if (Array.isArray(field)) {
+            return chainFilters(FILTER_OPERATORS[field[0]], mapFilters(field.slice(1)));
+        } else {
+            return FILTER_MAPPING[field.comparitor](field.name, field.value);
+        }
+    });
+};
 
 export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
     const geom_field = 'geom';
@@ -70,36 +81,32 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
         query_projection = new proj.get('EPSG:4326');
     }
 
-    const operators = {
-        'and': ol_filters.and,
-        'or': ol_filters.or,
-    };
-
     const filters = [];
-    if(query.selection && query.selection.geometry) {
-        // convert the geojson geometry into a ol geometry.
-        const ol_geom = (new GeoJSONFormat()).readGeometry(query.selection.geometry);
-        // convert the geometry to the query projection
-        ol_geom.transform(mapProjection, query_projection);
-        // add the intersection filter to the filter stack.
-        filters.push(ol_filters.intersects(geom_field, ol_geom));
-    }
+    if(query.selection && query.selection.length > 0) {
+        const geoFilters = query.selection.map(selectionFeature => {
+            // convert the geojson geometry into a ol geometry.
+            const ol_geom = (new GeoJSONFormat()).readGeometry(selectionFeature.geometry);
+            // convert the geometry to the query projection
+            ol_geom.transform(mapProjection, query_projection);
 
-    for(const filter of query.fields) {
-        // TODO: Catch "filter.type" and use internal conversion
-        //       functions for specialty filters.
-        if (Array.isArray(filter)) {
-            filters.push(chainFilters(operators[filter[0]], mapFilters(filter.slice(1))));
+            // add the intersection filter to the filter stack.
+            return ol_filters.intersects(geom_field, ol_geom);
+        });
+
+        if (geoFilters.length === 1) {
+            filters.push(geoFilters[0]);
         } else {
-            filters.push(FILTER_MAPPING[filter.comparitor](filter.name, filter.value));
+            filters.push(chainFilters(FILTER_OPERATORS.or, geoFilters));
         }
     }
+
+    mapFilters(query.fields).forEach(f => filters.push(f));
 
     // when multiple filters are set then they need to be
     //  chained together to create the compound filter.
     let chained_filters = null;
     if(filters.length > 1) {
-        chained_filters = chainFilters(operators.and, filters);
+        chained_filters = chainFilters(FILTER_OPERATORS.and, filters);
     } else {
         chained_filters = filters[0];
     }

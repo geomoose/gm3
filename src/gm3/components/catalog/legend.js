@@ -43,7 +43,11 @@ class CatalogLegend extends Component {
     }
 
     renderLegend(src) {
-        const legend = getLegend(this.props.mapSources[src.mapSourceName], this.props.mapView, src.layerName);
+        const legend = getLegend(
+            this.props.mapSources[src.mapSourceName],
+            this.props.mapView,
+            src.layerName
+        );
 
         const key = 'legend_' + src.mapSourceName + '_' + src.layerName;
         let legend_idx = 0;

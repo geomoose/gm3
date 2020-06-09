@@ -125,3 +125,21 @@ test('convertLength', () => {
     expect(util.convertLength(1, 'm', 'm')).toBe(1);
     expect(util.convertLength(1, 'yd', 'ft')).toBe(3);
 });
+
+describe('getExtentForQuery', () => {
+    test('test extent for a result with a single feature', () => {
+        const fakeResults = {
+            dummy: [{
+                type: 'Feature',
+                properties: {
+                    boundedBy: [0, 0, 300, 300]
+                }
+            }]
+        };
+        expect(util.getExtentForQuery(fakeResults)).toEqual([0, 0, 300, 300]);
+    });
+
+    test('test extent for an empty result', () => {
+        expect(util.getExtentForQuery({})).toEqual(null);
+    });
+});

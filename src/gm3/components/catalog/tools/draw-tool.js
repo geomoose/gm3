@@ -34,36 +34,28 @@ const DRAW_TYPES = {
     'point': 'Point',
     'line': 'LineString',
     'polygon': 'Polygon',
+    'edit': 'Edit',
 };
 
-export class DrawTool extends React.Component {
-    render() {
-        const src = this.props.layer.src[0];
-        const path = src.mapSourceName + '/' + src.layerName;
 
-        let tip = `Add a ${this.props.drawType} to the layer`;
-        if(this.props.drawType === 'modify') {
-            tip = 'Modify a drawn feature';
-        } else if (this.props.drawType === 'remove') {
-            tip = 'Remove a feature from the layer';
-        }
+export const DrawTool = ({layer, drawType, changeTool}) => {
+    const src = layer.src[0];
+    const path = src.mapSourceName + '/' + src.layerName;
 
-        return (
-            <Tool
-                iconClass={this.props.drawType}
-                tip={tip}
-                onClick={() => {
-                    this.props.changeTool(DRAW_TYPES[this.props.drawType], path);
-                }}
-            />
-        );
-    }
+    return (
+        <Tool
+            iconClass={drawType}
+            tip={`draw-${drawType}-tip`}
+            onClick={() => {
+                changeTool(DRAW_TYPES[drawType], path);
+            }}
+        />
+    );
 }
 
 DrawTool.propTypes = {
     changeTool: PropTypes.func,
     drawType: PropTypes.string,
-    tip: PropTypes.string,
     layer: PropTypes.object.isRequired,
 };
 
@@ -71,7 +63,6 @@ DrawTool.defaultProps = {
     changeTool: () => {
     },
     drawType: 'point',
-    tip: 'Add a point to the layer.',
 };
 
 function mapDispatch(dispatch) {

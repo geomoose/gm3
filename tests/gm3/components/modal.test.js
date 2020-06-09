@@ -26,7 +26,7 @@ import React from 'react';
 
 import Modal from 'gm3/components/modal';
 
-import Enzyme, { shallow } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -38,8 +38,9 @@ it('renders a one button Modal Dialog', () => {
     const callback = jest.fn();
 
     // create the dialog.
-    const dialog = shallow(
+    const dialog = mount(
         <Modal title='Title' message='Testing message for dialog'
+            open
             options={ [{label: 'Okay', value: 'okay'}] }
             onClose={ callback } />
     );

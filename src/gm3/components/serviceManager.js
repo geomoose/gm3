@@ -24,12 +24,14 @@
 
 import React from 'react';
 import { Provider, connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import { removeQuery, changeTool, zoomToExtent } from '../actions/map';
-import { finishService } from '../actions/service';
+import { startService, finishService, showServiceForm } from '../actions/service';
 import * as mapActions from '../actions/map';
 import { clearFeatures } from '../actions/mapSource';
 import { setUiHint } from '../actions/ui';
+import { getExtentForQuery } from '../util';
 
 import MeasureTool from './measure';
 
@@ -48,55 +50,18 @@ function normalizeSelection(selectionFeatures) {
                     all_coords.push(feature.geometry.coordinates[0]);
                 }
             }
-            return {
+            return [{
                 type: 'Feature',
                 properties: {},
                 geometry: {
                     type: 'MultiPoint',
                     coordinates: all_coords
                 }
-            };
+            }];
         }
     }
-    return selectionFeatures[0];
+    return selectionFeatures;
 }
-
-/** Get the extent of a query's results.
- *  All features must have a boundedBy property.
- */
-function getExtentForQuery(results, minSize = 150) {
-    let extent = null;
-
-    for(const path in results) {
-        const features = results[path];
-        if(features.length > 0) {
-            if(extent === null) {
-                extent = features[0].properties.boundedBy.slice();
-            }
-            for(let i = 1, ii = features.length; i < ii; i++) {
-                const e = features[i].properties.boundedBy;
-                extent[0] = Math.min(extent[0], e[0]);
-                extent[1] = Math.min(extent[1], e[1]);
-                extent[2] = Math.max(extent[2], e[2]);
-                extent[3] = Math.max(extent[3], e[3]);
-            }
-        }
-    }
-
-    if (extent[2] - extent[0] < minSize) {
-        const mid_x = (extent[0] + extent[2]) / 2;
-        extent[0] = mid_x - minSize;
-        extent[2] = mid_x + minSize;
-    }
-    if (extent[3] - extent[1] < minSize) {
-        const mid_y = (extent[1] + extent[3]) / 2;
-        extent[1] = mid_y - minSize;
-        extent[3] = mid_y + minSize;
-    }
-
-    return extent;
-}
-
 
 class ServiceManager extends React.Component {
 
@@ -177,17 +142,17 @@ class ServiceManager extends React.Component {
         const info_header = (
             <div className='results-info'>
                 <div className='results-info-item features-count'>
-                    <div className='label'>Features</div>
+                    <div className='label'>{this.props.t('features')}</div>
                     <div className='value'>{ feature_count }</div>
                 </div>
 
                 <div className='results-info-item layers-count'>
-                    <div className='label'>Layers</div>
+                    <div className='label'>{this.props.t('layers')}</div>
                     <div className='value'>{ layer_count }</div>
                 </div>
 
                 <div className='results-info-item zoomto'>
-                    <div className='label'>Zoom to results</div>
+                    <div className='label'>{this.props.t('zoomto-results')}</div>
                     <div className='value' onClick={() => { this.props.zoomToResults(query); }}>
                         <span className='icon zoomto'></span>
                     </div>
@@ -198,9 +163,15 @@ class ServiceManager extends React.Component {
         return (
             <div key={queryId}>
                 <div className='results-header'>
-                    { service_title }
+                    { this.props.t(service_title) }
                     <div className='results-tools'>
-                        <i className='icon clear' onClick={() => { this.props.removeQuery(queryId); }}></i>
+                        <i
+                            title={this.props.t('results-clear')}
+                            className='icon clear'
+                            onClick={() => {
+                                this.props.removeQuery(queryId);
+                            }}>
+                        </i>
                     </div>
                 </div>
                 <div className='results-query-id'>{ queryId }</div>
@@ -208,95 +179,6 @@ class ServiceManager extends React.Component {
                 <div dangerouslySetInnerHTML={this.renderQueryResults(queryId, query)}/>
             </div>
         );
-    }
-
-    closeForm() {
-        this.props.store.dispatch(finishService());
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        // when the drawing type changes this needs to
-        //  update the service 'page' because those elements
-        //  are tied to the state of the interactionType.
-        if(this.props.map.interactionType !== nextProps.map.interactionType
-           && nextProps.map.interactionType !== null
-           && nextProps.map.activeSource === null) {
-            return true;
-        }
-
-        for(const query_id of nextProps.queries.order) {
-            const query = nextProps.queries[query_id];
-            const oldQuery = this.props.queries[query_id] || {};
-
-            if (oldQuery.counter !== query.counter) {
-                return true;
-            }
-
-            if (!this.finishedQueries[query_id]) {
-                if (query && query.progress === 'finished') {
-                    this.finishedQueries[query_id] = true;
-                    const service = this.props.services[query.service];
-                    if (service.renderQueryResults) {
-                        service.renderQueryResults(query_id, query);
-                    }
-                }
-            }
-        }
-
-        if(this.props.queries.service !== nextProps.queries.service) {
-            return true;
-        }
-
-        // compare to the two sets of queries.
-        const old_queries = this.props.queries;
-        const new_queries = nextProps.queries;
-        const old_keys = Object.keys(old_queries);
-        const new_keys = Object.keys(new_queries);
-        // quicky check
-        if(old_keys.length !== new_keys.length) {
-            return true;
-        }
-
-        // each array is the same length (see the test above)
-        const len = old_keys.length;
-        // the arrays are un-sorted so go through each and
-        //   if there is any missing keys, then kick back a true
-        for(let i = 0; i < len; i++) {
-            let found = false;
-            for(let j = 0; j < len && !found; j++) {
-                if(new_keys[i] === old_keys[j]) {
-                    const old_q = old_queries[old_keys[j]];
-                    const new_q = new_queries[new_keys[j]];
-                    // these are the same
-                    if(old_q === null && new_q === null) {
-                        found = true;
-                    } else if(old_q === null || new_q === null) {
-                        // these differ, this check prevents the
-                        //  next check from happening and this should
-                        //  actually keep found set to false.
-                        found = false;
-                    } else if(old_q.progress === new_q.progress) {
-                        found = true;
-                    }
-                }
-            }
-            if(!found) { return true; }
-        }
-
-        // check to see if the selection features have changed.
-        const old_features = this.props.map.selectionFeatures;
-        const new_features = nextProps.map.selectionFeatures;
-        if(old_features.length !== new_features.length) {
-            return true;
-        } else {
-            // TODO: do a better list-against-list matching check.
-            for(let i = 0, ii = old_features.length; i < ii; i++) {
-                if(old_features[i].properties.id !== new_features[i].properties.id) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /** Iterate through all of the queries and execute
@@ -321,9 +203,6 @@ class ServiceManager extends React.Component {
     }
 
     UNSAFE_componentWillUpdate(nextProps, nextState) {
-        // anytime this updates, the user should really be seeing the service
-        //  tab.
-        this.props.store.dispatch(setUiHint('service-manager'));
 
         if(this.state.lastService !== nextProps.queries.service
            && nextProps.queries.service !== null) {
@@ -358,16 +237,6 @@ class ServiceManager extends React.Component {
                     // Don't allow the user to "autoGo" if there are
                     // fields which are required.
                     console.error('Misconfigured service. This service has been configured with autoGo but has required fields');
-                } else {
-                    const selection = nextProps.store.getState().map.selectionFeatures;
-                    if(selection.length > 0) {
-                        // okay, there *is* a selection feature.
-                        const fid = selection[0].properties.id;
-                        if(nextState.lastFeature !== fid) {
-                            this.setState({lastFeature: fid});
-                            this.props.startQuery(selection, this.props.services[service_name], this.state.values);
-                        }
-                    }
                 }
             }
         }
@@ -387,15 +256,21 @@ class ServiceManager extends React.Component {
         const code = evt.which;
         if(code === 13) {
         } else if(code === 27) {
-            this.closeForm();
+            this.props.onServiceFinished();
         }
     }
 
     /** Implement a small post-render hack to focus on the first
      *  input element of a service form.
      */
-    componentDidUpdate() {
-        if(this.props.queries.service !== null) {
+    componentDidUpdate(prevProps) {
+        if(this.props.queries.service !== prevProps.service) {
+            // anytime this updates, the user should really be seeing the service
+            //  tab.
+            if (prevProps.service !== undefined) {
+                this.props.setUiHint('service-manager');
+            }
+
             // look for an input in the service form and then
             //  focus on the first one, as available.
             if(this.refs.serviceForm) {
@@ -404,6 +279,33 @@ class ServiceManager extends React.Component {
                     inputs[0].focus();
                 }
             }
+        }
+
+        const serviceName = this.props.queries.service || this.state.lastService;
+        if (serviceName) {
+            const serviceDef = this.props.services[serviceName];
+            if (
+                serviceDef &&
+                this.props.selectionFeatures !== prevProps.selectionFeatures &&
+                this.props.selectionFeatures.length > 0
+            ) {
+                if (serviceDef.autoGo === true) {
+                    this.props.startQuery(
+                        this.props.selectionFeatures,
+                        this.props.services[serviceName],
+                        this.state.values
+                    );
+                } else {
+                    this.props.startService(serviceName);
+                }
+            }
+        }
+
+        if (!this.props.queries.showServiceForm &&
+            this.props.queries.order.length > 0 &&
+            prevProps.queries.order[0] !== this.props.queries.order[0]
+        ) {
+            this.props.setUiHint('new-results');
         }
     }
 
@@ -416,7 +318,7 @@ class ServiceManager extends React.Component {
             //  object constructed above into a useful set of 'props'
             //  for measure tool.
             contents = ( <MeasureTool {...m_tool_props} /> );
-        } else if(this.props.queries.service != null) {
+        } else if(this.props.queries.service !== null && this.props.queries.showServiceForm) {
             const service_name = this.props.queries.service;
             const service_def = this.props.services[service_name];
 
@@ -427,9 +329,12 @@ class ServiceManager extends React.Component {
                     onSubmit={(values) => {
                         if (service_def.autoGo !== true) {
                             // end the drawing
-                            this.props.changeDrawTool(null);
+                            if (service_def.keepAlive !== true) {
+                                this.props.changeDrawTool(null);
+                            }
+                            this.props.startQuery(this.props.selectionFeatures, service_def, values);
                         }
-                        this.props.startQuery(this.props.map.selectionFeatures, service_def, values);
+                        this.setState({values, });
                     }}
                     onCancel={() => {
                         this.props.changeDrawTool(null);
@@ -448,16 +353,15 @@ class ServiceManager extends React.Component {
                 // when there are no queries but a selection is left
                 //  allow the user to remove the selection
                 let enable_clear = false;
-                if(this.props.selectionSrc
-                  && this.props.selectionSrc.features
-                  && this.props.selectionSrc.features.length > 0) {
+                if (this.props.selectionFeatures &&
+                    this.props.selectionFeatures.length > 0) {
                     enable_clear = true;
                 }
 
                 contents = (
                     <React.Fragment>
                         <div className='info-box'>
-                            Nothing available to view. Please click a service to start in the toolbar.
+                            { this.props.t('start-service-help') }
                         </div>
 
                         <div className='clear-controls'>
@@ -466,7 +370,7 @@ class ServiceManager extends React.Component {
                                 className='clear-button'
                                 onClick={ () => { this.props.clearSelectionFeatures(); } }
                             >
-                                <i className='clear icon'></i> Clear previous selections
+                                <i className='clear icon'></i> { this.props.t('clear-previous-selection') }
                             </button>
                         </div>
                     </React.Fragment>
@@ -485,13 +389,11 @@ class ServiceManager extends React.Component {
 
 }
 
-const mapToProps = function(store) {
-    return {
-        queries: store.query,
-        map: store.map,
-        selectionSrc: store.mapSources.selection
-    }
-}
+const mapState = state => ({
+    queries: state.query,
+    map: state.map,
+    selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
+});
 
 function mapDispatch(dispatch, ownProps) {
     return {
@@ -510,9 +412,10 @@ function mapDispatch(dispatch, ownProps) {
             if(serviceDef.keepAlive !== true) {
                 // shutdown the drawing on the layer.
                 dispatch(changeTool(null));
+                dispatch(finishService());
+            } else {
+                dispatch(showServiceForm(false));
             }
-
-            dispatch(finishService());
 
             ownProps.services[serviceDef.name].query(selection, fields);
         },
@@ -524,15 +427,27 @@ function mapDispatch(dispatch, ownProps) {
         },
         zoomToResults: (query) => {
             const extent = getExtentForQuery(query.results);
-            dispatch(zoomToExtent(extent));
+            if (extent) {
+                dispatch(zoomToExtent(extent));
+            }
         },
         clearSelectionFeatures: () => {
             dispatch(mapActions.clearSelectionFeatures());
             dispatch(clearFeatures('selection'));
         },
         onServiceFinished: () => {
+            dispatch(changeTool(null));
             dispatch(finishService());
+        },
+        setUiHint: hint => {
+            dispatch(setUiHint(hint));
+        },
+        startService: serviceName => {
+            dispatch(startService(serviceName));
+        },
+        showServiceForm: show => {
+            dispatch(showServiceForm(show));
         },
     };
 }
-export default connect(mapToProps, mapDispatch)(ServiceManager);
+export default connect(mapState, mapDispatch)(withTranslation()(ServiceManager));

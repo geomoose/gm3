@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { Translation } from 'react-i18next';
 
 import { changeTool } from '../actions/map';
 
@@ -36,7 +37,6 @@ class DrawTool extends React.Component {
     constructor(props) {
         super(props);
 
-        this.changeDrawTool = this.changeDrawTool.bind(this);
         this.changeSelectLayer = this.changeSelectLayer.bind(this);
 
         this.state = {
@@ -47,10 +47,6 @@ class DrawTool extends React.Component {
             this.state.selectLayer = this.props.selectableLayers[0];
         }
 
-    }
-
-    changeDrawTool(type) {
-        this.props.store.dispatch(changeTool(type, this.state.selectLayer));
     }
 
     changeSelectLayer(event) {
@@ -74,6 +70,16 @@ class DrawTool extends React.Component {
         return options;
     }
 
+    componentDidMount() {
+        // if starting up with the select tool,
+        //  ensure there is a valid active layer.
+        if (this.props.interactionType === 'Select' && this.props.geomType === 'Select') {
+            const firstLayer = this.props.selectableLayers[0];
+            this.setState({selectLayer: firstLayer});
+            this.props.onChange('Select', firstLayer);
+        }
+    }
+
     render() {
         const gtype = this.props.geomType;
 
@@ -88,33 +94,31 @@ class DrawTool extends React.Component {
             tool_class += ' selected';
         }
 
-        let tool_label = gtype;
+        const tool_label = `draw-${gtype.toLowerCase()}-label`;
+
         if(gtype === 'Select') {
-            tool_label = 'Feature from: ';
             select_options = (
                 <select value={ this.state.selectLayer } onChange={ this.changeSelectLayer }>
                     { this.getSelectOptions() }
                 </select>
             );
-        } else if(gtype === 'Modify') {
-            tool_label = 'Modify Feature';
-        } else if(gtype === 'LineString') {
-            tool_label = 'Draw Line';
-        } else if(gtype === 'MultiPoint') {
-            tool_label = 'Draw Multi-Point';
-        } else {
-            tool_label = 'Draw ' + gtype;
         }
 
         return (
-            <div
-                key={'draw-tool-' + gtype}
-                className={tool_class}
-                onClick={ () => {
-                    this.props.onChange(gtype, this.state.selectLayer);
-                }}>
-                <i className='radio-icon'></i> { tool_label } { select_options }
-            </div>
+            <Translation>
+                {t => (
+                    <div
+                        key={'draw-tool-' + gtype}
+                        className={tool_class}
+                        onClick={ () => {
+                            this.props.onChange(gtype, this.state.selectLayer);
+                        }}>
+                        <i className='radio-icon'></i>
+                        {` ${t(tool_label)}`}
+                        { select_options }
+                    </div>
+                )}
+            </Translation>
         );
 
     }

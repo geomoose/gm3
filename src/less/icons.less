@@ -39,7 +39,7 @@
 }
 
 .icon.upload, .icon.clear, .icon.download, .icon.remove, .icon.refresh,
-.icon.legend, .icon.up, .icon.down,
+.icon.legend, .icon.up, .icon.down, .icon.edit,
 .icon.fade, .icon.unfade, .icon.metadata,
 .icon.sort, .icon.remove, .icon.filter,
 .icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox {
@@ -207,5 +207,17 @@
         &:before {
             content: @fa-var-check-square-o;
         }
+    }
+}
+
+.icon.edit {
+    &:before {
+        content: @fa-var-list;
+    }
+}
+
+.icon.buffer {
+    &:before {
+        content: "\e0bb";
     }
 }

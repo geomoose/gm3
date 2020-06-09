@@ -24,6 +24,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import DrawTool from './drawTool';
 
@@ -62,24 +63,24 @@ export class MeasureTool extends Component {
             let run = pointB[0] - pointA[0];
             if(rise === 0) {
                 if(pointA[0] > pointB[0]) {
-                    bearing = 'Due West';
+                    bearing = this.props.t('measure-due-west');
                 } else {
-                    bearing = 'Due East';
+                    bearing = this.props.t('measure-due-east');
                 }
             } else if(run === 0) {
                 if(pointA[1] > pointB[1]) {
-                    bearing = 'Due South';
+                    bearing = this.props.t('measure-due-south');
                 } else {
-                    bearing = 'Due North';
+                    bearing = this.props.t('measure-due-north');
                 }
             } else {
-                let ns_quad = 'N';
-                let ew_quad = 'E';
+                let ns_quad = this.props.t('measure-north-abbr');
+                let ew_quad = this.props.t('measure-east-abbr');
                 if(rise < 0) {
-                    ns_quad = 'S';
+                    ns_quad = this.props.t('measure-south-abbr');
                 }
                 if(run < 0) {
-                    ew_quad = 'W';
+                    ew_quad = this.props.t('measure-west-abbr');
                 }
                 /* we've determined the quadrant, so we can make these absolute */
                 rise = Math.abs(rise);
@@ -191,7 +192,7 @@ export class MeasureTool extends Component {
             <table className='measured-segments'>
                 <tbody>
                     <tr key='header'>
-                        <th></th><th>Segment Length ({this.state.units})</th><th>Bearing</th>
+                        <th></th><th>{this.props.t('measure-segment-length')} ({this.props.t(`units-${this.state.units}`)})</th><th>Bearing</th>
                     </tr>
                     { segment_html }
                 </tbody>
@@ -223,7 +224,7 @@ export class MeasureTool extends Component {
             <table className='measured-area'>
                 <tbody>
                     <tr key='header'>
-                        <th>Area (sq. {this.state.units})</th>
+                        <th>{this.props.t('measure-area')} ({this.props.t('measure-sq')} {this.props.t(`units-${this.state.units}`)})</th>
                     </tr>
                     <tr>
                         <td>{ area.toFixed(2) }</td>
@@ -244,11 +245,8 @@ export class MeasureTool extends Component {
             (g.type === 'LineString' && g.coordinates.length < 2) ||
             (g.type === 'Polygon' && g.coordinates[0].length < 3)
         ) {
-            return (
-                <div className='help-text'>
-                    Please draw a feature on the map to measure.
-                </div>
-            );
+            // swallow the measurement until the feature is ready.
+            return false;
         } else if (g.type === 'Point') {
             return ( <CoordinateDisplay coords={ g.coordinates } projections={ this.props.pointProjections } resolution={ this.props.map.resolution } /> );
         } else if (g.type === 'LineString') {
@@ -265,17 +263,17 @@ export class MeasureTool extends Component {
         this.setState({units: value});
     }
 
-    renderUnitOption(value, label) {
+    renderUnitOption(value, isSq) {
         const selected = (this.state.units === value) ? 'selected' : '';
         return (
             <div key={'units-' + value} className={'radio-option ' + selected } onClick={ () => { this.changeUnits(value) } }>
-                <i className='radio-icon'></i> { label }
+                <i className='radio-icon'></i> {isSq ? `${this.props.t('measure-sq')} ` : ''}{this.props.t(`units-${value}`)}
             </div>
         );
     }
 
     renderUnitOptions() {
-        const units = 'Units';
+        const units = this.props.t('units');
         let measurement_type = this.props.map.interactionType;
         if(measurement_type === 'Select') {
             if(this.props.map.selectionFeatures.length > 0) {
@@ -287,23 +285,23 @@ export class MeasureTool extends Component {
             return (
                 <div className='measure-units'>
                     <b>{units}:</b>
-                    { this.renderUnitOption('m', 'Meters') }
-                    { this.renderUnitOption('km', 'Kilometers') }
-                    { this.renderUnitOption('ft', 'Feet') }
-                    { this.renderUnitOption('mi', 'Miles') }
-                    { this.renderUnitOption('ch', 'Chains') }
+                    { this.renderUnitOption('m') }
+                    { this.renderUnitOption('km') }
+                    { this.renderUnitOption('ft') }
+                    { this.renderUnitOption('mi') }
+                    { this.renderUnitOption('ch') }
                 </div>
             );
         } else if(measurement_type === 'Polygon') {
             return (
                 <div className='measure-units'>
                     <b>{units}:</b>
-                    { this.renderUnitOption('m', 'Sq. Meters') }
-                    { this.renderUnitOption('km', 'Sq. Kilometers') }
-                    { this.renderUnitOption('ft', 'Sq. Feet') }
-                    { this.renderUnitOption('mi', 'Sq. Miles') }
-                    { this.renderUnitOption('a', 'Acres') }
-                    { this.renderUnitOption('h', 'Hectares') }
+                    { this.renderUnitOption('m', true) }
+                    { this.renderUnitOption('km', true) }
+                    { this.renderUnitOption('ft', true) }
+                    { this.renderUnitOption('mi', true) }
+                    { this.renderUnitOption('a') }
+                    { this.renderUnitOption('h') }
                 </div>
             );
         } else {
@@ -316,9 +314,7 @@ export class MeasureTool extends Component {
         // TODO: These events can happen when measuring is not happening!!!
         return (
             <div className='measure-tool'>
-                <div>
-                    Use <b>Draw line</b> to measure distances and <b>Draw Polygon</b> to measure areas.
-                </div>
+                <div dangerouslySetInnerHTML={{__html: this.props.t('measure-help')}} />
                 <div className='draw-tools'>
                     <DrawTool key='measure-point' geomType='Point'/>
                     <DrawTool key='measure-line' geomType='LineString'/>
@@ -343,4 +339,4 @@ const mapToProps = function(store) {
     }
 }
 
-export default connect(mapToProps)(MeasureTool);
+export default connect(mapToProps)(withTranslation()(MeasureTool));

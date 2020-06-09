@@ -29,6 +29,9 @@
 import * as util from '../../util';
 import Image from 'ol/layer/Image';
 import ImageWMS from 'ol/source/ImageWMS';
+import * as proj from 'ol/proj';
+
+const WEBMERC_PROJ = proj.get('EPSG:3857');
 
 /** Create the parameters for a WMS layer.
  *
@@ -109,7 +112,7 @@ export function getLegend(mapSource, mapView, layerName) {
 
     const params = Object.assign({
         'REQUEST': 'GetLegendGraphic',
-        // 'SCALE': TODO: get a scale hint from the map.
+        'SCALE': util.getScale(mapView.resolution, WEBMERC_PROJ),
         'SERVICE': 'WMS',
         // TODO: Does this need to be passed in? Check by server-type?
         'VERSION': '1.1.1',

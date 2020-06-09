@@ -32,14 +32,12 @@
 var app = new gm3.Application({
     mapserver_url: CONFIG.mapserver_url,
     mapfile_root: CONFIG.mapfile_root,
-
     map: {
         scaleLine: {
             enabled: true,
             units: 'imperial'
         }
     }
-
 });
 
 app.uiUpdate = function(ui) {
@@ -103,6 +101,48 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     });
 
+    app.registerService('single-search', SearchService, {
+        // The input fields are defined only using one field
+        fields: [
+            {type: 'text', label: 'Search', name: 'TERM'},
+        ],
+        prepareFields: function (fields) {
+            // this pulls out the term from the search
+            const searchTerms = fields[0].value.split(' ');
+            // this is the list of fields in the layer which will be searched.
+            const searchFields = ['OWNER_NAME', 'OWN_ADD_L1', 'OWN_ADD_L2'];
+            // this switched to matching any field
+            var query = ['or'];
+            for (var i = 0, ii = searchFields.length; i < ii; i++) {
+                const subquery = ['and'];
+                for (var v = 0, vv = searchTerms.length; v < vv; v++) {
+                    const searchTerm = searchTerms[v];
+                    subquery.push({
+                        comparitor: 'ilike',
+                        name: searchFields[i],
+                        value: '%' + searchTerm + '%'
+                    });
+                }
+                query.push(subquery);
+            }
+            return [query];
+        },
+        searchLayers: ['vector-parcels/parcels'],
+        validateFieldValues: function (fields) {
+            const validateFieldValuesResult = {
+                valid: true,
+                message: null
+            };
+            if (fields['TERM'] === undefined || fields['TERM'] === '') {
+                validateFieldValuesResult.valid = false;
+                validateFieldValuesResult.message = 'Please complete at least one field.'
+            }
+            return validateFieldValuesResult;
+        },
+        zoomToResults: true
+    });
+
+
     app.registerService('search-firestations', SearchService, {
         searchLayers: ['firestations/fire_stations'],
         fields: [
@@ -112,6 +152,12 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerService('select', SelectService, {
         // set the default layer
         defaultLayer: 'vector-parcels/parcels',
+        keepAlive: true,
+    });
+
+    app.registerService('buffer-select', SelectService, {
+        drawToolsLabel: '',
+        tools: {'buffer': true},
     });
 
     // This uses the OpenStreetMap Nominatim geocoder,

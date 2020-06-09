@@ -24,6 +24,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import KMLFormat from 'ol/format/KML';
 import GeoJSONFormat from 'ol/format/GeoJSON';
@@ -84,7 +85,7 @@ class UploadModal extends Modal {
             return (
                 <div>
                     <p>
-                        <span className="upload spinner"></span> Uploading file(s)...
+                        <span className="upload spinner"></span> {this.props.t('upload-uploading')}
                     </p>
                 </div>
             );
@@ -94,22 +95,20 @@ class UploadModal extends Modal {
             if(this.state.withError) {
                 error = (
                     <p>
-                        There was an error uploading the file. Please verify
-                        it is a valid GeoJSON or KML file.
+                        {this.props.t('upload-file-error')}
                     </p>
                 );
             } else if(this.state.invalid > 0) {
                 error = (
                     <p>
-                        There were { this.state.invalid } invalid features found in the
-                        file. Please check the source and try again.
+                        {this.props.t('upload-invalid-features', {count: this.state.invalid})}
                     </p>
                 );
             }
             return (
                 <div>
                     <p>
-                        { this.state.features } features uploaded.
+                        {this.props.t('upload-uploaded', {count: this.state.features})}
                     </p>
                     { error }
                 </div>
@@ -119,7 +118,7 @@ class UploadModal extends Modal {
         return (
             <div>
                 <p>
-                    { this.props.helpText }
+                    { this.props.t('upload-help') }
                 </p>
                 <p>
                     <input ref='fileInput' type='file' accept='.geojson,.json,.kml'/>
@@ -225,13 +224,14 @@ class UploadModal extends Modal {
 
 // setup the default prop options for the modal dialog.
 UploadModal.defaultProps = {
-    title: 'Upload data',
-    helpText: 'Use the browse button to select a KML or GeoJSON file then click "Okay" to upload the features to the map.',
+    title: 'upload-title',
     options: [
         {label: 'Cancel', value: 'dismiss'},
         {label: 'Okay', value: 'upload'}
     ]
 };
+
+const WrappedUploadModal = withTranslation()(UploadModal);
 
 /** Upload features to a vector layer from a file
  *  on the user's hard drive.
@@ -251,14 +251,14 @@ export class UploadTool extends React.Component {
     render() {
         return (
             <Tool
-                tip='Add features from file.'
+                tip={'upload-tip'}
                 iconClass='upload'
                 onClick={() => {
                     this.setState({open: true});
                 }}
             >
                 { !this.state.open ? false : (
-                    <UploadModal
+                    <WrappedUploadModal
                         open
                         layer={this.props.layer}
                         onClose={(opt) => {

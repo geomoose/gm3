@@ -76,7 +76,8 @@ function parseLayer(store, layerXml) {
         refreshEnabled: false,
         refresh: null,
         metadata_url: null,
-        tools: []
+        tools: [],
+        tip: layerXml.getAttribute('tip'),
     };
 
     // This is the first attempt at a new model
@@ -91,6 +92,7 @@ function parseLayer(store, layerXml) {
         'legend-toggle',
         'draw-point', 'draw-line', 'draw-polygon',
         'draw-modify', 'draw-remove',
+        'draw-edit',
         'clear'
     ];
 

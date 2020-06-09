@@ -28,7 +28,7 @@ export default class DownTool extends UpTool {
 }
 
 DownTool.defaultProps = {
-    tip: 'Move layer down in the order',
+    tip: 'layer-down-tip',
     iconClass: 'down',
     direction: 1,
 };

@@ -30,6 +30,7 @@
  */
 
 import React from 'react';
+import { Translation } from 'react-i18next';
 
 import { connect, Provider } from 'react-redux';
 
@@ -37,6 +38,7 @@ import { setGroupExpand } from '../../actions/catalog';
 
 import CatalogGroup from './group';
 import CatalogLayer from './layer';
+import EditorModal from '../editor';
 
 function allLayers() {
     return true;
@@ -124,18 +126,23 @@ export class Catalog extends React.Component {
             <Provider store={this.props.store}>
                 <div className={ catalog_classes }>
                     <div className='searchbox'>
-                        <input
-                            onChange={(evt) => {
-                                this.setState({searchFilter: evt.target.value.toLowerCase()});
-                            }}
-                            placeholder='Search catalog'
-                        />
+                        <Translation>
+                            {t => (
+                                <input
+                                    onChange={(evt) => {
+                                        this.setState({searchFilter: evt.target.value.toLowerCase()});
+                                    }}
+                                    placeholder={t('search-catalog')}
+                                />
+                            )}
+                        </Translation>
                     </div>
                     {
                         this.state.searchFilter === '' ?
                             this.props.catalog.root.children.map(child_id => renderTree(this.props.dispatch, this.props.catalog, child_id)) :
                             this.props.catalog.root.children.map(child_id => renderFlatTree(this.props.dispatch, this.props.catalog, child_id, filter))
                     }
+                    <EditorModal />
                 </div>
             </Provider>
         );

@@ -23,17 +23,38 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-export default class ModalDialog extends React.Component {
+const ModalTitle = ({title}) => {
+    const {t} = useTranslation();
+    return (
+        <h5>{t(title)}</h5>
+    );
+};
+
+const ModalButton = ({option, onClick}) => {
+    const {t} = useTranslation();
+    return (
+        <div
+            className="button-parent"
+        >
+            <button
+                onClick={() => { onClick(); }}
+            >
+                { t(option.label) }
+            </button>
+        </div>
+
+    );
+}
+
+class ModalDialog extends React.Component {
 
     constructor(props) {
         super(props);
         this.renderBody = this.renderBody.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
-
-        this.state = {
-            open: props.open,
-        };
+        this.state = {};
     }
 
     getTitle() {
@@ -49,16 +70,13 @@ export default class ModalDialog extends React.Component {
 
     renderOption(option) {
         return (
-            <div
-                className="button-parent"
-                key={option.value }
-            >
-                <button
-                    onClick={ () => { this.close(option.value) } }
-                >
-                    { option.label }
-                </button>
-            </div>
+            <ModalButton
+                key={option.value}
+                option={option}
+                onClick={() => {
+                    this.close(option.value);
+                }}
+            />
         );
     }
 
@@ -89,15 +107,13 @@ export default class ModalDialog extends React.Component {
     }
 
     close(response) {
-        this.setState({open: false});
-
         if(this.props.onClose) {
             this.props.onClose(response);
         }
     }
 
     render() {
-        if(!this.state.open) {
+        if (!this.props.open) {
             return false;
         }
 
@@ -105,7 +121,7 @@ export default class ModalDialog extends React.Component {
             <div className='modal-blocker'>
                 <div className='modal-frame'>
                     <div className='modal-title'>
-                        <h3>{ this.getTitle() }</h3>
+                        <ModalTitle title={this.getTitle()} />
                     </div>
                     <div className='modal-body' style={this.BodyProps && this.BodyProps.style}>
                         { this.renderBody() }
@@ -121,3 +137,5 @@ export default class ModalDialog extends React.Component {
 ModalDialog.defaultProps = {
     open: false,
 };
+
+export default ModalDialog;
