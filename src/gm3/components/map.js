@@ -471,6 +471,19 @@ class Map extends React.Component {
 
         if (query.selection.length > 0) {
             const queryGeometry = query.selection[0].geometry;
+            // Since AGS servers don't "intersect" a point with anything, we make a box
+            // Make a 4 pixel (2 pixels each way) box around the point
+            if (queryGeometry.type === 'Point'){
+                const res = this.map.getView().getResolution() * 2;
+                const pt = queryGeometry.coordinates;
+                queryGeometry.type = 'Polygon'
+                queryGeometry.coordinates = [[
+                    [pt[0] + res, pt[1] + res],
+                    [pt[0] + res, pt[1] - res],
+                    [pt[0] - res, pt[1] - res],
+                    [pt[0] - res, pt[1] + res]
+                ]]
+            }
             // make this an E**I geometry.
             const ol_geom = GEOJSON_FORMAT.readGeometry(queryGeometry);
 
