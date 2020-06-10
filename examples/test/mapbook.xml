@@ -4,7 +4,7 @@
         The map sources define the servers of the mapping data.
     =========================================================  -->
     <!-- - - - - - - -  TYPE = "vector"  - - - - - - - - - - - -->
-    <map-source name="vector-sketch"          type="vector"  title="Sketch">
+    <map-source name="vector-sketch"          type="vector"  title="Sketch  &#9673;">
         <layer name="default" selectable="true" status="off">
             <style><![CDATA[
             {
@@ -36,7 +36,7 @@
     </map-source>
 
     <!-- - - - - - - -  TYPE = "geojson"   - - - - - - - - - - -->
-    <map-source name="geojson-polygons"       type="geojson" title="GeoJSON Polygons" minresolution="100" maxresolution="5000">
+    <map-source name="geojson-polygons"       type="geojson" title="GeoJSON Polygons &#9673;" minresolution="100" maxresolution="5000">
         <url>./places.geojson</url>
         <layer name="default">
             <style><![CDATA[
@@ -396,11 +396,11 @@
         </layer>
         <param name="FORMAT" value="image/png"/>
     </map-source>
-    <map-source name="mapserver-polygons"     type="mapserver" title="Mapserver Polygons">
+    <map-source name="mapserver-polygons"     type="mapserver" title="Mapserver Polygons &#9673;">
         <file>./demo/parcels/parcels.map</file>
         <layer name="parcels" status="on" >
             <template name="identify" src="./templates/parcels.html" />
-                    </layer>
+        </layer>
         <param name="FORMAT" value="image/png"/>
     </map-source>
 
@@ -462,30 +462,30 @@
     <catalog>
 
         <group title="Vector with Feature Info" expand="true">
-            <group title="Vector" expand="true">
+            <group title="Vector"        expand="false">
                 <layer src="vector-sketch/default"
                        zoomto="true" upload="true" download="true" clear="true"
                        draw-point="true" draw-line="true" draw-polygon="true"
                        draw-modify="true" draw-remove="true" draw-edit="true" />
             </group>
-            <group title="GeoJSON" expand="false">
+            <group title="GeoJSON"       expand="false">
                 <layer src="geojson-polygons/default"  zoomto="true"  />
             </group>
-            <group title="WFS" expand="true">
-                <layer title="WFS Polygons" src="wfs-polygons/default"/>
+            <group title="WFS"           expand="false">
+                <layer title="WFS Polygons &#9673;" src="wfs-polygons/default"/>
                 <layer title="WFS Test" src="wfs-test/default"/>
             </group>
             <group title="Mapserver WFS" expand="false">
-                <layer title="Mapserver WFS Polygons" src="mapserver-wfs-polygons/parcels"/>
+                <layer title="Mapserver WFS Polygons &#9673;" src="mapserver-wfs-polygons/parcels"/>
             </group>
         </group>
 
-        <group title="Image with Feature Info" expand="false">
+        <group title="Image with Feature Info" expand="true">
             <group title="AGS-Vector" expand="true">
-               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters"/>
-               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads"/>
+               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters" zoomto="true"/>
+               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads" zoomto="true"/>
                 <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
-                <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways"></layer>
+                <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways" zoomto="true"></layer>
             </group>
             <group title="Mapserver" expand="true">
                 <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" >

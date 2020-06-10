@@ -111,6 +111,19 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
 
     app.registerService('search', SearchService, {
         fields: [
+            {type: 'select', label: 'Parcel ZIP',     name: 'ZIP', default: 0,
+                options: [
+                    {label:'No ZIP',value:''},
+                    {label:'55010',value:'55010'},
+                    {label:'55024',value:'55024'},
+                    {label:'55031',value:'55031'},
+                    {label:'55044',value:'55044'},
+                    {label:'55057',value:'55057'},
+                    {label:'55065',value:'55065'},
+                    {label:'55088',value:'55088'},
+                    {label:'55999',value:'55999'}
+                ]
+            },
             {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'},
             {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
             {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3'}
@@ -123,6 +136,9 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
                 message: null
             };
 
+            if (fields['ZIP'] !== undefined && fields['ZIP'] !== '') {
+                    nonEmpty++;
+            }
             if (fields['OWNER_NAME'] !== undefined && fields['OWNER_NAME'] !== '') {
                     nonEmpty++;
             }
