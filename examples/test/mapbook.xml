@@ -4,7 +4,7 @@
         The map sources define the servers of the mapping data.
     =========================================================  -->
     <!-- - - - - - - -  TYPE = "vector"  - - - - - - - - - - - -->
-    <map-source name="vector-sketch"          type="vector"  title="Sketch  &#9673;">
+    <map-source name="vector-sketch"          type="vector"  title="Sketch &#9673;">
         <layer name="default" selectable="true" status="off">
             <style><![CDATA[
             {
@@ -50,7 +50,7 @@
     </map-source>
 
     <!-- - - - - - - -  TYPE = "wfs"   - - - - - - - - - - - - -->
-    <map-source name="wfs-polygons"           type="wfs" >
+    <map-source name="wfs-polygons"           type="wfs" title="Wfs Polygons">
         <url>http://localhost/cgi-bin/mapserv.exe</url>
         <param name="map" value="C:/ms4w/apps/gm3-demo-data/demo/parcels/parcels.map"/>
         <param name="typename" value="ms:parcels"/>
@@ -75,11 +75,11 @@
 
     <!-- https://mrdata.usgs.gov/services/wfs/sgmc2?service=WFS&version=1.1.0&request=GetCapabilities& -->
     <!-- Only valid for EPSG:4326 -->
-    <map-source name="wfs-test"           type="wfs" >
+    <map-source name="wfs-test"           type="wfs" title="WFS Test">
         <url>https://mrdata.usgs.gov/wfs/sgmc2</url>
         <param name="typename" value="ms:Structure"/>
         <param name="srsname"  value="EPSG:4326"/>
-        <layer name="default" title="wfs Test">
+        <layer name="default" >
             <style><![CDATA[
             {
                 "circle-radius": 4,
@@ -97,7 +97,6 @@
             <template name="identify" auto="true" />
         </layer>
     </map-source>
-
 
     <!-- - - - - - - -  TYPE = "mapserver-wfs"   - - - - - - - -->
     <map-source name="mapserver-wfs-polygons" type="mapserver-wfs">
@@ -163,6 +162,17 @@
                 "text-color": "#000000"
             }
             ]]></style>
+            <legend type="html"><![CDATA[
+            <div style='padding-top: 3px; padding-bottom: 5px;'>
+                <div style='vertical-align: middle; display: inline-block;
+                    width: 1em; height: 1em;
+                    background-color: green;
+                    border: solid 2px black;
+                    border-radius: 50%;
+                '></div>
+                Bus Shelters
+            </div>
+            ]]></legend>
             <template name="identify" auto="true" />
         </layer>
     </map-source>
@@ -312,10 +322,22 @@
         <layer name="runways" selectable="true" title="Runways">
             <style><![CDATA[
             {
-                "line-color" : "#010138",
-                "line-width" : 2
+                "line-color" : "red",
+                "line-width" : 2,
+                "fill-color": "#FF4500",
+                "fill-opacity": 0.10
             }
             ]]></style>
+            <legend type="html"><![CDATA[
+            <div style='padding-top: 3px; padding-bottom: 5px;'>
+                <div style='vertical-align: middle; display: inline-block;
+                  width: 2em; height: 0.5em;
+                  background-color: rgb(255, 69, 0, 0.8);
+                  border: solid 2px red;'
+                ></div>
+                <b>Runways</b>
+            </div>
+            ]]></legend>
             <template name="identify" auto="true" />
             <template name="search"><![CDATA[
                 <div class="search-result">
@@ -403,7 +425,6 @@
         </layer>
         <param name="FORMAT" value="image/png"/>
     </map-source>
-
     <map-source name="mapserver-image"        type="mapserver">
         <file>./demo/wms/wms_proxy.map</file>
         <layer name="mncomp">
@@ -412,9 +433,40 @@
     </map-source>
 
     <!-- - - - - - - -  TYPE = "wms"   - - - - - - - - - - - - -->
-    <map-source name="wms-image"              type="wms">
+    <map-source name="wms-image"              type="wms" opacity="0.5">
+    <!-- see https://mesonet.agron.iastate.edu/docs/nexrad_mosaic/ -->
         <url>https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
-        <layer name="nexrad-n0r"/>
+        <layer name="nexrad-n0r">
+            <legend type="html"><![CDATA[
+            <div style='padding-top: 3px; padding-bottom: 5px;'>
+
+                <div class='my-legend'>
+                <div class='legend-title'>Rain</div>
+                    <div class='legend-scale'>
+                      <ul class='legend-labels'>
+                        <li><span style='background:#00ECEC;'></span>Light</li>
+                        <li><span style='background:#01A0F6;'></span></li>
+                        <li><span style='background:#0000F6;'></span></li>
+                        <li><span style='background:#00FF00;'></span></li>
+                        <li><span style='background:#00C800;'></span></li>
+                        <li><span style='background:#009000;'></span></li>
+                        <li><span style='background:#FFFF00;'></span></li>
+                        <li><span style='background:#E7C000;'></span></li>
+                        <li><span style='background:#FF9000;'></span></li>
+                        <li><span style='background:#FF0000;'></span></li>
+                        <li><span style='background:#D60000;'></span></li>
+                        <li><span style='background:#C00000;'></span>Intense</li>
+                        <li><span style='background:#FF00FF;'></span></li>
+                        <li><span style='background:#9955C9;'></span></li>
+                        <li><span style='background:#FFFFFF;'></span></li>
+                      </ul>
+                    </div>
+                    <div class='legend-source'>Source: <a target='_blank' href='https://mesonet.agron.iastate.edu/docs/nexrad_mosaic/'>IEM generated NEXRAD Mosaics</a></div>
+                </div>
+
+            </div>
+            ]]></legend>
+        </layer>
         <param name="FORMAT" value="image/png"/>
         <param name="TRANSPARENT" value="TRUE"/>
         <param name="cross-origin" value="anonymous"/>
@@ -461,51 +513,53 @@
     =========================================================  -->
     <catalog>
 
-        <group title="Vector with Feature Info" expand="true">
-            <group title="Vector"        expand="false">
+        <group title="Vector with Feature Info" expand="false">
+            <group title="Vector"        expand="true">
                 <layer src="vector-sketch/default"
                        zoomto="true" upload="true" download="true" clear="true"
                        draw-point="true" draw-line="true" draw-polygon="true"
                        draw-modify="true" draw-remove="true" draw-edit="true" />
             </group>
-            <group title="GeoJSON"       expand="false">
+            <group title="GeoJSON"       expand="true">
                 <layer src="geojson-polygons/default"  zoomto="true"  />
             </group>
-            <group title="WFS"           expand="false">
-                <layer title="WFS Polygons &#9673;" src="wfs-polygons/default"/>
-                <layer title="WFS Test" src="wfs-test/default"/>
+            <group title="WFS"           expand="true">
+                <layer title="WFS Polygons &#9673;" src="wfs-polygons/default" zoomto="true" />
+                <layer src="wfs-test/default" zoomto="true" legend-toggle="true" show-legend="true" />
             </group>
-            <group title="Mapserver WFS" expand="false">
-                <layer title="Mapserver WFS Polygons &#9673;" src="mapserver-wfs-polygons/parcels"/>
+            <group title="Mapserver WFS" expand="true">
+                <layer title="Mapserver WFS Polygons &#9673;" src="mapserver-wfs-polygons/parcels" zoomto="true" />
             </group>
         </group>
 
-        <group title="Image with Feature Info" expand="true">
+        <group title="Image with Feature Info (inc. vector geom)" expand="true">
             <group title="AGS-Vector" expand="true">
-               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters" zoomto="true"/>
-               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads" zoomto="true"/>
+               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters" />
+               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads"    />
                 <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
-                <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways" zoomto="true"></layer>
+                <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways"></layer>
             </group>
-            <group title="Mapserver" expand="true">
+            <group title="Mapserver"  expand="false">
                 <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" >
                 </layer>
                 <layer src="mapserver-lines/pipelines"    show-legend="true">
                 </layer>
-                <layer src="mapserver-polygons/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10" >
+                <layer src="mapserver-polygons/parcels" metadata="true" legend-toggle="true" tip="Sample land records" >
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
                 </layer>
+            </group>
+            <group title="WMS"        expand="false">
             </group>
         </group>
 
         <group title="Image Only" expand="false">
-            <group title="Mapserver" expand="true">
+            <group title="Mapserver" expand="false">
                 <layer title="Server-Reprojected Mapserver" src="mapserver-image/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
             </group>
             <group title="WMS" expand="true">
-                <layer title="WMS - remote" src="wms-image/nexrad-n0r" />
+                <layer title="WMS - remote" src="wms-image/nexrad-n0r" refresh="300" legend-toggle="true" show-legend="true" fade="true" unfade="true"/>
             </group>
-            <group title="AGS" expand="true">
+            <group title="AGS" expand="false">
                 <layer title="AGS - remote" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
             </group>
             <group title="XYZ" expand="true">
