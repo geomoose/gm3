@@ -72,6 +72,10 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
                 extent: [SW[0], SW[1], NE[0], NE[1]]
             },
             {
+                label: 'St Louis County',
+                extent: [-10408822.5, 5850437.9, -10145210.2, 6244038.3]
+            },
+            {
                 label: 'Dakota County',
                 extent: [-10381354,5545268,-10328765,5608252]
             },

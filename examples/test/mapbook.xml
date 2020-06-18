@@ -75,7 +75,7 @@
 
     <!-- https://mrdata.usgs.gov/services/wfs/sgmc2?service=WFS&version=1.1.0&request=GetCapabilities& -->
     <!-- Only valid for EPSG:4326 -->
-    <map-source name="wfs-test"           type="wfs" title="WFS Test">
+    <map-source name="wfs-test"               type="wfs" title="WFS Test">
         <url>https://mrdata.usgs.gov/wfs/sgmc2</url>
         <param name="typename" value="ms:Structure"/>
         <param name="srsname"  value="EPSG:4326"/>
@@ -143,7 +143,77 @@
        </layer>
     </map-source>
 
-    <!-- - - - - - - -  TYPE = "ags-vector"  - - - - - - - - - -->
+    <!-- - - - - - - -  TYPE = "ags-vector"  (FeatureServer) - - - - - - - - - -->
+    <map-source name="ags-featureserver-points"   type="ags-vector">
+        <url>https://gis.stlouiscountymn.gov/server2/rest/services/GeneralUse/OpenData/FeatureServer/4</url>
+        <param name="spatialRel" value="esriSpatialRelEnvelopeIntersects"/>
+        <layer name="controlpoints"                 title="Control Points">
+            <style><![CDATA[
+            {
+                "circle-radius": 5,
+                "circle-color": "yellow",
+                "circle-opacity": 0.60,
+                "circle-stroke-color": "Black",
+                "circle-stroke-width": 2,
+                "fill-opacity": 0.60,
+                "line-width": 1,
+                "line-opacity": 0.80,
+                "text-field": "{Point_Designation}",
+                "text-offset": [0,-1.5],
+                "text-color": "#000000"
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+    <map-source name="ags-featureserver-lines"    type="ags-vector">
+        <url>https://gis.stlouiscountymn.gov/server2/rest/services/GeneralUse/OpenData/FeatureServer/18</url>
+        <param name="spatialRel" value="esriSpatialRelEnvelopeIntersects"/>
+        <layer name="roadcenterlines"                 title="Road Centerlines">
+        <!-- https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/#layout-symbol-text-allow-overlap -->
+            <style><![CDATA[
+            {
+                "line-color": "green",
+                "line-width": 4,
+                "line-opacity": 0.80,
+                "text-font": ["literal", ["DIN Offc Pro Italic", "Arial Unicode MS Regular"]],
+                "text-size": 18.0,
+                "symbol-placement":"line",
+                "text-rotation-alignment": "auto",
+                "text-field": "{FNAME}",
+                "text-color": "green",
+                "text-halo-width":1,
+                "text-halo-color":"white",
+                "text-halo-blur":0,
+                "text-padding":200
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+    <map-source name="ags-featureserver-polygons" type="ags-vector">
+        <url>https://gis.stlouiscountymn.gov/server2/rest/services/GeneralUse/OpenData/FeatureServer/1</url>
+        <param name="spatialRel" value="esriSpatialRelEnvelopeIntersects"/>
+        <layer name="stlouiscountymn"                 title="St. Louis County">
+            <style><![CDATA[
+            {
+                "circle-radius": 10,
+                "circle-color": "green",
+                "circle-opacity": 0.60,
+                "circle-stroke-color": "Black",
+                "circle-stroke-width": 2,
+                "line-width": 4,
+                "fill-opacity": 0.60,
+                "line-opacity": 0.80,
+                "text-field": "{label}",
+                "text-color": "#000000"
+            }
+            ]]></style>
+            <template name="identify" auto="true" />
+        </layer>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "ags-vector"  (MapServer)- - - - - - - - - -->
     <map-source name="ags-vector-points"      type="ags-vector">
         <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/7</url>
         <param name="spatialRel" value="esriSpatialRelEnvelopeIntersects"/>
@@ -432,7 +502,21 @@
         </layer>
     </map-source>
 
-    <!-- - - - - - - -  TYPE = "wms"   - - - - - - - - - - - - -->
+    <!-- - - - - - - -  TYPE = "wms"  - - - - - - - - - - - - -->
+    <map-source name="wms-feature"            type="wms" title="WMS Polygons">
+    <!-- see https://gis.stlouiscountymn.gov/server2/rest/services/GeneralUse/PublicLands/MapServer -->
+        <url>https://gis.stlouiscountymn.gov/server2/services/GeneralUse/PublicLands/MapServer/WMSServer?</url>
+        <layer name="2">
+            <template name="identify" auto="true" />
+        </layer>
+<!--        <param name="INFO_FORMAT" value ="application/geojson" />  -->
+        <param name="INFO_FORMAT" value ="text/html" />
+        <param name="FORMAT" value="image/png"/>
+        <param name="TRANSPARENT" value="TRUE"/>
+        <param name="cross-origin" value="anonymous"/>
+    </map-source>
+
+    <!-- - - - - - - -  TYPE = "wms" (image only)  - - - - - - - - - - - - -->
     <map-source name="wms-image"              type="wms" opacity="0.5">
     <!-- see https://mesonet.agron.iastate.edu/docs/nexrad_mosaic/ -->
         <url>https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?</url>
@@ -513,32 +597,37 @@
     =========================================================  -->
     <catalog>
 
-        <group title="Vector with Feature Info" expand="false">
-            <group title="Vector"        expand="true">
+        <group title="Vector with Feature Info" expand="true">
+            <group title="Vector"        expand="false">
                 <layer src="vector-sketch/default"
                        zoomto="true" upload="true" download="true" clear="true"
                        draw-point="true" draw-line="true" draw-polygon="true"
                        draw-modify="true" draw-remove="true" draw-edit="true" />
             </group>
-            <group title="GeoJSON"       expand="true">
+            <group title="GeoJSON"       expand="false">
                 <layer src="geojson-polygons/default"  zoomto="true"  />
             </group>
-            <group title="WFS"           expand="true">
+            <group title="WFS"           expand="false">
                 <layer title="WFS Polygons &#9673;" src="wfs-polygons/default" zoomto="true" />
                 <layer src="wfs-test/default" zoomto="true" legend-toggle="true" show-legend="true" />
             </group>
-            <group title="Mapserver WFS" expand="true">
+            <group title="Mapserver WFS" expand="false">
                 <layer title="Mapserver WFS Polygons &#9673;" src="mapserver-wfs-polygons/parcels" zoomto="true" />
+            </group>
+            <group title="AGS FeatureServer" expand="true">
+                <layer title="AGS FeatureServer Points &#9673;"   src="ags-featureserver-points/controlpoints" zoomto="true" />
+                <layer title="AGS FeatureServer Lines &#9673;"    src="ags-featureserver-lines/roadcenterlines" zoomto="true" />
+                <layer title="AGS FeatureServer Polygons &#9673;" src="ags-featureserver-polygons/stlouiscountymn" zoomto="true" />
+            </group>
+            <group title="AGS MapServer" expand="false">
+               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters" />
+               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads"    />
+               <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
+               <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways"></layer>
             </group>
         </group>
 
-        <group title="Image with Feature Info (inc. vector geom)" expand="true">
-            <group title="AGS-Vector" expand="true">
-               <layer title="AGS Vector Points" src="ags-vector-points/BusShelters" />
-               <layer title="AGS Vector Lines"  src="ags-vector-lines/railroads"    />
-                <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
-                <layer title="AGS Vector Polygons" src="ags-vector-polygons/runways"></layer>
-            </group>
+        <group title="Image with Feature Info (inc. vector geom)" expand="false">
             <group title="Mapserver"  expand="false">
                 <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" >
                 </layer>
@@ -549,6 +638,8 @@
                 </layer>
             </group>
             <group title="WMS"        expand="false">
+                <layer src="wms-feature/2"    show-legend="true">
+                </layer>
             </group>
         </group>
 
