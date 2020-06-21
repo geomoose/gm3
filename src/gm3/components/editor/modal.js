@@ -49,6 +49,46 @@ export class EditorModal extends Modal {
         );
     }
 
+    renderInput(attr) {
+        const type = attr.type;
+        const isNumberType = type === 'number' || type === 'range';
+        const defaultValue = attr.default
+            ? attr.default
+            : isNumberType ? 0 : '';
+        const currentValue = this.state.properties[attr.name];
+
+        const props = {
+            type,
+            value: currentValue === undefined ? defaultValue : currentValue,
+            onChange: evt => {
+                const newValue = isNumberType
+                    ? parseFloat(evt.target.value)
+                    : evt.target.value;
+
+                const properties = Object.assign({},
+                    this.state.properties, {
+                        [attr.name]: newValue,
+                    });
+                this.setState({properties});
+            },
+        };
+
+        if (type === 'range' || type === 'number') {
+            ['min', 'max', 'step']
+                .forEach(prop => {
+                    if (attr[prop] !== undefined) {
+                        props[prop] = attr[prop];
+                    }
+                });
+        }
+
+        return (
+            <input
+                {...props}
+            />
+        );
+    }
+
 
     renderBody() {
         return (
@@ -56,16 +96,7 @@ export class EditorModal extends Modal {
                 {this.props.properties.map(attr => (
                     <div key={attr.name} className='editor-attribute'>
                         <label>{attr.label}</label>
-                        <input
-                            value={this.state.properties[attr.name] || ''}
-                            onChange={evt => {
-                                const properties = Object.assign({},
-                                    this.state.properties, {
-                                        [attr.name]: evt.target.value,
-                                    });
-                                this.setState({properties});
-                            }}
-                        />
+                        {this.renderInput(attr)}
                     </div>
                 ))}
             </div>
