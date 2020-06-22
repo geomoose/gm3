@@ -435,10 +435,10 @@ class Map extends React.Component {
         //  types
         const filter_mapping = {
             'like': function(name, value) {
-                return name + ' like ' + fix_like(value);
+                return name + " like '" + fix_like(value) + "'";
             },
             'ilike': function(name, value) {
-                return name + ' like upper(' + fix_like + ')'
+                return "upper(" + name + ") like upper('" + fix_like(value) + "')";
             },
             'eq': function(name, value) {
                 return simple_op('=', name, value);
@@ -471,6 +471,19 @@ class Map extends React.Component {
 
         if (query.selection.length > 0) {
             const queryGeometry = query.selection[0].geometry;
+            // Since AGS servers don't "intersect" a point with anything, we make a box
+            // Make a 4 pixel (2 pixels each way) box around the point
+            if (queryGeometry.type === 'Point'){
+                const res = this.map.getView().getResolution() * 2;
+                const pt = queryGeometry.coordinates;
+                queryGeometry.type = 'Polygon'
+                queryGeometry.coordinates = [[
+                    [pt[0] + res, pt[1] + res],
+                    [pt[0] + res, pt[1] - res],
+                    [pt[0] - res, pt[1] - res],
+                    [pt[0] - res, pt[1] + res]
+                ]]
+            }
             // make this an E**I geometry.
             const ol_geom = GEOJSON_FORMAT.readGeometry(queryGeometry);
 
@@ -485,7 +498,7 @@ class Map extends React.Component {
             // setup the spatial filter.
             query_params.geometryType = geom_type_lookup[queryGeometry.type];
             query_params.geometry = esri_format.writeGeometry(ol_geom);
-            query_params.spatialRel = 'esriSpatialRelIntersects';
+            query_params.spatialRel = 'esriSpatialRelIntersects'; // for lines?:'esriSpatialRelEnvelopeIntersects';
         }
 
         // build the filter fields.
@@ -494,12 +507,7 @@ class Map extends React.Component {
             where_statements.push(filter_mapping[filter.comparitor](filter.name, filter.value));
         }
 
-        const where_str = where_statements.join(' and ');
-
-        query_params.layers = JSON.stringify([{
-            layerId: layer_name,
-            'where': where_str,
-        }]);
+        query_params.where = where_statements.join(' and ');
 
         // get the query service url.
         const query_url = map_source.urls[0] + '/query/';
@@ -512,28 +520,36 @@ class Map extends React.Component {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
                 if(response) {
-                    // convert the esri features to OL features.
-                    const features = esri_format.readFeatures(response);
-                    // be ready with some json.
-                    const json_format = new GeoJSONFormat();
+                    if (response.error && response.error.code != 200){
+                        console.error(response.error);
+                        this.props.store.dispatch(
+                            // true for 'failed', empty array to prevent looping side-effects.
+                            mapActions.resultsForQuery(queryId, queryLayer, true, [])
+                        );
+                    } else {
+                        // convert the esri features to OL features.
+                        const features = esri_format.readFeatures(response);
+                        // be ready with some json.
+                        const json_format = new GeoJSONFormat();
 
-                    // create the features array.
-                    let js_features = [];
-                    for(const feature of features) {
-                        // feature to JSON.
-                        const js_feature = json_format.writeFeatureObject(feature);
-                        // ensure that every feature has a "boundedBy" attribute.
-                        js_feature.properties.boundedBy = feature.getGeometry().getExtent();
-                        // add it to the stack.
-                        js_features.push(js_feature);
+                        // create the features array.
+                        let js_features = [];
+                        for(const feature of features) {
+                            // feature to JSON.
+                            const js_feature = json_format.writeFeatureObject(feature);
+                            // ensure that every feature has a "boundedBy" attribute.
+                            js_feature.properties.boundedBy = feature.getGeometry().getExtent();
+                            // add it to the stack.
+                            js_features.push(js_feature);
+                        }
+
+                        // apply the transforms
+                        js_features = util.transformFeatures(map_source.transforms, js_features);
+
+                        this.props.store.dispatch(
+                            mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
+                        );
                     }
-
-                    // apply the transforms
-                    js_features = util.transformFeatures(map_source.transforms, js_features);
-
-                    this.props.store.dispatch(
-                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                    );
                 }
             },
             error: () => {

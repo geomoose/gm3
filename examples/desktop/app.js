@@ -69,6 +69,31 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     });
 
     app.registerService('identify', IdentifyService);
+
+    app.registerService('search-runways', SearchService, {
+        fields: [
+            {type: 'text', label: 'Name', name: 'Name'},
+        ],
+        searchLayers: ['ags-vector-dc21/runways'],
+        validateFieldValues: function (fields) {
+            let nonEmpty = 0;
+            const validateFieldValuesResult = {
+                valid: true,
+                message: null
+            };
+
+            if (fields['Name'] !== undefined && fields['Name'] !== '') {
+                    nonEmpty++;
+            }
+
+            if (nonEmpty === 0) {
+                validateFieldValuesResult.valid = false;
+                validateFieldValuesResult.message = 'Please complete at least one field.'
+            }
+            return validateFieldValuesResult;
+        }
+    });
+
     app.registerService('search', SearchService, {
         fields: [
             {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'},
