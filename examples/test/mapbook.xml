@@ -564,6 +564,16 @@
         <param name="cross-origin" value="anonymous"/>
     </map-source>
 
+    <!-- - - - - - - -  TYPE = "bing"  - - - - - - - - - - - - -->
+    <map-source name="bing"                   type="bing">
+        <layer name="canvasDark"/>
+        <layer name="canvasLight"/>
+        <layer name="canvasGray"/>
+        <layer name="roads"/>
+        <layer name="aerials"/>
+        <param name="key" value="YourKeyHere"/>
+    </map-source>
+
     <!-- - - - - - - -  TYPE = "xyz"   - - - - - - - - - - - - -->
     <map-source name="openstreetmap"          type="xyz">
         <layer name="osm_mapnik">
@@ -578,18 +588,16 @@
         <url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
         <url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
         <url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-
         <param name="cross-origin" value="anonymous"/>
     </map-source>
-
-    <!-- - - - - - - -  TYPE = "bing"  - - - - - - - - - - - - -->
-    <map-source name="bing"                   type="bing">
-        <layer name="canvasDark"/>
-        <layer name="canvasLight"/>
-        <layer name="canvasGray"/>
-        <layer name="roads"/>
-        <layer name="aerials"/>
-        <param name="key" value=""/>
+    <map-source name="ags-tile"               type="xyz">
+        <layer name="imagery"/>
+        <url>https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}</url>
+    </map-source>
+    <map-source name="wmflabs"                type="xyz">
+        <layer name="hillshade"/>
+        <url>https://api.maptiler.com/tiles/hillshades/{z}/{x}/{y}.png?key=YourKeyHere</url>
+        <param name="cross-origin" value="anonymous"/>
     </map-source>
 
     <!-- =========================================================
@@ -597,7 +605,7 @@
     =========================================================  -->
     <catalog>
 
-        <group title="Vector with Feature Info" expand="true">
+        <group title="Vector with Feature Info" expand="false">
             <group title="Vector"        expand="false">
                 <layer src="vector-sketch/default"
                        zoomto="true" upload="true" download="true" clear="true"
@@ -627,8 +635,8 @@
             </group>
         </group>
 
-        <group title="Image with Feature Info (inc. vector geom)" expand="false">
-            <group title="Mapserver"  expand="false">
+        <group title="Image with Feature Info (inc. vector geom)" expand="true">
+            <group title="Mapserver"  expand="true">
                 <layer src="mapserver-points/parcels_points" legend-toggle="true" show-legend="true" legend="true" title="Mapserver Points" status="off" >
                 </layer>
                 <layer src="mapserver-lines/pipelines"    show-legend="true">
@@ -654,7 +662,11 @@
                 <layer title="AGS - remote" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
             </group>
             <group title="XYZ" expand="true">
-                <layer title="XYZ" src="openstreetmap/osm_mapnik" legend-toggle="true" show-legend="true" legend="true" fade="true" unfade="true">
+                <layer title="XYZ"          src="openstreetmap/osm_mapnik" legend-toggle="true" show-legend="true" legend="true" fade="true" unfade="true">
+                </layer>
+                <layer title="XYZ - AGS"    src="ags-tile/imagery" fade="true" unfade="true">
+                </layer>
+                <layer title="XYZ - hillshade" src="wmflabs/hillshade" fade="true" unfade="true">
                 </layer>
             </group>
             <group title="BING (requires key)" multiple="false" expand="false">
