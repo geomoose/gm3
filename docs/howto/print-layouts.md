@@ -29,7 +29,7 @@ for the PrintModal:
 
 var custom_layouts = [
   {
-    label: 'Landscape Letter',
+    label: 'landscape-letter',
     orientation: 'landscape',
     page: 'letter',
     units: 'in',
@@ -65,7 +65,7 @@ var custom_layouts = [
 <!-- {% endraw %} -->
 
 `custom_layouts` contains:
-* `label` - The name of this layout presented to the user in the Print Preview dialog.
+* `label` - The label present in the language json file (e.g. `en.json`) that is converted to what is presented to the user in the Print Preview dialog. 
 * `orientation` - Page orientation.  One of `'landscape'` or `'portrait`'.
 * `page` - The page size (as supported by [usejsdoc.org]).  e.g. `'letter'`, `'a4'`, ...
 * `units` - The units used to specify the position of elements (e.g. for `x`,`y`,`width`,`height`,`strokeWidth`,...).  Can any units supported by jsDoc including: `'in'`, `'mm'`, `'pt'`.
@@ -76,7 +76,7 @@ The following elements are available:
 * `text` - Puts text on the map.
   * `text` - The content to put on the map.
     Supports [GeoMoose Templates](../templates.md) including a special `{{title}}`
-    mustasche which is the user's inputed title.
+    mustache which is the user's inputed title.
   * `size` - The font size in points.
   * `fontStyle` - `normal`, `italic` or `bold`
   * `font` - Defaults to Arial but could be any common font available to the browser.
