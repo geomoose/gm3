@@ -801,9 +801,9 @@ class Application {
     /**
      * Project a bounding box to web mercator.
      */
-    bboxToMeters(east, south, west, north) {
-        const [minx, miny] = this.lonLatToMeters(east, south);
-        const [maxx, maxy] = this.lonLatToMeters(west, north);
+    bboxToMeters(west, south, east, north) {
+        const [minx, miny] = this.lonLatToMeters(west, south);
+        const [maxx, maxy] = this.lonLatToMeters(east, north);
         return [minx, miny, maxx, maxy];
     }
 };
