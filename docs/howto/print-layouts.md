@@ -29,6 +29,50 @@ for the PrintModal:
 
 var custom_layouts = [
   {
+    label: 'letter-landscape-legend',
+    orientation: 'landscape',
+    page: 'letter',
+    units: 'in',
+    elements: [
+        {
+            type: 'text',
+            size: 18, fontStyle: 'bold',
+            x: .5, y: .70, text: '{{title}}'
+        },
+        {
+            type: 'map',
+            x: .5, y: .75,
+            width: 7, height: 7
+        },
+        {
+            type: 'rect',
+            x: .5, y: .75,
+            width: 7, height: 7,
+            strokeWidth: .01
+        },
+        {
+            type: 'text',
+            x: .5, y: 8, text: 'Printed on {{month}} / {{day}} / {{year}}'
+        },
+        {
+            type: 'text',
+            x: 7.6, y: .9,
+            text: 'Legend',
+        },
+        {
+            type: 'legend',
+            x: 7.61, y: 1.0
+        },
+        {
+            type: 'rect',
+            x: 7.6, y: .75,
+            width: 2.4,
+            height: 7,
+            strokeWidth: .01,
+         }
+    ]
+  },
+  {
     label: 'landscape-letter',
     orientation: 'landscape',
     page: 'letter',
