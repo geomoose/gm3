@@ -32,7 +32,8 @@ import { UI } from '../actionTypes';
 const defaultState = {
     stateId: 0,
     hint: null,
-    action: null
+    action: null,
+    modal: '',
 };
 
 export default function uiReducer(state = defaultState, action) {
@@ -51,6 +52,13 @@ export default function uiReducer(state = defaultState, action) {
             return Object.assign({}, state, {stateId: uuid(), action: action.action});
         case UI.CLEAR_ACTION:
             return Object.assign({}, state, {stateId: uuid(), action: null});
+        case UI.SHOW_MODAL:
+            return Object.assign({},
+                state,
+                {
+                    modal: action.payload,
+                },
+            );
         default:
             return state;
     }

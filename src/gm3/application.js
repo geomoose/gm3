@@ -755,6 +755,10 @@ class Application {
         ReactDOM.render(e, modal_div);
     }
 
+    showModal(modalKey) {
+        this.store.dispatch(uiActions.showModal(modalKey));
+    }
+
     /* Set the view of the map
      *
      * @param view {Object} A view definition containing center and zoom or resolution

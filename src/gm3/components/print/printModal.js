@@ -31,6 +31,7 @@
  * that image is ready.
  */
 import React from 'react';
+import {connect} from 'react-redux';
 import {Translation} from 'react-i18next';
 
 import View from 'ol/View';
@@ -44,6 +45,9 @@ import PrintPreviewImage from './printPreviewImage';
 
 import { getActiveMapSources } from '../../actions/mapSource';
 import { printed } from '../../actions/print';
+import { hideModal } from '../../actions/ui';
+
+import { getLegend } from '../map';
 
 import DefaultLayouts from './printLayouts';
 
@@ -64,7 +68,7 @@ function loadFonts(fontsUrl) {
     }
 }
 
-export default class PrintModal extends Modal {
+export class PrintModal extends Modal {
 
     constructor(props) {
         super(props);
@@ -74,7 +78,6 @@ export default class PrintModal extends Modal {
             },
         };
         this.state = {
-            open: false,
             mapTitle: '',
             layout: 0,
             resolution: 1,
@@ -93,7 +96,8 @@ export default class PrintModal extends Modal {
             // to store the (sometimes) enormous image.
             this.props.store.dispatch(printed());
         }
-        this.setState({open: false});
+
+        this.props.hideModal();
     }
 
     /* Return the title for the dialog. */
@@ -145,6 +149,55 @@ export default class PrintModal extends Modal {
             doc.addImage(def.image_data, def.x, def.y);
         }
 
+    }
+
+    /* Embed legends in the PDF
+     */
+    addLegends(doc, def) {
+        let legends = [];
+        for (const mapSourceName in this.props.mapSources) {
+            const mapSource = this.props.mapSources[mapSourceName];
+            const srcLegends = mapSource.layers
+                // only render legends for layers that are on
+                .filter(layer => layer.on)
+                // convert the layer to a legend def
+                .map(layer => getLegend(mapSource, this.props.mapView, layer.name))
+                // only image layers are supported.
+                .filter(legend => legend.type === 'img')
+                .map(legend => legend.images);
+
+            for (let i = 0, ii = srcLegends.length; i < ii; i++) {
+                legends = legends.concat(srcLegends[i]);
+            }
+        }
+
+        const promises = [];
+        legends.forEach(legendSrc => {
+            const promise = new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    resolve(img);
+                };
+                img.onerror = () => {
+                    reject();
+                };
+                img.src = legendSrc;
+
+            });
+            promises.push(promise);
+        });
+
+        return Promise.all(promises)
+            .then(images => {
+                let offsetY = 0;
+                images.forEach(img => {
+                    this.addImage(doc, {
+                        x: def.x, y: def.y + offsetY,
+                        image_data: img,
+                    });
+                    offsetY += (img.height + 5) / 72;
+                });
+            })
     }
 
     /* Wraps addImage specifically for the map.
@@ -310,6 +363,8 @@ export default class PrintModal extends Modal {
     }
 
     paintPDF(doc, layout) {
+        let promises = [];
+
         // iterate through the elements of the layout
         //  and place them in the document.
         for(const element of layout.elements) {
@@ -327,13 +382,19 @@ export default class PrintModal extends Modal {
                 case 'ellipse':
                     this.addDrawing(doc, element);
                     break;
+                case 'legend':
+                    promises = promises.concat(this.addLegends(doc, element));
+                    break;
                 default:
                     // pass, do nothing.
             }
         }
 
-        // kick it back out to the user.
-        doc.save('print_' + ((new Date()).getTime()) + '.pdf');
+        Promise.all(promises)
+            .then(() => {
+                // kick it back out to the user.
+                doc.save('print_' + ((new Date()).getTime()) + '.pdf');
+            });
     }
 
     renderFooter() {
@@ -483,15 +544,16 @@ export default class PrintModal extends Modal {
         );
 
     }
-
-    render() {
-        if (!this.state.open) {
-            return false;
-        }
-        return super.render();
-    }
 }
 
-PrintModal.defaultProps = {
-    open: true,
+const mapStateToProps = state => ({
+    mapSources: state.mapSources,
+    open: state.ui.modal === 'print',
+    mapView: state.map,
+});
+
+const mapDispatchToProps = {
+    hideModal,
 };
+
+export default connect(mapStateToProps, mapDispatchToProps)(PrintModal);
