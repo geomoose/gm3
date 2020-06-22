@@ -77,14 +77,14 @@ function defineSource(mapSource) {
                     console.error('No "typename" param defined for a WFS layer. This will fail.');
                 }
 
-                const url_params = Object.assign({}, mapSource.params, {
+                const url_params = Object.assign({}, {
                     'srsname': 'EPSG:3857',
                     'outputFormat': output_format,
                     'service': 'WFS',
                     'version': '1.1.0',
                     'request': 'GetFeature',
                     'bbox': extent.concat('EPSG:3857').join(',')
-                });
+                }, mapSource.params);
 
                 return mapSource.urls[0] + '?' + formatUrlParameters(url_params);
             },
