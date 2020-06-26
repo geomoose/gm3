@@ -111,7 +111,7 @@ export class Catalog extends React.Component {
     }
 
     render() {
-        const catalog_classes = 'catalog searchable'
+        const catalog_classes = this.props.showSearch ? 'catalog searchable' : 'catalog';
 
         const filter = (layer) => {
             if(this.state.searchFilter !== '') {
@@ -125,18 +125,20 @@ export class Catalog extends React.Component {
         return (
             <Provider store={this.props.store}>
                 <div className={ catalog_classes }>
-                    <div className='searchbox'>
-                        <Translation>
-                            {t => (
-                                <input
-                                    onChange={(evt) => {
-                                        this.setState({searchFilter: evt.target.value.toLowerCase()});
-                                    }}
-                                    placeholder={t('search-catalog')}
-                                />
-                            )}
-                        </Translation>
-                    </div>
+                    { this.props.showSearch && (
+                        <div className='searchbox'>
+                            <Translation>
+                                {t => (
+                                    <input
+                                        onChange={(evt) => {
+                                            this.setState({searchFilter: evt.target.value.toLowerCase()});
+                                        }}
+                                        placeholder={t('search-catalog')}
+                                    />
+                                )}
+                            </Translation>
+                        </div>
+                    )}
                     {
                         this.state.searchFilter === '' ?
                             this.props.catalog.root.children.map(child_id => renderTree(this.props.dispatch, this.props.catalog, child_id)) :
@@ -150,6 +152,7 @@ export class Catalog extends React.Component {
 }
 
 Catalog.defaultProps = {
+    showSearch: true,
 }
 
 const mapCatalogToProps = function(store) {
