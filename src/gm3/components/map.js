@@ -1398,7 +1398,7 @@ export default connect(mapState, mapDispatch)(withTranslation()(Map));
 export function getLegend(mapSource, mapView, layerName) {
     // see if the layer has a fixed legend.
     for(const layer of mapSource.layers) {
-        if(layer.name === layerName && layer.legend !== null) {
+        if(layer.name === layerName && layer.legend !== undefined && layer.legend !== null) {
             // translate from the store represenation to
             // what's used to render the legend.
             if(layer.legend.type === 'html') {

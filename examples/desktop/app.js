@@ -250,7 +250,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
     app.registerAction('print', function() {
         this.run = function() {
-           print_preview.setState({open: true});
+            app.showModal('print');
         }
     }, {});
 

@@ -47,3 +47,17 @@ export function clearAction() {
         type: UI.CLEAR_ACTION
     };
 }
+
+export function showModal(modalKey) {
+    return {
+        type: UI.SHOW_MODAL,
+        payload: modalKey,
+    };
+}
+
+export function hideModal() {
+    return {
+        type: UI.SHOW_MODAL,
+        payload: '',
+    };
+}
