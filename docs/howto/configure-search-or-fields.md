@@ -130,11 +130,7 @@ Search using the following list: `350010001079, 070030004077, 163030001000, 1600
 
 ## Searching the kitchen sink
 
-This search does the follwoing:
-
- * The user takes input from a single field.
- * The user input is used to search multiple fields.
- * Each of those fields are searched with a "ilike" search. So it will match partials, ignoring case.
+The user is presented with a single input box to enter search terms. The search then looks for those terms from a list of attributes using the "ilike" method (which ignores case and matches partial matches).
 
 ## The code!
 
@@ -171,7 +167,7 @@ This search does the follwoing:
 
 ### Testing in the demo
 
-The following examples can be used to test the functionality in the demo:
+This is implemented in the demo as the "Single field search" tool.  The following search terms can be used to test the functionality:
 
  * `peters`
  * `peters, 237`
