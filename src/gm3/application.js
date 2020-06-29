@@ -28,7 +28,10 @@
  *
  */
 
-import Request from 'reqwest';
+
+const BREAK_ME = 'to _cause_ failure';
+
+import Request from 'reqwest'; // this should fail
 
 import { createStore, combineReducers } from 'redux';
 import * as Proj from 'ol/proj';
