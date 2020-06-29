@@ -407,8 +407,6 @@ class Map extends React.Component {
     agsFeatureQuery(queryId, query, queryLayer) {
         // get the map source
         const ms_name = util.getMapSourceName(queryLayer);
-        const layer_name = util.getLayerName(queryLayer);
-
         const map_source = this.props.mapSources[ms_name];
 
         // if the openlayers layer is not on, this fakes
@@ -435,10 +433,10 @@ class Map extends React.Component {
         //  types
         const filter_mapping = {
             'like': function(name, value) {
-                return name + " like '" + fix_like(value) + "'";
+                return name + ' like \'' + fix_like(value) + '\'';
             },
             'ilike': function(name, value) {
-                return "upper(" + name + ") like upper('" + fix_like(value) + "')";
+                return 'upper(' + name + ') like upper(\'' + fix_like(value) + '\')';
             },
             'eq': function(name, value) {
                 return simple_op('=', name, value);
@@ -498,7 +496,8 @@ class Map extends React.Component {
             // setup the spatial filter.
             query_params.geometryType = geom_type_lookup[queryGeometry.type];
             query_params.geometry = esri_format.writeGeometry(ol_geom);
-            query_params.spatialRel = 'esriSpatialRelIntersects'; // for lines?:'esriSpatialRelEnvelopeIntersects';
+            query_params.spatialRel = 'esriSpatialRelIntersects';
+            // for lines?:'esriSpatialRelEnvelopeIntersects';
         }
 
         // build the filter fields.
@@ -520,7 +519,7 @@ class Map extends React.Component {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
                 if(response) {
-                    if (response.error && response.error.code != 200){
+                    if (response.error && response.error.code !== 200){
                         console.error(response.error);
                         this.props.store.dispatch(
                             // true for 'failed', empty array to prevent looping side-effects.
