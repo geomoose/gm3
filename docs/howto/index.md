@@ -24,6 +24,7 @@
 * [Customizing tabs](./customize-tabs.md)
 * [Adding a disclaimer](./disclaimer.md)
 * [How-to create a custom print layout](./print-layouts.md)
+* [Hide Search in the Catalog](./hide-search-in-catalog.md)
 
 * [Starting a service (incl. at startup)](./start-a-service.md)
 

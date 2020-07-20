@@ -95,14 +95,24 @@ function parseProperties(msXml) {
         const propXmls = propsParent
             .getElementsByTagName('property');
 
+        const propNames = [
+            'name', 'label', 'type', 'default',
+            'min', 'max', 'step',
+        ];
+
         for (let i = 0, ii = propXmls.length; i < ii; i++) {
             const prop = propXmls[i];
-            props.push({
-                name: prop.getAttribute('name'),
-                label: prop.getAttribute('label'),
-                type: prop.getAttribute('type'),
-                default: prop.getAttribute('default'),
-            });
+            const propDef = {};
+
+            for (let p = 0, pp = propNames.length; p < pp; p++) {
+                const propName = propNames[p];
+                const v = prop.getAttribute(propName);
+                if (v !== undefined && v !== null) {
+                    propDef[propName] = prop.getAttribute(propName);
+                }
+            }
+
+            props.push(propDef);
         }
     }
     return props;
