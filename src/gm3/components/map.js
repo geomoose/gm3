@@ -373,9 +373,19 @@ class Map extends React.Component {
                                 featureProjection: map_projection,
                                 dataProjection: query_projection
                             });
-                            js_features = (new GeoJSONFormat()).writeFeaturesObject(features).features;
-                        }
+                            // be ready with some json.
+                            const json_format = new GeoJSONFormat();
 
+                            // create the features array.
+                            for(const feature of features) {
+                                // feature to JSON.
+                                const js_feature = json_format.writeFeatureObject(feature);
+                                // ensure that every feature has a "boundedBy" attribute.
+                                js_feature.properties.boundedBy = feature.getGeometry().getExtent();
+                                // add it to the stack.
+                                js_features.push(js_feature);
+                            }
+                        }
 
                         // apply the transforms
                         js_features = util.transformFeatures(map_source.transforms, js_features);
