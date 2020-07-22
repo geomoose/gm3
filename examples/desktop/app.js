@@ -254,6 +254,13 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         }
     }, {});
 
+    app.add(gm3.components.BookmarkModal, 'bookmark-modal', {});
+    app.registerAction('bookmark', function() {
+        this.run = function() {
+            app.showModal('bookmark');
+        }
+    }, {});
+
     app.registerAction('reload', function() {
         this.run = function() {
             var reload_msg = 'Are you sure you want to start over? All unsaved work will be lost.';
