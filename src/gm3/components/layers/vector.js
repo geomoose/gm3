@@ -105,7 +105,7 @@ function defineSource(mapSource) {
 
                 // the E**I language can get a bit complicated but
                 //  this is the format for a basic BBOX query.
-                const params = {
+                const params = Object.assign({}, {
                     f: 'json',
                     returnGeometry: 'true',
                     spatialRel: 'esriSpatialRelIntersects',
@@ -120,7 +120,7 @@ function defineSource(mapSource) {
                     inSR: 102100, outSR: 102100,
                     outFields: '*',
                     returnIdsOnly: true,
-                };
+                }, mapSource.params);
 
                 // use JSONP to fetch the features.
                 request({
@@ -193,6 +193,9 @@ function defineSource(mapSource) {
                                 }
                             }
                         }
+                    },
+                    error: (response) => {
+                        console.log(response)
                     }
                 });
             },
@@ -295,6 +298,7 @@ export function createLayer(mapSource) {
         source,
         minResolution: mapSource.minresolution,
         maxResolution: mapSource.maxresolution,
+        declutter: true
     };
     const vector_layer = new VectorLayer(opts);
     applyStyle(vector_layer, mapSource);
