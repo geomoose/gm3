@@ -518,13 +518,15 @@ class Map extends React.Component {
 
         query_params.where = where_statements.join(' and ');
 
+        const params = Object.assign({}, query_params, map_source.params);
+
         // get the query service url.
         const query_url = map_source.urls[0] + '/query/';
         util.xhr({
             url: query_url,
             method: 'get',
             type: 'jsonp',
-            data: query_params,
+            data: params,
             success: (response) => {
                 // not all WMS services play nice and will return the
                 //  error message as a 200, so this still needs checked.
