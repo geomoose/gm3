@@ -32,6 +32,7 @@ class BookmarkModal extends Modal {
         return (
             <div>
                 <label>This url can be copied and pasted to make a bookmark:</label>
+                <a href={'' + document.location} target = "_blank" rel="noopener noreferrer"> Map Link</a>
                 <textarea
                     style={{
                         width: '100%',
