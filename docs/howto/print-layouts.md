@@ -29,7 +29,51 @@ for the PrintModal:
 
 var custom_layouts = [
   {
-    label: 'Landscape Letter',
+    label: 'letter-landscape-legend',
+    orientation: 'landscape',
+    page: 'letter',
+    units: 'in',
+    elements: [
+        {
+            type: 'text',
+            size: 18, fontStyle: 'bold',
+            x: .5, y: .70, text: '{{title}}'
+        },
+        {
+            type: 'map',
+            x: .5, y: .75,
+            width: 7, height: 7
+        },
+        {
+            type: 'rect',
+            x: .5, y: .75,
+            width: 7, height: 7,
+            strokeWidth: .01
+        },
+        {
+            type: 'text',
+            x: .5, y: 8, text: 'Printed on {{month}} / {{day}} / {{year}}'
+        },
+        {
+            type: 'text',
+            x: 7.6, y: .9,
+            text: 'Legend',
+        },
+        {
+            type: 'legend',
+            x: 7.61, y: 1.0
+        },
+        {
+            type: 'rect',
+            x: 7.6, y: .75,
+            width: 2.4,
+            height: 7,
+            strokeWidth: .01,
+         }
+    ]
+  },
+  {
+    label: 'landscape-letter',
     orientation: 'landscape',
     page: 'letter',
     units: 'in',
@@ -65,7 +109,7 @@ var custom_layouts = [
 <!-- {% endraw %} -->
 
 `custom_layouts` contains:
-* `label` - The name of this layout presented to the user in the Print Preview dialog.
+* `label` - The label present in the language json file (e.g. `en.json`) that is converted to what is presented to the user in the Print Preview dialog. 
 * `orientation` - Page orientation.  One of `'landscape'` or `'portrait`'.
 * `page` - The page size (as supported by [usejsdoc.org]).  e.g. `'letter'`, `'a4'`, ...
 * `units` - The units used to specify the position of elements (e.g. for `x`,`y`,`width`,`height`,`strokeWidth`,...).  Can any units supported by jsDoc including: `'in'`, `'mm'`, `'pt'`.
@@ -76,7 +120,7 @@ The following elements are available:
 * `text` - Puts text on the map.
   * `text` - The content to put on the map.
     Supports [GeoMoose Templates](../templates.md) including a special `{{title}}`
-    mustasche which is the user's inputed title.
+    mustache which is the user's inputed title.
   * `size` - The font size in points.
   * `fontStyle` - `normal`, `italic` or `bold`
   * `font` - Defaults to Arial but could be any common font available to the browser.

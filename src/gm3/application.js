@@ -31,8 +31,10 @@
 import Request from 'reqwest';
 
 import { createStore, combineReducers } from 'redux';
+
 import * as Proj from 'ol/proj';
 
+import * as ExperimentalApi from './experimental';
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
 import * as uiActions from './actions/ui';
@@ -137,6 +139,12 @@ class Application {
         this.store.subscribe(() => { this.shouldUiUpdate(); });
 
         this.showWarnings = (config.showWarnings === true);
+
+        // import the experimental API.
+        this.experimental = {};
+        for (const fnName in ExperimentalApi) {
+            this.experimental[fnName] = ExperimentalApi[fnName].bind(this);
+        }
     }
 
     registerService(serviceName, serviceClass, options) {
@@ -273,7 +281,6 @@ class Application {
                     this.populateMapbook(response);
                 }
             });
-
         } else if(options.content) {
             // this is just straight mapbook xml
             //  TODO: Maybe it needs parsed?!?
@@ -755,6 +762,10 @@ class Application {
         ReactDOM.render(e, modal_div);
     }
 
+    showModal(modalKey) {
+        this.store.dispatch(uiActions.showModal(modalKey));
+    }
+
     /* Set the view of the map
      *
      * @param view {Object} A view definition containing center and zoom or resolution
@@ -801,9 +812,9 @@ class Application {
     /**
      * Project a bounding box to web mercator.
      */
-    bboxToMeters(east, south, west, north) {
-        const [minx, miny] = this.lonLatToMeters(east, south);
-        const [maxx, maxy] = this.lonLatToMeters(west, north);
+    bboxToMeters(west, south, east, north) {
+        const [minx, miny] = this.lonLatToMeters(west, south);
+        const [maxx, maxy] = this.lonLatToMeters(east, north);
         return [minx, miny, maxx, maxy];
     }
 };

@@ -52,7 +52,7 @@ app.uiUpdate = function(ui) {
 app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     // set the default view.
     app.setView({
-        center: [ -10370351.141856, 5550949.728470501 ],
+        center: app.lonLatToMeters( -93.16, 44.55),
         zoom: 12
     });
 
@@ -192,7 +192,7 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     app.registerAction('findme', FindMeAction);
 
     app.registerAction('fullextent', ZoomToAction, {
-        extent: [-10742765,5398288,-9920914,6310641]
+        extent: app.bboxToMeters(-97.5,43.5, -88.2, 49.2)
     });
 
     app.add(gm3.components.Catalog, 'catalog');
@@ -232,11 +232,11 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         locations:  [
             {
                 label: 'Parcel Boundaries',
-                extent: [-10384071.6,5538681.6,-10356783.6,5563600.1]
+                extent: app.bboxToMeters(-93.3,44.47,-93.0, 44.63)
             },
             {
                 label: 'Dakota County',
-                extent: [-10381354,5545268,-10328765,5608252]
+                extent: app.bboxToMeters(-93.4,44.5,-92.7, 44.91)
             },
             {
                 label: 'Minnesota',
@@ -250,7 +250,14 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
     app.registerAction('print', function() {
         this.run = function() {
-           print_preview.setState({open: true});
+            app.showModal('print');
+        }
+    }, {});
+
+    app.add(gm3.components.BookmarkModal, 'bookmark-modal', {});
+    app.registerAction('bookmark', function() {
+        this.run = function() {
+            app.showModal('bookmark');
         }
     }, {});
 

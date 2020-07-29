@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2020 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,43 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import React from 'react';
+import {connect} from 'react-redux';
+import {showModal} from '../actions/ui';
 
-import { UI } from '../actionTypes';
+import Modal from './modal';
 
-export function setUiHint(hintName) {
-    return {
-        type: UI.HINT, hint: hintName
-    };
-}
-
-export function clearUiHint() {
-    return {
-        type: UI.CLEAR_HINT
-    };
-}
-
-export function runAction(actionName) {
-    return {
-        type: UI.RUN_ACTION, action: actionName
+class BookmarkModal extends Modal {
+    renderBody() {
+        return (
+            <div>
+                <label>This url can be copied and pasted to make a bookmark:</label>
+                <textarea
+                    style={{
+                        width: '100%',
+                        height: '200px',
+                        fontFamily: 'mono',
+                    }}
+                    defaultValue={'' + document.location}
+                />
+            </div>
+        );
     }
 }
 
-export function clearAction() {
-    return {
-        type: UI.CLEAR_ACTION
-    };
-}
+BookmarkModal.defaultProps = {
+    title: 'Bookmark',
+    options: [{
+        value: 'close',
+        label: 'Close',
+    }],
+};
 
-export function showModal(modalKey) {
-    return {
-        type: UI.SHOW_MODAL,
-        payload: modalKey,
-    };
-}
+const mapStateToProps = state => ({
+    open: state.ui.modal === 'bookmark',
+});
 
-export function hideModal() {
-    return {
-        type: UI.SHOW_MODAL,
-        payload: '',
-    };
-}
+const mapDispatchToProps = dispatch => ({
+    onClose: () => {
+        dispatch(showModal(''));
+    },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(BookmarkModal);
