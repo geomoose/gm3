@@ -541,5 +541,6 @@
 
         <tool name="findme" title="Find Me" type="action"/>
         <tool name="reload" title="Start Over" type="action"/>
+        <tool name="bookmark" title="Bookmark" type="action"/>
     </toolbar>
 </mapbook>
