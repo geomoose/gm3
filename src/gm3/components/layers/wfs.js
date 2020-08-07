@@ -71,7 +71,8 @@ const mapFilters = fields => {
 };
 
 export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
-    const geom_field = 'geom';
+    const geom_field = (mapSource.config && mapSource.config['geometry-name']) ?
+        mapSource.config['geometry-name'] : 'geom';
 
     // the internal storage mechanism requires features
     //  returned from the query be stored in 4326 and then
@@ -114,7 +115,12 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
     // the OL formatter requires that the typename and the schema be
     //  broken apart in order to properly format the request.
     // TODO: If this gets used elsewhere, push to a util function.
-    const type_parts = mapSource.params.typename.split(':');
+    // allow the typename to be in params OR config
+    let typename = mapSource.params.typename;
+    if (mapSource.config && mapSource.config.typename) {
+        typename = mapSource.config.typename;
+    }
+    const type_parts = typename.split(':');
     const format_options = {
         srsName: query_projection.getCode(),
         featurePrefix: type_parts[0],
