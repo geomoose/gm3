@@ -536,6 +536,7 @@ class Grid extends React.Component {
         if(query_id) {
             const query = this.props.queries[query_id];
             if(query.progress === 'finished') {
+                const serviceName = query.service;
                 const layer_path = Object.keys(query.results)[0];
                 let layer = null;
                 try {
@@ -545,19 +546,25 @@ class Grid extends React.Component {
                 }
 
                 if(layer !== null) {
+                    const columnTemplate = layer.templates[serviceName + '-grid-columns']
+                        || layer.templates.gridColumns;
+
                     // try to parse the grid columns
-                    if(layer.templates.gridColumns && typeof layer.templates.gridColumns.contents === 'object') {
-                        grid_cols = layer.templates.gridColumns.contents;
+                    if (columnTemplate && typeof columnTemplate.contents === 'object') {
+                        grid_cols = columnTemplate.contents;
                     } else {
                         try {
-                            grid_cols = JSON.parse(layer.templates.gridColumns.contents);
+                            grid_cols = JSON.parse(columnTemplate.contents);
                         } catch(err) {
                             // swallow the error
                         }
                     }
 
-                    if(layer.templates.gridRow) {
-                        grid_row = layer.templates.gridRow.contents;
+                    const rowTemplate = layer.templates[serviceName + '-grid-row']
+                        || layer.templates.gridRow;
+
+                    if (rowTemplate) {
+                        grid_row = rowTemplate.contents;
                     }
 
                     if(grid_cols && grid_row) {

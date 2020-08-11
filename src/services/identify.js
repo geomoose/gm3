@@ -39,6 +39,9 @@ function IdentifyService(Application, options) {
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@identify';
 
+    /** Toggle whether the grid should attempt rendering. */
+    this.showGrid = options.showGrid !== undefined ? options.showGrid : true;
+
     /** Name will be set by the application when the service is registered. */
     this.name = '';
 
@@ -70,6 +73,13 @@ function IdentifyService(Application, options) {
         // get the list of visible layers
         var visible_layers = Application.getQueryableLayers({withTemplate: 'identify'});
 
+        // check which templates should try and load
+        var templates = [this.template];
+        if (this.showGrid) {
+            templates.push('@identify-grid-columns');
+            templates.push('@identify-grid-row');
+        }
+
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
         //  as they are defined in the mapbook.  To perform other types of queries
@@ -77,7 +87,7 @@ function IdentifyService(Application, options) {
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
         if(visible_layers.length > 0) {
-            Application.dispatchQuery(this.name, selection, fields, visible_layers, this.template);
+            Application.dispatchQuery(this.name, selection, fields, visible_layers, templates);
         } else {
             Application.alert('no-identify-layers', 'No layers to identify!');
         }
