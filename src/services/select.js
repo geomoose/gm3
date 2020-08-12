@@ -129,6 +129,8 @@ function SelectService(Application, options) {
             // check which templates should try and load
             var templates = [this.template];
             if(this.showGrid) {
+                templates.push('@select-grid-columns');
+                templates.push('@select-grid-row');
                 templates.push('@gridColumns');
                 templates.push('@gridRow');
             }
