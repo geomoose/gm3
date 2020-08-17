@@ -70,15 +70,15 @@ function IdentifyService(Application, options) {
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        // get the list of visible layers
-        var visible_layers = Application.getQueryableLayers({withTemplate: 'identify'});
-
         // check which templates should try and load
         var templates = [this.template];
         if (this.showGrid) {
             templates.push('@identify-grid-columns');
             templates.push('@identify-grid-row');
         }
+
+        // get the list of visible layers
+        var visible_layers = Application.getQueryableLayers({withTemplate: templates});
 
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
