@@ -29,7 +29,7 @@
  */
 
 
-const BREAK_ME = 'to _cause_ failure';
+const BREAK_ME = 'to _cause_ failure again';
 
 import Request from 'reqwest'; // this should fail
 
