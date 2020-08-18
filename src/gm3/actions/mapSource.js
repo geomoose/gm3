@@ -585,14 +585,30 @@ export function getQueryableLayers(mapSources, filter = {}, options = {}) {
                 template_names = [template_names, ];
             }
 
-            template_filter_pass = false;
+            // this happens, primarily, with grid support where
+            //  a layer may or may not have a template for the super tab
+            //  and a template for the grid.
+            const testOp = filter.anyTemplate
+                ? (a, b) => a || b
+                : (a, b) => a && b;
+
+            // template_filter_pass = false;
             const templates = queryLayer.templates;
-            for (let x = 0, xx = template_names.length; x < xx && !template_filter_pass; x++) {
-                const tpl_name = template_names[x];
-                template_filter_pass = (templates && typeof templates[tpl_name] !== 'undefined');
+            if (templates) {
+                for (let x = 0, xx = template_names.length; x < xx && template_filter_pass; x++) {
+                    const tpl_name = template_names[x];
+                    template_filter_pass = testOp(template_filter_pass, templates[tpl_name] !== undefined);
+                }
+            } else {
+                // no templates means that the filter cannot pass!
+                template_filter_pass = false;
             }
         }
-        return (template_filter_pass && isQueryable(ms, queryLayer) && (!req_visible || isVisible(ms, layer)));
+        return (
+            template_filter_pass
+            && isQueryable(ms, queryLayer)
+            && (!req_visible || isVisible(ms, layer))
+        );
     }
 
     const query_layers = [];
