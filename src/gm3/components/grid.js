@@ -537,46 +537,48 @@ class Grid extends React.Component {
             const query = this.props.queries[query_id];
             if(query.progress === 'finished') {
                 const serviceName = query.service;
-                const layer_path = Object.keys(query.results)[0];
-                let layer = null;
-                try {
-                    layer = getLayerFromPath(this.props.mapSources, layer_path);
-                } catch(err) {
-                    // no layer, no problem.
-                }
+                const paths = Object.keys(query.results);
+                paths.forEach(layerPath => {
+                    let layer = null;
+                    try {
+                        layer = getLayerFromPath(this.props.mapSources, layerPath);
+                    } catch(err) {
+                        // no layer, no problem.
+                    }
 
-                if(layer !== null) {
-                    const columnTemplate = layer.templates[serviceName + '-grid-columns']
-                        || layer.templates.gridColumns;
+                    if(layer !== null) {
+                        const columnTemplate = layer.templates[serviceName + '-grid-columns']
+                            || layer.templates.gridColumns;
 
-                    // try to parse the grid columns
-                    if (columnTemplate && typeof columnTemplate.contents === 'object') {
-                        grid_cols = columnTemplate.contents;
-                    } else {
-                        try {
-                            grid_cols = JSON.parse(columnTemplate.contents);
-                        } catch(err) {
-                            // swallow the error
+                        // try to parse the grid columns
+                        if (columnTemplate && typeof columnTemplate.contents === 'object') {
+                            grid_cols = columnTemplate.contents;
+                        } else {
+                            try {
+                                grid_cols = JSON.parse(columnTemplate.contents);
+                            } catch(err) {
+                                // swallow the error
+                            }
+                        }
+
+                        const rowTemplate = layer.templates[serviceName + '-grid-row']
+                            || layer.templates.gridRow;
+
+                        if (rowTemplate) {
+                            grid_row = rowTemplate.contents;
+                        }
+
+                        if(grid_cols && grid_row) {
+                            // render as a grid.
+                            features = util.matchFeatures(query.results[layerPath], query.filter);
+                            if(query.results[layerPath].length > 0) {
+                                display_table = true;
+                            }
+                        } else {
+                            // console.error(layerPath + ' does not have gridColumns or gridRow templates.');
                         }
                     }
-
-                    const rowTemplate = layer.templates[serviceName + '-grid-row']
-                        || layer.templates.gridRow;
-
-                    if (rowTemplate) {
-                        grid_row = rowTemplate.contents;
-                    }
-
-                    if(grid_cols && grid_row) {
-                        // render as a grid.
-                        features = util.matchFeatures(query.results[layer_path], query.filter);
-                        if(query.results[layer_path].length > 0) {
-                            display_table = true;
-                        }
-                    } else {
-                        // console.error(layer_path + ' does not have gridColumns or gridRow templates.');
-                    }
-                }
+                });
             }
         }
 

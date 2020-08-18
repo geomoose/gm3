@@ -584,24 +584,29 @@ export function getQueryableLayers(mapSources, filter = {}, options = {}) {
             if(typeof template_names === 'string') {
                 template_names = [template_names, ];
             }
+            // clean up the names in case they have the `@` prefix
+            template_names = template_names.map(v => {
+                if (v.indexOf('@') === 0) {
+                    return v.slice(1);
+                }
+                return v;
+            });
 
             // this happens, primarily, with grid support where
             //  a layer may or may not have a template for the super tab
             //  and a template for the grid.
-            const testOp = filter.anyTemplate
+            const testOp = (filter.anyTemplate === undefined || filter.anyTemplate === true)
                 ? (a, b) => a || b
                 : (a, b) => a && b;
 
             // template_filter_pass = false;
             const templates = queryLayer.templates;
+            template_filter_pass = false;
             if (templates) {
-                for (let x = 0, xx = template_names.length; x < xx && template_filter_pass; x++) {
+                for (let x = 0, xx = template_names.length; x < xx; x++) {
                     const tpl_name = template_names[x];
                     template_filter_pass = testOp(template_filter_pass, templates[tpl_name] !== undefined);
                 }
-            } else {
-                // no templates means that the filter cannot pass!
-                template_filter_pass = false;
             }
         }
         return (

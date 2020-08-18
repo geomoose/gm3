@@ -78,10 +78,7 @@ function IdentifyService(Application, options) {
         }
 
         // get the list of visible layers
-        var visible_layers = Application.getQueryableLayers({
-            anyTemplate: true,
-            withTemplate: templates
-        });
+        var visible_layers = Application.getQueryableLayers({withTemplate: templates});
 
         // This will dispatch the query.
         // Application.dispatchQuery is used to query a set of map-sources
