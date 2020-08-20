@@ -604,7 +604,11 @@ class Map extends React.Component {
         if(selection && selection.geometry && selection.geometry.type === 'Point') {
             const coords = selection.geometry.coordinates;
             src.forEachFeatureAtCoordinateDirect(coords, (feature) => {
-                result_features.push(format.writeFeatureObject(feature));
+                const jsonFeature = format.writeFeatureObject(feature);
+                // the temp drawing feature has features set as null
+                if (jsonFeature.properties !== null) {
+                    result_features.push(jsonFeature);
+                }
             });
         }
 

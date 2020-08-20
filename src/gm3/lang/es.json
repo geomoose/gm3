@@ -33,6 +33,7 @@
   "draw-polygon-tip" : "Añadir objeto poligonal",
   "draw-remove-tip" : "Eliminar objetos de la capa",
   "draw-select-label" : "Objetos de:",
+  "empty-properties": "No hay atributos para esta objeto.",
   "end" : "Terminar de",
   "end-drawing" : "Terminar de dibujar",
   "end-select" : "Terminar de seleccionar",
