@@ -31,6 +31,7 @@
 import Request from 'reqwest';
 
 import { createStore, combineReducers } from 'redux';
+import i18next from 'i18next';
 
 import * as Proj from 'ol/proj';
 
@@ -480,20 +481,26 @@ class Application {
                     const features = query.results[path];
                     for(let i = 0, ii = features.length; i < ii; i++) {
                         const feature = features[i];
-                        const properties = Object.keys(feature.properties);
 
                         html_contents += '<div class="result">';
                         html_contents += '<div class="feature-class">'
                         html_contents += layer.label;
                         html_contents += '</div>';
-                        for(let k = 0, kk = properties.length; k < kk; k++) {
-                            const key = properties[k];
-                            if(key !== '_uuid') {
+
+                        const properties = Object.keys(feature.properties || {})
+                            .filter(key => key !== '_uuid');
+
+                        if (properties.length > 0) {
+                            for(let k = 0, kk = properties.length; k < kk; k++) {
+                                const key = properties[k];
                                 const value = feature.properties[key];
                                 html_contents += Mark.up('<b>{{ key }}:</b> {{ value }} <br/>', {
                                     key, value,
                                 }, util.FORMAT_OPTIONS);
                             }
+                        } else {
+                            // no properties
+                            html_contents += '<i>' + i18next.t('empty-properties') + '</i>';
                         }
                         html_contents += '</div>';
                     }

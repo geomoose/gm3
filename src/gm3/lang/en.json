@@ -34,6 +34,7 @@
   "draw-polygon-tip" : "Add a Polygon to the layer",
   "draw-remove-tip" : "Remove a feature from the layer",
   "draw-select-label" : "Feature from:",
+  "empty-properties": "No properties for this feature.",
   "end" : "End",
   "end-drawing" : "End Drawing",
   "end-select" : "End Selection",
