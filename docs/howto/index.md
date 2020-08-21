@@ -31,3 +31,4 @@
 * [Adding a language](./add-a-language.md)
 * [Adding a plugin](./add-a-plugin.md)
 * [Use AGS tiles](./ags-tile-example.md)
+* [Limit the extent and zoom levels of the map](set-maxzoom.md)
