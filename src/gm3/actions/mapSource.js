@@ -70,9 +70,9 @@ export function addLayer(mapSourceName, layer) {
  *
  *  @returns Object containing the params
  */
-function parseParams(msXml) {
+function parseParams(msXml, tagName = 'param') {
     const params_obj = {};
-    const params = msXml.getElementsByTagName('param');
+    const params = msXml.getElementsByTagName(tagName);
     for(let i = 0, ii = params.length; i < ii; i++) {
         const param = params[i];
         params_obj[param.getAttribute('name')] = param.getAttribute('value');
@@ -216,6 +216,7 @@ export function addFromXml(xml, config) {
         layers: [],
         transforms: {},
         params: {},
+        config: {},
         properties: [],
     };
 
@@ -262,6 +263,7 @@ export function addFromXml(xml, config) {
 
     // mix in the params
     Object.assign(map_source.params, parseParams(xml));
+    Object.assign(map_source.config, parseParams(xml, 'config'));
 
     // and lets get some properties
     Object.assign(map_source.properties, parseProperties(xml));

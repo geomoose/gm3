@@ -327,7 +327,7 @@ class Map extends React.Component {
 
         // Ensure all the extra URL params are attached to the
         //  layer.
-        const wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);;
+        const wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);
 
         const is_json_like = (output_format.toLowerCase().indexOf('json') > 0);
 

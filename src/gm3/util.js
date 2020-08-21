@@ -181,14 +181,18 @@ export function getLayerName(path) {
 /** Properly escape and join parameters for a URL
  *
  *  @params {Object} params an object of parameters.
+ *  @params {Array}  stripParams a list of parameters to remove from the object.
  *
  *  @returns {String}
  */
-export function formatUrlParameters(params) {
+export function formatUrlParameters(params, stripParams = []) {
     const formatted_params = [];
     for(const key in params) {
-        const formatted_value = encodeURIComponent(params[key]);
-        formatted_params.push(key + '=' + formatted_value);
+        // ignore any params in stripParams
+        if (stripParams.indexOf(key) <= 0) {
+            const formatted_value = encodeURIComponent(params[key]);
+            formatted_params.push(key + '=' + formatted_value);
+        }
     }
     return formatted_params.join('&');
 }

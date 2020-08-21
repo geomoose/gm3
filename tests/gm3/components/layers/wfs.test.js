@@ -138,4 +138,43 @@ describe('WFS Testing', () => {
         expect(wfs_query_xml).toBe(gone_fancy);
     });
 
+    it('handles an alternative geometry colum (geometry-name param)', () => {
+        const geomQuery = {
+            selection: [{
+                type: 'Feature',
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [
+                        [
+                            [0, 0], [0, 90], [-120, 90], [-120, 0], [0, 0],
+                        ],
+                    ],
+                },
+            }],
+            fields: [],
+            layers: [
+                'vector-parcels/parcels',
+            ],
+        };
+
+        const output_format = 'text/xml; subtype=gml/2.1.2'
+        const queryResults = buildWfsQuery(
+            geomQuery, PARCELS_SRC, new proj.get('EPSG:3857'), output_format);
+
+        expect(queryResults)
+            .toContain('<PropertyName xmlns="http://www.opengis.net/ogc">geom</PropertyName>');
+
+        const geomColumn = 'CustomGeometryColumn';
+        const mapSourceWithGeom = Object.assign({}, PARCELS_SRC, {
+            config: Object.assign({}, PARCELS_SRC.config, {
+                'geometry-name': geomColumn,
+            }),
+        });
+        const customNameResults = buildWfsQuery(
+            geomQuery, mapSourceWithGeom, new proj.get('EPSG:3857'), output_format);
+
+        expect(customNameResults)
+            .toContain('<PropertyName xmlns="http://www.opengis.net/ogc">' + geomColumn + '</PropertyName>');
+    });
+
 });
