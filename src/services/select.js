@@ -91,7 +91,7 @@ function SelectService(Application, options) {
             // ensure that the layer is visible to prevent confusion.
             requireVisible: true,
             // but require it have a select template.
-            withTemplate: ['select', 'select-header']
+            withTemplate: ['select', 'select-header', 'select-grid-columns', 'gridColumns']
         }
     }];
 
@@ -129,6 +129,8 @@ function SelectService(Application, options) {
             // check which templates should try and load
             var templates = [this.template];
             if(this.showGrid) {
+                templates.push('@select-grid-columns');
+                templates.push('@select-grid-row');
                 templates.push('@gridColumns');
                 templates.push('@gridRow');
             }

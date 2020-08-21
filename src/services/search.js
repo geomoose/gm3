@@ -42,6 +42,9 @@ function SearchService(Application, options) {
     /** Template to use for rendering returned features. */
     this.template = options.template ? options.template : '@search';
 
+    /** Toggle whether the grid should attempt rendering. */
+    this.showGrid = options.showGrid !== undefined ? options.showGrid : true;
+
     /** Footer template for rendering before features. */
     this.footerTemplate = options.footerTemplate ? options.footerTemplate : '@search-footer';
 
@@ -111,6 +114,13 @@ function SearchService(Application, options) {
      */
     this.query = function(selection, fields) {
         // This will dispatch the query.
+        // check which templates should try and load
+        var templates = [this.template];
+        if (this.showGrid) {
+            templates.push('@search-grid-columns');
+            templates.push('@search-grid-row');
+        }
+
         // Application.dispatchQuery is used to query a set of map-sources
         //  as they are defined in the mapbook.  To perform other types of queries
         //  it would be necessary to put that code here and then manually tell
@@ -121,7 +131,7 @@ function SearchService(Application, options) {
             selection,
             this.prepareFields(fields),
             this.getSearchLayers(this.searchLayers, fields),
-            this.template
+            templates
         );
     }
 

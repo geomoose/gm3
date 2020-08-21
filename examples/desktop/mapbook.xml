@@ -131,8 +131,10 @@
             </div>
             ]]></template>
 
-            <template name="gridColumns" src="./templates/parcel-columns.json" />
-            <template name="gridRow" src="./templates/parcel-row.html" />
+            <template name="select-grid-columns" src="./templates/parcel-columns.json" />
+            <template name="select-grid-row" src="./templates/parcel-row.html" />
+
+            <template name="identify" src="./templates/parcels.html" />
        </layer>
     </map-source>
 
@@ -167,9 +169,7 @@
 
     <map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
         <file>./demo/parcels/parcels.map</file>
-        <layer name="parcels" status="on" query-as="vector-parcels/parcels">
-            <template name="identify" src="./templates/parcels.html" />
-                    </layer>
+        <layer name="parcels" status="on" query-as="vector-parcels/parcels" />
         <layer name="parcels_points"/>
         <param name="FORMAT" value="image/png"/>
         <!-- this is used only for testing the group-functionality -->
@@ -244,7 +244,7 @@
                 </div>
             ]]></template>
             <template name="select" alias="search"/>
-            <template name="gridColumns"><![CDATA[
+            <template name="select-grid-columns"><![CDATA[
             [
                 {
                     "title": ""
@@ -258,7 +258,7 @@
                 }
             ]
             ]]></template>
-            <template name="gridRow"><![CDATA[
+            <template name="select-grid-row"><![CDATA[
             <tr
               onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
               onmouseleave="app.clearHighlight()"
@@ -302,7 +302,7 @@
                 </div>
             ]]></template>
             <template name="select" alias="search"/>
-            <template name="gridColumns"><![CDATA[
+            <template name="select-grid-columns"><![CDATA[
             [
                 {
                     "title": ""
@@ -316,7 +316,7 @@
                 }
             ]
             ]]></template>
-            <template name="gridRow"><![CDATA[
+            <template name="select-grid-row"><![CDATA[
             <tr
               onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
               onmouseleave="app.clearHighlight()"
@@ -369,7 +369,7 @@
                 </div>
             ]]></template>
             <template name="select" alias="search"/>
-            <template name="gridColumns"><![CDATA[
+            <template name="select-grid-columns"><![CDATA[
             [
                 {
                     "title": ""
@@ -399,7 +399,7 @@
                 }
             ]
             ]]></template>
-            <template name="gridRow"><![CDATA[
+            <template name="select-grid-row"><![CDATA[
             <tr
               onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
               onmouseleave="app.clearHighlight()"
