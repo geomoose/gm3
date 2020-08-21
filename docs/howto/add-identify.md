@@ -59,7 +59,7 @@ generated template, change the template to be:
 
 In the example above, there are a few things to note:
 * Customizing the look of the results is done using HTML syntax
-* GeoMoose substitutes values for references it knows about when encounters `{{ }}`
+* GeoMoose substitutes values for references it knows about when encounters `{{ "{{" }} }}`
 * Referencing the feature's value is done using `properties.COUNTYNAME`, where the `properties` part is from the GeoJSON
 format of the query results (so that is common to evert identify template), and the `COUNTYNAME` is the
 **case-sensitive** attribute name specific to the layer
