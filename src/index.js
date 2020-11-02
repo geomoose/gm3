@@ -91,8 +91,10 @@ function setPublicPath() {
     var distPath = '/';
     for (var i = 0; i < scriptTags.length; i++) {
         var src = scriptTags[i].getAttribute('src');
-        if (src.indexOf('geomoose.js') >= 0 || src.indexOf('geomoose.min.js') >= 0) {
-            distPath = src.split('/').slice(0, -1).join('/');
+        if (src) {
+            if (src.indexOf('geomoose.js') >= 0 || src.indexOf('geomoose.min.js') >= 0) {
+                distPath = src.split('/').slice(0, -1).join('/');
+            }
         }
     }
 
