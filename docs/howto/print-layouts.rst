@@ -67,7 +67,7 @@ The following elements are available:
 
 -  ``text`` - Puts text on the map.
 -  ``text`` - The content to put on the map. Supports `GeoMoose
-   Templates <../templates.md>`__ including a special ``{{title}}``
+   Templates <../templates.rst>`__ including a special ``{{title}}``
    mustache which is the user's inputed title.
 -  ``size`` - The font size in points.
 -  ``fontStyle`` - ``normal``, ``italic`` or ``bold``

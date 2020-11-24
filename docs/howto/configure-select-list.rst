@@ -13,7 +13,7 @@ Add your layers to select
 
 This how-to references both the source and layer for the fire stations
 and parcels datasets. For more information on setting those up in your
-local demo, read the `How-to add a layer <./add-a-layer.md>`__ guide.
+local demo, read the `How-to add a layer <./add-a-layer.rst>`__ guide.
 
 Add your select tool
 --------------------

@@ -9,8 +9,8 @@ docker image for serving the demo data and MapServer.
 Other quickstarts
 -----------------
 
--  `Quickstart for MS4W <./ms4w-quickstart/index.md>`__
--  `For developers on Windows <./install_on_windows.md>`__
+-  `Quickstart for MS4W <./ms4w-quickstart/index.rst>`__
+-  `For developers on Windows <./install_on_windows.rst>`__
 
 Basic requirements
 ------------------

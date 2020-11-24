@@ -121,7 +121,7 @@ The Firestations layer
 
 This section references the ``firestations`` source and
 ``fire_stations`` layer. For more information on setting those up in
-your local demo, read the `How-to add a layer <./add-a-layer.md>`__
+your local demo, read the `How-to add a layer <./add-a-layer.rst>`__
 guide.
 
 Adding identify to Firestations

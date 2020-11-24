@@ -14,4 +14,3 @@ Example:
             enableZoomJump: true
         }
     });
-

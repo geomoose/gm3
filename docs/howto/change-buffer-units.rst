@@ -20,4 +20,3 @@ In ``app.js``:
             defaultUnits: 'm'
         }
     });
-

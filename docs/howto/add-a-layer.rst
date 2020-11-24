@@ -4,7 +4,7 @@ How-to add a layer
 This how-to provides instructions to add the a Firestations layer to the
 GeoMoose demo. These instructions are similar to those found in the
 GeoMoose Workshop. There is another similar how to on `adding a GeoJSON
-file to GeoMoose <./geojson.md>`__.
+file to GeoMoose <./geojson.rst>`__.
 
 Including Firestations from the Demo.
 -------------------------------------
@@ -55,6 +55,6 @@ Add Firestations to the catalog
 Using identify with Firestatations
 ----------------------------------
 
-The `How-to add identify to a layer <./add-identify.md>`__ guide
+The `How-to add identify to a layer <./add-identify.rst>`__ guide
 features the firestations layer. And describes adding identify and how
 identify works.

@@ -88,7 +88,7 @@ function properly:
       drawing tool that should be selected by default.
 
 -  ``fields`` - This is a list of objects that defines the user input
-   fields. See `Input types <input-types.md>`__ for the types of input
+   fields. See `Input types <input-types.rst>`__ for the types of input
    which are available.
 
 The ``title``, ``tools``, and ``fields`` definitions will be used to
