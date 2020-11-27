@@ -1,5 +1,7 @@
-GeoMoose 3 Style Guide
-======================
+.. _style-guide:
+
+Coding Style Guide
+==================
 
 For any and all files
 ---------------------

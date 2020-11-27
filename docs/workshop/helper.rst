@@ -1,3 +1,5 @@
+.. _workshop-helper:
+
 Workshop Helper
 ===============
 

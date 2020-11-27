@@ -1,3 +1,5 @@
+.. _basemap-toggle-plugin
+
 Basemaps Toggle Plugin
 ======================
 

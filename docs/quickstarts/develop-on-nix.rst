@@ -1,16 +1,10 @@
-Quickstart
-==========
+Developer Quickstart for *nix/macOS
+===================================
 
 This is the quickstart to *development* guide. If you are looking for a
 quickstart guide for running GeoMoose then you should look at installing
 one of the GeoMoose examples. This quickstart utilizes the GeoMoose
 docker image for serving the demo data and MapServer.
-
-Other quickstarts
------------------
-
--  `Quickstart for MS4W <./ms4w-quickstart/index.md>`__
--  `For developers on Windows <./install_on_windows.md>`__
 
 Basic requirements
 ------------------

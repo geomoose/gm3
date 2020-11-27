@@ -1,5 +1,9 @@
-GeoMoose Developer Documentation
-================================
+Developer Documentation
+=======================
 
--  `Quickstart for Developers <./quickstart.html>`__
--  `Style Guide for Contributors <./style_guide.html>`__
+.. toctree::
+    :maxdepth: 1
+
+    ./quickstarts/develop-on-nix
+    ./quickstarts/develop-on-windows
+    ./style_guide

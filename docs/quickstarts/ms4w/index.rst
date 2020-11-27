@@ -1,13 +1,7 @@
+.. _quickstart-ms4w:
+
 MS4W Quickstart
 ===============
-
-**TABLE OF CONTENTS** \* `Requirements <#requirements>`__ \*
-`Background <#background>`__ \* `Option 1: Install MS4W + GeoMoose using
-installer <#option-1-install-mapserver-for-windows--geomoose-using-installer-1>`__
-\* `Option 2: Install the GeoMoose software + data
-separately <#option-2-install-the-geomoose-software--data-separately>`__
-\* `Test your local GeoMoose
-application <#test-your-local-geomoose-application>`__
 
 Requirements
 ------------
@@ -28,8 +22,8 @@ package available for download, where one contains the software and the
 other contains the demo data (this is `Option
 2 <#option-2-install-the-geomoose-software--data-separately>`__ below).
 
-Option 1: Install MapServer for Windows + GeoMoose using installer :+1:
-=======================================================================
+Option 1: Install MapServer for Windows + GeoMoose using installer
+------------------------------------------------------------------
 
 MS4W will install the base files required by GeoMoose along with an
 Apache service to actually serve GeoMoose, and you can select GeoMoose
@@ -40,15 +34,15 @@ description of the optional packages listed in the installer on
 `ms4w.com <https://www.geomoose.org/download.html>`__.
 
 .. figure:: ms4w-setup-1.png
-   :alt: ms4w setup screen 1
+    :alt: ms4w setup screen 1
 
-   ms4w setup screen 1
+    ms4w setup screen 1
 
-    :warning: MS4W may occasionally come with an older version of
-    GeoMoose, in which case you can head to `Option
-    2 <#option-2-install-the-geomoose-software--data-separately>`__
-    below to manually install the latest and greatest version for the
-    full Moose experience.
+MS4W may occasionally come with an older version of
+GeoMoose, in which case you can head to `Option
+2 <#option-2-install-the-geomoose-software--data-separately>`__
+below to manually install the latest and greatest version for the
+full Moose experience.
 
 The MS4W installer will prompt for a path. GeoMoose is set up and
 expects to run from the default path (``C:\ms4w\apps\gm3\htdocs\``), so
@@ -90,7 +84,7 @@ You can now test your local GeoMoose application (as
 `below <#test-your-local-geomoose-application>`__).
 
 Option 2: Install the GeoMoose software + data separately
-=========================================================
+---------------------------------------------------------
 
 The following assumes that you already have MS4W installed. You are also
 required to download the following 2 files:
@@ -103,7 +97,7 @@ required to download the following 2 files:
    `here <https://www.geomoose.org/download.html>`__.
 
 Install the GeoMoose Demo Data
-------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Extract the latest ``gm3-demo-data`` file (such as
 ``gm3-demo-data-3.6.0-ms4w.zip``) to the C directory. This will unzip
@@ -115,7 +109,7 @@ mapfiles and shapefiles used to power the GeoMoose examples.
    geomoose extract zip
 
 Install GeoMoose
-----------------
+~~~~~~~~~~~~~~~~
 
 Extract the latest ``gm3-examples`` file (such as
 ``gm3-examples-3.6.1-ms4w.zip``) to the C directory. Everything in it is
@@ -135,7 +129,7 @@ Once extracted, restart the Apache MS4W Service.
    restart windows apache service
 
 Test your local GeoMoose application
-====================================
+------------------------------------
 
 GeoMoose will now show up on the MS4W localhost page under applications
 

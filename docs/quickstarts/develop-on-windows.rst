@@ -1,5 +1,7 @@
-Getting Started with GeoMoose 3 on Windows
-==========================================
+.. _develop-on-windows:
+
+Developer Quickstart for Windows
+================================
 
 1. Install Node with npm
 ------------------------

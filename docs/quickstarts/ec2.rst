@@ -1,5 +1,5 @@
-GeoMoose on EC2 Quickstart
-==========================
+EC2 Quickstart
+==============
 
 Create an Ubuntu Virtual Machine in EC2
 ---------------------------------------

@@ -1,8 +1,10 @@
+.. _input-types:
+
 Input types
 ===========
 
 GeoMoose offers a variety of inputs types to be used with services. (See
-`Services and Actions <actions-and-services.md>`__) for more information
+:doc:`actions-and-services`) for more information
 on services. Each section describes a type of field and provides an
 example.
 

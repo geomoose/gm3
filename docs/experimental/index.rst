@@ -1,5 +1,12 @@
-GeoMoose Experimental APIs
-==========================
+.. _experimental-api:
+
+Experimental APIs
+=================
+
+.. toctree::
+    :maxdepth: 1
+
+    basemap-toggle-plugin
 
 GeoMoose contains an "experimental" API which is used as a testing
 grounds for new improvements. Experimental APIs are meant to be useful,

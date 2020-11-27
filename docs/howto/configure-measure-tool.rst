@@ -17,8 +17,8 @@ Here's the example from the demo:
         });
 
 -  ``pointProjections`` is an array of projection and label definitions,
-   that is defined the same as with the `Coordinate
-   Display <coordinate-display.md>`__. When a user clicks on a point on
+   that is defined the same as with the :doc:`Coordinate
+   Display <coordinate-display>`. When a user clicks on a point on
    the map, the point will be shown in all of the defined projections.
 -  ``initialUnits`` is one of:
 -  ``m`` for meters.
