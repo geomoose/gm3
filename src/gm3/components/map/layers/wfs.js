@@ -28,6 +28,8 @@ import WFSFormat from 'ol/format/WFS';
 import * as ol_filters from 'ol/format/filter';
 import * as proj from 'ol/proj';
 
+import {jsonToFeature} from '../../../util';
+
 function chainFilters(operator, filters) {
     let chained_filters = null;
     if(filters.length > 1) {
@@ -70,9 +72,21 @@ const mapFilters = fields => {
     });
 };
 
+const getTypeName = mapSource => {
+    let typename = mapSource.params.typename;
+    if (mapSource.config && mapSource.config.typename) {
+        typename = mapSource.config.typename;
+    }
+    return typename;
+}
+
+const getGeometryName = mapSource => (
+    (mapSource.config && mapSource.config['geometry-name']) ?
+        mapSource.config['geometry-name'] : 'geom'
+);
+
 export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
-    const geom_field = (mapSource.config && mapSource.config['geometry-name']) ?
-        mapSource.config['geometry-name'] : 'geom';
+    const geom_field = getGeometryName(mapSource);
 
     // the internal storage mechanism requires features
     //  returned from the query be stored in 4326 and then
@@ -114,12 +128,8 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
 
     // the OL formatter requires that the typename and the schema be
     //  broken apart in order to properly format the request.
-    // TODO: If this gets used elsewhere, push to a util function.
-    // allow the typename to be in params OR config
-    let typename = mapSource.params.typename;
-    if (mapSource.config && mapSource.config.typename) {
-        typename = mapSource.config.typename;
-    }
+    const typename = getTypeName(mapSource);
+
     const type_parts = typename.split(':');
     const format_options = {
         srsName: query_projection.getCode(),
@@ -132,4 +142,36 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
     const feature_request = new WFSFormat().writeGetFeature(format_options);
 
     return (new XMLSerializer().serializeToString(feature_request));
+}
+
+export function wfsSaveFeatures(mapSource, mapProjection, inFeatures) {
+    const format = new WFSFormat();
+    const typename = getTypeName(mapSource);
+    const typeParts = typename.split(':');
+    const options = {
+        featureType: typeParts[1],
+        featureNS: 'http://geomoose.org',
+        featurePrefix: typeParts[0],
+        srsName: 'EPSG:3857',
+    };
+
+    const features = inFeatures.map(f => jsonToFeature(f));
+
+    const geomFieldName = getGeometryName(mapSource);
+    features.forEach(f => {
+        /*
+        console.log('feature?', f);
+        console.log('geometry?', f.getGeometry());
+        geom.transform('EPSG:3857', 'EPSG:4326');
+        */
+        const geom = f.getGeometry();
+        f.setGeometryName(geomFieldName);
+        // f.setGeometry(geom);
+    });
+
+    console.log(features[0].getProperties());
+
+    // writeTransaction (inserts, updates, deletes, options)
+    const transaction = format.writeTransaction([], features, [], options);
+    return (new XMLSerializer().serializeToString(transaction));
 }

@@ -54,3 +54,16 @@ export const SELECTION_STYLE = {
     'fill-color': '#91bfdb',
     'fill-opacity': 0.25,
 };
+
+export const EDIT_STYLE = {
+    'circle-radius': 10,
+    'circle-color': '#d53e4f',
+    'circle-stroke-color': '#d53e4f',
+    'line-color': '#d53e4f',
+    'line-width': 6,
+    'line-opacity': 0.80,
+    'fill-color': '#d53e4f33',
+    'fill-opacity': 0.25,
+};
+
+export const EDIT_LAYER_NAME = 'edit-temp';

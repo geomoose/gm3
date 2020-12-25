@@ -27,7 +27,7 @@
  *
  */
 
-import { transformProperties, formatUrlParameters, requEstimator } from '../../util';
+import { transformProperties, joinUrl, requEstimator } from '../../../util';
 
 import GML2Format from 'ol/format/GML2';
 import GeoJSONFormat from 'ol/format/GeoJSON';
@@ -36,6 +36,8 @@ import { tile, bbox } from 'ol/loadingstrategy';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { createXYZ } from 'ol/tilegrid';
+import {getEditStyle} from './edit';
+import {EDIT_LAYER_NAME} from '../../../defaults';
 
 // WARNING! This is a monkey patch in order to
 // allow rendering labels outside of a polygon's
@@ -86,7 +88,7 @@ function defineSource(mapSource) {
                     'bbox': extent.concat('EPSG:3857').join(',')
                 }, mapSource.params);
 
-                return mapSource.urls[0] + '?' + formatUrlParameters(url_params);
+                return joinUrl(mapSource.urls[0], url_params);
             },
             strategy: bbox
         };
@@ -212,6 +214,12 @@ function defineSource(mapSource) {
  *
  */
 export function applyStyle(vectorLayer, mapSource) {
+    // if this is a special-case layer, handle it.
+    if (mapSource.name === EDIT_LAYER_NAME) {
+        vectorLayer.setStyle(getEditStyle(mapSource.layers[0].style));
+        return;
+    }
+
     const layers = [];
     for(const layer of mapSource.layers) {
         if(layer.on === true) {
@@ -264,7 +272,6 @@ export function applyStyle(vectorLayer, mapSource) {
             }
         }
     }
-
 
     applyStyleFunction(vectorLayer, {
         'version': 8,

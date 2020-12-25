@@ -188,3 +188,17 @@ export function setSelectionBuffer(distance, units) {
         units,
     };
 }
+
+/* Set the edit source, which is a hint as to where
+ * the current editing features originated from.
+ *
+ * @param mapSource {String} The map-source name
+ *
+ * @return action definition.
+ */
+export function setEditSource(mapSource) {
+    return {
+        type: MAP.SET_EDIT_SOURCE,
+        mapSource,
+    };
+}

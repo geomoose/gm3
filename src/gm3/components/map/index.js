@@ -37,12 +37,12 @@ import { withTranslation } from 'react-i18next';
 import uuid from 'uuid';
 import md5 from 'md5/md5';
 
-import * as mapSourceActions from '../actions/mapSource';
-import * as mapActions from '../actions/map';
-import {setEditFeature} from '../actions/edit';
+import * as mapSourceActions from '../../actions/mapSource';
+import * as mapActions from '../../actions/map';
+import {setEditFeature} from '../../actions/edit';
 
-import * as util from '../util';
-import * as jsts from '../jsts';
+import * as util from '../../util';
+import * as jsts from '../../jsts';
 
 import GeoJSONFormat from 'ol/format/GeoJSON';
 import EsriJSONFormat from 'ol/format/EsriJSON';
@@ -79,9 +79,12 @@ import * as bingLayer from './layers/bing';
 import * as usngLayer from './layers/usng';
 
 import { buildWfsQuery } from './layers/wfs';
+import {EDIT_LAYER_NAME} from '../../defaults';
 
 import AttributionDisplay from './attribution-display';
 import JumpToZoom from './jump-to-zoom';
+
+import ContextControls from './context-controls';
 
 function getControls(mapConfig) {
     const controls = [];
@@ -984,7 +987,7 @@ class Map extends React.Component {
         button.innerHTML = '<i class="stop tool"></i> ' + tool_desc;
         // when the button is clicked, stop drawing.
         button.onclick = () => {
-            this.props.store.dispatch(mapActions.changeTool(null));
+            this.props.changeTool(null);
 
             if (this.props.serviceName) {
             }
@@ -1048,7 +1051,7 @@ class Map extends React.Component {
         if(type !== null) {
             // add a "stop" button to the map, this provides
             //  clarity to the user as to what interaction is currently active.
-            this.createStopTool(type);
+            // this.createStopTool(type);
 
             // switch to the new drawing tool.
             if(type === 'Select') {
@@ -1093,11 +1096,33 @@ class Map extends React.Component {
                     // clear the selected features from the tool.
                     this.drawTool.getFeatures().clear();
                 });
-            } else if(type === 'Modify') {
+            } else if (type === 'Modify') {
+                this.drawTool = new olSelectInteraction({
+                    layers: [this.olLayers[map_source_name]],
+                    style: null,
+                });
+
+                this.drawTool.on('select', evt => {
+                    // tell other tools where this feature originated.
+                    this.props.setEditSource(map_source_name);
+
+                    // set the features of the editing layer
+                    //  to the selected feature.
+                    this.props.setFeatures(
+                        EDIT_LAYER_NAME,
+                        [GEOJSON_FORMAT.writeFeatureObject(evt.selected[0]),],
+                        true
+                    );
+
+                    // unset the edit-selection tool
+                    this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
+                });
+            } else if(type === '_Modify') {
                 const features = source.getFeatures();
                 this.drawTool = new olModifyInteraction({
                     features: new olCollection(features),
                 });
+                /*
 
                 if(is_selection) {
                     this.drawTool.on('modifyend', (evt) => {
@@ -1120,6 +1145,7 @@ class Map extends React.Component {
                         }
                     });
                 }
+                */
             } else {
                 const drawOptions = {
                     source,
@@ -1196,7 +1222,7 @@ class Map extends React.Component {
         }
 
         // remove the stop tool from the map
-        this.removeStopTool();
+        // this.removeStopTool();
     }
 
     /** This is a hack for OpenLayers. It makes sure the map is
@@ -1284,7 +1310,6 @@ class Map extends React.Component {
             if (interactionType !== prevProps.mapView.interactionType
                || this.props.mapView.activeSource !== prevProps.mapView.activeSource
                || interactionType !== this.currentInteraction) {
-                // console.log('Change to ', nextState.mapView.interaction, ' interaction.');
                 // "null" refers to the selection layer, "true" means only one feature
                 //   at a time.
                 const is_selection = (this.props.mapView.activeSource === null);
@@ -1350,7 +1375,20 @@ class Map extends React.Component {
             >
                 <AttributionDisplay store={this.props.store} />
                 <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
-                {enableZoomJump && <JumpToZoom store={this.props.store} />}
+
+                <div className="map-tools">
+                    {enableZoomJump && <JumpToZoom store={this.props.store} />}
+
+                    <ContextControls
+                        saveFeature={this.props.saveFeature}
+                        editSource={this.props.mapView.editSource}
+                        olLayers={this.olLayers}
+                        setFeatures={this.props.setFeatures}
+                        changeTool={this.props.changeTool}
+                        interactionType={this.props.mapView.interactionType}
+                        activeSource={this.props.mapView.activeSource}
+                    />
+                </div>
             </div>
         )
     }
@@ -1376,6 +1414,9 @@ function mapState(state) {
 
 function mapDispatch(dispatch) {
     return {
+        changeTool: (toolName, opt) => {
+            dispatch(mapActions.changeTool(toolName, opt));
+        },
         finishQuery: (queryId) => {
             dispatch(mapActions.finishQuery(queryId));
         },
@@ -1388,15 +1429,19 @@ function mapDispatch(dispatch) {
                 dispatch(mapActions.addSelectionFeature(feature));
             });
         },
-        setFeatures: (mapSourceName, features) => {
+        setFeatures: (mapSourceName, features, copy = false) => {
             dispatch(mapSourceActions.clearFeatures(mapSourceName));
-            dispatch(mapSourceActions.addFeatures(mapSourceName, features));
+            dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy));
         },
         zoomToResults: (query) => {
             const extent = util.getExtentForQuery(query.results);
             if (extent) {
                 dispatch(mapActions.zoomToExtent(extent));
             }
+        },
+        setEditSource: src => dispatch(mapActions.setEditSource(src)),
+        saveFeature: (src, feature) => {
+            dispatch(mapSourceActions.saveFeature(src, feature));
         },
     };
 }

@@ -42,7 +42,9 @@
 .icon.legend, .icon.up, .icon.down, .icon.edit,
 .icon.fade, .icon.unfade, .icon.metadata,
 .icon.sort, .icon.remove, .icon.filter,
-.icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox {
+.icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox,
+.icon.save, .icon.cancel, .icon.undo, .icon.stop
+{
     .fa;
     font-size: @icon-size/1;
 }
@@ -219,5 +221,29 @@
 .icon.buffer {
     &:before {
         content: "\e0bb";
+    }
+}
+
+.icon.save {
+    &:before {
+        content: @fa-var-check;
+    }
+}
+
+.icon.cancel {
+    &:before {
+        content: @fa-var-ban;
+    }
+}
+
+.icon.undo {
+    &:before {
+        content: @fa-var-undo;
+    }
+}
+
+.icon.stop {
+    &:before {
+        content: @fa-var-stop;
     }
 }
