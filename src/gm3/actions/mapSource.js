@@ -26,7 +26,10 @@
  *
  */
 
+import {get as getProj} from 'ol/proj';
+
 import { MAPSOURCE } from '../actionTypes';
+import {wfsSaveFeatures} from '../components/map/layers/wfs';
 
 import * as util from '../util';
 
@@ -218,6 +221,7 @@ export function addFromXml(xml, config) {
         params: {},
         config: {},
         properties: [],
+        idProperty: xml.getAttribute('id-property') || '_uuid',
     };
 
     // handle setting up the zIndex
@@ -667,10 +671,10 @@ export function setRefresh(mapSourceName, refreshSeconds) {
     }
 }
 
-export function addFeatures(mapSourceName, features) {
+export function addFeatures(mapSourceName, features, copy = false) {
     return {
         type: MAPSOURCE.ADD_FEATURES,
-        mapSourceName, features
+        mapSourceName, features, copy
     };
 }
 
@@ -700,10 +704,10 @@ export function removeFeature(mapSourceName, id) {
 
 /* Modify a feature's geomtery
  */
-export function modifyFeatureGeometry(mapSourceName, id, geometry) {
+export function modifyFeatureGeometry(mapSourceName, id, geometry, idProp = 'uuid') {
     return {
         type: MAPSOURCE.MODIFY_GEOMETRY,
-        mapSourceName, id, geometry
+        mapSourceName, id, geometry, idProp,
     };
 }
 
@@ -788,5 +792,61 @@ export function setLayerVisibility(mapSourceName, layerName, on) {
         layerName,
         mapSourceName,
         on
+    };
+}
+
+const cleanFeature = feature => {
+    const newProps = Object.assign({}, feature.properties);
+    delete newProps['boundedBy'];
+    return Object.assign({},
+        feature,
+        {
+            properties: newProps,
+        },
+    );
+};
+
+/**
+ * Save a feature
+ *
+ * Updates both the geometry and the properties.
+ *
+ */
+export function saveFeature(mapSourceName, feature) {
+    return (dispatch, getState) => {
+        const mapSource = getState().mapSources[mapSourceName];
+        if (mapSource) {
+            const idProp = mapSource.idProperty;
+            if (mapSource.type === 'vector') {
+                const id = feature.properties[idProp];
+
+                // if this is a client side layer then just return
+                //  the standard change events
+                dispatch(
+                    modifyFeatureGeometry(mapSourceName, id, feature.geometry, idProp)
+                );
+
+                // update the properties of the feature
+                const filter = {};
+                filter[idProp] = id;
+                dispatch(changeFeatures(mapSourceName, filter, feature.properties));
+            } else if (mapSource.type === 'wfs') {
+                const projection = getProj('EPSG:3857');
+                const features = [cleanFeature(feature)];
+                const changeRequest = wfsSaveFeatures(mapSource, projection, features);
+
+                fetch(mapSource.urls[0] + '', {
+                    method: 'POST',
+                    body: changeRequest,
+                })
+                    .then(r => r.text())
+                    .then(text => {
+                        console.log('RESPONSE', text);
+                        //dispatch(refreshLayer(mapSourceName));
+                    });
+            } else {
+                console.error(`${mapSource.type} sources do not support saving.`);
+            }
+        }
     };
 }

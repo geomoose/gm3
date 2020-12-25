@@ -30,7 +30,8 @@
 
 import Request from 'reqwest';
 
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import i18next from 'i18next';
 
 import * as Proj from 'ol/proj';
@@ -70,7 +71,7 @@ import Mark from 'markup-js';
 import * as util from './util';
 
 import i18nConfigure from './i18n';
-import { HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
+import { EDIT_LAYER_NAME, EDIT_STYLE, HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
 
 function hydrateConfig(userConfig) {
     const config = Object.assign({}, userConfig);
@@ -117,7 +118,7 @@ class Application {
 
         i18nConfigure(userConfig.lang || {});
 
-        register(proj4);
+        // register(proj4);
 
         // TODO: Combine Reducers here
         this.store = createStore(combineReducers({
@@ -131,7 +132,7 @@ class Application {
             'print': printReducer,
             'config': configReducer,
             'editor': editorReducer,
-        }));
+        }), applyMiddleware(thunk));
 
         this.store.dispatch(setConfig(config));
 
@@ -215,7 +216,7 @@ class Application {
         }));
     }
 
-    configureSelectionLayer(selectionStyle) {
+    configureSelectionLayer(selectionStyle, editStyle) {
         // add a layer that listens for changes
         //  to the query results.  This hs
         this.store.dispatch(mapSourceActions.add({
@@ -243,10 +244,33 @@ class Application {
             style: selection_style,
             filter: null,
         }));
+
+        // temproary layer for editing.
+        this.store.dispatch(mapSourceActions.add({
+            name: EDIT_LAYER_NAME,
+            urls: [],
+            type: 'vector',
+            opacity: 1.0,
+            queryable: false,
+            refresh: null,
+            layers: [],
+            options: {
+                'always-on': true,
+            },
+            params: {},
+            zIndex: 200003,
+        }));
+
+        this.store.dispatch(mapSourceActions.addLayer(EDIT_LAYER_NAME, {
+            name: EDIT_LAYER_NAME,
+            on: true,
+            style: Object.assign({}, EDIT_STYLE, editStyle),
+            filter: null,
+        }));
     }
 
     populateMapbook(mapbookXml) {
-        this.configureSelectionLayer(this.config.selectionStyle);
+        this.configureSelectionLayer(this.config.selectionStyle, this.config.editStyle);
         this.configureResultsLayer(this.config.resultsStyle);
 
         // load the map-sources

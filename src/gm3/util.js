@@ -519,6 +519,14 @@ export function jsonToGeom(geom) {
     return GEOJSON_FORMAT.readGeometry(geom);
 }
 
+export function featureToJson(feature) {
+    return GEOJSON_FORMAT.writeFeatureObject(feature);
+}
+
+export function jsonToFeature(feature) {
+    return GEOJSON_FORMAT.readFeature(feature);
+}
+
 const EQUIVALENT_METERS = {
     'ft': 0.3048,
     'yd': 0.9144,
@@ -799,4 +807,20 @@ export function getScale(resolution, projection) {
     const dpi = 25.4 / 0.28;
     const inchesPerMeter = 39.37;
     return resolution * mpu * inchesPerMeter * dpi;
+}
+
+/**
+ * Ensure there is no funny business joining a URL to its parameters.
+ *
+ * @param url - The URL
+ * @param params - GET parameters for the URL
+ *
+ * @returns String. The join URL and paramaters.
+ */
+export function joinUrl(url, params) {
+    let r = url;
+    if (url.substring(url.length - 1) !== '?') {
+        r += '?';
+    }
+    return r + formatUrlParameters(params);
 }

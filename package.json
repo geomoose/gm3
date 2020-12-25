@@ -102,16 +102,15 @@
     "react-redux": "^5.0.7",
     "react-resize-detector": "^4.2.1",
     "redux": "^3.7.2",
+    "redux-thunk": "^2.3.0",
     "reqwest": "^2.0.5",
     "uglifyjs-webpack-plugin": "^1.2.4",
+    "usng-map-collar": "^1.0.1",
     "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
     "uuid": "^3.2.1",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.11.2",
     "whatwg-fetch": "^3.0.0"
-  },
-  "dependencies": {
-    "usng-map-collar": "^1.0.1"
   }
 }

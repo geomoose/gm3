@@ -26,7 +26,7 @@
  *
  */
 
-import * as util from '../../util';
+import * as util from '../../../util';
 import Image from 'ol/layer/Image';
 import ImageWMS from 'ol/source/ImageWMS';
 import * as proj from 'ol/proj';

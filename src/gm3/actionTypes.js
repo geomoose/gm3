@@ -90,6 +90,8 @@ export const MAP = {
 
     ADD_FILTER: 'MAP_ADD_FILTER',
     REMOVE_FILTER: 'MAP_REMOVE_FILTER',
+
+    SET_EDIT_SOURCE: 'MAP_SET_EDIT_SOURCE',
 };
 
 export const TOOLBAR = {

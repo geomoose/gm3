@@ -95,7 +95,7 @@ function changeMapSourceFeatures(state, action) {
     switch(action.type) {
         case MAPSOURCE.ADD_FEATURES:
             // add an ID to the features
-            for(let x = 0, xx = action.features.length; x < xx; x++) {
+            for(let x = 0, xx = action.features.length; !action.copy && x < xx; x++) {
                 const id_mixin = {};
                 id_mixin[id_prop] = uuid();
                 action.features[x].properties = Object.assign({},
