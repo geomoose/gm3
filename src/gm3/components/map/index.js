@@ -66,7 +66,6 @@ import olDrawInteraction, {createBox} from 'ol/interaction/Draw';
 import olModifyInteraction from 'ol/interaction/Modify';
 import * as olEventConditions from 'ol/events/condition';
 
-import olZoomControl from 'ol/control/Zoom';
 import olRotateControl from 'ol/control/Rotate';
 
 
@@ -88,9 +87,6 @@ import ContextControls from './context-controls';
 
 function getControls(mapConfig) {
     const controls = [];
-    if (mapConfig.showZoom !== false) {
-        controls.push(new olZoomControl());
-    }
     if (mapConfig.allowRotate !== false) {
         controls.push(new olRotateControl());
     }
@@ -966,57 +962,6 @@ class Map extends React.Component {
         this.refreshMapSources();
     }
 
-    /* Add a "stop" tool to the map.
-     *
-     * @param type The type of drawing tool.
-     *
-     */
-    createStopTool(type) {
-        // "translate" a description of the tool
-        let tool_desc = this.props.t(type === 'Select' ? 'end-select' : 'end-drawing');
-        if (this.props.serviceName
-            && this.props.services[this.props.serviceName]
-        ) {
-            const title = this.props.services[this.props.serviceName].title;
-            tool_desc = this.props.t('end') + ' ' + this.props.t(title);
-        }
-
-        // yikes this is super not-reacty.
-        // But it's necessary to bridge the gap to open layers.
-        const button = document.createElement('button');
-        button.innerHTML = '<i class="stop tool"></i> ' + tool_desc;
-        // when the button is clicked, stop drawing.
-        button.onclick = () => {
-            this.props.changeTool(null);
-
-            if (this.props.serviceName) {
-            }
-        };
-
-        // create a wrapper div that places the button in the map
-        const elem = document.createElement('div');
-        elem.className = 'stop-tool ol-unselectable ol-control';
-        elem.appendChild(button);
-
-        // this creates the actual OL controls and adds it to the map
-        this.stopTool = new olControl({
-            element: elem
-        });
-        this.map.addControl(this.stopTool);
-    }
-
-    /* Remove the stop tool from the map.
-     *
-     */
-    removeStopTool() {
-        if(this.stopTool) {
-            // remove it from the map
-            this.map.removeControl(this.stopTool);
-            // set it to null.
-            this.stopTool = null;
-        }
-    }
-
     /** Switch the drawing tool.
      *
      *  @param type The type of drawing tool (Point,LineString,Polygon)
@@ -1049,10 +994,6 @@ class Map extends React.Component {
 
         // "null" interaction mean no more drawing.
         if(type !== null) {
-            // add a "stop" button to the map, this provides
-            //  clarity to the user as to what interaction is currently active.
-            // this.createStopTool(type);
-
             // switch to the new drawing tool.
             if(type === 'Select') {
                 this.drawTool = new olSelectInteraction({
@@ -1110,7 +1051,7 @@ class Map extends React.Component {
                     //  to the selected feature.
                     this.props.setFeatures(
                         EDIT_LAYER_NAME,
-                        [GEOJSON_FORMAT.writeFeatureObject(evt.selected[0]),],
+                        [GEOJSON_FORMAT.writeFeatureObject(evt.selected[0]), ],
                         true
                     );
 
@@ -1220,9 +1161,6 @@ class Map extends React.Component {
             // and the current interaction
             this.currentInteraction = null;
         }
-
-        // remove the stop tool from the map
-        // this.removeStopTool();
     }
 
     /** This is a hack for OpenLayers. It makes sure the map is
@@ -1361,10 +1299,9 @@ class Map extends React.Component {
             }, 250);
         }
 
-        const enableZoomJump = (
-            this.props.config &&
-            this.props.config.enableZoomJump === true
-        );
+        const config = this.props.config || {};
+
+        const enableZoomJump = config.enableZoomJump === true
 
         return (
             <div
@@ -1387,6 +1324,9 @@ class Map extends React.Component {
                         changeTool={this.props.changeTool}
                         interactionType={this.props.mapView.interactionType}
                         activeSource={this.props.mapView.activeSource}
+                        setZoom={this.props.setZoom}
+                        zoom={this.props.mapView.zoom}
+                        showZoom={config.showZoom === true}
                     />
                 </div>
             </div>
@@ -1443,6 +1383,7 @@ function mapDispatch(dispatch) {
         saveFeature: (src, feature) => {
             dispatch(mapSourceActions.saveFeature(src, feature));
         },
+        setZoom: z => dispatch(mapActions.setView({zoom: z})),
     };
 }
 
