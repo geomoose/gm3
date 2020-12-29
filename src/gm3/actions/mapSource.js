@@ -795,6 +795,13 @@ export function setLayerVisibility(mapSourceName, layerName, on) {
     };
 }
 
+export function reloadSource(mapSourceName) {
+    return {
+        type: MAPSOURCE.RELOAD,
+        mapSourceName,
+    };
+}
+
 const cleanFeature = feature => {
     const newProps = Object.assign({}, feature.properties);
     delete newProps['boundedBy'];
@@ -841,8 +848,9 @@ export function saveFeature(mapSourceName, feature) {
                 })
                     .then(r => r.text())
                     .then(text => {
-                        console.log('RESPONSE', text);
-                        //dispatch(refreshLayer(mapSourceName));
+                        // TODO: The response should be parsed for exceptions
+                        //       and reported to the user.
+                        dispatch(reloadSource(mapSourceName));
                     });
             } else {
                 console.error(`${mapSource.type} sources do not support saving.`);
