@@ -120,15 +120,27 @@ const StopControl = ({changeTool}) => {
     );
 }
 
-const ContextControls = ({changeTool, editSource, saveFeature, setFeatures, olLayers, interactionType, activeSource}) => {
+const ContextControls = ({
+    changeTool,
+    editSource,
+    saveFeature,
+    setFeatures,
+    olLayers,
+    interactionType,
+    activeSource,
+    setZoom,
+    zoom
+}) => {
+
+    let controls = false;
     // do not bother rendering anything if the interaction is null
     if (!interactionType) {
-        return false;
+        // return false;
     } else if (
         interactionType.indexOf('Modify') >= 0 &&
         activeSource === `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`
     ) {
-        return (
+        controls = (
             <EditLayerControls
                 olLayers={olLayers}
                 changeTool={changeTool}
@@ -138,8 +150,29 @@ const ContextControls = ({changeTool, editSource, saveFeature, setFeatures, olLa
             />
         );
     } else {
-        return <StopControl changeTool={changeTool}/>;
+        controls = <StopControl changeTool={changeTool}/>;
     }
+
+    return (
+        <React.Fragment>
+            <MapButton
+                label="zoom-in"
+                icon="icon zoom-in"
+                index={0}
+                onClick={() => setZoom(zoom + 1)}
+            />
+
+            <MapButton
+                label="zoom-out"
+                icon="icon zoom-out"
+                index={0}
+                onClick={() => setZoom(zoom - 1)}
+            />
+
+            <span style={{display: 'inline-block', width: 16}}></span>
+            {controls}
+        </React.Fragment>
+    )
 }
 
 export default ContextControls;

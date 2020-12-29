@@ -804,7 +804,7 @@ export function reloadSource(mapSourceName) {
 
 const cleanFeature = feature => {
     const newProps = Object.assign({}, feature.properties);
-    delete newProps['boundedBy'];
+    delete newProps.boundedBy;
     return Object.assign({},
         feature,
         {
