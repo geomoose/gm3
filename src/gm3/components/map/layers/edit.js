@@ -49,7 +49,17 @@ export const getEditStyle = (glStyle = EDIT_STYLE) => ([
             }),
         }),
         geometry: (feature) => {
-            const coordinates = feature.getGeometry().getCoordinates().flat();
+            const geom = feature.getGeometry();
+            const type = geom.getType().toLowerCase();
+
+            let coordinates = [];
+            if (type === 'polygon' || type === 'multilinestring') {
+                coordinates = geom.getCoordinates().flat();
+            } else if (type === 'multipolygon') {
+                coordinates = geom.getCoordinates().flat(2);
+            } else {
+                coordinates = geom.getCoordinates();
+            }
             return new MultiPoint(coordinates);
         },
     })
