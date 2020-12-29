@@ -146,16 +146,24 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
 
 export function wfsSaveFeatures(mapSource, mapProjection, inFeatures) {
     const format = new WFSFormat();
+    const config = mapSource.config || {};
     const typename = getTypeName(mapSource);
     const typeParts = typename.split(':');
     const options = {
-        featureType: typeParts[1],
-        featureNS: 'http://geomoose.org',
         featurePrefix: typeParts[0],
-        srsName: 'EPSG:3857',
+        featureType: typeParts[1],
+        srsName: config.srs || 'EPSG:3857',
     };
 
+    if (config['namespace-uri']) {
+        options.featureNS = config['namespace-uri'];
+    }
+
     const features = inFeatures.map(f => jsonToFeature(f));
+    // reproject the features to the layers native SRS
+    if (options.srsName !== 'EPSG:3857') {
+        features.forEach(f => f.getGeometry().transform('EPSG:3857', options.srsName));
+    }
 
     const geomFieldName = getGeometryName(mapSource);
     features.forEach(f => f.setGeometryName(geomFieldName));
