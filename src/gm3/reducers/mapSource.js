@@ -145,6 +145,15 @@ function changeMapSourceFeatures(state, action) {
     return update_obj;
 }
 
+export const handleReload = (state, action) => {
+    const mixin = {};
+    const mapSource = state[action.mapSourceName];
+    mixin[action.mapSourceName] = Object.assign({}, mapSource, {
+        featuresVersion: mapSource.version ? mapSource.version + 1 : 1,
+    });
+    return Object.assign({}, state, mixin);
+}
+
 export default function mapSource(state = [], action) {
     const new_elem = {};
 
@@ -209,6 +218,8 @@ export default function mapSource(state = [], action) {
         case MAPSOURCE.CHANGE_FEATURES:
         case MAPSOURCE.MODIFY_GEOMETRY:
             return Object.assign({}, state, changeMapSourceFeatures(state, action));
+        case MAPSOURCE.RELOAD:
+            return handleReload(state, action);
         default:
             return state;
     }

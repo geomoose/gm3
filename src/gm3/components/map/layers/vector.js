@@ -327,12 +327,7 @@ export function updateLayer(map, layer, mapSource) {
             // clear the layer without setting off events.
             source.clear(true);
             // setup the JSON parser
-            const output_format = new GeoJSONFormat({
-            /*
-                dataProjection: 'EPSG:4326',
-                featureProjection: map.getView().getProjection()
-            */
-            });
+            const output_format = new GeoJSONFormat();
             // bring in the new features.
             const features = output_format.readFeatures({
                 type: 'FeatureCollection', features: mapSource.features
@@ -341,6 +336,16 @@ export function updateLayer(map, layer, mapSource) {
 
             // update the version number
             layer.set('featuresVersion', mapSource.featuresVersion);
+        }
+    } else {
+        const layer_version = layer.get('featuresVersion');
+        // check to see if there was an update to the features
+        if(layer_version !== mapSource.featuresVersion) {
+            layer.set('featuresVersion', mapSource.featuresVersion);
+            // refresh is available to all vector layers,
+            //  this should force a reload of the features from the server
+            //  upon update.
+            layer.getSource().refresh();
         }
     }
 

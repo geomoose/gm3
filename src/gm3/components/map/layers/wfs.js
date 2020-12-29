@@ -158,18 +158,7 @@ export function wfsSaveFeatures(mapSource, mapProjection, inFeatures) {
     const features = inFeatures.map(f => jsonToFeature(f));
 
     const geomFieldName = getGeometryName(mapSource);
-    features.forEach(f => {
-        /*
-        console.log('feature?', f);
-        console.log('geometry?', f.getGeometry());
-        geom.transform('EPSG:3857', 'EPSG:4326');
-        */
-        const geom = f.getGeometry();
-        f.setGeometryName(geomFieldName);
-        // f.setGeometry(geom);
-    });
-
-    console.log(features[0].getProperties());
+    features.forEach(f => f.setGeometryName(geomFieldName));
 
     // writeTransaction (inserts, updates, deletes, options)
     const transaction = format.writeTransaction([], features, [], options);
