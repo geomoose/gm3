@@ -221,7 +221,7 @@ export function addFromXml(xml, config) {
         params: {},
         config: {},
         properties: [],
-        idProperty: xml.getAttribute('id-property') || '_uuid',
+        idProperty: '_uuid',
     };
 
     // handle setting up the zIndex
@@ -266,8 +266,14 @@ export function addFromXml(xml, config) {
     }
 
     // mix in the params
-    Object.assign(map_source.params, parseParams(xml));
-    Object.assign(map_source.config, parseParams(xml, 'config'));
+    Object.assign(map_source.params, {}, parseParams(xml));
+    Object.assign(map_source.config, {}, parseParams(xml, 'config'));
+
+    // check for the ID column config.
+    if (map_source.config['id-property']) {
+        map_source.idProperty = map_source.config['id-property'];
+        delete map_source.config['id-property'];
+    }
 
     // and lets get some properties
     Object.assign(map_source.properties, parseProperties(xml));
@@ -833,23 +839,30 @@ export function saveFeature(path, feature) {
         const mapSource = getState().mapSources[mapSourceName];
         if (mapSource) {
             const idProp = mapSource.idProperty;
+            const id = feature.id || (feature.properties || {})[idProp];
             if (mapSource.type === 'vector') {
-                const id = feature.properties[idProp];
 
                 // if this is a client side layer then just return
                 //  the standard change events
-                dispatch(
-                    modifyFeatureGeometry(mapSourceName, id, feature.geometry, idProp)
-                );
+                if (!id) {
+                    dispatch(
+                        addFeatures(mapSourceName, [feature])
+                    );
+                } else {
+                    dispatch(
+                        modifyFeatureGeometry(mapSourceName, id, feature.geometry, idProp)
+                    );
 
-                // update the properties of the feature
-                const filter = {};
-                filter[idProp] = id;
-                dispatch(changeFeatures(mapSourceName, filter, feature.properties));
+                    // update the properties of the feature
+                    const filter = {};
+                    filter[idProp] = id;
+                    dispatch(changeFeatures(mapSourceName, filter, feature.properties));
+                }
             } else if (mapSource.type === 'wfs') {
                 const projection = getProj('EPSG:3857');
                 const features = [cleanFeature(feature)];
-                const changeRequest = wfsSaveFeatures(mapSource, projection, features);
+
+                const changeRequest = wfsSaveFeatures(mapSource, projection, features, !id);
 
                 fetch(mapSource.urls[0] + '', {
                     method: 'POST',

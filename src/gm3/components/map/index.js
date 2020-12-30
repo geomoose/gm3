@@ -1117,8 +1117,10 @@ class Map extends React.Component {
                     features: new olCollection(features),
                 });
             } else {
+                const editSrc = this.olLayers[EDIT_LAYER_NAME].getSource();
                 const drawOptions = {
-                    source,
+                    //source: editSrc,
+                    //collection: [],
                     type,
                 };
 
@@ -1145,10 +1147,9 @@ class Map extends React.Component {
                 if(!is_selection) {
                     this.drawTool.on('drawend', (evt) => {
                         const json_feature = GEOJSON_FORMAT.writeFeatureObject(evt.feature);
+                        editSrc.clear();
 
-                        this.props.store.dispatch(
-                            mapSourceActions.addFeatures(map_source_name, [json_feature])
-                        );
+                        this.props.saveFeature(path, json_feature);
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
@@ -1411,8 +1412,8 @@ function mapDispatch(dispatch) {
             }
         },
         setEditPath: path => dispatch(mapActions.setEditPath(path)),
-        saveFeature: (src, feature) => {
-            dispatch(mapSourceActions.saveFeature(src, feature));
+        saveFeature: (path, feature) => {
+            dispatch(mapSourceActions.saveFeature(path, feature));
         },
         setZoom: z => dispatch(mapActions.setView({zoom: z})),
     };
