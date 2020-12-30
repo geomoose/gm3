@@ -77,7 +77,7 @@ import * as vectorLayer from './layers/vector';
 import * as bingLayer from './layers/bing';
 import * as usngLayer from './layers/usng';
 
-import { buildWfsQuery } from './layers/wfs';
+import { buildWfsQuery, wfsGetFeatures} from './layers/wfs';
 import {EDIT_LAYER_NAME} from '../../defaults';
 
 import AttributionDisplay from './attribution-display';
@@ -973,6 +973,7 @@ class Map extends React.Component {
     activateDrawTool(type, path, oneAtATime) {
         const is_selection = (path === null);
         const map_source_name = util.getMapSourceName(path);
+        const map_source = this.props.mapSources[map_source_name];
 
         // normalize the input.
         if(typeof(type) === 'undefined') {
@@ -1038,55 +1039,83 @@ class Map extends React.Component {
                     this.drawTool.getFeatures().clear();
                 });
             } else if (type === 'Modify') {
-                this.drawTool = new olSelectInteraction({
-                    layers: [this.olLayers[map_source_name]],
-                    style: null,
-                });
+                let layer = null;
+                try {
+                    layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
+                } catch (err) {
+                    // swallow the error if the layer can't be found.
+                }
 
-                this.drawTool.on('select', evt => {
+                const modifyNext = editFeatures => {
                     // tell other tools where this feature originated.
-                    this.props.setEditSource(map_source_name);
+                    this.props.setEditPath(path);
 
                     // set the features of the editing layer
                     //  to the selected feature.
                     this.props.setFeatures(
                         EDIT_LAYER_NAME,
-                        [GEOJSON_FORMAT.writeFeatureObject(evt.selected[0]), ],
+                        editFeatures,
                         true
                     );
 
                     // unset the edit-selection tool
                     this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
-                });
+                };
+
+                if (['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
+                    this.drawTool = new olSelectInteraction({
+                        layers: [this.olLayers[map_source_name]],
+                        style: null,
+                    });
+
+                    this.drawTool.on('select', evt => {
+                        modifyNext(
+                            [GEOJSON_FORMAT.writeFeatureObject(evt.selected[0])]
+                        );
+                    });
+                } else if (layer && layer.queryAs.length > 0) {
+                    // TODO: This wildly assumes the query-as layer is WFS,
+                    //       at the time of writing WFS was the only option.
+                    const queryLayer = mapSourceActions.getLayerFromPath(
+                        this.props.mapSources,
+                        layer.queryAs[0]
+                    );
+
+                    const editSrc = this.olLayers[EDIT_LAYER_NAME].getSource();
+
+                    this.drawTool = new olDrawInteraction({
+                        type: 'Point',
+                        source: editSrc,
+                    });
+
+                    this.drawTool.on('drawend', evt => {
+                        const querySourceName = util.getMapSourceName(layer.queryAs[0]);
+                        const querySource = this.props.mapSources[
+                            querySourceName
+                        ];
+                        const pointFeature = util.featureToJson(evt.feature);
+                        const mapProjection = this.map.getView().getProjection();
+
+                        editSrc.clear();
+
+                        wfsGetFeatures(
+                            {
+                                selection: [pointFeature],
+                                fields: [],
+                            },
+                            querySource,
+                            mapProjection
+                        )
+                            .then(features => {
+                                modifyNext(features);
+                            });
+                    });
+                }
             } else if(type === '_Modify') {
                 const features = source.getFeatures();
                 this.drawTool = new olModifyInteraction({
                     features: new olCollection(features),
                 });
-                /*
-
-                if(is_selection) {
-                    this.drawTool.on('modifyend', (evt) => {
-                        const features = evt.features.getArray();
-                        this.addSelectionFeatures(features, this.props.mapView.selectionBuffer);
-                    });
-                } else {
-                    this.drawTool.on('modifyend', (evt) => {
-                        const id_prop = '_uuid';
-                        const features = evt.features.getArray();
-                        for(const feature of features) {
-                            const geometry = util.geomToJson(feature.getGeometry());
-                            const id = feature.getProperties()[id_prop];
-
-                            if(id) {
-                                this.props.store.dispatch(
-                                    mapSourceActions.modifyFeatureGeometry(map_source_name, id, geometry)
-                                );
-                            }
-                        }
-                    });
-                }
-                */
             } else {
                 const drawOptions = {
                     source,
@@ -1142,7 +1171,9 @@ class Map extends React.Component {
                 }
             }
 
-            this.map.addInteraction(this.drawTool);
+            if (this.drawTool) {
+                this.map.addInteraction(this.drawTool);
+            }
         }
 
     }
@@ -1318,7 +1349,7 @@ class Map extends React.Component {
 
                     <ContextControls
                         saveFeature={this.props.saveFeature}
-                        editSource={this.props.mapView.editSource}
+                        editPath={this.props.mapView.editPath}
                         olLayers={this.olLayers}
                         setFeatures={this.props.setFeatures}
                         changeTool={this.props.changeTool}
@@ -1379,7 +1410,7 @@ function mapDispatch(dispatch) {
                 dispatch(mapActions.zoomToExtent(extent));
             }
         },
-        setEditSource: src => dispatch(mapActions.setEditSource(src)),
+        setEditPath: path => dispatch(mapActions.setEditPath(path)),
         saveFeature: (src, feature) => {
             dispatch(mapSourceActions.saveFeature(src, feature));
         },

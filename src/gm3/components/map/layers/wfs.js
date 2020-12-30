@@ -24,11 +24,12 @@
 
 import GeoJSONFormat from 'ol/format/GeoJSON';
 import WFSFormat from 'ol/format/WFS';
+import GML2Format from 'ol/format/GML2';
 
 import * as ol_filters from 'ol/format/filter';
 import * as proj from 'ol/proj';
 
-import {jsonToFeature} from '../../../util';
+import {jsonToFeature, featureToJson, transformFeatures} from '../../../util';
 
 function chainFilters(operator, filters) {
     let chained_filters = null;
@@ -85,7 +86,9 @@ const getGeometryName = mapSource => (
         mapSource.config['geometry-name'] : 'geom'
 );
 
-export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
+const DEFAULT_OUTPUT_FORMAT = 'text/xml; subtype=gml/2.1.2';
+
+export function buildWfsQuery(query, mapSource, mapProjection, outputFormat = DEFAULT_OUTPUT_FORMAT) {
     const geom_field = getGeometryName(mapSource);
 
     // the internal storage mechanism requires features
@@ -142,6 +145,36 @@ export function buildWfsQuery(query, mapSource, mapProjection, outputFormat) {
     const feature_request = new WFSFormat().writeGetFeature(format_options);
 
     return (new XMLSerializer().serializeToString(feature_request));
+}
+
+export function wfsGetFeatures(query, mapSource, mapProjection, outputFormat = DEFAULT_OUTPUT_FORMAT) {
+
+    const queryBody = buildWfsQuery(query, mapSource, mapProjection, outputFormat);
+
+    // TODO: check for params and properly join to URL!
+
+    return fetch(mapSource.urls[0], {
+        method: 'POST',
+        body: queryBody,
+    })
+        .then(r => r.text())
+        .then(response => {
+            const gml_format = new GML2Format();
+
+            let features = gml_format
+                .readFeatures(response, {
+                    // featureProjection: mapProjection,
+                    // dataProjection: query_projection
+                })
+                .map(feature => {
+                    const jsonFeature = featureToJson(feature);
+                    jsonFeature.properties.boundedBy = feature.getGeometry().getExtent();
+                    return jsonFeature;
+                });
+            // apply the transforms
+            features = transformFeatures(mapSource.transforms, features);
+            return features;
+        });
 }
 
 export function wfsSaveFeatures(mapSource, mapProjection, inFeatures) {

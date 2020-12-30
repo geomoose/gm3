@@ -819,8 +819,17 @@ const cleanFeature = feature => {
  * Updates both the geometry and the properties.
  *
  */
-export function saveFeature(mapSourceName, feature) {
+export function saveFeature(path, feature) {
     return (dispatch, getState) => {
+        const mapSources = getState().mapSources;
+        const layer = getLayerFromPath(mapSources, path);
+        const layerSrcName = util.getMapSourceName(path);
+
+        let mapSourceName = layerSrcName;
+        if (layer && layer.queryAs && layer.queryAs.length > 0) {
+            mapSourceName = util.getMapSourceName(layer.queryAs[0]);
+        }
+
         const mapSource = getState().mapSources[mapSourceName];
         if (mapSource) {
             const idProp = mapSource.idProperty;
@@ -850,7 +859,7 @@ export function saveFeature(mapSourceName, feature) {
                     .then(text => {
                         // TODO: The response should be parsed for exceptions
                         //       and reported to the user.
-                        dispatch(reloadSource(mapSourceName));
+                        dispatch(reloadSource(layerSrcName));
                     });
             } else {
                 console.error(`${mapSource.type} sources do not support saving.`);

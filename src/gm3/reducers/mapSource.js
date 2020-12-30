@@ -150,6 +150,9 @@ export const handleReload = (state, action) => {
     const mapSource = state[action.mapSourceName];
     mixin[action.mapSourceName] = Object.assign({}, mapSource, {
         featuresVersion: mapSource.featuresVersion ? mapSource.featuresVersion + 1 : 1,
+        params: Object.assign({}, mapSource.params, {
+            _ck: '.' + (new Date()).getTime(),
+        }),
     });
     return Object.assign({}, state, mixin);
 }
