@@ -177,7 +177,7 @@ export function wfsGetFeatures(query, mapSource, mapProjection, outputFormat = D
         });
 }
 
-export function wfsSaveFeatures(mapSource, mapProjection, inFeatures) {
+export function wfsSaveFeatures(mapSource, mapProjection, inFeatures, insert = false) {
     const format = new WFSFormat();
     const config = mapSource.config || {};
     const typename = getTypeName(mapSource);
@@ -192,16 +192,17 @@ export function wfsSaveFeatures(mapSource, mapProjection, inFeatures) {
         options.featureNS = config['namespace-uri'];
     }
 
-    const features = inFeatures.map(f => jsonToFeature(f));
+    const geometryName = getGeometryName(mapSource);
+    const jsonFormat = new GeoJSONFormat({geometryName,});
+    const features = inFeatures.map(f => jsonFormat.readFeature(f, {geometryName,}));
     // reproject the features to the layers native SRS
     if (options.srsName !== 'EPSG:3857') {
         features.forEach(f => f.getGeometry().transform('EPSG:3857', options.srsName));
     }
 
-    const geomFieldName = getGeometryName(mapSource);
-    features.forEach(f => f.setGeometryName(geomFieldName));
+    const inserts = insert ? features : [];
+    const updates = insert ? [] : features;
 
-    // writeTransaction (inserts, updates, deletes, options)
-    const transaction = format.writeTransaction([], features, [], options);
+    const transaction = format.writeTransaction(inserts, updates, [], options);
     return (new XMLSerializer().serializeToString(transaction));
 }

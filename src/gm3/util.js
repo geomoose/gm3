@@ -523,8 +523,8 @@ export function featureToJson(feature) {
     return GEOJSON_FORMAT.writeFeatureObject(feature);
 }
 
-export function jsonToFeature(feature) {
-    return GEOJSON_FORMAT.readFeature(feature);
+export function jsonToFeature(feature, options = {}) {
+    return GEOJSON_FORMAT.readFeature(feature, options);
 }
 
 const EQUIVALENT_METERS = {
