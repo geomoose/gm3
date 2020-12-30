@@ -5,12 +5,12 @@ import {featureToJson} from '../../util';
 
 import MapButton from './button';
 
-const EditLayerControls = ({editSource, saveFeature, olLayers, changeTool, setFeatures}) => {
+const EditLayerControls = ({editPath, saveFeature, olLayers, changeTool, setFeatures}) => {
     const clearChanges = useCallback(() => {
         setFeatures(EDIT_LAYER_NAME, []);
 
         // return the modify tool
-        changeTool('Modify', editSource);
+        changeTool('Modify', editPath);
     }, [changeTool, setFeatures, EDIT_LAYER_NAME]);
 
     // all done, wrap it up, unload features and the tool
@@ -29,7 +29,7 @@ const EditLayerControls = ({editSource, saveFeature, olLayers, changeTool, setFe
 
         if (features.length > 0) {
             const feature = features[0];
-            saveFeature(editSource, feature);
+            saveFeature(editPath, feature);
             clearChanges();
         }
     }, [olLayers, EDIT_LAYER_NAME]);
@@ -122,7 +122,7 @@ const StopControl = ({changeTool}) => {
 
 const ContextControls = ({
     changeTool,
-    editSource,
+    editPath,
     saveFeature,
     setFeatures,
     olLayers,
@@ -145,7 +145,7 @@ const ContextControls = ({
                 olLayers={olLayers}
                 changeTool={changeTool}
                 saveFeature={saveFeature}
-                editSource={editSource}
+                editPath={editPath}
                 setFeatures={setFeatures}
             />
         );
