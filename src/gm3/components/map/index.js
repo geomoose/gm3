@@ -1007,38 +1007,7 @@ class Map extends React.Component {
                     const selectedFeatures = evt.target.getFeatures();
                     this.addSelectionFeatures(selectedFeatures.getArray(), this.props.selectionBuffer);
                 });
-            } else if(type === 'Edit') {
-                this.drawTool = new olSelectInteraction({
-                    toggleCondition: olEventConditions.never,
-                    layers: [this.olLayers[map_source_name]]
-                });
-
-                this.drawTool.on('select', (evt) => {
-                    if (evt.selected[0]) {
-                        const feature = GEOJSON_FORMAT.writeFeatureObject(evt.selected[0]);
-                        this.props.onEditProperties(map_source_name, feature);
-                    }
-                });
-            } else if(type === 'Remove') {
-                // setup the select tool to allow the user
-                //  to pick a feature from the layer.
-                this.drawTool = new olSelectInteraction({
-                    layers: [this.olLayers[map_source_name]]
-                });
-
-                this.drawTool.on('select', (evt) => {
-                    // "_uuid" is the internal GeoMoose ID property added to
-                    //  all features that go through the state.
-                    const id_prop = '_uuid';
-                    const fid = evt.selected[0].getProperties()[id_prop];
-                    // send the remove feature event to remove it.
-                    this.props.store.dispatch(
-                        mapSourceActions.removeFeature(map_source_name, fid)
-                    );
-                    // clear the selected features from the tool.
-                    this.drawTool.getFeatures().clear();
-                });
-            } else if (type === 'Modify') {
+            } else if (type === 'Modify' || type === 'Edit' || type === 'Remove') {
                 let layer = null;
                 try {
                     layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
@@ -1047,19 +1016,28 @@ class Map extends React.Component {
                 }
 
                 const modifyNext = editFeatures => {
-                    // tell other tools where this feature originated.
-                    this.props.setEditPath(path);
+                    if (type === 'Remove') {
+                        this.props.removeFeature(path, editFeatures[0]);
+                    } else {
+                        // tell other tools where this feature originated.
+                        this.props.setEditPath(path);
 
-                    // set the features of the editing layer
-                    //  to the selected feature.
-                    this.props.setFeatures(
-                        EDIT_LAYER_NAME,
-                        editFeatures,
-                        true
-                    );
+                        // set the features of the editing layer
+                        //  to the selected feature.
+                        this.props.setFeatures(
+                            EDIT_LAYER_NAME,
+                            editFeatures,
+                            true
+                        );
 
-                    // unset the edit-selection tool
-                    this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
+                        if (type === 'Edit') {
+                            // show the edit dialog
+                            this.props.onEditProperties(editFeatures[0]);
+                        } else if (type === 'Modify') {
+                            // unset the edit-selection tool
+                            this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
+                        }
+                    }
                 };
 
                 if (['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
@@ -1392,8 +1370,8 @@ function mapDispatch(dispatch) {
         finishQuery: (queryId) => {
             dispatch(mapActions.finishQuery(queryId));
         },
-        onEditProperties: (source, feature) => {
-            dispatch(setEditFeature(source, feature));
+        onEditProperties: (feature) => {
+            dispatch(setEditFeature(feature));
         },
         setSelectionFeatures: (features) => {
             dispatch(mapActions.clearSelectionFeatures());
@@ -1416,6 +1394,9 @@ function mapDispatch(dispatch) {
             dispatch(mapSourceActions.saveFeature(path, feature));
         },
         setZoom: z => dispatch(mapActions.setView({zoom: z})),
+        removeFeature: (path, feature) => {
+            dispatch(mapSourceActions.removeFeature(path, feature));
+        },
     };
 }
 

@@ -29,7 +29,7 @@
 import {get as getProj} from 'ol/proj';
 
 import { MAPSOURCE } from '../actionTypes';
-import {wfsSaveFeatures} from '../components/map/layers/wfs';
+import {wfsDeleteFeatures, wfsSaveFeatures} from '../components/map/layers/wfs';
 
 import * as util from '../util';
 
@@ -701,10 +701,50 @@ export function removeFeatures(mapSourceName, filter) {
 
 /* Remove a specific feature from the layer.
  */
-export function removeFeature(mapSourceName, id) {
-    return {
-        type: MAPSOURCE.REMOVE_FEATURE,
-        mapSourceName, id
+export function removeFeature(path, feature) {
+    return (dispatch, getState) => {
+        const mapSources = getState().mapSources;
+        const layer = getLayerFromPath(mapSources, path);
+        const layerSrcName = util.getMapSourceName(path);
+
+        let mapSourceName = layerSrcName;
+        if (layer && layer.queryAs && layer.queryAs.length > 0) {
+            mapSourceName = util.getMapSourceName(layer.queryAs[0]);
+        }
+
+        const mapSource = getState().mapSources[mapSourceName];
+        if (mapSource) {
+            const idProp = mapSource.idProperty;
+            const id = feature.id || (feature.properties || {})[idProp];
+            if (mapSource.type === 'vector') {
+                // just remove the feature from an in memory layer.
+                return dispatch({
+                    type: MAPSOURCE.REMOVE_FEATURE,
+                    mapSourceName,
+                    id
+                });
+            } else if (mapSource.type === 'wfs') {
+                // time to get async'y.
+                const projection = getProj('EPSG:3857');
+                const features = [cleanFeature(feature)];
+
+                const changeRequest = wfsDeleteFeatures(mapSource, projection, features);
+
+                fetch(mapSource.urls[0] + '', {
+                    method: 'POST',
+                    body: changeRequest,
+                })
+                    .then(r => r.text())
+                    .then(text => {
+                        // TODO: The response should be parsed for exceptions
+                        //       and reported to the user.
+                        dispatch(reloadSource(layerSrcName));
+                    });
+            } else {
+                console.error(`${mapSource.type} sources do not support saving.`);
+            }
+
+        }
     };
 }
 

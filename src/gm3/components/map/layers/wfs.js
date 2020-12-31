@@ -177,7 +177,8 @@ export function wfsGetFeatures(query, mapSource, mapProjection, outputFormat = D
         });
 }
 
-export function wfsSaveFeatures(mapSource, mapProjection, inFeatures, insert = false) {
+
+function wfsTransact(mapSource, mapProjection, inFeatures) {
     const format = new WFSFormat();
     const config = mapSource.config || {};
     const typename = getTypeName(mapSource);
@@ -194,15 +195,40 @@ export function wfsSaveFeatures(mapSource, mapProjection, inFeatures, insert = f
 
     const geometryName = getGeometryName(mapSource);
     const jsonFormat = new GeoJSONFormat({geometryName,});
-    const features = inFeatures.map(f => jsonFormat.readFeature(f, {geometryName,}));
-    // reproject the features to the layers native SRS
-    if (options.srsName !== 'EPSG:3857') {
-        features.forEach(f => f.getGeometry().transform('EPSG:3857', options.srsName));
-    }
 
-    const inserts = insert ? features : [];
-    const updates = insert ? [] : features;
+    const features = {
+        updates: [],
+        inserts: [],
+        deletes: [],
+    };
 
-    const transaction = format.writeTransaction(inserts, updates, [], options);
+    ['inserts', 'updates', 'deletes'].forEach(operation => {
+        if (inFeatures[operation]) {
+            features[operation] = inFeatures[operation].map(
+                f => jsonFormat.readFeature(f, {geometryName,})
+            );
+            // reproject the features to the layers native SRS
+            if (options.srsName !== 'EPSG:3857') {
+                features[operation].forEach(
+                    f => f.getGeometry().transform('EPSG:3857', options.srsName)
+                );
+            }
+        }
+    });
+
+
+    const transaction = format.writeTransaction(features.inserts, features.updates, features.deletes, options);
     return (new XMLSerializer().serializeToString(transaction));
+}
+
+
+export function wfsSaveFeatures(mapSource, mapProjection, inFeatures, insert = false) {
+    return wfsTransact(mapSource, mapProjection, {
+        [insert ? 'inserts' : 'updates']: inFeatures,
+    });
+}
+
+
+export function wfsDeleteFeatures(mapSource, mapProjection, inFeatures) {
+    return wfsTransact(mapSource, mapProjection, {deletes: inFeatures});
 }

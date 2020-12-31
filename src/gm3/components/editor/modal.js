@@ -38,7 +38,7 @@ export class EditorModal extends Modal {
 
                         this.props.onClose(
                             option.value,
-                            this.props.source,
+                            this.props.path,
                             feature
                         );
                     }}
