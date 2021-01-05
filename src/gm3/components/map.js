@@ -926,7 +926,7 @@ class Map extends React.Component {
         }
 
         if (this.props.config.view) {
-            const mixinKeys = ['center', 'zoom', 'maxZoom', 'minZoom'];
+            const mixinKeys = ['extent', 'center', 'zoom', 'maxZoom', 'minZoom'];
             mixinKeys.forEach(key => {
                 if (this.props.config.view[key]) {
                     view_params[key] = this.props.config.view[key];
