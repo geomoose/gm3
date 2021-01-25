@@ -4,6 +4,10 @@
         The mapping services define the source of the mapping data.
     -->
 
+    <map-source name="usng-grid" type="usng">
+        <layer name="usng-grid" status="off" />
+    </map-source>
+
     <map-source name="sketch" type="vector" title="Drawing and Markup">
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
@@ -493,7 +497,8 @@
             <layer title="Weather Radar" src="iastate/nexrad-n0r" />
         </group>
 
-        <group title="Test Grids">
+        <group title="Grids">
+            <layer src="usng-grid/usng-grid" title="USNG Grid" />
             <layer title="1 km grid" src="grids/grid_1km"/>
             <layer title="1 mile grid" src="grids/grid_1mile"/>
         </group>

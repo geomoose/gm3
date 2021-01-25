@@ -31,13 +31,14 @@
       "react"
     ],
     "plugins": [
-      "syntax-dynamic-import"
+      "syntax-dynamic-import",
+      "transform-object-rest-spread"
     ]
   },
   "jest": {
     "testURL": "http://localhost",
     "transformIgnorePatterns": [
-      "node_modules/(?!ol|jsts)"
+      "node_modules/(?!ol|jsts|usng)"
     ],
     "moduleDirectories": [
       "./src",
@@ -64,6 +65,7 @@
     "babel-eslint": "^8.2.6",
     "babel-loader": "^7.1.4",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
@@ -108,5 +110,8 @@
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",
     "whatwg-fetch": "^3.0.0"
+  },
+  "dependencies": {
+    "usng-map-collar": "^1.0.1"
   }
 }
