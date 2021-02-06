@@ -388,7 +388,7 @@ export function remove(path) {
 
 /** Get a map-source layer based on a catalog layer object.
  *
- *  @param store The master store.
+ *  @param store The main store.
  *  @param layer An object with {mapSourceName, layerName}
  *
  * @returns The layer from the map-source in the store.
