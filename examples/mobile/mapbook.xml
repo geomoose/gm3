@@ -296,7 +296,7 @@
 			<group title="County Layers" expand="false">
 
 				<layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="this a parcel layer, y'all" refresh="10">
-					<metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+					<metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
 				</layer>
 				<layer title="Parcel Points" src="parcels/parcels_points" minscale="6000" maxscale="20000" status="off"/>
                 <layer title="Expensive Parcels" src="vector-parcels/big-money"/>

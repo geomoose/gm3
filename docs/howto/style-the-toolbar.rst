@@ -158,7 +158,7 @@ with any image end-point.
         /* this ensures the entire icon will fit inside the width, height */
         box-sizing: border-box;
         /* URL to the icon image. */
-        background-image: url(https://github.com/geomoose/geomoose-art/raw/master/logo_2011/favicon/favicon-32.png);
+        background-image: url(https://github.com/geomoose/geomoose-art/raw/main/logo_2011/favicon/favicon-32.png);
         /* prevent the icon image from repeating. */
         background-repeat: no-repeat;
         /* ensure the background fits inside the icon */
