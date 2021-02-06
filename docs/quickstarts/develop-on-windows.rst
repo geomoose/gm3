@@ -15,7 +15,7 @@ node command line in the PATH and install the NPM package manager.
 2. Create a Folder for GeoMoose
 -------------------------------
 
-These examples will use C::raw-latex:`\GeoMoose `as the target folder.
+These examples will use ``\GeoMoose`` as the target folder.
 
 3. Install Git
 --------------

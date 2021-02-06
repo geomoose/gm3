@@ -1,3 +1,5 @@
+.. _howto_style_the_toolbar:
+
 How-to style the toolbar
 ========================
 

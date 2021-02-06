@@ -56,8 +56,7 @@ the PrintModal:
 
     * ``label`` - The label present in the language json file (e.g. ``en.json``) that is converted to what is presented to the user in the Print Preview dialog.
     * ``orientation`` - Page orientation. One of ``'landscape'`` or ``'portrait``'.
-    * ``page`` - The page size (as supported by [usejsdoc.org]). e.g. ``'letter'``,
-``'a4'``, ...
+    * ``page`` - The page size (as supported by [usejsdoc.org]). e.g. ``'letter'``, ``'a4'``, ...
     * ``units`` - The units used to specify the position of elements (e.g. for ``x``, ``y``, ``width``, ``height``, ``strokeWidth``,...). Can any units supported by jsDoc including: ``'in'``, ``'mm'``, ``'pt'``.
     * ``elements`` - An array of elements, described below.
 
