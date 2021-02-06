@@ -8,7 +8,7 @@ This is the main repository for the new GeoMoose3 library/application. To learn 
 
 ## Documentation
 
-GeoMoose 3 Documentation found in the `./docs` directory of this repository and is also available online at https://docs.geomoose.org/3.x 
+GeoMoose 3 Documentation found in the `./docs` directory of this repository and is also available online at https://docs.geomoose.org/3.x/
 
 
 ## Quickstarts
