@@ -26,11 +26,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation, useTranslation } from 'react-i18next';
 
-import * as Papa from 'papaparse';
+import {unparse as writeCsv} from 'papaparse';
 import Mark from 'markup-js';
 import FileSaver from 'file-saver';
 
-import * as util from '../util';
+import {FORMAT_OPTIONS, matchFeatures} from '../util';
 
 import { addFilter, removeFilter } from '../actions/map';
 import { getLayerFromPath } from '../actions/mapSource';
@@ -474,7 +474,7 @@ class Grid extends React.Component {
 
         let html = '';
         for(const feature of sorted_rows) {
-            html += Mark.up(rowTemplate, feature, util.FORMAT_OPTIONS);
+            html += Mark.up(rowTemplate, feature, FORMAT_OPTIONS);
         }
 
         return {__html: html};
@@ -504,7 +504,7 @@ class Grid extends React.Component {
         }
 
         // create the data
-        const csv_blob = new Blob([Papa.unparse(feature_data)], {type: 'text/csv;charset=utf-8'});
+        const csv_blob = new Blob([writeCsv(feature_data)], {type: 'text/csv;charset=utf-8'});
 
         // create a unique string
         const uniq = '' + (new Date()).getTime();
@@ -570,7 +570,7 @@ class Grid extends React.Component {
 
                         if(grid_cols && grid_row) {
                             // render as a grid.
-                            features = util.matchFeatures(query.results[layerPath], query.filter);
+                            features = matchFeatures(query.results[layerPath], query.filter);
                             if(query.results[layerPath].length > 0) {
                                 display_table = true;
                             }
