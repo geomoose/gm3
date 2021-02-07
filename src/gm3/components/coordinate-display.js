@@ -45,6 +45,23 @@ export function formatCoordinates(projection, coords, defaultPrecision = 4) {
 }
 
 /**
+ * Convert the zoom level to a number of digits for lat/lon
+ * formatting.
+ *
+ * @param {Number} zoom - The map's zoom level.
+ *
+ * @returns {Number} the number of digits.
+ */
+const zoomToPrecision = zoom => {
+    if (zoom > 18) {
+        return 6;
+    } else if (zoom > 9) {
+        return 4;
+    }
+    return 2;
+};
+
+/**
  * CoordinateDisplay options
  * - These options can be passed when adding the coordinate display to the app
  *
@@ -158,9 +175,10 @@ export default class CoordinateDisplay extends React.Component {
         return proj.transform(this.props.coords, map_proj, latlon_proj);
     }
 
-    latlon(projection) {
+    latlon(projection, autoPrecision = true) {
         const coords = this.getLatLonCoords();
-        return formatCoordinates(projection, [coords[1], coords[0]]);
+        const digits = autoPrecision ? zoomToPrecision(this.props.zoom) : 4;
+        return formatCoordinates(projection, [coords[1], coords[0]], digits);
     }
 
     getProjectionCoords(projection) {
