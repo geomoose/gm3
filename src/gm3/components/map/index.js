@@ -39,7 +39,7 @@ import md5 from 'md5/md5';
 
 import * as mapSourceActions from '../../actions/mapSource';
 import * as mapActions from '../../actions/map';
-import {setEditFeature} from '../../actions/edit';
+import {removeFeature, setEditFeature} from '../../actions/edit';
 
 import * as util from '../../util';
 import * as jsts from '../../jsts';
@@ -1016,20 +1016,20 @@ class Map extends React.Component {
                 }
 
                 const modifyNext = editFeatures => {
+                    // tell other tools where this feature originated.
+                    this.props.setEditPath(path);
+
+                    // set the features of the editing layer
+                    //  to the selected feature.
+                    this.props.setFeatures(
+                        EDIT_LAYER_NAME,
+                        editFeatures,
+                        true
+                    );
+
                     if (type === 'Remove') {
                         this.props.removeFeature(path, editFeatures[0]);
                     } else {
-                        // tell other tools where this feature originated.
-                        this.props.setEditPath(path);
-
-                        // set the features of the editing layer
-                        //  to the selected feature.
-                        this.props.setFeatures(
-                            EDIT_LAYER_NAME,
-                            editFeatures,
-                            true
-                        );
-
                         if (type === 'Edit') {
                             // show the edit dialog
                             this.props.onEditProperties(editFeatures[0]);
@@ -1097,8 +1097,8 @@ class Map extends React.Component {
             } else {
                 const editSrc = this.olLayers[EDIT_LAYER_NAME].getSource();
                 const drawOptions = {
-                    //source: editSrc,
-                    //collection: [],
+                    // source: editSrc,
+                    // collection: [],
                     type,
                 };
 
@@ -1395,7 +1395,7 @@ function mapDispatch(dispatch) {
         },
         setZoom: z => dispatch(mapActions.setView({zoom: z})),
         removeFeature: (path, feature) => {
-            dispatch(mapSourceActions.removeFeature(path, feature));
+            dispatch(removeFeature(path, feature));
         },
     };
 }

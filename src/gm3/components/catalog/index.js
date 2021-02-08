@@ -39,6 +39,7 @@ import { setGroupExpand } from '../../actions/catalog';
 import CatalogGroup from './group';
 import CatalogLayer from './layer';
 import EditorModal from '../editor';
+import RemoveModal from '../editor/remove-modal';
 
 function allLayers() {
     return true;
@@ -145,6 +146,7 @@ export class Catalog extends React.Component {
                             this.props.catalog.root.children.map(child_id => renderFlatTree(this.props.dispatch, this.props.catalog, child_id, filter))
                     }
                     <EditorModal />
+                    <RemoveModal />
                 </div>
             </Provider>
         );

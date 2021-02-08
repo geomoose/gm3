@@ -27,20 +27,32 @@ import {EDITOR} from '../actionTypes';
 const defaultState = {
     feature: null,
     source: '',
+    modal: '',
 };
 
 const EditorReducer = (state = defaultState, action = {}) => {
     switch(action.type) {
         case EDITOR.START_EDIT:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 feature: action.feature,
                 source: action.source,
-            });
+                modal: 'edit',
+            };
         case EDITOR.FINISH_EDIT:
-            return Object.assign({}, state, {
+            return {
+                ...state,
                 feature: null,
                 source: '',
-            });
+                modal: '',
+            };
+        case EDITOR.REMOVE:
+            return {
+                ...state,
+                feature: action.feature,
+                source: action.source,
+                modal: 'remove',
+            };
         default:
             return state;
     }

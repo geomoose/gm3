@@ -36,3 +36,11 @@ export function finishEditing() {
         type: EDITOR.FINISH_EDIT,
     };
 }
+
+export function removeFeature(source, feature) {
+    return {
+        type: EDITOR.REMOVE,
+        feature,
+        source,
+    };
+}
