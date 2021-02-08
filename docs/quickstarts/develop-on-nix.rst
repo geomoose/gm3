@@ -1,5 +1,5 @@
-Developer Quickstart for *nix/macOS
-===================================
+Developer Quickstart for \*nix/macOS
+====================================
 
 This is the quickstart to *development* guide. If you are looking for a
 quickstart guide for running GeoMoose then you should look at installing

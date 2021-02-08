@@ -311,9 +311,8 @@ Adding identify to Firestations
 More information on templates
 -----------------------------
 
--  GeoMoose has a rich template system provided by Mark.up. `More
-   information on GeoMoose templates
-   here. <http://geomoose.github.io/gm3/templates.html>`__
+-  GeoMoose has a rich template system provided by Mark.up. :ref:`More
+   information on GeoMoose templates here. <templates>`
 -  Features in GeoMoose are processed through the templates as
    `GeoJSON <http://geojson.org>`__. For example:
 
@@ -562,8 +561,8 @@ And change the icon!
         background-image: url(./logo-mini.png);
     }
 
--  More info is available in the GeoMoose `How-to style the toolbar
-   guide. <http://geomoose.github.io/gm3/howto/style-the-toolbar.html>`__
+-  More info is available in the GeoMoose :ref:`How-to style the toolbar
+   guide. <howto_style_the_toolbar>`
 
 Put a sweet gradient on the header
 ----------------------------------

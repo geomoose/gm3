@@ -2,16 +2,18 @@
 
 This is the main repository for the new GeoMoose3 library/application. To learn more about GeoMoose [visit the homepage.](http://www.geomoose.org)
 
-[![Build Status](https://api.travis-ci.org/geomoose/gm3.svg?branch=master)](https://travis-ci.org/geomoose/gm3)
+[![Build Status](https://api.travis-ci.org/geomoose/gm3.svg?branch=main)](https://travis-ci.org/geomoose/gm3)
 [![BrowserStack Status](https://api.browserstack.com/automate/badge.svg?badge_key=cERGdUNyMFlMOEhKbW5OeEtlTm9LS212UVoxNlYyWHdpS2ZHMGpFUExDOD0tLTFOYnBBWHk0Nkdodk5xNlFUZnZiSEE9PQ==--65689ed559d4b9f50fa15a378d55d5a5c2f3d254)](https://api.browserstack.com/automate/public-build/cERGdUNyMFlMOEhKbW5OeEtlTm9LS212UVoxNlYyWHdpS2ZHMGpFUExDOD0tLTFOYnBBWHk0Nkdodk5xNlFUZnZiSEE9PQ==--65689ed559d4b9f50fa15a378d55d5a5c2f3d254)
 
 
-## Quickstart
+## Documentation
 
-This Quickstart is intended for *developers* who are looking to delve into GeoMoose3 right away! We will have additional Getting Started guides once we have demo packages ready for download.
+GeoMoose 3 Documentation found in the `./docs` directory of this repository and is also available online at https://docs.geomoose.org/3.x/
 
-[Click here for the Quickstart Guide](./docs/quickstart.md)
 
+## Quickstarts
+
+[Click here for the Quickstart Guide](https://docs.geomoose.org/3.x/quickstarts/index.html)
 
 
 ## Building

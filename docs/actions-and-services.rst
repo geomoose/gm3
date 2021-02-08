@@ -1,4 +1,4 @@
-.. _actions-and-services
+.. _actions_and_services:
 
 Actions and Services
 ====================

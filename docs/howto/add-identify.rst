@@ -163,5 +163,5 @@ Adding identify to Firestations
    <!-- {% endraw %} -->
 
 -  This example uses GeoMoose's template system. GeoMoose has a rich
-   template system provided by Mark.up. `More information on GeoMoose
-   templates here. <http://geomoose.github.io/gm3/templates.html>`__
+   template system provided by Mark.up. :ref:`More information on GeoMoose
+   templates here. <templates>`

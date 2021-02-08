@@ -477,11 +477,11 @@
                 <layer src="places/default" />
 
                 <layer title="Vector Parcels" src="vector-parcels/parcels">
-                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
                 </layer>
 
                 <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10">
-                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
                     <!--
                     <legend>images/logo_mini.gif</legend>
                     -->

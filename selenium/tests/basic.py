@@ -3,7 +3,7 @@
 #
 
 def run(driver):
-    driver.get('https://demo.geomoose.org/master/desktop/')
+    driver.get('https://demo.geomoose.org/3.x/desktop/')
 
     if not 'GeoMoose' in driver.title:
         raise Exception('Unable to load geomoose demo!')
