@@ -36,7 +36,7 @@ const EditorReducer = (state = defaultState, action = {}) => {
             return {
                 ...state,
                 feature: action.feature,
-                source: action.source,
+                source: action.source || '',
                 modal: 'edit',
             };
         case EDITOR.FINISH_EDIT:
@@ -50,7 +50,7 @@ const EditorReducer = (state = defaultState, action = {}) => {
             return {
                 ...state,
                 feature: action.feature,
-                source: action.source,
+                source: action.source || '',
                 modal: 'remove',
             };
         default:

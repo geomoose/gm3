@@ -39,16 +39,18 @@ describe('test the `edit` reducer', () => {
 
         let nextState = reducer();
 
-        nextState = reducer(nextState, setEditFeature(fakeSource, fakeFeature));
+        nextState = reducer(nextState, setEditFeature(fakeFeature));
         expect(nextState).toEqual({
-            source: fakeSource,
             feature: fakeFeature,
+            source: '',
+            modal: 'edit',
         });
 
         nextState = reducer(nextState, finishEditing());
         expect(nextState).toEqual({
-            source: '',
             feature: null,
+            source: '',
+            modal: '',
         });
     });
 });

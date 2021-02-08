@@ -824,3 +824,26 @@ export function joinUrl(url, params) {
     }
     return r + formatUrlParameters(params);
 }
+
+/** "Buffer" a point in a square fashion
+ *
+ * @param point - The point [x, y], in ground units.
+ * @param buffer - The buffer width, in ground units.
+ *
+ * returns A GeoJSON polygon feature with a square geometry.
+ *
+ */
+export const getSquareBuffer = (point, buffer) => ({
+    type: 'Feature',
+    properties: {},
+    geometry: {
+        type: 'Polygon',
+        coordinates: [[
+            [point[0] - buffer, point[1] - buffer],
+            [point[0] - buffer, point[1] + buffer],
+            [point[0] + buffer, point[1] + buffer],
+            [point[0] + buffer, point[1] - buffer],
+            [point[0] - buffer, point[1] - buffer],
+        ]],
+    },
+});

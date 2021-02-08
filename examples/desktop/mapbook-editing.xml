@@ -85,6 +85,9 @@
         <!-- speicfy the ID column -->
         <config name="id-property" value="ogc_fid" />
 
+        <!-- make sure there is no tolerance on polygon layers -->
+        <config name="pixel-tolerance" value="0" />
+
         <properties>
             <property name="geoid" label="GeoID" />
             <property name="name" label="Name" />
@@ -117,6 +120,46 @@
     </map-source>
 
     <map-source
+        name="census-landmarks-wfs"
+        type="wfs"
+    >
+        <url>http://localhost:8080/geoserver/wfs</url>
+        <param name="typename" value="Geomoose:census_landmarks" />
+        <config name="geometry-name" value="wkb_geometry" />
+        <config name="namespace-uri" value="http://geomoose.demo" />
+        <config name="srs" value="urn:ogc:def:crs:EPSG::4326" />
+        <config name="id-property" value="ogc_fid" />
+
+        <properties>
+            <property name="pointid" label="Point ID" />
+            <property name="fullname" label="Name" />
+        </properties>
+
+        <layer name="census_landmarks">
+            <style><![CDATA[
+            {
+                "line-color" : "#998ec3",
+                "line-width" : 4,
+                "fill-color" : "#998ec3",
+                "fill-opacity" : 0.1
+            }
+            ]]></style>
+
+            <template name="identify"><![CDATA[
+                <div>
+                    <div class="item">
+                        <label>{{ properties.fullname }}</label>
+                    </div>
+                    <div class="item">
+                        ID: {{properties.pointid}}
+                    </div>
+                </div>
+            ]]></template>
+        </layer>
+    </map-source>
+
+
+    <map-source
         name="geoserver"
         type="wms"
     >
@@ -126,7 +169,10 @@
             name="census_cities"
             query-as="geoserver-wfs/census_cities"
         />
-        <layer name="census_landmarks" />
+        <layer
+            name="census_landmarks"
+            query-as="census-landmarks-wfs/census_landmarks"
+        />
         <layer name="census_roads" />
 
         <param name="FORMAT" value="image/png"/>
@@ -548,6 +594,15 @@
                     draw-polygon="true"
                     draw-remove="true"
                 />
+                <layer
+                    title="Census landmarks"
+                    src="geoserver/census_landmarks"
+                    draw-edit="true"
+                    draw-modify="true"
+                    draw-point="true"
+                    draw-remove="true"
+                />
+
             </group>
             <group title="County Layers">
                 <layer src="places/default" />

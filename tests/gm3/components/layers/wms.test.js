@@ -23,7 +23,7 @@
  */
 
 
-import * as WmsLayer from 'gm3/components/layers/wms';
+import * as WmsLayer from 'gm3/components/map/layers/wms';
 
 describe('WMS Layer Tests', function() {
 
