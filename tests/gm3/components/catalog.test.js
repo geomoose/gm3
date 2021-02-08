@@ -27,13 +27,15 @@ import React from 'react';
 import Enzyme, { mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
 import Catalog from 'gm3/components/catalog';
 
 import reducer from 'gm3/reducers/catalog';
 import msReducer from 'gm3/reducers/mapSource';
 import editorReducer from 'gm3/reducers/editor';
+import mapReducer from 'gm3/reducers/map';
 import * as actions from 'gm3/actions/catalog';
 import * as msActions from 'gm3/actions/mapSource';
 
@@ -45,7 +47,8 @@ describe('Catalog component tests', () => {
         'catalog': reducer,
         'mapSources': msReducer,
         'editor': editorReducer,
-    }));
+        'map': mapReducer,
+    }), applyMiddleware(thunk));
 
     let catalog = null;
 

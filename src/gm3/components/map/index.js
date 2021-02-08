@@ -53,7 +53,6 @@ import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import * as proj from 'ol/proj';
 
-import olControl from 'ol/control/Control';
 import olScaleLine from 'ol/control/ScaleLine';
 
 import olView from 'ol/View';
@@ -143,7 +142,12 @@ class Map extends React.Component {
             case 'wfs' :
             case 'ags-vector':
             case 'geojson':
-                vectorLayer.updateLayer(this.map, ol_layer, map_source);
+                vectorLayer.updateLayer(
+                    this.map,
+                    ol_layer,
+                    map_source,
+                    this.props.mapView.interactionType
+                );
                 break;
             case 'bing':
                 bingLayer.updateLayer(this.map, ol_layer, map_source);
@@ -1030,12 +1034,14 @@ class Map extends React.Component {
                     if (type === 'Remove') {
                         this.props.removeFeature(path, editFeatures[0]);
                     } else {
-                        if (type === 'Edit') {
-                            // show the edit dialog
-                            this.props.onEditProperties(editFeatures[0]);
-                        } else if (type === 'Modify') {
-                            // unset the edit-selection tool
-                            this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
+                        if (editFeatures && editFeatures.length > 0) {
+                            if (type === 'Edit') {
+                                // only show the edit dialog if there is a feature selected.
+                                this.props.onEditProperties(editFeatures[0]);
+                            } else if (type === 'Modify') {
+                                // unset the edit-selection tool
+                                this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
+                            }
                         }
                     }
                 };
@@ -1052,13 +1058,6 @@ class Map extends React.Component {
                         );
                     });
                 } else if (layer && layer.queryAs.length > 0) {
-                    // TODO: This wildly assumes the query-as layer is WFS,
-                    //       at the time of writing WFS was the only option.
-                    const queryLayer = mapSourceActions.getLayerFromPath(
-                        this.props.mapSources,
-                        layer.queryAs[0]
-                    );
-
                     const editSrc = this.olLayers[EDIT_LAYER_NAME].getSource();
 
                     this.drawTool = new olDrawInteraction({
@@ -1071,14 +1070,36 @@ class Map extends React.Component {
                         const querySource = this.props.mapSources[
                             querySourceName
                         ];
-                        const pointFeature = util.featureToJson(evt.feature);
+                        let queryFeature = util.featureToJson(evt.feature);
                         const mapProjection = this.map.getView().getProjection();
+
+                        // the default pixel tolerance is 10 pixels.
+                        let pxTolerance = 10;
+                        try {
+                            if (querySource.config['pixel-tolerance']) {
+                                pxTolerance = parseFloat(querySource.config['pixel-tolerance']);
+                            }
+                        } catch (err) {
+                            // swallow the error
+                        }
+
+                        if (pxTolerance > 0) {
+                            // buffer point is in pixels,
+                            //  this converts pixels to ground units
+                            const width = pxTolerance *
+                                this.props.mapView.resolution;
+
+                            queryFeature = util.getSquareBuffer(
+                                queryFeature.geometry.coordinates,
+                                width
+                            );
+                        }
 
                         editSrc.clear();
 
                         wfsGetFeatures(
                             {
-                                selection: [pointFeature],
+                                selection: [queryFeature],
                                 fields: [],
                             },
                             querySource,

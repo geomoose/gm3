@@ -94,11 +94,16 @@ const EditLayerControls = ({editPath, saveFeature, olLayers, changeTool, setFeat
 }
 
 
-const StopControl = ({changeTool}) => {
+const StopControl = ({changeTool, setFeatures}) => {
+    const done = useCallback(() => {
+        setFeatures(EDIT_LAYER_NAME, []);
+        changeTool(null);
+    });
+
     useEffect(() => {
         const keyFn = evt => {
             if (evt.key === 'Escape') {
-                changeTool(null);
+                done();
                 evt.preventDefault();
                 evt.stopPropagation()
             }
@@ -115,7 +120,7 @@ const StopControl = ({changeTool}) => {
             label="end-drawing"
             icon="icon stop"
             index={1}
-            onClick={() => changeTool(null)}
+            onClick={() => done()}
         />
     );
 }
@@ -150,7 +155,12 @@ const ContextControls = ({
             />
         );
     } else {
-        controls = <StopControl changeTool={changeTool}/>;
+        controls = (
+            <StopControl
+                changeTool={changeTool}
+                setFeatures={setFeatures}
+            />
+        );
     }
 
     return (

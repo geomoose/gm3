@@ -27,9 +27,11 @@
  */
 
 import {get as getProj} from 'ol/proj';
+import {changeTool} from './map';
 
 import { MAPSOURCE } from '../actionTypes';
 import {wfsDeleteFeatures, wfsSaveFeatures} from '../components/map/layers/wfs';
+import {EDIT_LAYER_NAME} from '../defaults';
 
 import * as util from '../util';
 
@@ -718,11 +720,13 @@ export function removeFeature(path, feature) {
             const id = feature.id || (feature.properties || {})[idProp];
             if (mapSource.type === 'vector') {
                 // just remove the feature from an in memory layer.
-                return dispatch({
+                dispatch({
                     type: MAPSOURCE.REMOVE_FEATURE,
                     mapSourceName,
                     id
                 });
+                // return a resolved promise.
+                return new Promise(resolve => resolve());
             } else if (mapSource.type === 'wfs') {
                 // time to get async'y.
                 const projection = getProj('EPSG:3857');
@@ -730,7 +734,7 @@ export function removeFeature(path, feature) {
 
                 const changeRequest = wfsDeleteFeatures(mapSource, projection, features);
 
-                fetch(mapSource.urls[0] + '', {
+                return fetch(mapSource.urls[0] + '', {
                     method: 'POST',
                     body: changeRequest,
                 })
@@ -833,11 +837,23 @@ export function setLayerTemplate(mapSourceName, layerName, name, template) {
  * @param on            Visibility state of the layer.
  */
 export function setLayerVisibility(mapSourceName, layerName, on) {
-    return {
-        type: MAPSOURCE.LAYER_VIS,
-        layerName,
-        mapSourceName,
-        on
+    return (dispatch, getState) => {
+        const mapState = getState().map;
+
+        // turn off the actual layer.
+        dispatch({
+            type: MAPSOURCE.LAYER_VIS,
+            layerName,
+            mapSourceName,
+            on
+        });
+
+        // when the layer is turned off de-activate the editing tool
+        const pathName = `${mapSourceName}/${layerName}`;
+        if (mapState.activeSource === pathName || mapState.editPath === pathName) {
+            dispatch(changeTool(null));
+            dispatch(clearFeatures(EDIT_LAYER_NAME));
+        }
     };
 }
 

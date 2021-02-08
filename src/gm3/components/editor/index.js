@@ -24,7 +24,7 @@ const mapState = state => {
         }
 
         // check for a query-as
-        if (layer && layer.queryAs.length > 0) {
+        if (layer && layer.queryAs && layer.queryAs.length > 0) {
             const querySource = getMapSourceName(layer.queryAs[0]);
             properties = state.mapSources[querySource].properties;
         } else {
@@ -45,10 +45,10 @@ const mapDispatch = dispatch => ({
     onClose: (action, path, feature) => {
         if (action === 'save') {
             dispatch(saveFeature(path, feature));
-            // clear out any current features
-            dispatch(clearFeatures(EDIT_LAYER_NAME));
-            dispatch(changeTool('Edit', path));
         }
+        // clear out any current features
+        dispatch(clearFeatures(EDIT_LAYER_NAME));
+        dispatch(changeTool('Edit', path));
         dispatch(finishEditing());
     },
 });

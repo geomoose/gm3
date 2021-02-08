@@ -213,10 +213,11 @@ function defineSource(mapSource) {
 /** Return a style function for the layer.
  *
  */
-export function applyStyle(vectorLayer, mapSource) {
+export function applyStyle(vectorLayer, mapSource, mapTool) {
     // if this is a special-case layer, handle it.
     if (mapSource.name === EDIT_LAYER_NAME) {
-        vectorLayer.setStyle(getEditStyle(mapSource.layers[0].style));
+        const renderPoints = (mapTool === 'Modify' || mapTool === '_Modify');
+        vectorLayer.setStyle(getEditStyle(mapSource.layers[0].style, renderPoints));
         return;
     }
 
@@ -315,7 +316,7 @@ export function createLayer(mapSource) {
 
 /** Ensure that the Vector parameters all match.
  */
-export function updateLayer(map, layer, mapSource) {
+export function updateLayer(map, layer, mapSource, mapTool) {
     if(mapSource.type === 'vector') {
         // vector layer features are defined by what
         // is stored in mapSource.features
@@ -351,5 +352,5 @@ export function updateLayer(map, layer, mapSource) {
 
     // update the style effectively turns "layers"
     // on and off on vector layers.
-    applyStyle(layer, mapSource);
+    applyStyle(layer, mapSource, mapTool);
 }

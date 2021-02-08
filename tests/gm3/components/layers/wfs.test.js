@@ -24,7 +24,7 @@
 
 import * as proj from 'ol/proj';
 
-import { buildWfsQuery } from 'gm3/components/layers/wfs';
+import { buildWfsQuery } from 'gm3/components/map/layers/wfs';
 
 const PARCELS_SRC = {
     layers: [{

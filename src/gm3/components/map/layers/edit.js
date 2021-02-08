@@ -30,37 +30,47 @@ import MultiPoint from 'ol/geom/MultiPoint';
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
 import {EDIT_STYLE} from '../../../defaults';
 
-export const getEditStyle = (glStyle = EDIT_STYLE) => ([
-    new Style({
-        stroke: new Stroke({
-            color: glStyle['line-color'],
-            width: 3,
-        }),
-        fill: new Fill({
-            color: glStyle['fill-color'],
-            opacity: glStyle['fill-opacity'],
-        }),
-    }),
-    new Style({
-        image: new CircleStyle({
-            radius: 5,
+export const getEditStyle = (glStyle = EDIT_STYLE, renderPoints = false) => {
+    const styles = [
+        new Style({
+            stroke: new Stroke({
+                color: glStyle['line-color'],
+                width: 3,
+            }),
             fill: new Fill({
-                color: glStyle['circle-color'],
+                color: glStyle['fill-color'],
+                opacity: glStyle['fill-opacity'],
             }),
         }),
-        geometry: (feature) => {
-            const geom = feature.getGeometry();
-            const type = geom.getType().toLowerCase();
+    ];
 
-            let coordinates = [];
-            if (type === 'polygon' || type === 'multilinestring') {
-                coordinates = geom.getCoordinates().flat();
-            } else if (type === 'multipolygon') {
-                coordinates = geom.getCoordinates().flat(2);
-            } else {
-                coordinates = geom.getCoordinates();
-            }
-            return new MultiPoint(coordinates);
-        },
-    })
-]);
+    if (renderPoints) {
+        styles.push(
+            new Style({
+                image: new CircleStyle({
+                    radius: 5,
+                    fill: new Fill({
+                        color: glStyle['circle-color'],
+                    }),
+                }),
+                geometry: (feature) => {
+                    const geom = feature.getGeometry();
+                    const type = geom.getType().toLowerCase();
+
+                    let coordinates = [];
+                    if (type === 'polygon' || type === 'multilinestring') {
+                        coordinates = geom.getCoordinates().flat();
+                    } else if (type === 'multipolygon') {
+                        coordinates = geom.getCoordinates().flat(2);
+                    } else if (type === 'point') {
+                        return geom;
+                    } else {
+                        coordinates = geom.getCoordinates();
+                    }
+                    return new MultiPoint(coordinates);
+                },
+            })
+        );
+    }
+    return styles;
+};
