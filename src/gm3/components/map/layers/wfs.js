@@ -29,7 +29,7 @@ import GML2Format from 'ol/format/GML2';
 import * as ol_filters from 'ol/format/filter';
 import * as proj from 'ol/proj';
 
-import {jsonToFeature, featureToJson, transformFeatures} from '../../../util';
+import {featureToJson, transformFeatures} from '../../../util';
 
 function chainFilters(operator, filters) {
     let chained_filters = null;
@@ -194,7 +194,7 @@ function wfsTransact(mapSource, mapProjection, inFeatures) {
     }
 
     const geometryName = getGeometryName(mapSource);
-    const jsonFormat = new GeoJSONFormat({geometryName,});
+    const jsonFormat = new GeoJSONFormat({geometryName, });
 
     const features = {
         updates: [],
@@ -205,7 +205,7 @@ function wfsTransact(mapSource, mapProjection, inFeatures) {
     ['inserts', 'updates', 'deletes'].forEach(operation => {
         if (inFeatures[operation]) {
             features[operation] = inFeatures[operation].map(
-                f => jsonFormat.readFeature(f, {geometryName,})
+                f => jsonFormat.readFeature(f, {geometryName, })
             );
             // reproject the features to the layers native SRS
             if (options.srsName !== 'EPSG:3857') {

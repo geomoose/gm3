@@ -9,7 +9,7 @@ import Modal from './modal';
 const mapState = state => {
     let properties = [];
 
-    const open = state.editor && state.editor.feature !== null;
+    const open = state.editor && state.editor.modal === 'edit';
 
     if (open) {
         // get the editing path.
