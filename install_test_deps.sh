@@ -31,4 +31,4 @@
 #
 
 npm install
-npm install --no-save canvas@1.6.7 xmlshim
+npm install --no-save canvas@2.6.1 xmlshim
