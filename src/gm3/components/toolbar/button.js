@@ -39,13 +39,15 @@ export const ToolbarButton = ({tool, onClick, currentService, currentDrawTool}) 
     const {t} = useTranslation();
     const label = t(tool.label);
 
+    const active = (tool.name === currentService);
+
     return (
         <span
             onClick={() => {
                 onClick(tool, currentService, currentDrawTool);
             }}
             key={tool.name}
-            className={tool.cssClass || 'tool ' + tool.name}
+            className={`${active ? 'active ' : ''}${tool.cssClass || 'tool ' + tool.name}`}
             title={label}
         >
             <span className='icon'></span><span className='label'>{label}</span>

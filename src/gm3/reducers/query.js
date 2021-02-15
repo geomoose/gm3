@@ -103,7 +103,7 @@ export default function queryReducer(state = default_query, action) {
         case SERVICE.START:
             return Object.assign({}, state, {service: action.service, showServiceForm: true});
         case SERVICE.FINISH:
-            return Object.assign({}, state, {serivce: null, showServiceForm: false});
+            return Object.assign({}, state, {service: null, showServiceForm: false});
         case MAP.QUERY_NEW:
             const query_id = uuid.v4();
             new_query[query_id] = Object.assign({}, action.query, {

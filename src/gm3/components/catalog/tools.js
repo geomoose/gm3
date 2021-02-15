@@ -28,12 +28,12 @@ import { useTranslation } from 'react-i18next';
 
 /** Generic class for basic "click this, do this" tools.
  */
-export const Tool = ({tip, iconClass, onClick, children}) => {
+export const Tool = ({tip, iconClass, onClick, children, active}) => {
     const {t} = useTranslation();
     return (
         <React.Fragment>
             <i
-                className={'icon ' + iconClass}
+                className={(active ? 'active icon ' : 'icon ') + iconClass}
                 onClick={onClick}
                 title={t(tip)}>
             </i>
@@ -47,4 +47,5 @@ Tool.defaultProps = {
     },
     iconClass: '',
     tip: '',
+    active: false,
 }

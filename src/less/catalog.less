@@ -95,6 +95,32 @@
         color: #aaa;
         font-style: italic;
     }
+
+    .layer-tools {
+        .icon {
+            color: #333;
+            font-size: 20px;
+            width: 28px;
+            height: 28px;
+            border-radius: 14px;
+
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+
+            margin-right: 4px;
+            margin-bottom: 4px;
+
+            &:hover {
+                box-shadow: 0 0 1px 1px #a09999;
+            }
+
+            &.active {
+                box-shadow: 0 0 1px 1px #a09999;
+                background-color: rgba(160, 153, 153, 0.2);
+            }
+        }
+    }
 }
 
 .catalog {

@@ -38,7 +38,7 @@ const DRAW_TYPES = {
 };
 
 
-export const DrawTool = ({layer, drawType, changeTool}) => {
+export const DrawTool = ({layer, drawType, changeTool, interactionType, activeSource}) => {
     const src = layer.src[0];
     const path = src.mapSourceName + '/' + src.layerName;
 
@@ -49,6 +49,7 @@ export const DrawTool = ({layer, drawType, changeTool}) => {
             onClick={() => {
                 changeTool(DRAW_TYPES[drawType], path);
             }}
+            active={DRAW_TYPES[drawType] === interactionType && path === activeSource}
         />
     );
 }
@@ -65,12 +66,13 @@ DrawTool.defaultProps = {
     drawType: 'point',
 };
 
-function mapDispatch(dispatch) {
-    return {
-        changeTool: (drawType, path) => {
-            dispatch(changeTool(drawType, path));
-        },
-    };
-}
+const mapState = state => ({
+    activeSource: state.map.activeSource,
+    interactionType: state.map.interactionType,
+});
 
-export default connect(undefined, mapDispatch)(DrawTool);
+const mapDispatch = {
+    changeTool,
+};
+
+export default connect(mapState, mapDispatch)(DrawTool);
