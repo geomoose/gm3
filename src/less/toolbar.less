@@ -1,13 +1,22 @@
 .toolbar {
     .tool {
         height: 22px;
-        padding: 0 7px;
+        padding: 2px 7px;
         font-size: 14px;
         border: none;
         background: none;
+        border-radius: 11px;
+        margin-bottom: 4px;
+        margin-right: 4px;
+
         &:hover {
             cursor: pointer;
             text-decoration: underline;
+        }
+
+        &.active {
+            box-shadow: 0 0 1px 1px #a09999;
+            background-color: rgba(160, 153, 153, 0.2);
         }
     }
 }
