@@ -36,6 +36,7 @@ import reducer from 'gm3/reducers/catalog';
 import msReducer from 'gm3/reducers/mapSource';
 import editorReducer from 'gm3/reducers/editor';
 import mapReducer from 'gm3/reducers/map';
+import queryReducer from 'gm3/reducers/query';
 import * as actions from 'gm3/actions/catalog';
 import * as msActions from 'gm3/actions/mapSource';
 
@@ -48,6 +49,7 @@ describe('Catalog component tests', () => {
         'mapSources': msReducer,
         'editor': editorReducer,
         'map': mapReducer,
+        'query': queryReducer,
     }), applyMiddleware(thunk));
 
     let catalog = null;
