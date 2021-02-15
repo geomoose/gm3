@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { changeTool } from '../../../actions/map';
+import { finishService } from '../../../actions/service';
 import { Tool } from '../tools';
 
 const DRAW_TYPES = {
@@ -38,7 +39,7 @@ const DRAW_TYPES = {
 };
 
 
-export const DrawTool = ({layer, drawType, changeTool, interactionType, activeSource}) => {
+export const DrawTool = ({layer, drawType, changeTool, interactionType, activeSource, service, finishService}) => {
     const src = layer.src[0];
     const path = src.mapSourceName + '/' + src.layerName;
 
@@ -47,6 +48,9 @@ export const DrawTool = ({layer, drawType, changeTool, interactionType, activeSo
             iconClass={drawType}
             tip={`draw-${drawType}-tip`}
             onClick={() => {
+                if (service) {
+                    finishService();
+                }
                 changeTool(DRAW_TYPES[drawType], path);
             }}
             active={DRAW_TYPES[drawType] === interactionType && path === activeSource}
@@ -69,10 +73,12 @@ DrawTool.defaultProps = {
 const mapState = state => ({
     activeSource: state.map.activeSource,
     interactionType: state.map.interactionType,
+    service: state.query.service,
 });
 
 const mapDispatch = {
     changeTool,
+    finishService,
 };
 
 export default connect(mapState, mapDispatch)(DrawTool);
