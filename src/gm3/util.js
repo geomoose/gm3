@@ -326,9 +326,12 @@ export function filterFeatures(features, filter, inverse = true) {
         filter_function = createFilter(['all'].concat(filter)).filter;
     }
 
-    for(const feature of features) {
-        if(inverse !== filter_function({zoom: 15}, feature)) {
-            new_features.push(feature);
+    if (features) {
+        for (let x = 0, xx = features.length; x < xx; x++) {
+            const feature = features[x];
+            if(inverse !== filter_function({zoom: 15}, feature)) {
+                new_features.push(feature);
+            }
         }
     }
 
