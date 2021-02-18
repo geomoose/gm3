@@ -42,7 +42,7 @@
     position: absolute;
     cursor: pointer;
     bottom: 50%;
-    z-index: 1000;
+    z-index: 100;
     transform: rotate(0deg);
     transition: left ease 500ms, transform ease 500ms;
     border-radius: 10px;
