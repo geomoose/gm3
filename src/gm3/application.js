@@ -118,7 +118,7 @@ class Application {
 
         i18nConfigure(userConfig.lang || {});
 
-        // register(proj4);
+        register(proj4);
 
         // TODO: Combine Reducers here
         this.store = createStore(combineReducers({
