@@ -71,7 +71,7 @@ module.exports = env => {
                     path.join(__dirname, 'node_modules/'),
                 ],
                 exclude: function(absPath) {
-                    var acceptable = ['ol', 'mapbox-to-ol-style', '@mapbox', 'jsts'];
+                    var acceptable = ['ol', 'mapbox-to-ol-style', '@mapbox', 'jsts', 'usng-map-collar'];
                     if(absPath.indexOf('node_modules') < 0) {
                         return false;
                     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2021 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,14 @@
  * SOFTWARE.
  */
 
-import { connect } from 'react-redux';
+import UsngGrid from 'usng-map-collar/UsngGrid';
 
-import CoordinateDisplay from './coordinate-display';
+export const createLayer = () => {
+    return new UsngGrid();
+};
 
-const mapToProps = function(store) {
-    return {
-        coords: store.cursor.coords,
-        resolution: store.map.resolution,
-        zoom: store.map.zoom,
-    }
-}
-
-export default connect(mapToProps)(CoordinateDisplay);
+export const updateLayer = (olMap, olLayer, mapSource) => {
+    // basically, if there are any visible layers turn make it visible
+    const visible = mapSource.layers.filter(layer => layer.on).length > 0;
+    olLayer.setVisible(visible);
+};

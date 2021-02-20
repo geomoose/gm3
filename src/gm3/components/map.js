@@ -76,6 +76,7 @@ import * as xyzLayer from './layers/xyz';
 import * as agsLayer from './layers/ags';
 import * as vectorLayer from './layers/vector';
 import * as bingLayer from './layers/bing';
+import * as usngLayer from './layers/usng';
 
 import { buildWfsQuery } from './layers/wfs';
 
@@ -148,6 +149,9 @@ class Map extends React.Component {
             case 'bing':
                 bingLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
+            case 'usng':
+                usngLayer.updateLayer(this.map, ol_layer, map_source);
+                break;
             default:
                 console.info('Unhandled map-source type: ' + map_source.type);
         }
@@ -174,6 +178,8 @@ class Map extends React.Component {
                 return vectorLayer.createLayer(mapSource);
             case 'bing':
                 return bingLayer.createLayer(mapSource);
+            case 'usng':
+                return usngLayer.createLayer(mapSource);
             default:
                 throw new Error('Unhandled creation of map-source type: ' + mapSource.type);
         }
@@ -703,25 +709,6 @@ class Map extends React.Component {
         }
     }
 
-    sortOlLayers() {
-        const layers = [];
-        for(const ms_name in this.olLayers) {
-            layers.push(this.olLayers[ms_name]);
-        }
-
-        layers.sort((a, b) => {
-            return (a.zIndex < b.zIndex) ? -1 : 1;
-        });
-
-        layers.push(this.selectionLayer);
-
-        const map_layers = this.map.getLayers();
-
-        for(let i = 0, ii = layers.length; i < ii; i++) {
-            map_layers.setAt(i, layers[i]);
-        }
-    }
-
     /** Remove an interval to prevent a layer from being repeatedly
      *  refreshed.
      *
@@ -834,8 +821,6 @@ class Map extends React.Component {
             }
 
         }
-
-        // this.sortOlLayers();
     }
 
     /** Add features to the selection layer.
@@ -937,7 +922,7 @@ class Map extends React.Component {
         // initialize the map.
         this.map = new olMap({
             target: this.mapDiv,
-            layers: [this.selectionLayer],
+            layers: [this.selectionLayer, ],
             logo: false,
             view: new olView(view_params),
             controls: getControls(this.props.config),

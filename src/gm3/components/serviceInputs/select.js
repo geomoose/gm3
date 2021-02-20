@@ -41,7 +41,11 @@ export default class SelectInput extends TextInput {
             this.props.field.default === undefined ||
             options.filter(v => v.value === this.props.field.default).length < 1
         ) {
-            this.onChange({target: {value: options[0].value}});
+            this.onChange({
+                target: {
+                    value: options.length > 0 ? options[0].value : '',
+                },
+            });
         }
     }
 
