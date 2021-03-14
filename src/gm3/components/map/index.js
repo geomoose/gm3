@@ -79,6 +79,8 @@ import * as usngLayer from './layers/usng';
 import { buildWfsQuery, wfsGetFeatures} from './layers/wfs';
 import {EDIT_LAYER_NAME} from '../../defaults';
 
+import EditorModal from '../editor';
+import RemoveModal from '../editor/remove-modal';
 import AttributionDisplay from './attribution-display';
 import JumpToZoom from './jump-to-zoom';
 
@@ -1341,6 +1343,9 @@ class Map extends React.Component {
             >
                 <AttributionDisplay store={this.props.store} />
                 <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
+
+                <EditorModal store={this.props.store} />
+                <RemoveModal store={this.props.store} />
 
                 <div className="map-tools">
                     {enableZoomJump && <JumpToZoom store={this.props.store} />}
