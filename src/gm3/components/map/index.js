@@ -1145,10 +1145,21 @@ class Map extends React.Component {
 
                 if(!is_selection) {
                     this.drawTool.on('drawend', (evt) => {
-                        const json_feature = GEOJSON_FORMAT.writeFeatureObject(evt.feature);
+                        const newFeature = GEOJSON_FORMAT.writeFeatureObject(evt.feature);
                         editSrc.clear();
 
-                        this.props.saveFeature(path, json_feature);
+                        const layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
+                        const querySourceName = util.getMapSourceName(layer.queryAs[0]);
+                        const querySource = this.props.mapSources[
+                            querySourceName
+                        ];
+
+                        if (util.parseBoolean(querySource.config['edit-attributes-on-add'], true)) {
+                            this.props.setEditPath(path);
+                            this.props.onEditProperties(newFeature);
+                        } else {
+                            this.props.saveFeature(path, newFeature);
+                        }
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
