@@ -168,7 +168,10 @@ export function wfsGetFeatures(query, mapSource, mapProjection, outputFormat = D
                 })
                 .map(feature => {
                     const jsonFeature = featureToJson(feature);
-                    jsonFeature.properties.boundedBy = feature.getGeometry().getExtent();
+                    jsonFeature.properties = {
+                        ...jsonFeature.properties,
+                        boundedBy: feature.getGeometry().getExtent(),
+                    };
                     return jsonFeature;
                 });
             // apply the transforms
