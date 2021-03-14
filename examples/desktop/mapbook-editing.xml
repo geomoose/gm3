@@ -87,6 +87,9 @@
 
         <!-- make sure there is no tolerance on polygon layers -->
         <config name="pixel-tolerance" value="0" />
+        <!--
+        <config name="edit-attributes-on-add" value="false" />
+        -->
 
         <properties>
             <property name="geoid" label="GeoID" />

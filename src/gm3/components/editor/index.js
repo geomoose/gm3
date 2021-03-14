@@ -1,7 +1,6 @@
 import {connect} from 'react-redux';
 import {finishEditing} from '../../actions/edit';
 import {clearFeatures, saveFeature, getLayerFromPath} from '../../actions/mapSource';
-import {changeTool} from '../../actions/map';
 import {getMapSourceName} from '../../util';
 import {EDIT_LAYER_NAME} from '../../defaults';
 import Modal from './modal';
@@ -48,7 +47,6 @@ const mapDispatch = dispatch => ({
         }
         // clear out any current features
         dispatch(clearFeatures(EDIT_LAYER_NAME));
-        dispatch(changeTool('Edit', path));
         dispatch(finishEditing());
     },
 });
