@@ -37,7 +37,7 @@ const mapState = state => {
         open,
         path: state.map.editPath,
         properties,
-        feature: state.editor.feature,
+        feature: state.editor ? state.editor.feature : null,
     };
 };
 
