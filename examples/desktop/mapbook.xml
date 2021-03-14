@@ -529,7 +529,7 @@
         The toolbar defines which services are referneces in the toolbar
     -->
     <toolbar>
-        <tool name="fullextent" title="Zoom to Full Extent" type="action"/>
+        <tool name="fullextent" title="Full Extent" type="action"/>
         <tool name="measure" title="Measure" type="service"/>
         <tool name="print" title="Print" type="action"/>
 
