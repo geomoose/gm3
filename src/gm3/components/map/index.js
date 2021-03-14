@@ -1031,17 +1031,15 @@ class Map extends React.Component {
                         true
                     );
 
-                    if (type === 'Remove') {
-                        this.props.removeFeature(path, editFeatures[0]);
-                    } else {
-                        if (editFeatures && editFeatures.length > 0) {
-                            if (type === 'Edit') {
-                                // only show the edit dialog if there is a feature selected.
-                                this.props.onEditProperties(editFeatures[0]);
-                            } else if (type === 'Modify') {
-                                // unset the edit-selection tool
-                                this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
-                            }
+                    // only show the follow up steps if a feature is selected
+                    if (editFeatures && editFeatures.length > 0) {
+                        if (type === 'Remove') {
+                            this.props.removeFeature(path, editFeatures[0]);
+                        } else if (type === 'Edit') {
+                            this.props.onEditProperties(editFeatures[0]);
+                        } else if (type === 'Modify') {
+                            // unset the edit-selection tool
+                            this.props.changeTool('_Modify', `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`)
                         }
                     }
                 };
