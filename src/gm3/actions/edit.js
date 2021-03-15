@@ -24,10 +24,11 @@
 
 import { EDITOR } from '../actionTypes';
 
-export function setEditFeature(feature) {
+export function setEditFeature(feature, isNew = false) {
     return {
         type: EDITOR.START_EDIT,
         feature,
+        isNew,
     };
 }
 

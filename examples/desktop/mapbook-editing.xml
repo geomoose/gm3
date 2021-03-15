@@ -93,7 +93,7 @@
 
         <properties>
             <property name="geoid" label="GeoID" />
-            <property name="name" label="Name" />
+            <property name="name" label="Name" default="City of [name]"/>
         </properties>
 
         <!-- the layer name does not need to match the typename but

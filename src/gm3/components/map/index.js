@@ -1156,7 +1156,7 @@ class Map extends React.Component {
 
                         if (util.parseBoolean(querySource.config['edit-attributes-on-add'], true)) {
                             this.props.setEditPath(path);
-                            this.props.onEditProperties(newFeature);
+                            this.props.onEditProperties(newFeature, true);
                         } else {
                             this.props.saveFeature(path, newFeature);
                         }
@@ -1405,8 +1405,8 @@ function mapDispatch(dispatch) {
         finishQuery: (queryId) => {
             dispatch(mapActions.finishQuery(queryId));
         },
-        onEditProperties: (feature) => {
-            dispatch(setEditFeature(feature));
+        onEditProperties: (feature, isNew = false) => {
+            dispatch(setEditFeature(feature, isNew));
         },
         setSelectionFeatures: (features) => {
             dispatch(mapActions.clearSelectionFeatures());

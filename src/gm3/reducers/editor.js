@@ -37,6 +37,7 @@ const EditorReducer = (state = defaultState, action = {}) => {
                 ...state,
                 feature: action.feature,
                 source: action.source || '',
+                isNew: action.isNew === true,
                 modal: 'edit',
             };
         case EDITOR.FINISH_EDIT:
