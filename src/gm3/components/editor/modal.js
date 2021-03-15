@@ -52,7 +52,7 @@ export class EditorModal extends Modal {
     renderInput(attr) {
         const type = attr.type;
         const isNumberType = type === 'number' || type === 'range';
-        const defaultValue = attr.default
+        const defaultValue = (this.props.isNew && attr.default)
             ? attr.default
             : isNumberType ? 0 : '';
         const currentValue = this.state.properties[attr.name];

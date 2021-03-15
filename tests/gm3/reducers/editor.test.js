@@ -44,6 +44,7 @@ describe('test the `edit` reducer', () => {
             feature: fakeFeature,
             source: '',
             modal: 'edit',
+            isNew: false,
         });
 
         nextState = reducer(nextState, finishEditing());
@@ -51,6 +52,7 @@ describe('test the `edit` reducer', () => {
             feature: null,
             source: '',
             modal: '',
+            isNew: false,
         });
     });
 });
