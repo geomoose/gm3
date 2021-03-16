@@ -98,7 +98,7 @@
   "upload-invalid-features" : "Il y a eu {{count}} dessin(s) invalide(s) trouvé(s) dans le fichier. Vérifiez la source puis réessayez.",
   "upload-tip" : "Importer des dessins depuis un fichier.",
   "upload-title" : "Importer des dessins",
-  "upload-uploaded" : "Il y a eu {{count}} dessin(s) exporté(s)",
+  "upload-uploaded" : "Il y a eu {{count}} dessin(s) importé(s)",
   "upload-uploading" : "Importation du/des fichier(s)...",
   "view-metadata-tip" : "Voir les métadonnées - ouvre une nouvelle fenêtre",
   "visible-layers-help" : "Cet onglet affiche toutes les couches visibles. Cocher une couche du catalogue la fera s'afficher ici. Décocher la couche la fera disparaître de cette liste.",
