@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [ 'ubuntu-latest' ]
+        platform: [ 'ubuntu-20.04' ]
         node-version: [ '14.x' ]
 
     steps:
