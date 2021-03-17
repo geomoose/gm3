@@ -49,7 +49,7 @@ app.uiUpdate = function(ui) {
     }
 }
 
-app.loadMapbook({url: 'mapbook-editing.xml'}).then(function() {
+app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     // set the default view.
     app.setView({
         center: app.lonLatToMeters( -93.16, 44.55),
