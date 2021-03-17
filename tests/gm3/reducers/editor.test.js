@@ -35,7 +35,6 @@ describe('test the `edit` reducer', () => {
             },
             properties: {},
         };
-        const fakeSource = 'fake-source';
 
         let nextState = reducer();
 

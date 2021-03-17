@@ -1149,10 +1149,14 @@ class Map extends React.Component {
                         editSrc.clear();
 
                         const layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
-                        const querySourceName = util.getMapSourceName(layer.queryAs[0]);
-                        const querySource = this.props.mapSources[
-                            querySourceName
-                        ];
+
+                        let querySource = map_source;
+                        if (layer.queryAs && layer.queryAs.length > 0) {
+                            const querySourceName = util.getMapSourceName(layer.queryAs[0]);
+                            querySource = this.props.mapSources[
+                                querySourceName
+                            ];
+                        }
 
                         if (util.parseBoolean(querySource.config['edit-attributes-on-add'], true)) {
                             this.props.setEditPath(path);
