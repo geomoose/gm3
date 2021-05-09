@@ -11,6 +11,7 @@
   "Select Features" : "Seleziona oggetti",
   "Start Over" : "Ricarica la mappa",
   "Zoom to Full Extent" : "Zoom Estensione Massima",
+  "buffer-all": "Tampone oggetti",
   "cancel" : "Cancella",
   "clear-features" : "Pulisci oggetti",
   "clear-features-tip" : "Pulisci tutti gli oggetti dal layer.",

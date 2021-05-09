@@ -536,7 +536,8 @@ class Grid extends React.Component {
         if(query_id) {
             const query = this.props.queries[query_id];
             if(query.progress === 'finished') {
-                const serviceName = query.service;
+                const service = this.props.services[query.service];
+                const serviceName = service.alias || service.name;
                 const paths = Object.keys(query.results);
                 paths.forEach(layerPath => {
                     let layer = null;
