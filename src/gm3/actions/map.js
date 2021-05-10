@@ -202,3 +202,17 @@ export function setEditPath(editPath) {
         editPath,
     };
 }
+
+/* Set the size of the map in the state as a hint
+ * to other components.
+ *
+ * @param size {Object} an object containing a width and height property.
+ *
+ * @return action definition
+ */
+export function resize(size) {
+    return {
+        type: MAP.RESIZE,
+        size,
+    };
+}

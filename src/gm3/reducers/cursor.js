@@ -30,7 +30,9 @@ import { MAP } from '../actionTypes';
 
 const default_view = {
     coords: [0, 0],
-    sketchGeometry: null
+    sketchGeometry: null,
+    // size can be null by default, this is meant to be a hint only!
+    size: null,
 };
 
 export default function cursorReducer(state = default_view, action) {
@@ -39,6 +41,10 @@ export default function cursorReducer(state = default_view, action) {
             return Object.assign({}, state, {coords: action.coords});
         case MAP.SKETCH_GEOMETRY:
             return Object.assign({}, state, {sketchGeometry: action.geometry});
+        case MAP.RESIZE:
+            return Object.assign({}, state, {
+                size: action.size,
+            });
         default:
             return state;
     }

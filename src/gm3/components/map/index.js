@@ -966,6 +966,12 @@ class Map extends React.Component {
 
         // once the map is created, kick off the initial startup.
         this.refreshMapSources();
+
+        // note the size of the map
+        this.props.onMapResize({
+            width: this.mapDiv.clientWidth,
+            height: this.mapDiv.clientHeight,
+        });
     }
 
     /** Switch the drawing tool.
@@ -1214,9 +1220,13 @@ class Map extends React.Component {
      *
      * @returns Boolean. True when the map sucessfully sized, false otherwise.
      */
-    updateMapSize() {
+    updateMapSize(width, height) {
         if(this.map && this.mapDiv) {
             this.map.updateSize();
+
+            // this is a hint for other components to calculate
+            //  things based on the map size.
+            // this.props.onMapResize({width, height});
 
             const canvas = this.mapDiv.getElementsByTagName('canvas');
             if(canvas && canvas[0] && canvas[0].style.display !== 'none') {
@@ -1323,6 +1333,12 @@ class Map extends React.Component {
                     this.props.setFeatures('selection', keepers);
                 }
             }
+
+            // note the size of the map
+            this.props.onMapResize({
+                width: this.mapDiv.clientWidth,
+                height: this.mapDiv.clientHeight,
+            });
         }
     }
 
@@ -1385,6 +1401,7 @@ class Map extends React.Component {
 
 Map.defaultProps = {
     services: {},
+    onMapResize: () => {},
 };
 
 function mapState(state) {
@@ -1436,6 +1453,7 @@ function mapDispatch(dispatch) {
         removeFeature: (path, feature) => {
             dispatch(removeFeature(path, feature));
         },
+        onMapResize: size => dispatch(mapActions.resize(size)),
     };
 }
 
