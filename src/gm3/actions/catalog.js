@@ -182,6 +182,13 @@ function subtreeActions(store, parent, subtreeXml) {
         }
         if(childNode.tagName === 'group') {
             const group = parseGroup(childNode);
+
+            // carry any multiple=false settings down to the
+            //  child groups
+            if (parent && parent.multiple === false) {
+                group.multiple = false;
+            }
+
             actions.push({type: CATALOG.ADD_GROUP, child: group});
             child = group;
 

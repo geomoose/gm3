@@ -28,48 +28,77 @@ import { connect } from 'react-redux';
 import { setLayerVisibility } from '../../actions/mapSource';
 import { isLayerOn } from '../../util';
 
+const getAllChildLayers = (catalog, id, found = []) => {
+    const node = catalog[id];
 
-class LayerCheckbox extends React.Component {
-    render() {
-        let classes = 'checkbox icon';
-        if(this.props.layer.exclusive === true) {
-            classes = 'radio icon';
-        }
-        if(this.props.on) {
-            classes += ' on';
-        }
-
-        return (
-            <i
-                className={ classes }
-                onClick={() => {
-                    this.props.onChange(!this.props.on, this.props.neighbors);
-                }}
-            />
-        );
-
-    }
-}
-
-function getNeighboringLayers(catalog, layer) {
-    // get the parent node
-    const parent = catalog[layer.parent];
-    let srcs = [];
-    for (let c = 0, cc = parent.children.length; c < cc; c++) {
-        const node = catalog[parent.children[c]];
-        if (node.id !== layer.id && (!node.children || node.children.length === 0)) {
-            srcs = srcs.concat(node.src);
+    if (node) {
+        if (node.children) {
+            for (let i = 0, ii = node.children.length; i < ii; i++) {
+                const child = catalog[node.children[i]];
+                if (child.children) {
+                    found = found.concat(getAllChildLayers(catalog, node.children[i], found));
+                } else {
+                    found = found.concat([child]);
+                }
+            }
+        } else {
+            found = found.concat([id]);
         }
     }
-    return srcs;
+
+    return found;
+};
+
+const getNeighboringLayers = (catalog, layer) => {
+    // find the root of the exclusivitiy.
+    let root = layer.parent;
+    while (catalog[root] && catalog[root].parent && catalog[catalog[root].parent] && catalog[catalog[root].parent].multiple === false) {
+        root = catalog[root].parent;
+    }
+
+    // get the all the neighboring src's
+    //  as a flat array.
+    let allSrcs = [];
+    getAllChildLayers(catalog, root, [])
+        .filter(node => node.id !== layer.id)
+        .forEach(node => {
+            allSrcs = allSrcs.concat(node.src);
+        });
+
+    // return the unique srcs as a list.
+    return allSrcs;
+};
+
+
+const LayerCheckbox = props => {
+    let classes = 'checkbox icon';
+    if(props.layer.exclusive === true) {
+        classes = 'radio icon';
+    }
+    if(props.on) {
+        classes += ' on';
+    }
+
+    return (
+        <i
+            className={ classes }
+            onClick={() => {
+                if (props.layer.exclusive === true) {
+                    const neighbors = getNeighboringLayers(props.catalog, props.layer);
+                    props.onChange(!props.on, neighbors);
+                } else {
+                    props.onChange(!props.on);
+                }
+            }}
+        />
+    );
 }
+
 
 function mapStateProps(state, ownProps) {
     return {
+        catalog: state.catalog,
         on: isLayerOn(state.mapSources, ownProps.layer),
-        // group is only needed when a layer is exclusive
-        neighbors: ownProps.layer.exclusive === true ?
-            getNeighboringLayers(state.catalog, ownProps.layer) : [],
     };
 }
 
