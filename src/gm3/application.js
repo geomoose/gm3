@@ -182,6 +182,18 @@ class Application {
      *
      */
     configureResultsLayer(resultsStyle = {}) {
+        // add a blank base layer as "blank/blank"
+        this.store.dispatch(mapSourceActions.add({
+            name: 'blank',
+            urls: [],
+            type: 'blank',
+        }));
+        this.store.dispatch(mapSourceActions.addLayer('blank', {
+            name: 'blank',
+            on: false,
+            label: 'No basemap',
+        }));
+
         // add a layer that listens for changes
         //  to the query results.  This hs
         this.store.dispatch(mapSourceActions.add({

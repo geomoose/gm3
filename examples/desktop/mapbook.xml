@@ -504,6 +504,7 @@
         </group>
 
         <group title="Backgrounds" expand="true" multiple="false">
+            <layer title="No background" src="blank/blank" status="on" />
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
             <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" />

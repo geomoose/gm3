@@ -75,6 +75,7 @@ import * as agsLayer from './layers/ags';
 import * as vectorLayer from './layers/vector';
 import * as bingLayer from './layers/bing';
 import * as usngLayer from './layers/usng';
+import {createLayer as createBlankLayer} from './layers/blank';
 
 import { buildWfsQuery, wfsGetFeatures} from './layers/wfs';
 import {EDIT_LAYER_NAME} from '../../defaults';
@@ -157,6 +158,9 @@ class Map extends React.Component {
             case 'usng':
                 usngLayer.updateLayer(this.map, ol_layer, map_source);
                 break;
+            case 'blank':
+                // this is a non-op, blank will be blank for all time.
+                break;
             default:
                 console.info('Unhandled map-source type: ' + map_source.type);
         }
@@ -185,6 +189,8 @@ class Map extends React.Component {
                 return bingLayer.createLayer(mapSource);
             case 'usng':
                 return usngLayer.createLayer(mapSource);
+            case 'blank':
+                return createBlankLayer();
             default:
                 throw new Error('Unhandled creation of map-source type: ' + mapSource.type);
         }
