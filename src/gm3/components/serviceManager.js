@@ -42,7 +42,7 @@ function normalizeSelection(selectionFeatures) {
     // OpenLayers handles MultiPoint geometries in an awkward way,
     // each feature is a 'MultiPoint' type but only contains one feature,
     //  this normalizes that in order to be submitted properly to query services.
-    if(selectionFeatures.length > 0) {
+    if(selectionFeatures && selectionFeatures.length > 0) {
         if(selectionFeatures[0].geometry.type === 'MultiPoint') {
             const all_coords = [];
             for(const feature of selectionFeatures) {
