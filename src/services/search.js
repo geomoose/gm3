@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2021 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -167,48 +167,6 @@ function SearchService(Application, options) {
         // return the html for rendering.
         return html;
     }
-
-    /** hasRendered is an object which tells renderQueryResults to ignore
-     *              queries which have already been rendered.
-     */
-    this.hasRendered = {};
-
-    /** renderQueryResults is the function called to let the service
-     *                     run basically any code it needs to execute after
-     *                     the query has been set to finish.
-     *
-     *  WARNING! This will be called multiple times. It is best to ensure
-     *           there is some sort of flag to prevent multiple renderings.
-     */
-    this.renderQueryResults = function(queryId, query) {
-        // This is an ugly short circuit.
-        if(this.hasRendered[queryId]) {
-            // do nothing.
-            return;
-        }
-        // flag the query as rendered even though code below
-        //  this line has not finished, this prevents an accidental
-        //  double-rendering.
-        this.hasRendered[queryId] = true;
-
-        // render a set of features on a layer.
-        var all_features = [];
-        for(var i = 0, ii = query.layers.length; i < ii; i++) {
-            var path = query.layers[i];
-            if(query.results[path]) {
-                all_features = all_features.concat(query.results[path]);
-            }
-        }
-
-        // when features have been returned, clear out the old features
-        //  and put the new features on the results layer.
-        if(all_features.length > 0) {
-            Application.clearFeatures(this.resultsPath);
-            Application.addFeatures(this.resultsPath, all_features);
-        }
-    }
-
-
 }
 
 if(typeof(module) !== 'undefined') { module.exports = SearchService; }

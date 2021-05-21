@@ -12,6 +12,7 @@
   "Select Features" : "Seleccionar objetos",
   "Start Over" : "Restablecer",
   "Zoom to Full Extent" : "Zoom a la extension",
+  "buffer-all": "Buffer objetos",
   "cancel" : "Cancelar",
   "clear-features" : "Limpiar objetos",
   "clear-features-tip" : "Limpiar objetos de la capa",

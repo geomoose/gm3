@@ -12,13 +12,14 @@
     "Select Features" : "Selecionar Feições",
     "Start Over" : "Reiniciar",
     "Zoom to Full Extent" : "Enquadrar toda extensão",
+    "buffer-all": "Buffer Feições",
     "cancel" : "Cancelar",
     "clear-features" : "Limpar Feições",
     "clear-features-tip" : "Limpar todas as feições da camada.",
     "clear-previous-selection" : "Limpar a seleção anterior",
     "download-features" : "Baixar as feições",
     "download-features-tip" : "Baixar as feições para arquivo.",
-    "download-format": "Formato do download",  
+    "download-format": "Formato do download",
     "download-help" : "Escolha o formato, então clique 'Ok' para download das feições da camada no formato definido",
     "draw-box-label" : "Desenhar retângulo",
     "draw-edit-tip" : "Editar propriedades da feição",
@@ -107,4 +108,4 @@
     "zoomto-results" : "Zoom para resultados",
     "zoomto-tip" : "Zoom para toda a camada."
   }
-  
+

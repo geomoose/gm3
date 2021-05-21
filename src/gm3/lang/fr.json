@@ -12,6 +12,7 @@
   "Select Features" : "Sélectionner",
   "Start Over" : "Recharger la carte",
   "Zoom to Full Extent" : "Zoomer sur l'étendue complète",
+  "buffer-all": "Tout tamponner",
   "cancel" : "Annuler",
   "clear-features" : "Effacer les dessins",
   "clear-features-tip" : "Effacer les dessins de la couche.",

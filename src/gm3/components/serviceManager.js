@@ -29,7 +29,7 @@ import { withTranslation } from 'react-i18next';
 import { removeQuery, changeTool, zoomToExtent } from '../actions/map';
 import { startService, finishService, showServiceForm } from '../actions/service';
 import * as mapActions from '../actions/map';
-import { clearFeatures } from '../actions/mapSource';
+import { addFeatures, clearFeatures } from '../actions/mapSource';
 import { setUiHint } from '../actions/ui';
 import { getExtentForQuery } from '../util';
 
@@ -42,7 +42,7 @@ function normalizeSelection(selectionFeatures) {
     // OpenLayers handles MultiPoint geometries in an awkward way,
     // each feature is a 'MultiPoint' type but only contains one feature,
     //  this normalizes that in order to be submitted properly to query services.
-    if(selectionFeatures.length > 0) {
+    if(selectionFeatures && selectionFeatures.length > 0) {
         if(selectionFeatures[0].geometry.type === 'MultiPoint') {
             const all_coords = [];
             for(const feature of selectionFeatures) {
@@ -62,6 +62,13 @@ function normalizeSelection(selectionFeatures) {
     }
     return selectionFeatures;
 }
+
+const DEFAULT_CONFIG = {
+    enableBufferAll: false,
+    enableZoomTo: true,
+    showLayerCount: true,
+    showFeatureCount: true,
+};
 
 class ServiceManager extends React.Component {
 
@@ -119,6 +126,14 @@ class ServiceManager extends React.Component {
 
         const service = this.props.services[query.service];
 
+        const resultsConfig = {
+            showFeatureCount: true,
+            showLayerCount: true,
+            showBufferAll: false,
+            showZoomToAll: true,
+            ...service.resultsConfig,
+        };
+
         let service_title = service.resultsTitle;
 
         // By default show the summary, unless showSummary is explicitly
@@ -141,22 +156,37 @@ class ServiceManager extends React.Component {
 
         const info_header = (
             <div className='results-info'>
-                <div className='results-info-item features-count'>
-                    <div className='label'>{this.props.t('features')}</div>
-                    <div className='value'>{ feature_count }</div>
-                </div>
-
-                <div className='results-info-item layers-count'>
-                    <div className='label'>{this.props.t('layers')}</div>
-                    <div className='value'>{ layer_count }</div>
-                </div>
-
-                <div className='results-info-item zoomto'>
-                    <div className='label'>{this.props.t('zoomto-results')}</div>
-                    <div className='value' onClick={() => { this.props.zoomToResults(query); }}>
-                        <span className='icon zoomto'></span>
+                {resultsConfig.showFeatureCount && (
+                    <div className='results-info-item features-count'>
+                        <div className='label'>{this.props.t('features')}</div>
+                        <div className='value'>{ feature_count }</div>
                     </div>
-                </div>
+                )}
+
+                {resultsConfig.showLayerCount && (
+                    <div className='results-info-item layers-count'>
+                        <div className='label'>{this.props.t('layers')}</div>
+                        <div className='value'>{ layer_count }</div>
+                    </div>
+                )}
+
+                {resultsConfig.showBufferAll && (
+                    <div className='results-info-item buffer-all'>
+                        <div className='label'>{this.props.t('buffer-all')}</div>
+                        <div className='value' onClick={() => { this.props.bufferAll(query); }}>
+                            <span className='icon buffer'></span>
+                        </div>
+                    </div>
+                )}
+
+                {resultsConfig.showZoomToAll && (
+                    <div className='results-info-item zoomto'>
+                        <div className='label'>{this.props.t('zoomto-results')}</div>
+                        <div className='value' onClick={() => { this.props.zoomToResults(query); }}>
+                            <span className='icon zoomto'></span>
+                        </div>
+                    </div>
+                )}
             </div>
         );
 
@@ -215,8 +245,6 @@ class ServiceManager extends React.Component {
             }
             // 'rotate' the current servie to the next services.
             this.setState({lastService: nextProps.queries.service, lastFeature: ''});
-            // clear out the previous selection feaures.
-            this.props.clearSelectionFeatures();
 
             // clear out the previous field values.
             if(!this.fieldValues[nextProps.queries.service]) {
@@ -393,6 +421,7 @@ const mapState = state => ({
     queries: state.query,
     map: state.map,
     selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
+    config: {...DEFAULT_CONFIG, ...state.config.results},
 });
 
 function mapDispatch(dispatch, ownProps) {
@@ -447,6 +476,34 @@ function mapDispatch(dispatch, ownProps) {
         },
         showServiceForm: show => {
             dispatch(showServiceForm(show));
+        },
+        // this is a special case that will attempt
+        //  to start the buffer-select service.
+        bufferAll: query => {
+            // flatten the query results down to just a
+            //  list of features
+            let features = [];
+            for (const path in query.results) {
+                features = features.concat(query.results[path]);
+            }
+
+            if (features.length > 0) {
+                dispatch(startService('buffer-select'));
+                dispatch(mapActions.changeTool(''));
+
+                // reset the buffer since this is a new buffer set.
+                dispatch(mapActions.setSelectionBuffer(0));
+                // dispatch the features
+                dispatch(mapActions.clearSelectionFeatures());
+                features.forEach(f => {
+                    dispatch(mapActions.addSelectionFeature(f))
+                });
+                dispatch(clearFeatures('selection'));
+                dispatch(addFeatures('selection', features));
+            } else {
+                // TODO: Dispatch an error message that it
+                //       it is not possible to buffer nothing.
+            }
         },
     };
 }

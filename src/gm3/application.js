@@ -149,16 +149,22 @@ class Application {
         }
     }
 
-    registerService(serviceName, serviceClass, options) {
-        // when options are not an object, then default it to be
-        //  an object.
-        if(typeof(options) != 'object') { options = {}; }
+    registerService(serviceName, serviceClass, options = {}) {
         // "serviceClass" should be a class that can be created,
         //  the only parameter to the constructor should be the application,
         //  which it uses to tie back to the 'react' environment.
-        this.services[serviceName] = new serviceClass(this, options);
+        const service = new serviceClass(this, options);
         // set the service name to whatever it was registered as.
-        this.services[serviceName].name = serviceName;
+        service.name = serviceName;
+        // see if there is an alais for the service.
+        service.alias = options.alias || '';
+        // check for results config
+        service.resultsConfig = {
+            ...service.resultsConfig,
+            ...options.results,
+        };
+        // add it to the services object
+        this.services[serviceName] = service;
     }
 
     /** Actions are classes with a "run" method which the application

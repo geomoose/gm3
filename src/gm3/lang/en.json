@@ -12,6 +12,7 @@
   "Select Features" : "Select Features",
   "Start Over" : "Start Over",
   "Zoom to Full Extent" : "Zoom to Full Extent",
+  "buffer-all": "Buffer results",
   "cancel" : "Cancel",
   "clear-features" : "Clear Features",
   "clear-features-tip" : "Clear all features from the layer.",

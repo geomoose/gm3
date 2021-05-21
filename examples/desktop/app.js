@@ -37,6 +37,10 @@ var app = new gm3.Application({
             enabled: true,
             units: 'imperial'
         }
+    },
+    results: {
+        enableBufferAll: true,
+        showLayerCount: false,
     }
 });
 
@@ -178,11 +182,18 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         // set the default layer
         defaultLayer: 'vector-parcels/parcels',
         keepAlive: true,
+        results: {
+            showBufferAll: true,
+            showLayerCount: false
+        }
     });
 
     app.registerService('buffer-select', SelectService, {
         drawToolsLabel: '',
         tools: {'buffer': true},
+        // tell the app to use the select service templates
+        //  for this services.
+        alias: 'select',
     });
 
     // This uses the OpenStreetMap Nominatim geocoder,
