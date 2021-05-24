@@ -425,7 +425,7 @@
     </map-source-->
 
     <map-source name="openstreetmap" type="xyz">
-        <layer name="osm_mapnik">
+        <layer name="osm_mapnik" status="on">
             <attribution><![CDATA[
                 &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
             ]]></attribution>
@@ -503,10 +503,11 @@
             <layer title="1 mile grid" src="grids/grid_1mile"/>
         </group>
 
-        <group title="Backgrounds" expand="true">
+        <group title="Backgrounds" expand="true" multiple="false">
+            <layer title="No background" src="blank/blank" status="on" />
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
-            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
+            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" />
             <!-- These layers can be *very* slow, they are left here
               -  for demonstration purposes.
             <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
