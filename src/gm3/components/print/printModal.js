@@ -42,6 +42,7 @@ import Mark from 'markup-js';
 import Modal from '../modal';
 import PrintImage from './printImage';
 import PrintPreviewImage from './printPreviewImage';
+import LinearProgress from '../linearProgress';
 
 import { getActiveMapSources } from '../../actions/mapSource';
 import { printed } from '../../actions/print';
@@ -504,7 +505,6 @@ export class PrintModal extends Modal {
         }
 
         const mapSize = this.getMapSize();
-
         return (
             <div>
                 {print_warning}
@@ -533,6 +533,9 @@ export class PrintModal extends Modal {
                         </div>
                     )}
                 </Translation>
+
+                {!this.props.printData && <LinearProgress />}
+
                 <div>
                     <PrintPreviewImage store={this.props.store}/>
                 </div>
@@ -550,6 +553,7 @@ const mapStateToProps = state => ({
     mapSources: state.mapSources,
     open: state.ui.modal === 'print',
     mapView: state.map,
+    printData: state.print.printData,
 });
 
 const mapDispatchToProps = {

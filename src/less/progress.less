@@ -1,0 +1,27 @@
+.linear-progress {
+    height: 12px;
+    background-color: #e7e0e0;
+    position: relative;
+
+    .bar {
+        position: absolute;
+        background-color: #5cC878;
+        top: 0;
+        bottom: 0;
+        width: 23%;
+        right: 0%;
+        animation: progress 2s linear infinite;
+    }
+}
+
+@keyframes progress {
+  0% {
+    right: 0%
+  }
+  50% {
+    right: 30%;
+  }
+  100% {
+    right: 100%;
+  }
+}

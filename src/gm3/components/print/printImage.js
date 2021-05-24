@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2017, 2021 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,90 +22,97 @@
  * SOFTWARE.
  */
 
-import React, { Component } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-
-import uuid from 'uuid';
 
 import Map from '../map';
 
 import { printImage } from '../../actions/print';
 
-class PrintImage extends Component {
+const getImage = (parentElement, exportSize) => {
+    // a derivation of https://openlayers.org/en/latest/examples/export-map.html
+    const mapCanvas = document.createElement('canvas');
+    mapCanvas.width = exportSize[0];
+    mapCanvas.height = exportSize[1];
 
-    constructor(props) {
-        super(props);
+    const mapContext = mapCanvas.getContext('2d');
 
-        this.state = {
-            mapId: 'print-map-' + uuid.v4()
-        };
-    }
-
-
-    /* Get the PNG bytes from the included map.
-     *
-     */
-    getImage() {
-        // there are many opportunities for the map to
-        //  disappear "out of order" and this makes sure all
-        //  of the DOM elements required still exists.
-        const p = document.getElementById(this.state.mapId);
-        if(p) {
-            const canvas = p.getElementsByTagName('canvas');
-            if(canvas.length > 0) {
-                // other options:
-                // canvas.toDataURL('image/jpeg', quality)
-                try {
-                    for (let i = 0, ii = canvas.length; i < ii; i++) {
-                        if (canvas[i].width > 0) {
-                            return canvas[i].toDataURL('image/png');
-                        }
-                    }
-                } catch(error) {
-                    return 'err';
-                }
+    if (parentElement) {
+        const canvases = parentElement.getElementsByTagName('canvas');
+        for (let i = 0, ii = canvases.length; i < ii; i++) {
+            const canvas = canvases[i];
+            if (canvas.width > 0) {
+                const opacity = canvas.parentNode.style.opacity;
+                mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+                const transform = canvas.style.transform;
+                // Get the transform parameters from the style's transform matrix
+                const matrix = transform
+                    // eslint-disable-next-line
+                    .match(/^matrix\(([^\(]*)\)$/)[1]
+                    .split(',')
+                    .map(Number);
+                // Apply the transform to the export map context
+                CanvasRenderingContext2D.prototype.setTransform.apply(
+                    mapContext,
+                    matrix
+                );
+                mapContext.drawImage(canvas, 0, 0);
             }
         }
-        return '';
     }
 
-    /* When the map renders, update the image in the reducer.
-     */
-    mapRendered() {
-        const print_image_action = printImage(this.getImage());
-        this.props.store.dispatch(print_image_action);
-    }
-
-    render() {
-        const image_style = {
-            display: 'inline-block',
-            width: (this.props.width ? this.props.width : 600) + 'px',
-            height: (this.props.height ? this.props.height : 400) + 'px',
-        };
-
-        const center = this.props.mapView.center;
-        const rez = this.props.mapView.resolution;
-
-        // draw the map.
-        return (
-            <div style={image_style} id={this.state.mapId}>
-                <Map
-                    store={this.props.store}
-                    center={center}
-                    resolution={rez}
-                    printOnly={true}
-                    mapRenderedCallback={() => { this.mapRendered() }}
-                />
-            </div>
-        );
-    }
+    return mapCanvas.toDataURL('image/png');
 }
 
+const PrintImage = props => {
+    const [image, setImage] = useState('');
+    const parentRef = useRef();
 
-const mapToProps = function(store) {
-    return {
-        mapView: store.map,
-    }
+    const parentStyle = {
+        display: 'inline-block',
+        width: props.width + 'px',
+        height: props.height + 'px',
+    };
+
+    const center = props.mapView.center;
+    const rez = props.mapView.resolution;
+
+    // empty the print image whenever something changes.
+    useEffect(() => {
+        props.printImage('');
+    }, [props.width, props.height, center, rez]);
+
+    useEffect(() => {
+        props.printImage(image);
+    }, [image]);
+
+    return (
+        <div style={parentStyle} ref={parentRef}>
+            <Map
+                store={props.store}
+                center={center}
+                resolution={rez}
+                printOnly={true}
+                mapRenderedCallback={() => {
+                    setImage(getImage(parentRef.current, [props.width, props.height]));
+                }}
+            />
+        </div>
+    );
 }
 
-export default connect(mapToProps)(PrintImage);
+PrintImage.defaultProps = {
+    width: 600,
+    height: 400,
+};
+
+const mapToProps = state => ({
+    mapView: state.map,
+});
+
+const mapDispatchToProps = {
+    printImage,
+};
+
+
+export default connect(mapToProps, mapDispatchToProps)(PrintImage);

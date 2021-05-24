@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2017, 2021 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,69 +25,49 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-class PrintPreviewImage extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        // TODO: Get the image size from the props.
-        this.state = {
-            size: {
-                width: 600,
-                height: 400
-            }
-        };
+const PrintPreviewImage = ({printData}) => {
+    if (printData && printData.substring(0, 3) === 'err') {
+        return (<div className='error-message'>
+            There was an error generating the print image.<br/>
+            This is likely due to a cross-origin/CORS error with a map-source
+            which is being served from an external server. Check:
+            <ol>
+                <li>The server supports cross-origin requests.</li>
+                <li>That the cross-origin param is set in the mapbook.</li>
+                <li>
+                    If the server does not support cross-origin requests, set the map-source's printable
+                    attribute to false.
+                </li>
+            </ol>
+        </div>);
     }
-
-    render() {
-        const print_data = this.props.print.printData;
-
-        if(print_data) {
-            if(print_data.substring(0, 3) === 'err') {
-                return (<div className='error-message'>
-                    There was an error generating the print image.<br/>
-                    This is likely due to a cross-origin/CORS error with a map-source
-                    which is being served from an external server. Check:
-                    <ol>
-                        <li>The server supports cross-origin requests.</li>
-                        <li>That the cross-origin param is set in the mapbook.</li>
-                        <li>
-                            If the server does not support cross-origin requests, set the map-source's printable
-                            attribute to false.
-                        </li>
-                    </ol>
-                </div>);
-            } else {
-                return (
-                    <div style={{textAlign: 'center'}}>
-                        <img
-                            height={150} style={{border: 'solid 1px #333', maxWidth: '100%'}} alt='map preview' src={print_data}
-                        />
-                    </div>
-                );
-            }
-
-        }
-        return (
-            <div style={{textAlign: 'center'}}>
-                <div
-                    style={{
-                        border: 'solid 1px black',
-                        width: '100px',
-                        height: '150px',
-                    }}
-                >
-                </div>
+    return (
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div
+                style={{
+                    border: 'solid 1px #333',
+                    minHeight: '100px',
+                    maxHeight: '180px',
+                    minWidth: '150px',
+                    maxWidth: '100%',
+                    display: 'flex',
+                }}
+            >
+                {printData && (
+                    <img
+                        style={{maxWidth: '100%', maxHeight: '100%'}}
+                        alt='map preview'
+                        src={printData}
+                    />
+                )}
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 
-const mapToProps = function(store) {
-    return {
-        print: store.print
-    }
-}
+const mapToProps = state => ({
+    printData: state.print.printData,
+});
 
 export default connect(mapToProps)(PrintPreviewImage);
