@@ -524,11 +524,10 @@ class Map extends React.Component {
         };
 
         if (query.selection.length > 0) {
-            let queryGeometry = query.selection[0].geometry;
-
-            queryGeometry = applyPixelTolerance(
-                queryGeometry, map_source,
+            const queryFeature = applyPixelTolerance(
+                query.selection[0], map_source,
                 this.props.mapView.resolution, 2);
+            const queryGeometry = queryFeature.geometry;
 
             // make this an E**I geometry.
             const ol_geom = GEOJSON_FORMAT.readGeometry(queryGeometry);
