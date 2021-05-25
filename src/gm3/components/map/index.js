@@ -967,7 +967,7 @@ class Map extends React.Component {
 
         // call back for when the map has finished rendering.
         if(this.props.mapRenderedCallback) {
-            this.map.on('postrender', this.props.mapRenderedCallback);
+            this.map.on('postrender', () => this.props.mapRenderedCallback(this.map));
         }
 
         // once the map is created, kick off the initial startup.
