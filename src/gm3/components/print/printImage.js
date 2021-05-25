@@ -79,7 +79,7 @@ const PrintImage = props => {
 
     // empty the print image whenever something changes.
     useEffect(() => {
-        props.printImage('');
+        setImage('');
     }, [props.width, props.height, center, rez]);
 
     useEffect(() => {
