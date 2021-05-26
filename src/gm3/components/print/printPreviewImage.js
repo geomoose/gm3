@@ -23,9 +23,8 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
 
-const PrintPreviewImage = ({printData}) => {
+const PrintPreviewImage = ({printData, previewSize}) => {
     if (printData && printData.substring(0, 3) === 'err') {
         return (<div className='error-message'>
             There was an error generating the print image.<br/>
@@ -43,31 +42,23 @@ const PrintPreviewImage = ({printData}) => {
     }
     return (
         <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <div
-                style={{
-                    border: 'solid 1px #333',
-                    minHeight: '100px',
-                    maxHeight: '180px',
-                    minWidth: '150px',
-                    maxWidth: '100%',
-                    display: 'flex',
-                }}
-            >
-                {printData && (
-                    <img
-                        style={{maxWidth: '100%', maxHeight: '100%'}}
-                        alt='map preview'
-                        src={printData}
-                    />
-                )}
-            </div>
+            {printData && (
+                <img
+                    style={{
+                        border: 'solid 1px #333',
+                        maxWidth: previewSize + 'px',
+                        maxHeight: previewSize + 'px',
+                    }}
+                    alt='map preview'
+                    src={printData}
+                />
+            )}
         </div>
     );
 }
 
+PrintPreviewImage.defaultProps = {
+    previewSize: 180,
+};
 
-const mapToProps = state => ({
-    printData: state.print.printData,
-});
-
-export default connect(mapToProps)(PrintPreviewImage);
+export default PrintPreviewImage;

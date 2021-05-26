@@ -537,7 +537,7 @@ export class PrintModal extends Modal {
                 {!this.props.printData && <LinearProgress />}
 
                 <div>
-                    <PrintPreviewImage store={this.props.store}/>
+                    <PrintPreviewImage printData={this.props.printData}/>
                 </div>
 
                 <div style={ map_style_hack }>
