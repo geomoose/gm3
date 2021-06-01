@@ -67,3 +67,10 @@ export const EDIT_STYLE = {
 };
 
 export const EDIT_LAYER_NAME = 'edit-temp';
+
+export const DEFAULT_RESULTS_CONFIG = {
+    showBufferAll: false,
+    showZoomToAll: true,
+    showLayerCount: true,
+    showFeatureCount: true,
+};
