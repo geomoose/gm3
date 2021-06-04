@@ -94,7 +94,9 @@ const PrintImage = props => {
                 resolution={rez}
                 printOnly={true}
                 mapRenderedCallback={() => {
-                    setImage(getImage(parentRef.current, [props.width, props.height]));
+                    if (parentRef.current) {
+                        setImage(getImage(parentRef.current, [props.width, props.height]));
+                    }
                 }}
             />
         </div>
