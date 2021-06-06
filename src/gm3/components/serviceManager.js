@@ -274,20 +274,6 @@ class ServiceManager extends React.Component {
         this.checkQueries(nextProps.queries);
     }
 
-    /** Function to handle bashing 'Enter' and causing
-     *  the service form to submit.
-     *
-     *  @param evt The event from the div.
-     *
-     */
-    handleKeyboardShortcuts(serviceName, evt) {
-        const code = evt.which;
-        if(code === 13) {
-        } else if(code === 27) {
-            this.props.onServiceFinished();
-        }
-    }
-
     /** Implement a small post-render hack to focus on the first
      *  input element of a service form.
      */

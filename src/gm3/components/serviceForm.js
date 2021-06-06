@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017, 2021 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -75,6 +75,8 @@ class ServiceForm extends React.Component {
             values: getDefaultValues(this.props.serviceDef),
             validateFieldValuesResultMessage: null,
         };
+
+        this.handleKeyboard = this.handleKeyboardShortcuts.bind(this);
     }
 
     submit() {
@@ -90,9 +92,10 @@ class ServiceForm extends React.Component {
         }
         if (validateFieldValuesResultValid) {
             this.props.onSubmit(this.state.values);
+        } else {
+            // update state validation message
+            this.setState( {validateFieldValuesResultMessage} );
         }
-        // update state validation message
-        this.setState( {validateFieldValuesResultMessage} );
     }
 
     /** Function to handle bashing 'Enter' and causing
@@ -122,6 +125,14 @@ class ServiceForm extends React.Component {
                 validateFieldValuesResultMessage: null,
             });
         }
+    }
+
+    componentDidMount() {
+        document.addEventListener('keyup', this.handleKeyboard);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keyup', this.handleKeyboard);
     }
 
     render() {
@@ -162,12 +173,7 @@ class ServiceForm extends React.Component {
         }
 
         return (
-            <div className='service-form'
-                onKeyUp={(evt) => {
-                    this.handleKeyboardShortcuts(evt);
-                }}
-            >
-
+            <div className='service-form'>
                 <h3>{this.props.t(service_def.title)}</h3>
                 { inputs }
                 {
