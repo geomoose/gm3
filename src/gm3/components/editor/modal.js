@@ -5,8 +5,16 @@ import Modal from '../modal';
 
 const isNumberType = type => (type === 'number' || type === 'range');
 
-const getDefaultValue = attr =>
-    attr.default ? attr.default : (isNumberType(attr.type) ? 0 : '');
+const getDefaultValue = attr => {
+    const numeric = isNumberType(attr.type);
+    if (attr.default) {
+        return numeric ? parseFloat(attr.default) : attr.default;
+    } else if (numeric) {
+        return 0;
+    } else {
+        return '';
+    }
+}
 
 const getDefaultProperties = attributes => {
     const properties = {};
