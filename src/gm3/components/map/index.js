@@ -1084,9 +1084,13 @@ class Map extends React.Component {
                     }
                 };
 
-                if (['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
+                if (!map_source || ['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
+                    const layers = !map_source
+                        ? [this.selectionLayer]
+                        : [this.olLayers[map_source_name]];
+
                     this.drawTool = new olSelectInteraction({
-                        layers: [this.olLayers[map_source_name]],
+                        layers,
                         style: null,
                     });
 
@@ -1394,7 +1398,16 @@ class Map extends React.Component {
                     {enableZoomJump && <JumpToZoom store={this.props.store} />}
 
                     <ContextControls
-                        saveFeature={this.props.saveFeature}
+                        saveFeature={(path, feature) => {
+                            // this is the selection layer
+                            if (path === null) {
+                                // convert the feature back to OL
+                                const olFeature = GEOJSON_FORMAT.readFeature(feature);
+                                this.addSelectionFeatures([olFeature], this.props.selectionBuffer);
+                            } else {
+                                this.props.saveFeature(path, feature);
+                            }
+                        }}
                         editPath={this.props.mapView.editPath}
                         olLayers={this.olLayers}
                         setFeatures={this.props.setFeatures}
