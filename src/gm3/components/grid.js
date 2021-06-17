@@ -444,23 +444,28 @@ class Grid extends React.Component {
     }
 
     sortResults(results) {
+        const collator = Intl.Collator();
         const sorted_results = [].concat(results);
 
         const sort_col = this.state.sortBy;
         const sort_asc = this.state.sortAsc;
         const sort_as = this.state.sortAs;
 
-        sorted_results.sort(function(a, b) {
+        sorted_results.sort((a, b) => {
             let value_a = a.properties[sort_col];
             let value_b = b.properties[sort_col];
-            if(sort_as === 'number') {
+            if (sort_as === 'number') {
                 value_a = parseFloat(value_a);
                 value_b = parseFloat(value_b);
+                if (sort_asc) {
+                    return value_a < value_b ? -1 : 1;
+                }
+                return value_b < value_a ? -1 : 1;
             }
-            if(sort_asc) {
-                return (value_a > value_b) ? 1 : -1;
+            if (sort_asc) {
+                return collator.compare(value_a, value_b);
             }
-            return (value_a > value_b) ? -1 : 1;
+            return collator.compare(value_b, value_a);
         });
         return sorted_results;
     }
