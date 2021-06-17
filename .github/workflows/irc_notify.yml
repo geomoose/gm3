@@ -30,7 +30,7 @@ jobs:
           server: "irc.libera.chat"          
           nickname: geomoose-github-notifier
           message: |
-            ${{ github.actor }} opened PR ${{ github.event.html_url }}
+            ${{ github.actor }} opened PR ${{ github.event.pull_request.html_url }}
       - name: irc tag created
         uses: rectalogic/notify-irc@v1
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
