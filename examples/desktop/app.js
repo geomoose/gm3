@@ -37,10 +37,6 @@ var app = new gm3.Application({
             enabled: true,
             units: 'imperial'
         }
-    },
-    results: {
-        enableBufferAll: true,
-        showLayerCount: false,
     }
 });
 

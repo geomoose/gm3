@@ -113,17 +113,7 @@ function SelectService(Application, options) {
      *                   given to the service.
      */
     this.query = function(selection, fields) {
-        if(typeof(selection) === 'undefined') {
-            // throw up this handy dialog.
-            var msg = 'A selection geometry is required for this query.';
-            var service_name = this.name;
-            var self = this;
-            var on_close = function() {
-                Application.startService(service_name, {changeTool: self.tools.default});
-            };
-
-            Application.alert('selection-required', msg, on_close);
-        } else {
+        if (selection && selection.length > 0) {
             // get the query layer.
             var query_layer = fields[0].value;
             // check which templates should try and load
@@ -137,6 +127,16 @@ function SelectService(Application, options) {
 
             // dispatch the query against on the query layer!
             Application.dispatchQuery(this.name, selection, [], [query_layer], templates);
+        } else {
+            // throw up this handy dialog.
+            var msg = 'A selection geometry is required for this query.';
+            var service_name = this.name;
+            var self = this;
+            var on_close = function() {
+                Application.startService(service_name, {changeTool: self.tools.default});
+            };
+
+            Application.alert('selection-required', msg, on_close);
         }
     }
 
