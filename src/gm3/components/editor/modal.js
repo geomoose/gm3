@@ -3,18 +3,44 @@ import {withTranslation} from 'react-i18next';
 
 import Modal from '../modal';
 
+const isNumberType = type => (type === 'number' || type === 'range');
+
+const getDefaultValue = attr => {
+    const numeric = isNumberType(attr.type);
+    if (attr.default) {
+        return numeric ? parseFloat(attr.default) : attr.default;
+    } else if (numeric) {
+        return 0;
+    } else {
+        return '';
+    }
+}
+
+const getDefaultProperties = attributes => {
+    const properties = {};
+    attributes.forEach(attr => {
+        properties[attr.name] = getDefaultValue(attr);
+    });
+    return properties;
+};
+
 export class EditorModal extends Modal {
     constructor(props) {
         super(props);
         this.state = {
-            properties: {},
+            properties: null,
         };
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.feature !== this.props.feature) {
+            const defaultProperties = getDefaultProperties(this.props.properties);
+            const featureProperties = this.props.feature && this.props.feature.properties;
             this.setState({
-                properties: Object.assign({}, this.props.feature ? this.props.feature.properties : {}),
+                properties: {
+                    ...defaultProperties,
+                    ...featureProperties,
+                },
             });
         }
     }
@@ -51,17 +77,14 @@ export class EditorModal extends Modal {
 
     renderInput(attr) {
         const type = attr.type;
-        const isNumberType = type === 'number' || type === 'range';
-        const defaultValue = (this.props.isNew && attr.default)
-            ? attr.default
-            : isNumberType ? 0 : '';
-        const currentValue = this.state.properties[attr.name];
+        const propValue = this.state.properties[attr.name];
+        const currentValue = propValue === undefined ? getDefaultValue(attr) : propValue;
 
         const props = {
             type,
-            value: currentValue === undefined ? defaultValue : currentValue,
+            value: currentValue,
             onChange: evt => {
-                const newValue = isNumberType
+                const newValue = isNumberType(type)
                     ? parseFloat(evt.target.value)
                     : evt.target.value;
 
@@ -93,7 +116,7 @@ export class EditorModal extends Modal {
     renderBody() {
         return (
             <div className='editor-list'>
-                {this.props.properties.map(attr => (
+                {this.state.properties && this.props.properties.map(attr => (
                     <div key={attr.name} className='editor-attribute'>
                         <label>{attr.label}</label>
                         {this.renderInput(attr)}
