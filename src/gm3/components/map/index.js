@@ -369,7 +369,7 @@ class Map extends React.Component {
             output_format = map_source.params.outputFormat;
         }
 
-        if (query.selection.length === 1) {
+        if (query.selection && query.selection.length === 1) {
             query.selection[0] = applyPixelTolerance(
                 query.selection[0], map_source,
                 this.props.mapView.resolution, 10);
@@ -529,7 +529,7 @@ class Map extends React.Component {
             outFields: '*',
         };
 
-        if (query.selection.length > 0) {
+        if (query.selection && query.selection.length > 0) {
             const queryFeature = applyPixelTolerance(
                 query.selection[0], map_source,
                 this.props.mapView.resolution, 2);
@@ -643,7 +643,7 @@ class Map extends React.Component {
 
         const result_features = [];
 
-        const selection = query.selection[0];
+        const selection = query.selection ? query.selection[0] : null;
         if(selection && selection.geometry && selection.geometry.type === 'Point') {
             const coords = selection.geometry.coordinates;
             src.forEachFeatureAtCoordinateDirect(coords, (feature) => {
