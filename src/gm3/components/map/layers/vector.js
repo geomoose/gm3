@@ -27,7 +27,7 @@
  *
  */
 
-import { transformProperties, joinUrl, requEstimator } from '../../../util';
+import { parseBoolean, transformProperties, joinUrl, requEstimator } from '../../../util';
 
 import GML2Format from 'ol/format/GML2';
 import GeoJSONFormat from 'ol/format/GeoJSON';
@@ -306,7 +306,7 @@ export function createLayer(mapSource) {
         source,
         minResolution: mapSource.minresolution,
         maxResolution: mapSource.maxresolution,
-        declutter: true
+        declutter: parseBoolean((mapSource.config || {}).declutter),
     };
     const vector_layer = new VectorLayer(opts);
     applyStyle(vector_layer, mapSource);

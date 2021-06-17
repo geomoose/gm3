@@ -84,6 +84,7 @@
     <map-source name="vector-parcels" type="mapserver-wfs">
         <file>./demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels"/>
+        <config name="pixel-tolerance" value="0"/>
         <transform attribute="EMV_TOTAL" function="number"/>
 
         <layer name="big-money">
@@ -142,9 +143,16 @@
        </layer>
     </map-source>
 
-    <map-source name="pipelines" type="mapserver" title="Pipelines">
+    <map-source name="vector-pipelines" title="Pipelines" type="mapserver-wfs">
+        <param name="typename" value="ms:pipelines"/>
         <file>./demo/pipelines/pipelines.map</file>
         <layer name="pipelines" status="off">
+            <style><![CDATA[
+            {
+                "line-color": "#aaaaff",
+                "line-width": 6
+            }
+            ]]></style>
             <template name="identify"><![CDATA[
             <div>
                 <div class="feature-class pipelines">
@@ -493,7 +501,7 @@
                 <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
                 <layer title="AGS Dakota County Runways" src="ags-vector-dc21/runways"></layer>
             </group>
-            <layer src="pipelines/pipelines"></layer>
+            <layer src="vector-pipelines/pipelines"></layer>
             <layer title="Weather Radar" src="iastate/nexrad-n0r" />
         </group>
 
