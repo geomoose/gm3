@@ -32,6 +32,7 @@ import * as mapActions from '../actions/map';
 import { addFeatures, clearFeatures } from '../actions/mapSource';
 import { setUiHint } from '../actions/ui';
 import { getExtentForQuery } from '../util';
+import { DEFAULT_RESULTS_CONFIG } from '../defaults';
 
 import MeasureTool from './measure';
 
@@ -62,13 +63,6 @@ function normalizeSelection(selectionFeatures) {
     }
     return selectionFeatures;
 }
-
-const DEFAULT_CONFIG = {
-    enableBufferAll: false,
-    enableZoomTo: true,
-    showLayerCount: true,
-    showFeatureCount: true,
-};
 
 class ServiceManager extends React.Component {
 
@@ -127,10 +121,7 @@ class ServiceManager extends React.Component {
         const service = this.props.services[query.service];
 
         const resultsConfig = {
-            showFeatureCount: true,
-            showLayerCount: true,
-            showBufferAll: false,
-            showZoomToAll: true,
+            ...this.props.resultsConfig,
             ...service.resultsConfig,
         };
 
@@ -407,7 +398,7 @@ const mapState = state => ({
     queries: state.query,
     map: state.map,
     selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
-    config: {...DEFAULT_CONFIG, ...state.config.results},
+    resultsConfig: {...DEFAULT_RESULTS_CONFIG, ...state.config.results},
 });
 
 function mapDispatch(dispatch, ownProps) {
