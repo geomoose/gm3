@@ -102,6 +102,35 @@ function getControls(mapConfig) {
 const GEOJSON_FORMAT = new GeoJSONFormat();
 
 
+const getPixelTolerance = (querySource, defaultPx = 10) => {
+    // the default pixel tolerance is 10 pixels.
+    let pxTolerance = defaultPx;
+    try {
+        if (querySource.config['pixel-tolerance']) {
+            pxTolerance = parseFloat(querySource.config['pixel-tolerance']);
+        }
+    } catch (err) {
+        // swallow the error
+    }
+    return pxTolerance;
+};
+
+const applyPixelTolerance = (queryFeature, querySource, resolution, defaultPxTolerance) => {
+    const pxTolerance = getPixelTolerance(querySource, defaultPxTolerance);
+    if (pxTolerance > 0 && queryFeature.geometry.type === 'Point') {
+        // buffer point is in pixels,
+        //  this converts pixels to ground units
+        const width = pxTolerance * resolution;
+        return util.getSquareBuffer(
+            queryFeature.geometry.coordinates,
+            width
+        );
+    }
+    return queryFeature;
+};
+
+
+
 class Map extends React.Component {
 
     constructor() {
@@ -340,6 +369,12 @@ class Map extends React.Component {
             output_format = map_source.params.outputFormat;
         }
 
+        if (query.selection.length === 1) {
+            query.selection[0] = applyPixelTolerance(
+                query.selection[0], map_source,
+                this.props.mapView.resolution, 10);
+        }
+
         const wfs_query_xml = buildWfsQuery(query, map_source, map_projection, output_format);
 
         // Ensure all the extra URL params are attached to the
@@ -495,20 +530,11 @@ class Map extends React.Component {
         };
 
         if (query.selection.length > 0) {
-            const queryGeometry = query.selection[0].geometry;
-            // Since AGS servers don't "intersect" a point with anything, we make a box
-            // Make a 4 pixel (2 pixels each way) box around the point
-            if (queryGeometry.type === 'Point'){
-                const res = this.map.getView().getResolution() * 2;
-                const pt = queryGeometry.coordinates;
-                queryGeometry.type = 'Polygon'
-                queryGeometry.coordinates = [[
-                    [pt[0] + res, pt[1] + res],
-                    [pt[0] + res, pt[1] - res],
-                    [pt[0] - res, pt[1] - res],
-                    [pt[0] - res, pt[1] + res]
-                ]]
-            }
+            const queryFeature = applyPixelTolerance(
+                query.selection[0], map_source,
+                this.props.mapView.resolution, 2);
+            const queryGeometry = queryFeature.geometry;
+
             // make this an E**I geometry.
             const ol_geom = GEOJSON_FORMAT.readGeometry(queryGeometry);
 
@@ -1083,29 +1109,11 @@ class Map extends React.Component {
                             querySourceName
                         ];
                         let queryFeature = util.featureToJson(evt.feature);
+
                         const mapProjection = this.map.getView().getProjection();
-
-                        // the default pixel tolerance is 10 pixels.
-                        let pxTolerance = 10;
-                        try {
-                            if (querySource.config['pixel-tolerance']) {
-                                pxTolerance = parseFloat(querySource.config['pixel-tolerance']);
-                            }
-                        } catch (err) {
-                            // swallow the error
-                        }
-
-                        if (pxTolerance > 0) {
-                            // buffer point is in pixels,
-                            //  this converts pixels to ground units
-                            const width = pxTolerance *
-                                this.props.mapView.resolution;
-
-                            queryFeature = util.getSquareBuffer(
-                                queryFeature.geometry.coordinates,
-                                width
-                            );
-                        }
+                        queryFeature = applyPixelTolerance(
+                            queryFeature, querySource,
+                            this.props.mapView.resolution, 10);
 
                         editSrc.clear();
 
@@ -1130,8 +1138,6 @@ class Map extends React.Component {
             } else {
                 const editSrc = this.olLayers[EDIT_LAYER_NAME].getSource();
                 const drawOptions = {
-                    // source: editSrc,
-                    // collection: [],
                     type,
                 };
 
@@ -1146,7 +1152,6 @@ class Map extends React.Component {
                     this.drawTool.on('drawstart', (evt) => {
                         // clear out the other features on the source.
                         source.clear();
-
                         this.sketchFeature = evt.feature;
                     });
                 } else {
@@ -1169,6 +1174,7 @@ class Map extends React.Component {
                                 querySourceName
                             ];
                         }
+
 
                         if (util.parseBoolean(querySource.config['edit-attributes-on-add'], true)) {
                             this.props.setEditPath(path);
