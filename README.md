@@ -41,4 +41,4 @@ GeoMoose3 uses an MIT-style licence. You can read the contents of it [here](./LI
 
 ## OSGeo
 GeoMoose is an OSGeo Project. To learn more about OSGeo and what that means, click the logo below.
-[![OSGeo Logo](https://wiki.osgeo.org/images/4/40/OSGeo_Logo_150by65_pixel.png)](http://www.osgeo.org/)
+[![OSGeo Logo](https://www.geomoose.org/_static/osgeo.png)](http://www.osgeo.org/)
