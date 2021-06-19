@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { parse as urlParse } from 'url';
+
 import Request from 'reqwest';
 
 import GeoJSONFormat from 'ol/format/GeoJSON';
@@ -30,6 +32,17 @@ import {featureFilter as createFilter} from '@mapbox/mapbox-gl-style-spec';
 
 /** Collection of handy functions
  */
+export function parseHash() {
+    // take the hash and parse it like a query string.
+    // The "substring(1)" removes the "#" from the leading edge,
+    //  replacing it with the '?' then cuases the hash to be parsed like
+    //  a normal query string.
+    return urlParse('?' + window.location.hash.substring(1), true);
+}
+
+export function parseQuery() {
+    return urlParse(window.location.search, true);
+}
 
 export function parseBoolean(bool, def = false) {
     if(typeof(bool) == 'undefined' || bool === null) { return def; }
