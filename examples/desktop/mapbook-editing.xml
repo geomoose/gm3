@@ -4,6 +4,10 @@
         The mapping services define the source of the mapping data.
     -->
 
+    <map-source name="usng-grid" type="usng">
+        <layer name="usng-grid" status="off" />
+    </map-source>
+
     <map-source name="sketch" type="vector" title="Drawing and Markup">
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
@@ -63,82 +67,33 @@
         </properties>
     </map-source>
 
-    <map-source
-        name="geoserver-wfs"
-        type="wfs"
-    >
-        <!-- GeoMoose support GeoServer being on a different domain
-             as long as GeoServer has been configured with CORS support.
-             See: https://docs.geoserver.org/latest/en/user/production/container.html#enable-cors
-        -->
+    <map-source name="census_landmarks-wfst" type="wfs" >
+        <!-- Use the following for the GeoServer WFS-T server: -->
         <url>http://localhost:8080/geoserver/wfs</url>
-        <!-- The typename with GeoServer is the combination of the
-             workspace name and the layer name joined with a colon
-        -->
-        <param name="typename" value="Geomoose:census_cities" />
-        <!-- This will match the geometry colum name in geoserver -->
-        <config name="geometry-name" value="wkb_geometry" />
-        <!-- this needs to match the workspace of the GeoServer layer -->
         <config name="namespace-uri" value="http://geomoose.demo" />
-        <!-- specifying by URN will ensure that axis-order is correct -->
-        <config name="srs" value="urn:ogc:def:crs:EPSG::4326" />
-        <!-- speicfy the ID column -->
-        <config name="id-property" value="ogc_fid" />
+        <!--         -->
 
-        <!-- make sure there is no tolerance on polygon layers -->
-        <config name="pixel-tolerance" value="0" />
+        <!-- Substitute the following to use the TinyOWS WFS-T server instead of GeoServer: -->
         <!--
-        <config name="edit-attributes-on-add" value="false" />
+        <url>http://localhost/cgi-bin/tinyows.exe</url>
+        <config name="namespace-uri" value="http://localhost/cgi-bin/tinyows.exe" />
         -->
 
-        <properties>
-            <property name="geoid" label="GeoID" />
-            <property name="name" label="Name" default="City of [name]"/>
-        </properties>
-
-        <!-- the layer name does not need to match the typename but
-             it is a good idea.
-        -->
-        <layer name="census_cities">
-            <style><![CDATA[
-            {
-                "line-color" : "#998ec3",
-                "line-width" : 4,
-                "fill-color" : "#998ec3",
-                "fill-opacity" : 0.1
-            }
-            ]]></style>
-
-            <template name="identify"><![CDATA[
-                <div>
-                    <div class="item">
-                        <label>{{ properties.name }}</label>
-                    </div>
-                    <div class="item">
-                        ID: {{properties.geoid}}
-                    </div>
-                </div>
-            ]]></template>
-        </layer>
-    </map-source>
-
-    <map-source
-        name="census-landmarks-wfs"
-        type="wfs"
-    >
-        <url>http://localhost:8080/geoserver/wfs</url>
         <param name="typename" value="Geomoose:census_landmarks" />
         <config name="geometry-name" value="wkb_geometry" />
-        <config name="namespace-uri" value="http://geomoose.demo" />
-        <config name="srs" value="urn:ogc:def:crs:EPSG::4326" />
+        <config name="srs" value="EPSG:4269" />
         <config name="id-property" value="ogc_fid" />
+        <config name="pixel-tolerance" value="20" />
 
         <properties>
             <property name="pointid" label="Point ID" />
             <property name="fullname" label="Name" />
+            <property name="mtfcc"    label="Code" />
+            <property name="statefp"  label="State Code" />
+            <property name="ansicode" label="Ansi Code" />
         </properties>
 
-        <layer name="census_landmarks">
+        <layer name="census_landmarks" title="Census Landmarks">
             <style><![CDATA[
             {
                 "line-color" : "#998ec3",
@@ -158,25 +113,164 @@
                     </div>
                 </div>
             ]]></template>
+
         </layer>
     </map-source>
 
+    <map-source name="census_roads-wfst" type="wfs">
+        <!-- Use the following for the GeoServer WFS-T server: -->
+        <url>http://localhost:8080/geoserver/wfs</url>
+        <config name="namespace-uri" value="http://geomoose.demo" />
+        <!--         -->
 
-    <map-source
-        name="geoserver"
-        type="wms"
-    >
+        <!-- Substitute the following to use the TinyOWS WFS-T server instead of GeoServer: -->
+        <!--
+        <url>http://localhost/cgi-bin/tinyows.exe</url>
+        <config name="namespace-uri" value="http://localhost/cgi-bin/tinyows.exe" />
+        -->
+
+        <param name="typename" value="Geomoose:census_roads" />
+        <config name="geometry-name" value="wkb_geometry" />
+        <config name="srs" value="EPSG:4269" />
+        <config name="id-property" value="ogc_fid" />
+        <config name="pixel-tolerance" value="10" />
+
+        <properties>
+            <property name="linearid" label="ID" />
+            <property name="fullname" label="Name" />
+            <property name="rttype"   label="Type" />
+            <property name="mtfcc"    label="Code" />
+        </properties>
+
+        <layer name="census_roads" title="Census Roads">
+            <style><![CDATA[
+            {
+                "line-color": "green",
+                "line-width": 4,
+                "line-opacity": 0.80,
+                "text-font": ["literal", ["DIN Offc Pro Italic", "Arial Unicode MS Regular"]],
+                "text-size": 18.0,
+                "symbol-placement":"line",
+                "text-rotation-alignment": "auto",
+                "text-field": "{fullname}",
+                "text-color": "green",
+                "text-halo-width":1,
+                "text-halo-color":"white",
+                "text-halo-blur":0,
+                "text-padding":200
+            }
+            ]]></style>
+
+            <template name="identify"><![CDATA[
+                <div>
+                    <div class="item">
+                        <label>{{ properties.fullname }}</label>
+                    </div>
+                    <div class="item">
+                        ID: {{properties.linearid}}
+                    </div>
+                </div>
+            ]]></template>
+
+        </layer>
+    </map-source>
+
+    <map-source name="census_cities-wfst" type="wfs">
+        <!-- GeoMoose support GeoServer being on a different domain
+             as long as GeoServer has been configured with CORS support.
+             See: https://docs.geoserver.org/latest/en/user/production/container.html#enable-cors
+        -->
+        <url>http://localhost:8080/geoserver/wfs</url>
+        <config name="namespace-uri" value="http://geomoose.demo" />
+        <!--         -->
+        <!-- Substitute the following to use the TinyOWS WFS-T server instead of GeoServer: -->
+        <!--
+        <url>http://localhost/cgi-bin/tinyows.exe</url>
+        <config name="namespace-uri" value="http://localhost/cgi-bin/tinyows.exe" />
+        -->
+
+        <!-- The typename is the combination of the
+             workspace name and the layer name joined with a colon
+        -->
+        <param name="typename" value="Geomoose:census_cities" />
+        <!-- This will match the geometry colum name in the server -->
+        <config name="geometry-name" value="wkb_geometry" />
+        <config name="srs" value="EPSG:4269" />
+        <!-- specify the ID column -->
+        <config name="id-property" value="ogc_fid" />
+
+        <!-- make sure there is no tolerance on polygon layers -->
+        <config name="pixel-tolerance" value="0" />
+        <!--
+        <config name="edit-attributes-on-add" value="false" />
+        -->
+
+        <properties>
+            <property name="geoid"    label="GeoID" />
+            <property name="name"     label="Name"/>
+            <property name="statefp"  label="statefp" default="27"/>
+            <property name="placefp"  label="placefp" />
+            <property name="placens"  label="placens" />
+            <property name="namelsad" label="namelsad" />
+            <property name="lsad"     label="lsad" />
+            <property name="classfp"  label="classfp" />
+            <property name="pcipbsa"  label="pcipbsa" />
+            <property name="pcinecta" label="pcinecta" />
+            <property name="mtfcc"    label="mtfcc" />
+            <property name="funcstat" label="funcstat" />
+            <property name="aland"    label="aland"  default="0" />
+            <property name="awater"   label="awater" default="0" />
+            <property name="intptlat" label="intptlat" />
+            <property name="intptlon" label="intptlon" />
+        </properties>
+
+        <!-- the layer name does not need to match the typename but
+             it is a good idea.
+        -->
+        <layer name="census_cities" title="Census Cities">
+            <style><![CDATA[
+            {
+                "line-color" : "#998ec3",
+                "line-width" : 4,
+                "fill-color" : "#998ec3",
+                "fill-opacity" : 0.1
+            }
+            ]]></style>
+
+            <template name="identify"><![CDATA[
+                <div>
+                    <div class="item">
+                        <label>{{ properties.name }}</label>
+                    </div>
+                    <div class="item">
+                        ID: {{properties.geoid}}
+                    </div>
+                </div>
+            ]]></template>
+
+        </layer>
+    </map-source>
+
+    <!-- Use the following for the GeoServer WMS server: -->
+    <map-source name="census-wms" type="wms">
         <url>http://localhost:8080/geoserver/wms?</url>
-
+    <!--         -->
+    <!-- Or use the following for the Mapserver WMS server: -->
+    <!--
+    <map-source name="census-wms" type="mapserver">
+        <file>./demo/census/census.map</file>
+    -->
         <layer
             name="census_cities"
-            query-as="geoserver-wfs/census_cities"
+            query-as="census_cities-wfst/census_cities"
+        />
+        <layer name="census_roads"
+            query-as="census_roads-wfst/census_roads"
         />
         <layer
             name="census_landmarks"
-            query-as="census-landmarks-wfs/census_landmarks"
+            query-as="census_landmarks-wfst/census_landmarks"
         />
-        <layer name="census_roads" />
 
         <param name="FORMAT" value="image/png"/>
         <param name="TRANSPARENT" value="TRUE"/>
@@ -199,6 +293,7 @@
     <map-source name="vector-parcels" type="mapserver-wfs">
         <file>./demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels"/>
+        <config name="pixel-tolerance" value="0"/>
         <transform attribute="EMV_TOTAL" function="number"/>
 
         <layer name="big-money">
@@ -257,9 +352,16 @@
        </layer>
     </map-source>
 
-    <map-source name="pipelines" type="mapserver" title="Pipelines">
+    <map-source name="vector-pipelines" title="Pipelines" type="mapserver-wfs">
+        <param name="typename" value="ms:pipelines"/>
         <file>./demo/pipelines/pipelines.map</file>
         <layer name="pipelines" status="off">
+            <style><![CDATA[
+            {
+                "line-color": "#aaaaff",
+                "line-width": 6
+            }
+            ]]></style>
             <template name="identify"><![CDATA[
             <div>
                 <div class="feature-class pipelines">
@@ -453,6 +555,92 @@
         </layer>
     </map-source>
 
+    <!-- This layer is very large.  It will take awhile to load, will slow down the browser
+         once it is loaded.  Thus, it is not "in" the demo, but it is left here because it
+         a good complex example and is a great stress test for the ags-vector driver. -->
+    <!--map-source name="ags-vector-dc20" type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/20</url>
+        <layer name="roads" selectable="true" title="Streets">
+            <style><![CDATA[
+            {
+                "line-color" : "#A1A138",
+                "line-width" : 2
+            }
+            ]]></style>
+
+            <template name="identify"><![CDATA[
+                <div class="identify-result">
+                    <div class="feature-class">Dakota County Streets</div>
+                    <div class="item"><label>Street Name:</label> {{ properties.STREET_NAME }}</div>
+                    <div class="item"><label>City:</label> {{ properties.CITY_L }}</div>
+                </div>
+            ]]></template>
+            <template name="search"><![CDATA[
+                <div class="search-result">
+                    <div class="search-label">
+                        {{ properties.STREET_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ]]></template>
+            <template name="select" alias="search"/>
+            <template name="select-grid-columns"><![CDATA[
+            [
+                {
+                    "title": ""
+                },
+                {
+                    "title": "Street Name",
+                    "property" : "STREET_NAME",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
+                    "title" : "City Left",
+                    "property" : "CITY_L",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                },
+                {
+                    "title" : "City Right",
+                    "property" : "CITY_R",
+                    "sortAs" : "string",
+                    "filter" : {
+                        "type" : "list"
+                    }
+                }
+            ]
+            ]]></template>
+            <template name="select-grid-row"><![CDATA[
+            <tr
+              onmouseenter="app.highlightFeatures({'OBJECTID' : '{{ properties.OBJECTID }}'}, true)"
+              onmouseleave="app.clearHighlight()"
+            >
+                <td>
+                  <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}], 'EPSG:3857')" class="zoomto-link">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </td>
+                <td>
+                  {{ properties.STREET_NAME}}
+                </td>
+                <td>{{ properties.CITY_L }}</td>
+                <td>{{ properties.CITY_R }}</td>
+            </tr>
+            ]]></template>
+
+        </layer>
+    </map-source-->
+
     <map-source name="openstreetmap" type="xyz">
         <layer name="osm_mapnik" status="on">
             <attribution><![CDATA[
@@ -504,43 +692,81 @@
         <group title="Overlays" expand="true">
             <group title="Census Layers" expand="true">
                 <layer
-                    title="Census cities"
-                    src="geoserver/census_cities"
-                    draw-edit="true"
-                    draw-modify="true"
-                    draw-polygon="true"
-                    draw-remove="true"
-                />
-                <layer
-                    title="Census landmarks"
-                    src="geoserver/census_landmarks"
+                    title="Census Landmarks"
+                    src="census-wms/census_landmarks"
                     draw-edit="true"
                     draw-modify="true"
                     draw-point="true"
                     draw-remove="true"
                 />
-
+                <layer
+                    title="Census Roads"
+                    src="census-wms/census_roads"
+                    draw-edit="true"
+                    draw-modify="true"
+                    draw-line="true"
+                    draw-remove="true"
+                />
+                <layer
+                    title="Census Cities"
+                    src="census-wms/census_cities"
+                    draw-edit="true"
+                    draw-modify="true"
+                    draw-polygon="true"
+                    draw-remove="true"
+                />
             </group>
             <group title="County Layers">
                 <layer src="places/default" />
 
                 <layer title="Vector Parcels" src="vector-parcels/parcels">
-                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
                 </layer>
 
                 <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10">
-                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/master/demo/parcels/LICENSE</metadata>
+                    <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
                     <!--
                     <legend>images/logo_mini.gif</legend>
                     -->
                 </layer>
                 <layer title="Parcel Points" src="parcels/parcels_points" minscale="6000" maxscale="20000" status="off"/>
+                <layer title="Expensive Parcels" src="vector-parcels/big-money"/>
                 <layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
+                <layer title="AGS Dakota County Rail" src="ags-vector-dc16/railroads"/>
+                <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
+                <layer title="AGS Dakota County Runways" src="ags-vector-dc21/runways"></layer>
             </group>
-            <layer src="pipelines/pipelines"></layer>
+            <layer src="vector-pipelines/pipelines"></layer>
             <layer title="Weather Radar" src="iastate/nexrad-n0r" />
         </group>
-        <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
+
+        <group title="Grids">
+            <layer src="usng-grid/usng-grid" title="USNG Grid" />
+            <layer title="1 km grid" src="grids/grid_1km"/>
+            <layer title="1 mile grid" src="grids/grid_1mile"/>
+        </group>
+
+        <group title="Backgrounds" expand="true" multiple="false">
+            <layer title="No background" src="blank/blank" status="on" />
+            <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
+
+            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" />
+            <!-- These layers can be *very* slow, they are left here
+              -  for demonstration purposes.
+            <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
+            -->
+            <layer title="ArcGIS Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+
+            <!-- These layres are commented out until a user enabled bing
+              -  with an appropriate key.
+            <layer title="Bing Dark"         src="bing/canvasDark"       show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Grey"         src="bing/canvasGray"       show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Light"        src="bing/canvasLight"      show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Roads" src="bing/roads" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Bing Aerials" src="bing/aerials" show-legend="false" legend="false" fade="true" unfade="true"/>
+            -->
+        </group>
     </catalog>
 
     <!--
