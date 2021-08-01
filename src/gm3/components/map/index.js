@@ -965,6 +965,10 @@ class Map extends React.Component {
             controls: getControls(this.props.config),
         });
 
+        if (this.props.mapView.extent) {
+            this.zoomToExtent(this.props.mapView.extent);
+        }
+
         // when the map moves, dispatch an action
         this.map.on('moveend', () => {
             // get the view of the map
@@ -1252,21 +1256,24 @@ class Map extends React.Component {
         return false;
     }
 
+    zoomToExtent(extent) {
+        let bbox = extent.bbox;
+        const bbox_code = extent.projection;
+        if(bbox_code) {
+            const map_proj = this.map.getView().getProjection();
+            bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
+        }
+        // move the map to the new extent.
+        this.map.getView().fit(bbox, {size: this.map.getSize()});
+    }
+
     /** Intercept extent changes during a part of the render
      *  cycle where the state can get modified.
      */
     componentDidUpdate(prevProps) {
         // extent takes precendent over the regular map-view,
         if(this.props.mapView.extent) {
-            let bbox = this.props.mapView.extent.bbox;
-            const bbox_code = this.props.mapView.extent.projection;
-            if(bbox_code) {
-                const map_proj = this.map.getView().getProjection();
-                bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
-            }
-            // move the map to the new extent.
-            this.map.getView().fit(bbox, {size: this.map.getSize()});
-
+            this.zoomToExtent(this.props.mapView.extent);
         // check to see if the view has been altered.
         } else if(this.props.mapView) {
             const map_view = this.map.getView();
