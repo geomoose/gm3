@@ -117,6 +117,18 @@ function parseProperties(msXml) {
                 }
             }
 
+            // parse the select options.
+            if (propDef.type === 'select') {
+                propDef.options = []
+                const options = prop.getElementsByTagName('option');
+                for (let x = 0, xx = options.length; x < xx; x++) {
+                    propDef.options.push({
+                        value: options[x].getAttribute('value'),
+                        label: util.getXmlTextContents(options[x]),
+                    });
+                }
+            }
+
             props.push(propDef);
         }
     }
