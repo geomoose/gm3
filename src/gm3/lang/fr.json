@@ -29,6 +29,7 @@
   "draw-modify-label" : "Modifier",
   "draw-modify-tip" : "Modifier un dessin tracé",
   "draw-multipoint-label" : "Tracer plusieurs points",
+  "draw-open-tip": "Ouvrir les outils de trac",
   "draw-point-label" : "Tracer un point",
   "draw-point-tip" : "Ajouter un point sur la couche",
   "draw-polygon-label" : "Tracer un polygone",

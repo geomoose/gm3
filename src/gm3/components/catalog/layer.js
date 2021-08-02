@@ -23,12 +23,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 
+import { DRAW_TOOLS } from '../../defaults';
 import ClearTool from './tools/clear';
 import DownTool from './tools/down';
 import DownloadTool from './tools/download';
-import DrawTool from './tools/draw-tool';
+import EditTool from './tools/edit-tool';
 import FadeTool from './tools/fade';
 import LegendToggle from './tools/legend';
 import MetadataTool from './tools/metadata';
@@ -42,111 +42,100 @@ import Legend from './legend';
 import LayerCheckbox from './layer-checkbox';
 import LayerFavorite from './layer-favorite';
 
-export class CatalogLayer extends React.Component {
-    /* Convert the tool definitions to components.
-     */
-    getTools(layer, enabledTools) {
-        const tools = [];
-        for(const tool_name of enabledTools) {
-            const key = layer.id + '_' + tool_name;
-
-            switch(tool_name) {
-                case 'up':
-                    tools.push(<UpTool key={key} layer={layer} />);
-                    break;
-                case 'down':
-                    tools.push(<DownTool key={key} layer={layer} />);
-                    break;
-                case 'fade':
-                    tools.push(<FadeTool key={key} layer={layer} />);
-                    break;
-                case 'unfade':
-                    tools.push(<UnfadeTool key={key} layer={layer} />);
-                    break;
-                case 'zoomto':
-                    tools.push(<ZoomToTool key={key} layer={layer} />);
-                    break;
-                case 'upload':
-                    tools.push(<UploadTool key={key} layer={layer} />);
-                    break;
-                case 'download':
-                    tools.push(<DownloadTool key={key} layer={layer} />);
-                    break;
-                case 'clear':
-                    tools.push(<ClearTool key={key} layer={layer} />);
-                    break;
-
-                case 'draw-point':
-                case 'draw-polygon':
-                case 'draw-line':
-                case 'draw-modify':
-                case 'draw-remove':
-                case 'draw-edit':
-                    const draw_type = tool_name.split('-')[1];
-                    tools.push(<DrawTool drawType={draw_type} key={key} layer={layer} />);
-                    break;
-                case 'legend-toggle':
-                    tools.push(<LegendToggle layer={layer} key={key} />);
-                    break;
-                default:
-                    // pass
-            }
+const getTools = (layer, enabledTools) => {
+    const tools = [];
+    for (let i = 0, ii = enabledTools.length; i < ii; i++) {
+        const toolName = enabledTools[i];
+        const key = layer.id + '_' + toolName;
+        switch (toolName) {
+            case 'up':
+                tools.push(<UpTool key={key} layer={layer} />);
+                break;
+            case 'down':
+                tools.push(<DownTool key={key} layer={layer} />);
+                break;
+            case 'fade':
+                tools.push(<FadeTool key={key} layer={layer} />);
+                break;
+            case 'unfade':
+                tools.push(<UnfadeTool key={key} layer={layer} />);
+                break;
+            case 'zoomto':
+                tools.push(<ZoomToTool key={key} layer={layer} />);
+                break;
+            case 'upload':
+                tools.push(<UploadTool key={key} layer={layer} />);
+                break;
+            case 'download':
+                tools.push(<DownloadTool key={key} layer={layer} />);
+                break;
+            case 'clear':
+                tools.push(<ClearTool key={key} layer={layer} />);
+                break;
+            case 'legend-toggle':
+                tools.push(<LegendToggle layer={layer} key={key} />);
+                break;
+            default:
+                // pass, no actions.
         }
-        return tools;
+    }
+    return tools;
+}
+
+const getEnabledTools = (layer, forceTools) => layer.tools.concat(forceTools);
+
+const canEdit = (enabledTools) =>
+    enabledTools.filter(tool => DRAW_TOOLS.indexOf(tool) >= 0).length > 0
+
+export const CatalogLayer = ({layer, resolution, forceTools}) => {
+    const layer_classes = ['layer'];
+    if (layer.on) {
+        layer_classes.push('on');
+    }
+    if (layer.classNames) {
+        layer_classes.push(layer.classNames);
     }
 
-    getToolsForLayer(layer) {
-        return this.getTools(layer, layer.tools.concat(this.props.forceTools));
+    if ((layer.minresolution || layer.maxresolution) && resolution) {
+        const min_z = layer.minresolution !== undefined ? layer.minresolution : -1;
+        const max_z = layer.maxresolution !== undefined ? layer.maxresolution : 1000;
+        if (resolution < min_z || resolution > max_z) {
+            layer_classes.push('out-of-resolution');
+        }
     }
 
-    render() {
-        const layer = this.props.layer;
+    const enabledTools = getEnabledTools(layer, forceTools);
 
-        const layer_classes = ['layer'];
-        if(layer.on) {
-            layer_classes.push('on');
-        }
-
-        if((layer.minresolution || layer.maxresolution) && this.props.resolution) {
-            const min_z = layer.minresolution !== undefined ? layer.minresolution : -1;
-            const max_z = layer.maxresolution !== undefined ? layer.maxresolution : 1000;
-            if (this.props.resolution < min_z || this.props.resolution > max_z) {
-                layer_classes.push('out-of-resolution');
-            }
-        }
-
-        const tools = this.getToolsForLayer(layer);
-
-        return (
-            <div key={layer.id} className={layer_classes.join(' ')}>
-                <div className='layer-label' title={layer.tip}>
-                    <LayerCheckbox layer={layer} />
-                    <LayerFavorite layer={layer} />
-                    <span>
-                        {layer.label}
-                    </span>
-                    {
-                        (layer.refresh === null) ? false : (
-                            <RefreshTool layer={layer} />
-                        )
-                    }
-                    {
-                        !layer.metadata_url ? false : (
-                            <MetadataTool href={layer.metadata_url} />
-                        )
-                    }
-                </div>
-                <div className='layer-tools'>
-                    {tools}
-                </div>
+    return (
+        <div key={layer.id} className={layer_classes.join(' ')}>
+            <div className='layer-label' title={layer.tip}>
+                <LayerCheckbox layer={layer} />
+                <LayerFavorite layer={layer} />
+                <span>
+                    {layer.label}
+                </span>
                 {
-                    !layer.legend ? false : (
-                        <Legend layer={layer} />
+                    (layer.refresh === null) ? false : (
+                        <RefreshTool layer={layer} />
+                    )
+                }
+                {
+                    !layer.metadata_url ? false : (
+                        <MetadataTool href={layer.metadata_url} />
                     )
                 }
             </div>
-        );
-    }
+            <div className='layer-tools'>
+                { getTools(layer, enabledTools) }
+                { canEdit(enabledTools) && <EditTool layer={layer} /> }
+            </div>
+            {
+                !layer.legend ? false : (
+                    <Legend layer={layer} />
+                )
+            }
+        </div>
+    );
 }
 
 CatalogLayer.propTypes = {
@@ -157,10 +146,4 @@ CatalogLayer.defaultProps = {
     forceTools: [],
 };
 
-function mapState(state) {
-    return {
-        resolution: state.map ? state.map.resolution : -1,
-    };
-}
-
-export default connect(mapState)(CatalogLayer);
+export default CatalogLayer;

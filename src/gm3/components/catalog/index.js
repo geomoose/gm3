@@ -43,7 +43,7 @@ function allLayers() {
     return true;
 }
 
-export function renderTree(dispatch, tree, id, filter = allLayers) {
+export function renderTree(dispatch, tree, id, resolution, filter = allLayers) {
     const node = tree[id];
 
     if(node.children) {
@@ -55,7 +55,7 @@ export function renderTree(dispatch, tree, id, filter = allLayers) {
                     dispatch(setGroupExpand(id, node.expand !== true));
                 }}
             >
-                { node.children.map(child_id => renderTree(dispatch, tree, child_id, filter)) }
+                { node.children.map(child_id => renderTree(dispatch, tree, child_id, resolution, filter)) }
             </CatalogGroup>
         );
     } else {
@@ -64,6 +64,7 @@ export function renderTree(dispatch, tree, id, filter = allLayers) {
                 <CatalogLayer
                     key={id}
                     layer={node}
+                    resolution={resolution}
                 />
             );
         } else {
@@ -72,14 +73,14 @@ export function renderTree(dispatch, tree, id, filter = allLayers) {
     }
 }
 
-export function renderFlatTree(dispatch, tree, id, filter = allLayers) {
+export function renderFlatTree(dispatch, tree, id, resolution, filter = allLayers) {
     const node = tree[id];
 
     let elements = [];
 
     if(node.children) {
         for(let i = 0, ii = node.children.length; i < ii; i++) {
-            const sublayers = renderFlatTree(dispatch, tree, node.children[i], filter);
+            const sublayers = renderFlatTree(dispatch, tree, node.children[i], resolution, filter);
             if (sublayers.length > 0) {
                 elements = elements.concat(sublayers);
             }
@@ -90,6 +91,7 @@ export function renderFlatTree(dispatch, tree, id, filter = allLayers) {
                 <CatalogLayer
                     key={id}
                     layer={node}
+                    resolution={resolution}
                 />
             ));
         }
@@ -140,8 +142,8 @@ export class Catalog extends React.Component {
                     )}
                     {
                         this.state.searchFilter === '' ?
-                            this.props.catalog.root.children.map(child_id => renderTree(this.props.dispatch, this.props.catalog, child_id)) :
-                            this.props.catalog.root.children.map(child_id => renderFlatTree(this.props.dispatch, this.props.catalog, child_id, filter))
+                            this.props.catalog.root.children.map(child_id => renderTree(this.props.dispatch, this.props.catalog, child_id, this.props.resolution)) :
+                            this.props.catalog.root.children.map(child_id => renderFlatTree(this.props.dispatch, this.props.catalog, child_id, this.props.resolution, filter))
                     }
                 </div>
             </Provider>
@@ -153,11 +155,10 @@ Catalog.defaultProps = {
     showSearch: true,
 }
 
-const mapCatalogToProps = function(store) {
-    return {
-        mapSources: store.mapSources,
-        catalog: store.catalog
-    }
-}
+const mapCatalogToProps = (state) => ({
+    mapSources: state.mapSources,
+    catalog: state.catalog,
+    resolution: state.map ? state.map.resolution : -1,
+});
 
 export default connect(mapCatalogToProps)(Catalog);

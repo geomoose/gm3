@@ -513,15 +513,15 @@
 
         <group title="Backgrounds" expand="true" multiple="false">
             <layer title="No background" src="blank/blank" status="on" />
-            <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true" classNames="inline-tools"/>
 
-            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" />
+            <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" classNames="inline-tools" />
             <!-- These layers can be *very* slow, they are left here
               -  for demonstration purposes.
             <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>
             <layer title="USGS Topo Quads" src="usgs/usgs_topo" show-legend="false" legend="false" fade="true" unfade="true"/>
             -->
-            <layer title="ArcGIS Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
+            <layer title="ArcGIS Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true" classNames="inline-tools" />
 
             <!-- These layres are commented out until a user enabled bing
               -  with an appropriate key.

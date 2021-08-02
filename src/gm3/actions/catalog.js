@@ -79,6 +79,7 @@ function parseLayer(store, layerXml, exclusive = false) {
         tools: [],
         tip: layerXml.getAttribute('tip'),
         exclusive,
+        classNames: layerXml.getAttribute('classNames'),
     };
 
     // This is the first attempt at a new model
