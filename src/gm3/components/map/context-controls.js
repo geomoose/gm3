@@ -145,6 +145,7 @@ const DRAW_TYPES = {
 
 const DrawTools = ({
     editTools,
+    editPath,
     setEditPath,
     setEditTools,
     changeTool,
@@ -157,7 +158,7 @@ const DrawTools = ({
                     label={`${editTool}-tip`}
                     icon={`icon ${ICON_CLASSES[editTool]}`}
                     index={idx + 2}
-                    onClick={() => changeTool(DRAW_TYPES[editTool])}
+                    onClick={() => changeTool(DRAW_TYPES[editTool], editPath)}
                 />
             ))}
 
@@ -198,6 +199,7 @@ const ContextControls = ({
                 setEditPath={setEditPath}
                 setEditTools={setEditTools}
                 changeTool={changeTool}
+                editPath={editPath}
             />
         );
     } else if (
