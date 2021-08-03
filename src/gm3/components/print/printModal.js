@@ -286,7 +286,7 @@ export class PrintModal extends Modal {
                 y: def.y + def.height - margin - height,
                 // width info comes as pixels, this
                 //  should convert the width
-                width: scaleInfo.width / 72,
+                width: scaleInfo.width * pxToLayout,
                 height,
                 strokeWidth: 0,
                 fill: [178, 196, 219],
