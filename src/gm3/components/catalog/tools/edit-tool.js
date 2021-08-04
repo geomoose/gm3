@@ -26,12 +26,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { setEditPath, setEditTools } from '../../../actions/map';
+import { setLayerVisibility } from '../../../actions/mapSource';
 import { finishService } from '../../../actions/service';
 import { Tool } from '../tools';
 import { DRAW_TOOLS } from '../../../defaults';
+import { getMapSourceName, getLayerName } from '../../../util';
 
 
-export const EditTool = ({layer, service, setEditPath, setEditTools, finishService}) => {
+export const EditTool = ({layer, service, setEditPath, setEditTools, setLayerVisibility, finishService}) => {
     const src = layer.src[0];
     const path = src.mapSourceName + '/' + src.layerName;
 
@@ -56,6 +58,9 @@ export const EditTool = ({layer, service, setEditPath, setEditTools, finishServi
                 }
                 // set the edit tools.
                 setEditTools(layerTools);
+
+                // ensure the layer is on
+                setLayerVisibility(getMapSourceName(path), getLayerName(path), true);
             }}
         />
     );
@@ -80,6 +85,7 @@ const mapDispatch = {
     finishService,
     setEditPath,
     setEditTools,
+    setLayerVisibility,
 };
 
 export default connect(mapState, mapDispatch)(EditTool);
