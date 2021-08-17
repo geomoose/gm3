@@ -28,10 +28,7 @@ import { zoomToExtent, setView } from '../actions/map';
 import { toLonLat, fromLonLat, transformExtent } from 'ol/proj';
 import olView from 'ol/View';
 
-import { getMapSourceName, getLayerName, parseBoolean } from '../util';
-
-// node's url parser
-import { parse as urlParse } from 'url';
+import { getMapSourceName, getLayerName, parseBoolean, parseHash } from '../util';
 
 export const JOIN_SYMBOL = ';';
 
@@ -246,11 +243,7 @@ export default class HashTracker {
      *  the previous state.
      */
     restore() {
-        // take the hash and parse it like a query string.
-        // The "substring(1)" removes the "#" from the leading edge,
-        //  replacing it with the '?' then cuases the hash to be parsed like
-        //  a normal query string.
-        const parsed = urlParse('?' + window.location.hash.substring(1), true);
+        const parsed = parseHash();
 
         if(parsed.query) {
             if(parsed.query.loc) {

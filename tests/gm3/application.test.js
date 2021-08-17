@@ -55,14 +55,19 @@ describe('application api calls', () => {
         expect(app.store.getState().ui.hint).toBe(null);
     });
 
-    it('loads a mapbook', (done) => {
+    it('loads a mapbook (from an XML doc)', (done) => {
         fs.readFile(MAPBOOK_PATH, (err, contents) => {
             const parser = new DOMParser();
             const xml = parser.parseFromString(contents, 'text/xml');
             app.loadMapbook({content: xml});
-
             done();
+        });
+    });
 
+    it('loads a mapbook from a string', done => {
+        fs.readFile(MAPBOOK_PATH, (err, contents) => {
+            app.loadMapbook({content: contents});
+            done();
         });
     });
 

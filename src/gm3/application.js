@@ -28,8 +28,6 @@
  *
  */
 
-import Request from 'reqwest';
-
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import i18next from 'i18next';
@@ -68,7 +66,7 @@ import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSou
 
 import Mark from 'markup-js';
 
-import * as util from './util';
+import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from './util';
 
 import i18nConfigure from './i18n';
 import { EDIT_LAYER_NAME, EDIT_STYLE, HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
@@ -287,7 +285,12 @@ class Application {
         }));
     }
 
-    populateMapbook(mapbookXml) {
+    populateMapbook(contents) {
+        let mapbookXml = contents;
+        if (typeof contents === 'string') {
+            mapbookXml = (new DOMParser()).parseFromString(contents, 'text/xml');
+        }
+
         this.configureSelectionLayer(this.config.selectionStyle, this.config.editStyle);
         this.configureResultsLayer(this.config.resultsStyle);
 
@@ -310,28 +313,39 @@ class Application {
         for(const action of toolbar_actions) {
             this.store.dispatch(action);
         }
+
+        // return the parsed version of the document.
+        return mapbookXml;
     }
 
-    loadMapbook(options) {
-        if(options.url) {
-            // load mapbook content from a URL,
-            //  return the promise in case the user
-            //  wants to do something after the mapbook has loaded.
-            return Request({
-                url: options.url,
-                type: 'xml',
-                success: (response) => {
-                    this.populateMapbook(response);
-                }
+    loadMapbook(options = {}) {
+        // allow the user to specify fetch options
+        const fetchOpts = {
+            ...options.fetchOpts,
+        };
+
+        let mapbookUrl = options.url;
+
+        if (this.config.mapbooks) {
+            // check for a mapbook in the hash
+            const mapbookName = parseQuery().query.mapbook || 'default';
+            if (mapbookName && this.config.mapbooks[mapbookName]) {
+                mapbookUrl = this.config.mapbooks[mapbookName];
+            }
+        }
+
+        if (mapbookUrl) {
+            return fetch(mapbookUrl, fetchOpts)
+                .then(r => r.text())
+                .then(content => {
+                    return this.populateMapbook(content);
+                });
+        } else if (options.content) {
+            return new Promise((resolve, reject) => {
+                resolve(this.populateMapbook(options.content));
             });
-        } else if(options.content) {
-            // this is just straight mapbook xml
-            //  TODO: Maybe it needs parsed?!?
-            const populate_promise = new Promise((resolve, reject) => {
-                this.populateMapbook(options.content);
-                resolve(options.content);
-            });
-            return populate_promise;
+        } else {
+            alert('No mapbook configured.');
         }
     }
 
@@ -416,8 +430,8 @@ class Application {
                         //       possibility.
                         resolve(layer.templates[layer_template.alias].contents);
                     } else if(layer_template.type === 'remote') {
-                        const ms_name = util.getMapSourceName(path);
-                        const layer_name = util.getLayerName(path);
+                        const ms_name = getMapSourceName(path);
+                        const layer_name = getLayerName(path);
 
                         // fetch the contents of the template
                         fetch(layer_template.src)
@@ -517,7 +531,7 @@ class Application {
                 if(template_contents) {
                     for(const feature of query.results[path]) {
                         // TODO: Make this plugable, check by template "type"?!?
-                        html_contents += Mark.up(template_contents, feature, util.FORMAT_OPTIONS);
+                        html_contents += Mark.up(template_contents, feature, FORMAT_OPTIONS);
                     }
                 } else if(layer_template && layer_template.type === 'auto') {
                     const features = query.results[path];
@@ -538,7 +552,7 @@ class Application {
                                 const value = feature.properties[key];
                                 html_contents += Mark.up('<b>{{ key }}:</b> {{ value }} <br/>', {
                                     key, value,
-                                }, util.FORMAT_OPTIONS);
+                                }, FORMAT_OPTIONS);
                             }
                         } else {
                             // no properties
@@ -551,7 +565,7 @@ class Application {
             } else if(template) {
                 // assume the template is template contents.
                 for(const feature of query.results[path]) {
-                    html_contents += Mark.up(template, feature, util.FORMAT_OPTIONS);
+                    html_contents += Mark.up(template, feature, FORMAT_OPTIONS);
                 }
             }
         }
@@ -583,7 +597,7 @@ class Application {
                 } else {
                     template_contents = layer.templates[template_name].contents;
                 }
-                return Mark.up(template_contents, params, util.FORMAT_OPTIONS);
+                return Mark.up(template_contents, params, FORMAT_OPTIONS);
             }
         }
         return '';
@@ -648,14 +662,14 @@ class Application {
     /** Remove all the features from a vector layer.
      */
     clearFeatures(path) {
-        const ms_name = util.getMapSourceName(path);
+        const ms_name = getMapSourceName(path);
         this.store.dispatch(mapSourceActions.clearFeatures(ms_name));
     }
 
     /** Add features to a vector layer.
      */
     addFeatures(path, features) {
-        const ms_name = util.getMapSourceName(path);
+        const ms_name = getMapSourceName(path);
         this.store.dispatch(mapSourceActions.addFeatures(ms_name, features));
     }
 
@@ -682,14 +696,14 @@ class Application {
     /** Remove features from a vector layer (with a filter)
      */
     removeFeatures(path, filter) {
-        const ms_name = util.getMapSourceName(path);
+        const ms_name = getMapSourceName(path);
         this.store.dispatch(mapSourceActions.removeFeatures(ms_name, filter));
     }
 
     /** Change the features on a vectory layer with a filter.
      */
     changeFeatures(path, filter, properties) {
-        const ms_name = util.getMapSourceName(path);
+        const ms_name = getMapSourceName(path);
         this.store.dispatch(mapSourceActions.changeFeatures(ms_name, filter, properties));
     }
 
@@ -835,7 +849,7 @@ class Application {
      * @param {string} projDef.def - a string definition of the projection, in WKT/Proj format
      */
     addProjection(projDef) {
-        util.addProjDef(proj4, projDef.ref, projDef.def);
+        addProjDef(proj4, projDef.ref, projDef.def);
     }
 
     /* Short hand for toggling the highlight of features.

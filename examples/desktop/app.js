@@ -37,6 +37,11 @@ var app = new gm3.Application({
             enabled: true,
             units: 'imperial'
         }
+    },
+    mapbooks: {
+        'default': 'mapbook.xml',
+        geoserver: 'mapbook-editing-geoserver.xml',
+        test: 'mapbook-test-servers.xml'
     }
 });
 
@@ -49,7 +54,7 @@ app.uiUpdate = function(ui) {
     }
 }
 
-app.loadMapbook({url: 'mapbook.xml'}).then(function() {
+app.loadMapbook().then(function() {
     // set the default view.
     app.setView({
         center: app.lonLatToMeters( -93.16, 44.55),
