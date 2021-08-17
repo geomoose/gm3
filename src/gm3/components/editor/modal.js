@@ -105,6 +105,16 @@ export class EditorModal extends Modal {
                 });
         }
 
+        if (type === 'select') {
+            return (
+                <select {...props}>
+                    {attr.options.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                </select>
+            );
+        }
+
         return (
             <input
                 {...props}
