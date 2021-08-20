@@ -40,8 +40,8 @@ var app = new gm3.Application({
     },
     mapbooks: {
         'default': 'mapbook.xml',
-        geoserver: 'mapbook-editing-geoserver.xml',
-        test: 'mapbook-test-servers.xml'
+        'editing': 'mapbook-editing.xml',
+        'test': 'mapbook-test-servers.xml'
     }
 });
 
