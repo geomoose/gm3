@@ -1416,6 +1416,7 @@ class Map extends React.Component {
                             }
                         }}
                         editPath={this.props.mapView.editPath}
+                        editTools={this.props.mapView.editTools}
                         olLayers={this.olLayers}
                         setFeatures={this.props.setFeatures}
                         changeTool={this.props.changeTool}
@@ -1424,6 +1425,8 @@ class Map extends React.Component {
                         setZoom={this.props.setZoom}
                         zoom={this.props.mapView.zoom}
                         showZoom={config.showZoom === true}
+                        setEditPath={this.props.setEditPath}
+                        setEditTools={this.props.setEditTools}
                     />
                 </div>
             </div>
@@ -1478,6 +1481,7 @@ function mapDispatch(dispatch) {
             }
         },
         setEditPath: path => dispatch(mapActions.setEditPath(path)),
+        setEditTools: tools => dispatch(mapActions.setEditTools(tools)),
         saveFeature: (path, feature) => {
             dispatch(mapSourceActions.saveFeature(path, feature));
         },

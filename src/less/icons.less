@@ -44,10 +44,16 @@
 .icon.sort, .icon.remove, .icon.filter,
 .icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox,
 .icon.radio,
-.icon.save, .icon.cancel, .icon.undo, .icon.stop
+.icon.save, .icon.cancel, .icon.undo, .icon.stop, .icon.close
 {
     .fa;
     font-size: @icon-size/1;
+}
+
+.icon.close {
+    &:before {
+        content: @fa-var-times;
+    }
 }
 
 .icon.upload {

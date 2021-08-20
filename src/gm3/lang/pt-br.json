@@ -33,6 +33,7 @@
     "draw-point-tip" : "Adicionar ponto à camada",
     "draw-polygon-label" : "Desenhar polígono",
     "draw-polygon-tip" : "Adicionar polígono à camada",
+    "draw-open-tip": "Abrir ferramentas de desenho",
     "draw-remove-tip" : "Remover a feição da camada",
     "draw-select-label" : "Feição de:",
     "empty-properties": "Não existe propriedades para esta feição.",

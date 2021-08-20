@@ -29,6 +29,7 @@
   "draw-modify-label" : "Modify Feature",
   "draw-modify-tip" : "Modify a drawn feature",
   "draw-multipoint-label" : "Draw Multi-Point",
+  "draw-open-tip": "Open drawing tools",
   "draw-point-label" : "Draw Point",
   "draw-point-tip" : "Add a Point to the layer",
   "draw-polygon-label" : "Draw Polygon",
