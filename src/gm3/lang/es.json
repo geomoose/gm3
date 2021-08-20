@@ -28,6 +28,7 @@
   "draw-modify-label" : "Editar geometría",
   "draw-modify-tip" : "Editar geometría existente",
   "draw-multipoint-label" : "Dibujar Multi-punto",
+  "draw-open-tip": "Abrir herramientas de dibujo",
   "draw-point-label" : "Dibujar punto",
   "draw-point-tip" : "Añadir objeto puntual",
   "draw-polygon-label" : "Dibujar polígono",

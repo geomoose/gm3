@@ -125,24 +125,85 @@ const StopControl = ({changeTool, setFeatures}) => {
     );
 }
 
+const ICON_CLASSES = {
+    'draw-point': 'point',
+    'draw-polygon': 'polygon',
+    'draw-line': 'line',
+    'draw-modify': 'modify',
+    'draw-remove': 'remove',
+    'draw-edit': 'edit',
+};
+
+const DRAW_TYPES = {
+    'draw-remove': 'Remove',
+    'draw-modify': 'Modify',
+    'draw-point': 'Point',
+    'draw-line': 'LineString',
+    'draw-polygon': 'Polygon',
+    'draw-edit': 'Edit',
+};
+
+const DrawTools = ({
+    editTools,
+    editPath,
+    setEditPath,
+    setEditTools,
+    changeTool,
+}) => {
+    return (
+        <React.Fragment>
+            {editTools.map((editTool, idx) => (
+                <MapButton
+                    key={editTool}
+                    label={`${editTool}-tip`}
+                    icon={`icon ${ICON_CLASSES[editTool]}`}
+                    index={idx + 2}
+                    onClick={() => changeTool(DRAW_TYPES[editTool], editPath)}
+                />
+            ))}
+
+            <MapButton
+                label="Close"
+                icon="icon close"
+                index={editTools.length + 2}
+                onClick={() => {
+                    setEditPath('');
+                    setEditTools([]);
+                }}
+            />
+        </React.Fragment>
+    );
+}
+
 const ContextControls = ({
     changeTool,
     editPath,
+    editTools,
     saveFeature,
     setFeatures,
     olLayers,
     interactionType,
     activeSource,
     setZoom,
+    setEditPath,
+    setEditTools,
     zoom
 }) => {
 
     let controls = false;
     // do not bother rendering anything if the interaction is null
-    if (!interactionType) {
-        // return false;
+    if (!interactionType && editPath) {
+        controls = (
+            <DrawTools
+                editTools={editTools}
+                setEditPath={setEditPath}
+                setEditTools={setEditTools}
+                changeTool={changeTool}
+                editPath={editPath}
+            />
+        );
     } else if (
-        interactionType.indexOf('Modify') >= 0 &&
+        interactionType && interactionType.indexOf('Modify') >= 0 &&
         activeSource === `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`
     ) {
         controls = (
@@ -154,7 +215,7 @@ const ContextControls = ({
                 setFeatures={setFeatures}
             />
         );
-    } else {
+    } else if (!!interactionType) {
         controls = (
             <StopControl
                 changeTool={changeTool}

@@ -203,6 +203,19 @@ export function setEditPath(editPath) {
     };
 }
 
+/* Set the list of available editing tools.
+ *
+ * @param editTools {Array} An array of tool names.
+ *
+ * @return action definition
+ */
+export function setEditTools(tools) {
+    return {
+        type: MAP.SET_EDIT_TOOLS,
+        tools,
+    };
+}
+
 /* Set the size of the map in the state as a hint
  * to other components.
  *

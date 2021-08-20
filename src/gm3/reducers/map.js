@@ -39,6 +39,7 @@ const default_view = {
     selectionBuffer: 0,
     selectionBufferUnits: 'ft',
     editPath: '',
+    editTools: [],
 };
 
 function setConfigOptions(state, config) {
@@ -90,6 +91,11 @@ export default function mapReducer(state = default_view, action) {
             return Object.assign({}, state, {
                 editPath: action.editPath,
             });
+        case MAP.SET_EDIT_TOOLS:
+            return {
+                ...state,
+                editTools: action.tools,
+            };
         default:
             return state;
     }

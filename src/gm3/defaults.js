@@ -74,3 +74,12 @@ export const DEFAULT_RESULTS_CONFIG = {
     showLayerCount: true,
     showFeatureCount: true,
 };
+
+export const DRAW_TOOLS = [
+    'draw-point',
+    'draw-polygon',
+    'draw-line',
+    'draw-modify',
+    'draw-remove',
+    'draw-edit',
+];

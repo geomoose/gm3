@@ -28,6 +28,7 @@
   "draw-modify-label" : "Modifica oggetto",
   "draw-modify-tip" : "Modifica un oggetto disegnato",
   "draw-multipoint-label" : "Disegno Multi-Point",
+  "draw-open-tip": "Apri gli strumenti di disegno",
   "draw-point-label" : "Clicca in un punto",
   "draw-point-tip" : "Aggiungi un putno al layer",
   "draw-polygon-label" : "Disegna poligono",
