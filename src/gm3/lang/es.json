@@ -14,6 +14,7 @@
   "Zoom to Full Extent" : "Zoom a la extension",
   "buffer-all": "Buffer objetos",
   "cancel" : "Cancelar",
+  "cancel-changes" "Cancelar los cambios",
   "clear-features" : "Limpiar objetos",
   "clear-features-tip" : "Limpiar objetos de la capa",
   "clear-previous-selection" : "Limpiar seleccion previa",
@@ -84,6 +85,7 @@
   "start-service-help" : "No hay ninguna seleccion. Seleccione una opcion de la barra de herramientas",
   "toggle-legend-tip" : "Alternar visibilidad de leyenda",
   "unfade-tip" : "Aclarar capa",
+  "undo-changes" : "Deshacer los cambios",
   "units" : "Unidades",
   "units-a" : "Acres",
   "units-ch" : "Chains",
@@ -106,5 +108,7 @@
   "with-buffer" : "Ancho de buffer",
   "zoomto-extent" : "Zoom a la extension",
   "zoomto-results" : "Zoom a la seleccion",
-  "zoomto-tip" : "Zoom a la capa"
+  "zoomto-tip" : "Zoom a la capa",
+  "zoom-in" : "Acercar la imagen",
+  "zoom-out" : "Alejar la imagen"
 }
