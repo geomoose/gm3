@@ -56,17 +56,19 @@ describe('application api calls', () => {
     });
 
     it('loads a mapbook (from an XML doc)', (done) => {
-        fs.readFile(MAPBOOK_PATH, (err, contents) => {
+        fs.readFile(MAPBOOK_PATH, 'utf-8', (err, contents) => {
             const parser = new DOMParser();
             const xml = parser.parseFromString(contents, 'text/xml');
-            app.loadMapbook({content: xml});
+            app.loadMapbook({content: xml})
+                .catch(err => done(err));
             done();
         });
     });
 
     it('loads a mapbook from a string', done => {
-        fs.readFile(MAPBOOK_PATH, (err, contents) => {
-            app.loadMapbook({content: contents});
+        fs.readFile(MAPBOOK_PATH, 'utf-8', (err, contents) => {
+            app.loadMapbook({content: contents})
+                .catch(err => done(err));
             done();
         });
     });

@@ -61,29 +61,9 @@ describe('map component tests', () => {
         it('is going to skip all tests....', () => {
             console.error('Skipping map tests without node-canvas installed.');
         });
-        return false;
-    }
+    } else {
+        let store = null;
 
-    let store = null;
-
-    beforeEach(() => {
-        store = createStore(combineReducers({
-            map: mapReducer,
-            mapSources: msReducer,
-            query: queryReducer,
-            config: configReducer,
-            editor: editorReducer,
-        }));
-    });
-
-    it('creates a map', () => {
-        mount(<div>
-            <Map store={store} />
-        </div>);
-    });
-
-
-    describe('add layers tests', () => {
         beforeEach(() => {
             store = createStore(combineReducers({
                 map: mapReducer,
@@ -92,117 +72,135 @@ describe('map component tests', () => {
                 config: configReducer,
                 editor: editorReducer,
             }));
-            // seed the view
-            store.dispatch(mapActions.setView({
-                center: [ -10370351.141856, 5550949.728470501 ],
-                zoom: 12
-            }));
-
-            mount(
-                <div style={{height: '500px', width: '500px'}}>
-                    <Map mapId='map' store={store}/>
-                </div>
-            );
         });
 
-        it('adds a wms layer', () => {
-            store.dispatch(msActions.add({
-                type: 'wms',
-                urls: [
-                    'http://test/wms?'
-                ],
-                name: 'test0',
-                label: 'test0-label',
-                opacity: 1,
-                queryable: false,
-                refresh: null,
-                layers: [],
-                params: {}
-            }));
-
-            store.dispatch(msActions.addLayer('test0', {
-                name: 'test1',
-                on: true,
-                label: 'test1-label'
-            }));
-
+        it('creates a map', () => {
+            mount(<div>
+                <Map store={store} />
+            </div>);
         });
 
-        it('adds an XYZ layer', () => {
-            store.dispatch(msActions.add({
-                name: 'osm',
-                type: 'xyz',
-                label: 'OSM',
-                urls: [
-                    'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                ],
-                layers: [{
-                    name: 'osm_mapnik',
-                    on: true
-                }]
-            }));
 
-            // this tests "updating" the OSM layer's URLs.
-            store.dispatch(msActions.add({
-                name: 'osm',
-                type: 'xyz',
-                label: 'OSM',
-                urls: [
-                    'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                ],
-                layers: [{
-                    name: 'osm_mapnik',
-                    on: true
-                }]
-            }));
+        describe('add layers tests', () => {
+            beforeEach(() => {
+                store = createStore(combineReducers({
+                    map: mapReducer,
+                    mapSources: msReducer,
+                    query: queryReducer,
+                    config: configReducer,
+                    editor: editorReducer,
+                }));
+                // seed the view
+                store.dispatch(mapActions.setView({
+                    center: [ -10370351.141856, 5550949.728470501 ],
+                    zoom: 12
+                }));
+
+                mount(
+                    <div style={{height: '500px', width: '500px'}}>
+                        <Map mapId='map' store={store}/>
+                    </div>
+                );
+            });
+
+            it('adds a wms layer', () => {
+                store.dispatch(msActions.add({
+                    type: 'wms',
+                    urls: [
+                        'http://test/wms?'
+                    ],
+                    name: 'test0',
+                    label: 'test0-label',
+                    opacity: 1,
+                    queryable: false,
+                    refresh: null,
+                    layers: [],
+                    params: {}
+                }));
+
+                store.dispatch(msActions.addLayer('test0', {
+                    name: 'test1',
+                    on: true,
+                    label: 'test1-label'
+                }));
+
+            });
+
+            it('adds an XYZ layer', () => {
+                store.dispatch(msActions.add({
+                    name: 'osm',
+                    type: 'xyz',
+                    label: 'OSM',
+                    urls: [
+                        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    ],
+                    layers: [{
+                        name: 'osm_mapnik',
+                        on: true
+                    }]
+                }));
+
+                // this tests "updating" the OSM layer's URLs.
+                store.dispatch(msActions.add({
+                    name: 'osm',
+                    type: 'xyz',
+                    label: 'OSM',
+                    urls: [
+                        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    ],
+                    layers: [{
+                        name: 'osm_mapnik',
+                        on: true
+                    }]
+                }));
+            });
+
+            it('adds an ags tile layer', () => {
+                store.dispatch(msActions.add({
+                    name: 'ags-test',
+                    type: 'ags',
+                    label: 'AGS',
+                    urls: [
+                        'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
+                    ],
+                    layers: [{
+                        name: 'NatGeo_World_map',
+                        on: true
+                    }]
+                }));
+
+                store.dispatch(msActions.add({
+                    name: 'ags-test',
+                    type: 'ags',
+                    label: 'AGS',
+                    urls: [
+                        'https://demo.services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
+                    ],
+                    layers: [{
+                        name: 'NatGeo_World_map',
+                        on: true
+                    }]
+                }));
+            });
+
+            it('adds a bing layer', () => {
+
+                store.dispatch(msActions.add({
+                    name: 'bing-test',
+                    type: 'bing',
+                    label: 'Bing',
+                    layers: [{
+                        name: 'roads',
+                        on: true
+                    }],
+                    params: {
+                        key: 'garbage-sample-key'
+                    }
+                }));
+
+            });
+
         });
-
-        it('adds an ags tile layer', () => {
-            store.dispatch(msActions.add({
-                name: 'ags-test',
-                type: 'ags',
-                label: 'AGS',
-                urls: [
-                    'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
-                ],
-                layers: [{
-                    name: 'NatGeo_World_map',
-                    on: true
-                }]
-            }));
-
-            store.dispatch(msActions.add({
-                name: 'ags-test',
-                type: 'ags',
-                label: 'AGS',
-                urls: [
-                    'https://demo.services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
-                ],
-                layers: [{
-                    name: 'NatGeo_World_map',
-                    on: true
-                }]
-            }));
-        });
-
-        it('adds a bing layer', () => {
-
-            store.dispatch(msActions.add({
-                name: 'bing-test',
-                type: 'bing',
-                label: 'Bing',
-                layers: [{
-                    name: 'roads',
-                    on: true
-                }],
-                params: {
-                    key: 'garbage-sample-key'
-                }
-            }));
-
-        });
-
-    });
-
+    }
 });
