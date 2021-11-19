@@ -53,8 +53,6 @@ module.exports = env => {
         mode: isDevelopment ? 'development' : 'production',
         devtool: isDevelopment ? 'eval-source-map' : undefined,
         entry: [
-            'babel-polyfill',
-            'whatwg-fetch',
             './src/index.js'
         ],
         resolve: {

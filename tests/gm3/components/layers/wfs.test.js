@@ -38,13 +38,6 @@ const PARCELS_SRC = {
 };
 
 describe('WFS Testing', () => {
-    if (!global.XMLSerializer) {
-        it('is going to skip all tests....', () => {
-            console.error('Skipping WFS tests without xmlshim installed.');
-        });
-        return false;
-    }
-
     it('Test creating a query with on input', () => {
         const basic_query = {
             fields: [
@@ -62,7 +55,7 @@ describe('WFS Testing', () => {
         const output_format = 'text/xml; subtype=gml/2.1.2'
         const wfs_query_xml = buildWfsQuery(basic_query, PARCELS_SRC, new proj.get('EPSG:3857'), output_format);
 
-        expect(wfs_query_xml).toBe('<GetFeature xmlns=\"http://www.opengis.net/wfs\" service=\"WFS\" version=\"1.1.0\" outputFormat=\"text/xml; subtype=gml/2.1.2\" xmlns:ns1=\"http://www.w3.org/2001/XMLSchema-instance\" ns1:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\"><Query typeName=\"ms:parcels\" srsName=\"EPSG:3857\"><Filter xmlns=\"http://www.opengis.net/ogc\"><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo></Filter></Query></GetFeature>');
+        expect(wfs_query_xml).toBe('<GetFeature xmlns="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="text/xml; subtype=gml/2.1.2" xmlns:ns1="http://www.w3.org/2001/XMLSchema-instance" ns1:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"><Query typeName="ms:parcels" srsName="EPSG:3857"><Filter xmlns="http://www.opengis.net/ogc"><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo></Filter></Query></GetFeature>');
     });
 
     it('Tests creating a query with TWO inputs (defaults to AND)', () => {
@@ -90,7 +83,7 @@ describe('WFS Testing', () => {
 
         let wfs_query_xml = buildWfsQuery(and_query, PARCELS_SRC, new proj.get('EPSG:3857'), output_format);
 
-        const and_xml = '<GetFeature xmlns=\"http://www.opengis.net/wfs\" service=\"WFS\" version=\"1.1.0\" outputFormat=\"application/json\" xmlns:ns1=\"http://www.w3.org/2001/XMLSchema-instance\" ns1:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\"><Query typeName=\"ms:parcels\" srsName=\"EPSG:3857\"><Filter xmlns=\"http://www.opengis.net/ogc\"><And><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo><PropertyIsGreaterThan><PropertyName>ACRES</PropertyName><Literal>5000</Literal></PropertyIsGreaterThan></And></Filter></Query></GetFeature>';
+        const and_xml = '<GetFeature xmlns="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="application/json" xmlns:ns1="http://www.w3.org/2001/XMLSchema-instance" ns1:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"><Query typeName="ms:parcels" srsName="EPSG:3857"><Filter xmlns="http://www.opengis.net/ogc"><And><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo><PropertyIsGreaterThan><PropertyName>ACRES</PropertyName><Literal>5000</Literal></PropertyIsGreaterThan></And></Filter></Query></GetFeature>';
 
         expect(wfs_query_xml).toBe(and_xml);
 
@@ -133,7 +126,7 @@ describe('WFS Testing', () => {
         };
 
         const wfs_query_xml = buildWfsQuery(or_join, PARCELS_SRC, new proj.get('EPSG:3857'), 'application/json');
-        const gone_fancy = '<GetFeature xmlns=\"http://www.opengis.net/wfs\" service=\"WFS\" version=\"1.1.0\" outputFormat=\"application/json\" xmlns:ns1=\"http://www.w3.org/2001/XMLSchema-instance\" ns1:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd\"><Query typeName=\"ms:parcels\" srsName=\"EPSG:3857\"><Filter xmlns=\"http://www.opengis.net/ogc\"><And><PropertyIsEqualTo><PropertyName>CITY</PropertyName><Literal>LAKEVILLE</Literal></PropertyIsEqualTo><Or><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo><PropertyIsGreaterThan><PropertyName>ACRES</PropertyName><Literal>5000</Literal></PropertyIsGreaterThan></Or></And></Filter></Query></GetFeature>';
+        const gone_fancy = '<GetFeature xmlns="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="application/json" xmlns:ns1="http://www.w3.org/2001/XMLSchema-instance" ns1:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"><Query typeName="ms:parcels" srsName="EPSG:3857"><Filter xmlns="http://www.opengis.net/ogc"><And><PropertyIsEqualTo><PropertyName>CITY</PropertyName><Literal>LAKEVILLE</Literal></PropertyIsEqualTo><Or><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo><PropertyIsGreaterThan><PropertyName>ACRES</PropertyName><Literal>5000</Literal></PropertyIsGreaterThan></Or></And></Filter></Query></GetFeature>';
 
         expect(wfs_query_xml).toBe(gone_fancy);
     });
