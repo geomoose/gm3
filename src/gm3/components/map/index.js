@@ -797,16 +797,17 @@ class Map extends React.Component {
         if(this.props.mapSources.results) {
             // clear the features
             this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
-            // get the path to the first set of features
-            const layer_path = Object.keys(query.results)[0];
 
-            // ensure the layer_path does not have a failure.
-            if(query.results[layer_path].failed !== true) {
-                // get the features, after applying the query filter
-                const features = util.matchFeatures(query.results[layer_path], query.filter);
-                // render only those features.
-                this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
+            let features = [];
+            for (const layer_path in query.results) {
+                // ensure the layer_path does not have a failure.
+                if(query.results[layer_path].failed !== true) {
+                    // get the features, after applying the query filter
+                    features = features.concat(util.matchFeatures(query.results[layer_path], query.filter));
+                }
             }
+            // render the features from all the layers
+            this.props.store.dispatch(mapSourceActions.addFeatures('results', features));
         } else {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }
