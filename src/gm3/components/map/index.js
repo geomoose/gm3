@@ -797,8 +797,6 @@ class Map extends React.Component {
         if(this.props.mapSources.results) {
             // clear the features
             this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
-            // get the path to the first set of features
-            const layer_path = Object.keys(query.results)[0];
 
             let features = [];
             for (const layer_path in query.results) {
