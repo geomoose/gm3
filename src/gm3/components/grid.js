@@ -63,7 +63,21 @@ class FilterModal extends ModalDialog {
         const new_filters = [];
 
         if(this.props.column.filter.type === 'list') {
-            new_filters.push(['in', property].concat(value));
+            // undefined causes challenges for the filter generator
+            //  this normalizes querying for an undefined value.
+            if (value.indexOf(undefined) >= 0) {
+                let nextFilter = ['==', ['coalesce', ['get', property], ''], ''];
+                if (value.length > 1) {
+                    nextFilter = [
+                        'any',
+                        nextFilter,
+                        ['in', ['get', property]].concat(value.filter(x => x !== undefined)),
+                    ];
+                }
+                new_filters.push(nextFilter);
+            } else {
+                new_filters.push(['in', property].concat(value));
+            }
         } else if(this.props.column.filter.type === 'range') {
             if(this.state.min !== '') {
                 new_filters.push(['>=', property, this.state.min]);
@@ -81,7 +95,7 @@ class FilterModal extends ModalDialog {
             removeFilter(this.props.queryId, property)
         );
 
-        // add the new filtres.
+        // add the new filters.
         for(const new_filter of new_filters) {
             // add/update this filter.
             this.props.store.dispatch(
@@ -162,10 +176,17 @@ class ListFilterModal extends FilterModal {
             const uniq_check = {};
             for(const result of this.props.results) {
                 const v = result.properties[prop];
-                if(uniq_check[v] !== true) {
-                    this.filter_values.push({
-                        value: v, label: v
-                    });
+                if (uniq_check[v] !== true) {
+                    if (v === undefined) {
+                        this.filter_values.push({
+                            value: undefined,
+                            label: '(empty)',
+                        });
+                    } else {
+                        this.filter_values.push({
+                            value: v, label: v
+                        });
+                    }
                 }
                 uniq_check[v] = true;
             }
