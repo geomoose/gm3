@@ -36,7 +36,7 @@ export class FavoriteLayers extends React.Component {
             return isFavorite(this.props.mapSources, layer);
         };
 
-        const favorites = renderFlatTree(this.props.dispatch, this.props.catalog, 'root', is_favorite);
+        const favorites = renderFlatTree(this.props.dispatch, this.props.catalog, 'root', this.props.resolution, is_favorite);
 
         return (
             <Provider store={this.props.store}>
@@ -62,11 +62,10 @@ export class FavoriteLayers extends React.Component {
 }
 
 
-const mapFavoritesToProps = function(store) {
-    return {
-        mapSources: store.mapSources,
-        catalog: store.catalog
-    }
-}
+const mapFavoritesToProps = state => ({
+    mapSources: state.mapSources,
+    catalog: state.catalog,
+    resolution: state.map ? state.map.resolution : -1,
+});
 
 export default connect(mapFavoritesToProps)(FavoriteLayers);
