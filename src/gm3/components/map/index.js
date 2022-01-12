@@ -1144,7 +1144,7 @@ class Map extends React.Component {
                 this.drawTool = new olModifyInteraction({
                     features: new olCollection(features),
                 });
-            } else {
+            } else if (type !== '') {
                 const editSrc = this.olLayers[EDIT_LAYER_NAME].getSource();
                 const drawOptions = {
                     type,
