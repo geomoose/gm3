@@ -84,7 +84,7 @@
   "search-catalog" : "Rechercher dans le catalogue",
   "start-service-help" : "Rien à afficher. Cliquez sur un service à démarrer dans la barre d'outil.",
   "toggle-legend-tip" : "Afficher/Masquer la légende.",
-  "unfade-tip" : "Rendre la couche plus visible",
+  "unfade-layer" : "Rendre la couche plus visible",
   "units" : "Unités",
   "units-a" : "Ares",
   "units-ch" : "Chaînes",
