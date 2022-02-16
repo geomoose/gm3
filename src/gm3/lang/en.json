@@ -86,7 +86,7 @@
   "start-service-help" : "Nothing available to view. Please click a service to start in the toolbar.",
   "toggle-legend-tip" : "Toggle legend visibility.",
   "undo-changes" : "Undo Changes",
-  "unfade-tip" : "Unfade layer",
+  "unfade-layer" : "Unfade layer",
   "units" : "Units",
   "units-a" : "Acres",
   "units-ch" : "Chains",
