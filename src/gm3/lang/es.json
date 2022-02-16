@@ -84,7 +84,7 @@
   "search-catalog" : "Buscar en el Catalogo de capas",
   "start-service-help" : "No hay ninguna seleccion. Seleccione una opcion de la barra de herramientas",
   "toggle-legend-tip" : "Alternar visibilidad de leyenda",
-  "unfade-tip" : "Aclarar capa",
+  "unfade-layer" : "Aclarar capa",
   "undo-changes" : "Deshacer los cambios",
   "units" : "Unidades",
   "units-a" : "Acres",
