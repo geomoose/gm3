@@ -69,6 +69,26 @@ function loadFonts(fontsUrl) {
     }
 }
 
+
+function buildLegendsOnMap(catalog) {
+    const legendMap = {};
+    for (const key in catalog) {
+        if (Array.isArray(catalog[key].src)) {
+            const srcs = catalog[key].src;
+            for (let i = 0, ii = srcs.length; i < ii; i++) {
+                const src = srcs[i];
+                if (!legendMap[src.mapSourceName]) {
+                    legendMap[src.mapSourceName] = {};
+                }
+
+                legendMap[src.mapSourceName][src.layerName] =
+                    !!legendMap[src.mapSourceName][src.layerName] || catalog[key].legend;
+            }
+        }
+    }
+    return legendMap;
+}
+
 export class PrintModal extends Modal {
 
     constructor(props) {
@@ -155,20 +175,38 @@ export class PrintModal extends Modal {
     /* Embed legends in the PDF
      */
     addLegends(doc, def) {
+        const legendsOnMap = buildLegendsOnMap(this.props.catalog);
+        const mapResolution = this.props.mapView.resolution;
+
+        const checkResolution = ms => {
+            let on = true;
+            if (ms.minresolution !== undefined && mapResolution < ms.minresolution) {
+                on = false;
+            }
+            if (ms.maxresolution !== undefined && mapResolution > ms.maxresolution) {
+                on = false;
+            }
+            return on;
+        }
+
         let legends = [];
         for (const mapSourceName in this.props.mapSources) {
-            const mapSource = this.props.mapSources[mapSourceName];
-            const srcLegends = mapSource.layers
-                // only render legends for layers that are on
-                .filter(layer => layer.on)
-                // convert the layer to a legend def
-                .map(layer => getLegend(mapSource, this.props.mapView, layer.name))
-                // only image layers are supported.
-                .filter(legend => legend.type === 'img')
-                .map(legend => legend.images);
+            const mapSource = this.props.mapSources[mapSourceName]
+            if (checkResolution(mapSource)) {
+                const srcLegends = mapSource.layers
+                    // only render legends for layers that are on
+                    .filter(layer => layer.on)
+                    // Is the legend on
+                    .filter(layer => !!legendsOnMap[mapSourceName] && !!legendsOnMap[mapSourceName][layer.name])
+                    // convert the layer to a legend def
+                    .map(layer => getLegend(mapSource, this.props.mapView, layer.name))
+                    // only image layers are supported.
+                    .filter(legend => legend.type === 'img')
+                    .map(legend => legend.images);
 
-            for (let i = 0, ii = srcLegends.length; i < ii; i++) {
-                legends = legends.concat(srcLegends[i]);
+                for (let i = 0, ii = srcLegends.length; i < ii; i++) {
+                    legends = legends.concat(srcLegends[i]);
+                }
             }
         }
 
@@ -554,6 +592,7 @@ const mapStateToProps = state => ({
     open: state.ui.modal === 'print',
     mapView: state.map,
     printData: state.print.printData,
+    catalog: state.catalog,
 });
 
 const mapDispatchToProps = {
