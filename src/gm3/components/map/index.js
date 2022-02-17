@@ -711,7 +711,7 @@ class Map extends React.Component {
     checkQueries(queries) {
         for(const query_id in queries) {
             const query = queries[query_id];
-            if(query && query.progress === 'new' && query.layers.length > 0) {
+            if(query && query.progress === 'new') {
                 // issue a 'started' modification so the query is
                 //  not run twice.
                 this.props.store.dispatch(mapActions.startQuery(query_id));
