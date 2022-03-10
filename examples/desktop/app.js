@@ -101,7 +101,7 @@ app.loadMapbook().then(function() {
 
     app.registerService('search', SearchService, {
         fields: [
-            {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'},
+            {type: 'text', label: 'Owner Name', example: '(i.e. Johnson)' name: 'OWNER_NAME'},
             {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
             {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3'}
         ],
