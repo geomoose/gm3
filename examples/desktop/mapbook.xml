@@ -171,13 +171,11 @@
     </map-source>
 
     <!-- Demo of parcels as points. -->
-    <!--
-    <map-source name="parcel_points" type="mapserver" up="true" down="true" title="Parcel Points">
+    <map-source name="parcels_points" type="mapserver" up="true" down="true" title="Parcel Points" minresolution="100" maxresolution="5000">
         <file>./demo/parcels/parcels.map</file>
-        <layer name="parcel_points"/>
+        <layer name="parcels_points"/>
         <param name="FORMAT" value="image/png"/>
     </map-source>
-    -->
 
     <map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
         <file>./demo/parcels/parcels.map</file>
@@ -494,7 +492,7 @@
                     <legend>images/logo_mini.gif</legend>
                     -->
                 </layer>
-                <layer title="Parcel Points" src="parcels/parcels_points" minscale="6000" maxscale="20000" status="off"/>
+                <layer title="Parcel Points" src="parcels_points/parcels_points" status="off" />
                 <layer title="Expensive Parcels" src="vector-parcels/big-money"/>
                 <layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
                 <layer title="AGS Dakota County Rail" src="ags-vector-dc16/railroads"/>
