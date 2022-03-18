@@ -63,7 +63,21 @@ class FilterModal extends ModalDialog {
         const new_filters = [];
 
         if(this.props.column.filter.type === 'list') {
-            new_filters.push(['in', property].concat(value));
+            // undefined causes challenges for the filter generator
+            //  this normalizes querying for an undefined value.
+            if (value.indexOf(undefined) >= 0) {
+                let nextFilter = ['==', ['coalesce', ['get', property], ''], ''];
+                if (value.length > 1) {
+                    nextFilter = [
+                        'any',
+                        nextFilter,
+                        ['in', ['get', property]].concat(value.filter(x => x !== undefined)),
+                    ];
+                }
+                new_filters.push(nextFilter);
+            } else {
+                new_filters.push(['in', property].concat(value));
+            }
         } else if(this.props.column.filter.type === 'range') {
             if(this.state.min !== '') {
                 new_filters.push(['>=', property, this.state.min]);
@@ -81,7 +95,7 @@ class FilterModal extends ModalDialog {
             removeFilter(this.props.queryId, property)
         );
 
-        // add the new filtres.
+        // add the new filters.
         for(const new_filter of new_filters) {
             // add/update this filter.
             this.props.store.dispatch(
@@ -146,90 +160,73 @@ class ListFilterModal extends FilterModal {
     constructor(props) {
         super(props);
 
-        const filter_def = props.column.filter;
+        const prop = this.props.column.property;
+        const selectedValues = [];
 
-        this.filter_values = [];
-
-        // when "values" is set in the column's
-        // filter property, that is expected to be an enumerated
-        // list of values for picking-and-choosing.
-        if(filter_def.values) {
-            this.filter_values = filter_def.values;
+        let orderedValues = [];
+        if (props.column.filter.values) {
+            orderedValues = props.column.filter.values;
         } else {
-            const prop = this.props.column.property;
-            // when the values are not specified they need
-            // to be pulled from the results.
-            const uniq_check = {};
-            for(const result of this.props.results) {
-                const v = result.properties[prop];
-                if(uniq_check[v] !== true) {
-                    this.filter_values.push({
-                        value: v, label: v
-                    });
+            // get the values from the dataset.
+            for (let i = 0, ii = this.props.results.length; i < ii; i++) {
+                const result = this.props.results[i];
+                const value = result.properties[prop];
+
+                if (orderedValues.indexOf(value) < 0) {
+                    orderedValues.push(value);
+                    selectedValues[orderedValues.length - 1] = true;
                 }
-                uniq_check[v] = true;
             }
         }
-
-        // everything is checked by default
-        const value = [];
-        for(const f of this.filter_values) {
-            value.push(f.value);
-        }
-
 
         // value is an array for list types.
         this.state = {
-            value: value
+            value: [...orderedValues],
+            orderedValues,
+            selectedValues,
         };
     }
 
-    /* onChange handles removing and adding the
-     * appropriate settings from the checkboxes.
-     */
-    onChange(evt) {
-        const target = evt.target;
-        const new_values = this.state.value.slice();
-
-        if(target.checked) {
-            new_values.push(target.value);
-            this.setState({value: new_values});
-        } else {
-            const val_pos = new_values.indexOf(target.value);
-            if(val_pos >= 0) {
-                new_values.splice(val_pos, 1);
-            }
-        }
-        this.setState({value: new_values});
-    }
-
-    /* Determine whether a checkbox should be checked or not.
-     */
-    isChecked(value) {
-        return (this.state.value.indexOf(value) >= 0);
-    }
-
     renderBody() {
-        // now convert the filter_values into
-        //  proper dom elements.
-        const settings = [];
+        const isChecked = value =>
+            this.state.selectedValues[value] === true;
 
-        for(let i = 0, ii = this.filter_values.length; i < ii; i++) {
-            const val = this.filter_values[i];
-            settings.push((
-                <div key={ 'key' + i }>
-                    <input type='checkbox'
-                        value={ val.value }
-                        checked={ this.isChecked(val.value) }
-                        onChange={ this.onChange } />
-                    { val.label }
-                </div>
-            ));
-        }
+        const toggleSelected = value => {
+            const nextSelected = {
+                ...this.state.selectedValues,
+                [value]: !this.state.selectedValues[value],
+            };
+
+            const nextValue = [];
+            for (const key in nextSelected) {
+                if (nextSelected[key] === true) {
+                    nextValue.push(this.state.orderedValues[parseInt(key, 10)]);
+                }
+            }
+
+            this.setState({
+                ...this.state,
+                selectedValues: nextSelected,
+                value: nextValue,
+            });
+        };
 
         return (
             <div>
-                { settings }
+                {this.state.orderedValues.map((value, valueIdx) => (
+                    <div
+                        key={value ? value : 'empty'}
+                        className="checkbox"
+                        onClick={() => {
+                            toggleSelected(valueIdx);
+                        }}
+                    >
+                        <i
+                            className={`icon checkbox ${isChecked(valueIdx) ? 'on' : ''}`}
+                        />
+                        {value ? value : '(empty)'}
+                    </div>
+                ))}
             </div>
         );
     }
