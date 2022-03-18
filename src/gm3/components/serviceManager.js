@@ -365,13 +365,13 @@ class ServiceManager extends React.Component {
                     <React.Fragment>
                         <Modal
                             open={this.state.showTooManyFeatures}
-                            options={[{value: 'close', label: 'Close'}]}
+                            options={[{value: 'okay', label: this.props.t('Close')}]}
                             onClose={() => {
                                 this.setState({showTooManyFeatures: false});
                             }}
-                            title='Too many features'
+                            title={this.props.t('too-many-features-title')}
                         >
-                            Too many features to buffer. Please, select a smaller number of features on the map.
+                            {this.props.t('too-many-features-description')}
                         </Modal>
                         { this.props.queries.order.map(this.renderQuery) }
                     </React.Fragment>
