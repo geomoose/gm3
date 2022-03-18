@@ -39,21 +39,24 @@ export function buffer(feature, meters) {
     return bufferFeature(feature, meters).geometry;
 }
 
+function getAnchorPoint(feature, empty = null) {
+    let anchorPoint = empty;
+    const gtype = feature.geometry.type;
+    if (gtype === 'Point') {
+        anchorPoint = feature.geometry.coordinates;
+    } else if(gtype === 'MultiPoint' || gtype === 'LineString') {
+        anchorPoint = feature.geometry.coordinates[0];
+    } else if(gtype === 'MultiLineString' || gtype === 'Polygon') {
+        anchorPoint = feature.geometry.coordinates[0][0];
+    } else if(gtype === 'MuliPolygon') {
+        anchorPoint = feature.geometry.cooredinates[0][0][0];
+    }
+    return anchorPoint;
+}
+
 export function bufferFeature(feature, meters) {
     // Start on null island.
-    let pos_pt = [0, 0];
-
-    const gtype = feature.geometry.type;
-
-    if (gtype === 'Point') {
-        pos_pt = feature.geometry.coordinates;
-    } else if(gtype === 'MultiPoint' || gtype === 'LineString') {
-        pos_pt = feature.geometry.coordinates[0];
-    } else if(gtype === 'MultiLineString' || gtype === 'Polygon') {
-        pos_pt = feature.geometry.coordinates[0][0];
-    } else if(gtype === 'MuliPolygon') {
-        pos_pt = feature.geometry.cooredinates[0][0][0];
-    }
+    const pos_pt = getAnchorPoint(feature, [0, 0]);
 
     // find the feature's location in UTM space.
     const utmZone = proj.get(getUtmZone(pos_pt));
@@ -113,4 +116,24 @@ export function bufferAndUnion(features, meters) {
     }
 
     return geometry.geometry;
+}
+
+export function union(features) {
+    const distance = pt => Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1]);
+    // sort the features by their bounding boxes.
+    const sortedFeatures = features.sort((a, b) => {
+        const ptA = getAnchorPoint(a);
+        const ptB = getAnchorPoint(b);
+        if (ptA === null) {
+            return 1;
+        } else if (ptB === null) {
+            return -1;
+        }
+        return distance(ptA) < distance(ptB) ? -1 : 1;
+    });
+    let unionFeature = {...sortedFeatures[0]};
+    for (let i = 1, ii = sortedFeatures.length; i < ii; i++) {
+        unionFeature = turf_union(unionFeature, sortedFeatures[i]);
+    }
+    return unionFeature;
 }

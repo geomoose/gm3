@@ -145,6 +145,8 @@ class ServiceManager extends React.Component {
             }
         }
 
+        const bufferEnabled = feature_count <= this.props.config.bufferMaxFeatures;
+
         const info_header = (
             <div className='results-info'>
                 {resultsConfig.showFeatureCount && (
@@ -162,9 +164,11 @@ class ServiceManager extends React.Component {
                 )}
 
                 {resultsConfig.showBufferAll && (
-                    <div className='results-info-item buffer-all'>
+                    <div
+                        className={`results-info-item buffer-all ${!bufferEnabled ? 'disabled' : ''}`}
+                    >
                         <div className='label'>{this.props.t('buffer-all')}</div>
-                        <div className='value' onClick={() => { this.props.bufferAll(query); }}>
+                        <div className='value' onClick={() => { if (bufferEnabled) { this.props.bufferAll(query); } }}>
                             <span className='icon buffer'></span>
                         </div>
                     </div>
@@ -399,6 +403,10 @@ const mapState = state => ({
     map: state.map,
     selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
     resultsConfig: {...DEFAULT_RESULTS_CONFIG, ...state.config.results},
+    config: {
+        bufferMaxFeatures: 100,
+        ...state.config.query,
+    },
 });
 
 function mapDispatch(dispatch, ownProps) {
