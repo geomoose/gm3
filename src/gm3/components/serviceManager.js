@@ -35,6 +35,7 @@ import { getExtentForQuery } from '../util';
 import { DEFAULT_RESULTS_CONFIG } from '../defaults';
 
 import MeasureTool from './measure';
+import Modal from './modal';
 
 import ServiceForm from './serviceForm';
 
@@ -78,6 +79,7 @@ class ServiceManager extends React.Component {
             lastService: null,
             lastFeature: '',
             values: {},
+            showTooManyFeatures: false,
         };
 
         this.fieldValues = {};
@@ -165,10 +167,16 @@ class ServiceManager extends React.Component {
 
                 {resultsConfig.showBufferAll && (
                     <div
-                        className={`results-info-item buffer-all ${!bufferEnabled ? 'disabled' : ''}`}
+                        className='results-info-item buffer-all'
                     >
                         <div className='label'>{this.props.t('buffer-all')}</div>
-                        <div className='value' onClick={() => { if (bufferEnabled) { this.props.bufferAll(query); } }}>
+                        <div className='value' onClick={() => {
+                            if (bufferEnabled) {
+                                this.props.bufferAll(query);
+                            } else {
+                                this.setState({showTooManyFeatures: true});
+                            }
+                        }}>
                             <span className='icon buffer'></span>
                         </div>
                     </div>
@@ -355,6 +363,16 @@ class ServiceManager extends React.Component {
             if(this.props.queries.order.length > 0) {
                 contents = (
                     <React.Fragment>
+                        <Modal
+                            open={this.state.showTooManyFeatures}
+                            options={[{value: 'close', label: 'Close'}]}
+                            onClose={() => {
+                                this.setState({showTooManyFeatures: false});
+                            }}
+                            title='Too many features'
+                        >
+                            Too many features to buffer. Please, select a smaller number of features on the map.
+                        </Modal>
                         { this.props.queries.order.map(this.renderQuery) }
                     </React.Fragment>
                 );
@@ -372,7 +390,6 @@ class ServiceManager extends React.Component {
                         <div className='info-box'>
                             { this.props.t('start-service-help') }
                         </div>
-
                         <div className='clear-controls'>
                             <button
                                 disabled={ !enable_clear }
