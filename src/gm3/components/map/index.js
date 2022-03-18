@@ -880,7 +880,7 @@ class Map extends React.Component {
 
             // buffer those features.
             bufferedFeature =
-                util.projectFeatures(
+                [jsts.union(util.projectFeatures(
                     wgs84Features.map(feature => {
                         const buffered = jsts.bufferFeature(feature, buffer);
                         buffered.properties = {
@@ -890,7 +890,8 @@ class Map extends React.Component {
                     }),
                     'EPSG:4326',
                     'EPSG:3857'
-                );
+                )
+                ), ];
         }
 
         // the selection feature(s) are the original, as-drawn feature.
