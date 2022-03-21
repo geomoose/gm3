@@ -25,7 +25,6 @@
  */
 var path = require('path');
 var webpack = require('webpack');
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 var package = require('./package.json');
 
@@ -44,7 +43,6 @@ module.exports = env => {
     let filename = env && env.outfile ? env.outfile : 'geomoose.js';
 
     if (!isDevelopment) {
-        PLUGINS.push(new UglifyJsPlugin());
         filename = 'geomoose.min.js';
     }
 
@@ -59,11 +57,14 @@ module.exports = env => {
             extensions: [
                 '.js', '.jsx',
             ],
+            fallback: {
+                url: require.resolve('url'),
+            },
         },
         module: {
             rules: [{
                 test: /\.(jsx|js)$/,
-                loaders: ['babel-loader'],
+                loader: 'babel-loader',
                 include: [
                     path.join(__dirname, 'src'),
                     path.join(__dirname, 'node_modules/'),
@@ -101,21 +102,22 @@ module.exports = env => {
             libraryTarget: 'umd'
         },
         devServer: {
-            publicPath: '/examples/geomoose/dist',
-            contentBase: './',
+            devMiddleware: {
+                index: true,
+                publicPath: '/examples/geomoose/dist',
+            },
+            static: [{
+                directory: path.join(__dirname, 'dist'),
+                publicPath: '/examples/geomoose/dist',
+            }, {
+                directory: path.join(__dirname, 'examples'),
+                publicPath: '/examples',
+            }],
             port: 4000,
             proxy: [
                 {
                     context: ['/mapserver'],
                     target: 'http://localhost:8000/',
-                    secure: false
-                },
-                {
-                    // point the example "geomoose" directories back
-                    //  at the geomoose repository.
-                    context: ['/examples/geomoose/'],
-                    target: 'http://localhost:4000/',
-                    pathRewrite: {'^/examples/geomoose' : '' },
                     secure: false
                 },
             ]
