@@ -86,7 +86,7 @@
   "start-service-help" : "Nothing available to view. Please click a service to start in the toolbar.",
   "toggle-legend-tip" : "Toggle legend visibility.",
   "too-many-features-title": "Too many features",
-  "too-many-features-description": "Too many features to buffer. Please, select a smaller number of features on the map.",
+  "too-many-features-description": "Too many features to buffer. Please, select fewer than {{max}} features.",
   "undo-changes" : "Undo Changes",
   "unfade-tip" : "Unfade layer",
   "units" : "Units",

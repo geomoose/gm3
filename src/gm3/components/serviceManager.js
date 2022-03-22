@@ -371,7 +371,7 @@ class ServiceManager extends React.Component {
                             }}
                             title={this.props.t('too-many-features-title')}
                         >
-                            {this.props.t('too-many-features-description')}
+                            {this.props.t('too-many-features-description', {max: this.props.config.bufferMaxFeatures})}
                         </Modal>
                         { this.props.queries.order.map(this.renderQuery) }
                     </React.Fragment>
