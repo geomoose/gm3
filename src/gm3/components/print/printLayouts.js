@@ -154,6 +154,50 @@ const LAYOUTS = [
                 x: .5, y: 10.5, text: 'Printed on {{month}} / {{day}} / {{year}}'
             }
         ]
+    },
+    {
+        label: 'a4-landscape-legend',
+        orientation: 'landscape',
+        page: 'a4',
+        units: 'mm',
+        elements: [
+            {
+                type: 'text',
+                size: 18, fontStyle: 'bold',
+                x: 12, y: 18, text: '{{title}}'
+            },
+            {
+                type: 'map',
+                x: 12, y: 19,
+                width: 209, height: 179
+            },
+            {
+                type: 'rect',
+                x: 12, y: 19,
+                width: 209, height: 179,
+                strokeWidth: .25
+            },
+            {
+                type: 'text',
+                x: 12, y: 203, text: 'Printed on {{month}} / {{day}} / {{year}}'
+            },
+            {
+                type: 'text',
+                x: 224, y: 23,
+                text: 'Legend',
+            },
+            {
+                type: 'legend',
+                x: 225, y: 25
+            },
+            {
+                type: 'rect',
+                x: 224, y: 19,
+                width: 61,
+                height: 179,
+                strokeWidth: .25,
+            }
+        ]
     }
 ];
 
