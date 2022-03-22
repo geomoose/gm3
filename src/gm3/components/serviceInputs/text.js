@@ -71,9 +71,18 @@ export default class TextInput extends Component {
         return (
             <div className='service-input'>
                 <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input onChange={this.onChange} value={this.state.value} type="text" id={ 'input-' + id}></input>
+                <input
+                    onChange={this.onChange}
+                    value={this.state.value}
+                    type="text"
+                    id={ 'input-' + id}
+                    placeholder={ this.props.field.placeHolder }
+                    className={this.props.field.helpText ? 'has-help-text' : ''}
+                />
+                {this.props.field.helpText && (
+                    <div className="helper-text" htmlFor={ 'input-' + id }>{ this.props.field.helpText }</div>
+                )}
             </div>
         );
     }
-
 }

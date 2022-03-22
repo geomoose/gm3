@@ -101,9 +101,9 @@ app.loadMapbook().then(function() {
 
     app.registerService('search', SearchService, {
         fields: [
-            {type: 'text', label: 'Owner Name', name: 'OWNER_NAME'},
+            {type: 'text', label: 'Owner Name', name: 'OWNER_NAME', helpText: '(i.e. Johnson)'},
             {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
-            {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3'}
+            {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3', placeHolder: 'Farmington'}
         ],
         searchLayers: ['vector-parcels/parcels'],
         validateFieldValues: function (fields) {
