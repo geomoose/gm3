@@ -284,7 +284,7 @@ export class PrintModal extends Modal {
                 // place this in the lower left corner of the map
                 x: def.x + margin,
                 y: def.y + def.height - margin - height,
-                // width info comes as pixels, this
+                // width info comes as points, this
                 //  should convert the width
                 width: scaleInfo.width * ptToLayout,
                 height,
