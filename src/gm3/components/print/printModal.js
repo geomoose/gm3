@@ -275,25 +275,25 @@ export class PrintModal extends Modal {
         const scaleLine = state.config.map.scaleLine;
         if (scaleLine && scaleLine.enabled) {
             const scaleInfo = getScalelineInfo(view, scaleLine.units || 'us', {multiplier: resolution});
-            const pxToLayout = this.toPoints(1, 'px') / this.toPoints(1, layout.units);
-            const margin = 12 * pxToLayout;
-            const height = 12 * pxToLayout;
+            const ptToLayout = 1 / this.toPoints(1, layout.units);
+            const margin = 12 * ptToLayout;
+            const height = 12 * ptToLayout;
             this.addDrawing(doc, {
                 type: 'rect',
                 filled: true,
                 // place this in the lower left corner of the map
                 x: def.x + margin,
                 y: def.y + def.height - margin - height,
-                // width info comes as pixels, this
+                // width info comes as points, this
                 //  should convert the width
-                width: scaleInfo.width / 72,
+                width: scaleInfo.width * ptToLayout,
                 height,
                 strokeWidth: 0,
                 fill: [178, 196, 219],
             });
 
             this.addText(doc, {
-                x: def.x + margin + 2 * pxToLayout,
+                x: def.x + margin + 2 * ptToLayout,
                 y: def.y + def.height - margin - height / 2,
                 text: scaleInfo.label,
                 size: 12,
