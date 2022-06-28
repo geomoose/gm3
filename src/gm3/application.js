@@ -442,8 +442,9 @@ class Application {
                                     mapSourceActions.setLayerTemplate(
                                         ms_name, layer_name,
                                         template_name, {
+                                            ...layer_template,
                                             type: 'local',
-                                            contents: content
+                                            contents: content,
                                         }
                                     )
                                 );
