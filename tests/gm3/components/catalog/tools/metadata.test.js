@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render } from '@testing-library/react';
 
 import MetadataTool from 'gm3/components/catalog/tools/metadata';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Metadata tool test', () => {
     it('renders a metadata tool and dispatches an action', () => {
@@ -39,8 +35,8 @@ describe('Metadata tool test', () => {
             href: TEST_HREF,
         };
 
-        const wrapper = mount(<MetadataTool {...props} />);
-        expect(wrapper.html()).toContain(TEST_HREF);
+        const {container} = render(<MetadataTool {...props} />);
+        expect(container.innerHTML).toContain(TEST_HREF);
     });
 });
 

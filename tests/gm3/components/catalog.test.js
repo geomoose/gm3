@@ -24,8 +24,7 @@
 
 import React from 'react';
 
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { fireEvent, render } from '@testing-library/react';
 
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -41,8 +40,6 @@ import * as actions from 'gm3/actions/catalog';
 import * as msActions from 'gm3/actions/mapSource';
 
 
-Enzyme.configure({ adapter: new Adapter() });
-
 describe('Catalog component tests', () => {
     const store = createStore(combineReducers({
         'catalog': reducer,
@@ -54,25 +51,7 @@ describe('Catalog component tests', () => {
 
     let catalog = null;
 
-    /*
-    it('renders a catalog from the store', function() {
-        const store = createStore(combineReducers({
-            'toolbar': toolbarReducer
-        }));
-        store.dispatch(actions.addDrawer('root', {
-            name: 'drawer0', label: 'Drawer 0',
-        }));
-        store.dispatch(actions.addTool('drawer0', {
-            name: 'sample1', label: 'Sample 1',
-            actionType: 'service', actionDetail: 'sample2'
-        }));
-
-        const div = document.createElement('div');
-        ReactDOM.render(<SmartToolbar store={store}/>, div);
-    });
-    */
-
-    it('renders a catalog from a mapbook fragment', function() {
+    beforeEach(function() {
         // setup the map sources
         store.dispatch(msActions.add({name: 'test', type: 'vector'}));
 
@@ -114,40 +93,40 @@ describe('Catalog component tests', () => {
         const catalog_xml = parser.parseFromString(xml, 'text/xml');
         const results = actions.parseCatalog(store, catalog_xml.getElementsByTagName('catalog')[0]);
 
-        for(const action of results) {
+        results.forEach(action => {
             store.dispatch(action);
-        }
+        });
 
-        catalog = mount(<div>
+        const {container} = render(<div>
             <Catalog store={store} />
         </div>);
 
-        expect(catalog).not.toBe(null);
+        catalog = container;
     });
 
     it('toggles a favorite', function() {
-        catalog.find('i.favorite.icon').first().simulate('click');
+        fireEvent.click(catalog.querySelector('i.favorite.icon'));
         expect(store.getState().mapSources.test.layers[0].favorite).toBe(true);
     });
 
     it('toggles refreshes', function() {
-        catalog.find('i.refresh.icon').first().simulate('click');
+        fireEvent.click(catalog.querySelector('i.refresh.icon'));
     });
 
     it('toggles the group state', function() {
-        catalog.find('.group-label').first().simulate('click');
-        expect(catalog.find('.gm-expand').length).toBe(1);
-        catalog.find('.group-label').first().simulate('click');
-        expect(catalog.find('.gm-collapse').length).toBe(1);
+        fireEvent.click(catalog.querySelector('.group-label'));
+        expect(catalog.querySelector('.gm-expand')).not.toBeNull();
+        fireEvent.click(catalog.querySelector('.group-label'));
+        expect(catalog.querySelector('.gm-collapse')).not.toBeNull();
     });
 
     it('triggers a catalog search', function() {
-        const searchbox = catalog.find('input').first();
-        searchbox.simulate('change', {target: {value: '1'}});
+        fireEvent.change(catalog.querySelector('input'), {value: '1'});
     });
 
     it('toggles layer visibility', function() {
-        catalog.find('.checkbox').first().simulate('click');
-        expect(store.getState().mapSources.test.layers[0].on).toBe(true);
+        fireEvent.click(catalog.querySelector('.checkbox'));
+        // the layer is on by default
+        expect(store.getState().mapSources.test.layers[0].on).toBe(false);
     });
 });

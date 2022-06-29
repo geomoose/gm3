@@ -33,6 +33,7 @@ export const Tool = ({tip, iconClass, onClick, children, active}) => {
     return (
         <React.Fragment>
             <i
+                role='button'
                 className={(active ? 'active icon ' : 'icon ') + iconClass}
                 onClick={onClick}
                 title={t(tip)}>

@@ -23,13 +23,10 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { DownloadTool } from 'gm3/components/catalog/tools/download';
 
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Download tool test', () => {
     it('renders a download tool and dispatches an action', () => {
@@ -47,13 +44,13 @@ describe('Download tool test', () => {
             },
         };
 
-        const wrapper = mount(<DownloadTool {...props} />);
+        render(<DownloadTool {...props} />);
 
-        wrapper.find('i.icon').simulate('click');
+        // click on the tool
+        fireEvent.click(screen.getByRole('button'));
 
-        wrapper.update();
-
-        wrapper.find('button').last().simulate('click');
+        // click the download button
+        fireEvent.click(screen.getByText('Okay'));
 
         expect(clicked).toBe(true);
     });

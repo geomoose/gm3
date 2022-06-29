@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { screen, render, fireEvent } from '@testing-library/react';
 
 import { ZoomToTool } from 'gm3/components/catalog/tools/zoomto';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Zoom-to tool test', () => {
     it('renders a zoom to tool', () => {
@@ -60,9 +56,8 @@ describe('Zoom-to tool test', () => {
             },
         };
 
-        const wrapper = mount(<ZoomToTool {...props} />);
-        wrapper.find('i.icon').simulate('click');
-
+        render(<ZoomToTool {...props} />);
+        fireEvent.click(screen.getByRole('button'));
         expect(clicked).toBe(true);
     });
 });

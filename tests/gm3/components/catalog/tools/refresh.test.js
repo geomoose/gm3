@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { screen, render, fireEvent } from '@testing-library/react';
 
 import { LayerRefresh } from 'gm3/components/catalog/tools/refresh';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Refresh tool test', () => {
     it('renders a refresh tool and dispatches an action', () => {
@@ -72,10 +68,8 @@ describe('Refresh tool test', () => {
             },
         };
 
-        const wrapper = mount(<LayerRefresh {...props} />);
-
-        wrapper.find('i.icon').simulate('click');
-
+        render(<LayerRefresh {...props} />);
+        fireEvent.click(screen.getByRole('button'));
         expect(clicked).toBe(true);
     });
 });

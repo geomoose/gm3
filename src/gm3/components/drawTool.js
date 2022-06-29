@@ -24,13 +24,18 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Translation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { changeTool } from '../actions/map';
 
 import { getSelectableLayers, getLayerFromSources } from '../actions/mapSource';
 
 import { getMapSourceName, getLayerName } from '../util';
+
+const ToolLabel = ({label}) => {
+    const {t} = useTranslation();
+    return t(label);
+};
 
 class DrawTool extends React.Component {
 
@@ -105,20 +110,16 @@ class DrawTool extends React.Component {
         }
 
         return (
-            <Translation>
-                {t => (
-                    <div
-                        key={'draw-tool-' + gtype}
-                        className={tool_class}
-                        onClick={ () => {
-                            this.props.onChange(gtype, this.state.selectLayer);
-                        }}>
-                        <i className='radio-icon'></i>
-                        {` ${t(tool_label)}`}
-                        { select_options }
-                    </div>
-                )}
-            </Translation>
+            <div
+                key={'draw-tool-' + gtype}
+                className={tool_class}
+                onClick={ () => {
+                    this.props.onChange(gtype, this.state.selectLayer);
+                }}>
+                <i className='radio-icon'></i>
+                <ToolLabel label={tool_label} />
+                { select_options }
+            </div>
         );
 
     }

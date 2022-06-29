@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render, fireEvent, screen } from '@testing-library/react';
 
 import { UpTool } from 'gm3/components/catalog/tools/up';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('UpTool test', () => {
     it('renders an up tool', () => {
@@ -69,8 +65,8 @@ describe('UpTool test', () => {
             },
         };
 
-        const wrapper = mount(<UpTool {...props} />);
-        wrapper.find('i.icon').simulate('click');
+        render(<UpTool {...props} />);
+        fireEvent.click(screen.getByRole('button'));
     });
 });
 

@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { screen, render, fireEvent } from '@testing-library/react';
 
 import { LegendToggle } from 'gm3/components/catalog/tools/legend';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Legend tool test', () => {
     it('renders a legend tool and dispatches an action', () => {
@@ -47,10 +43,8 @@ describe('Legend tool test', () => {
             },
         };
 
-        const wrapper = mount(<LegendToggle {...props} />);
-
-        wrapper.find('i.icon').simulate('click');
-
+        render(<LegendToggle {...props} />);
+        fireEvent.click(screen.getByRole('button'));
         expect(clicked).toBe(true);
     });
 });

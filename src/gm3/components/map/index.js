@@ -1402,7 +1402,7 @@ class Map extends React.Component {
                 }}
             >
                 <AttributionDisplay store={this.props.store} />
-                <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
+                {/* <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />*/}
 
                 <EditorModal store={this.props.store} />
                 <RemoveModal store={this.props.store} />

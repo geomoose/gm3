@@ -23,10 +23,7 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
+import {render} from '@testing-library/react';
 import CoordinateDisplay, { formatCoordinates } from 'gm3/components/coordinate-display';
 
 // this is necessary to configure the UTM projections
@@ -34,8 +31,6 @@ import { configureProjections } from 'gm3/util';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('coordinate display component', () => {
     it('formats coordinates with default precision', () => {
@@ -63,13 +58,12 @@ describe('coordinate display component', () => {
 
 
     it('renders a coordinate display', () => {
-        const wrapper = mount(
+        const {container} = render(
             <CoordinateDisplay
                 coords={[100000, 100000]}
             />
         );
-
-        expect(wrapper.html()).toContain('100000.0, 100000.0');
+        expect(container.getElementsByClassName('coordinate-display')[0].innerHTML).toContain('100000.0, 100000.0');
     });
 
     it('accepts a custom projections list', () => {
@@ -96,18 +90,18 @@ describe('coordinate display component', () => {
             }
         ];
 
-        const wrapper = mount(
+        const {container} = render(
             <CoordinateDisplay
                 coords={[-10370000, 5550000]}
                 projections={ projections }
             />
         );
-        expect(wrapper.html()).toContain('487664, 4932296');
+        expect(container.innerHTML).toContain('487664, 4932296');
     });
 
 
     it('renders precision 0 correctly', () => {
-        const wrapper = mount(
+        const {container} = render(
             <CoordinateDisplay
                 coords={[123.456, 123.456]}
                 projections={[{
@@ -118,6 +112,6 @@ describe('coordinate display component', () => {
             />
         );
 
-        expect(wrapper.html().indexOf('123, 123')).not.toBe(-1);
+        expect(container.innerHTML.indexOf('123, 123')).not.toBe(-1);
     });
 });

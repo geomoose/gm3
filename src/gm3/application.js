@@ -58,7 +58,7 @@ import editorReducer from './reducers/editor';
 import Modal from './components/modal';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
@@ -356,19 +356,21 @@ class Application {
         props.services = this.services;
 
         const e = React.createElement(component, props);
-        return ReactDOM.render(e, document.getElementById(domId));
+        const root = createRoot(document.getElementById(domId));
+        root.render(e);
     }
 
     addPlugin(component, domId, inProps = {}) {
         const props = Object.assign({
             store: this.store,
             React: React,
-            ReactDOM: ReactDOM,
+            ReactDOM: {createRoot},
         }, inProps);
         props.services = this.services;
 
         const e = React.createElement(component, props);
-        return ReactDOM.render(e, document.getElementById(domId));
+        const root = createRoot(document.getElementById(domId));
+        root.render(e);
     }
 
 
@@ -821,9 +823,9 @@ class Application {
             open: true,
         };
 
-        // create the element
         const e = React.createElement(Modal, props);
-        ReactDOM.render(e, modal_div);
+        const root = createRoot(modal_div);
+        root.render(e);
     }
 
     showModal(modalKey) {
