@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,35 +26,30 @@
  *
  */
 
-import { TOOLBAR } from '../actionTypes';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-export function addTool(root, tool, order = 'last') {
-    return {
-        type: TOOLBAR.ADD,
+export const addTool = createAction('toolbar/add', (root, tool, order = 'last') => ({
+    payload: {
         order,
-        root,
-        tool
-    }
-}
+        root: root || 'root',
+        tool,
+    },
+}));
 
-export function addDrawer(root, drawer, order = 'last') {
-    return {
-        type: TOOLBAR.ADD,
+export const addDrawer = createAction('toolbar/add-drawer', (root, drawer, order = 'last') => ({
+    payload: {
+        root: root || 'root',
         order,
-        root,
         tool: {
-            name: drawer.name, label: drawer.label,
-            actionType: 'drawer', actionDetail: '',
+            name: drawer.name,
+            label: drawer.label,
+            actionType: 'drawer',
+            actionDetail: '',
         }
     }
-}
+}));
 
-export function remove(name) {
-    return {
-        type: TOOLBAR.REMOVE,
-        name
-    }
-}
+export const remove = createAction('toolbar/remove');
 
 function parseTool(toolXml) {
     return {

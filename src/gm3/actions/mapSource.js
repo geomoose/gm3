@@ -26,10 +26,10 @@
  *
  */
 
+import {createAction, createAsyncThunk} from '@reduxjs/toolkit';
 import {get as getProj} from 'ol/proj';
 import {changeTool} from './map';
 
-import { MAPSOURCE } from '../actionTypes';
 import {wfsDeleteFeatures, wfsSaveFeatures} from '../components/map/layers/wfs';
 import {EDIT_LAYER_NAME} from '../defaults';
 
@@ -38,36 +38,37 @@ import * as util from '../util';
 let MS_Z_INDEX = 100000;
 
 const SOURCE_DEFAULTS = {
+    layers: [],
+    params: {},
+    printable: true,
+    queryable: false,
     opacity: 1.0,
 };
 
 /** Add a map-source using a MapSource
  *  object.
  */
-export function add(mapSourceIn) {
-    if(typeof(mapSourceIn.zIndex) !== 'number') {
-        mapSourceIn.zIndex = MS_Z_INDEX;
-        MS_Z_INDEX--;
-    }
-
-    const mapSource = Object.assign({}, SOURCE_DEFAULTS, mapSourceIn);
-
+export const add = createAction('mapsource/add', newMapSource => {
+    const zIndex = MS_Z_INDEX;
+    MS_Z_INDEX--;
     return {
-        type: MAPSOURCE.ADD,
-        mapSource
+        payload: {
+            ...SOURCE_DEFAULTS,
+            ...newMapSource,
+            zIndex,
+        },
     };
-}
+});
 
 /** Add a layer to a mapsource.
  *
  */
-export function addLayer(mapSourceName, layer) {
-    return {
-        type: MAPSOURCE.ADD_LAYER,
+export const addLayer = createAction('mapsource/add-layer', (mapSourceName, layer) => ({
+    payload: {
         mapSourceName,
-        layer
-    };
-}
+        layer,
+    },
+}));
 
 /** Convert all the <params> of a <map-source> into an object.
  *
@@ -143,13 +144,13 @@ function parseProperties(msXml) {
  *
  *  @returns The action object.
  */
-export function favoriteLayer(mapSourceName, layerName, favorite) {
-    return {
-        type: MAPSOURCE.LAYER_FAVORITE,
-        mapSourceName, layerName,
-        favorite
-    }
-}
+export const favoriteLayer = createAction('mapsource/favorite', (mapSourceName, layerName, favorite) => ({
+    payload: {
+        mapSourceName,
+        layerName,
+        favorite,
+    },
+}));
 
 
 /** Convert a mapserver layer to something more normal.
@@ -403,12 +404,7 @@ export function addFromXml(xml, config) {
  *  @param path The 'path'/name of the map-source.
  *
  */
-export function remove(path) {
-    return {
-        type: MAPSOURCE.REMOVE,
-        path
-    }
-}
+export const remove = createAction('mapsource/remove');
 
 /** Get a map-source layer based on a catalog layer object.
  *
@@ -419,13 +415,13 @@ export function remove(path) {
  */
 export function getLayer(mapSources, layer) {
     const map_source = mapSources[layer.mapSourceName];
-    if (map_source && map_source.layers) {
-        for (const l of map_source.layers) {
+    if (map_source) {
+        for(const l of map_source.layers) {
             if(l.name === layer.layerName) { return l; }
         }
-    }
-    if (!layer.layerName) {
-        return map_source;
+        if(!layer.layerName) {
+            return map_source;
+        }
     }
     console.error('Cannot find layer', layer.mapSourceName, layer.layerName);
     throw new Error(`Cannot find layer ${layer.mapSourceName}/${layer.layerName}`);
@@ -685,35 +681,31 @@ export function getSelectableLayers(mapSources) {
  *  null is the default state and will prevent the layer
  *  from refreshing.  Time is specified in seconds.
  */
-export function setRefresh(mapSourceName, refreshSeconds) {
-    return {
-        type: MAPSOURCE.REFRESH,
+export const setRefresh = createAction('mapsource/refresh', (mapSourceName, refreshSeconds) => ({
+    payload: {
         mapSourceName,
-        refresh: refreshSeconds
-    }
-}
+        refreshSeconds,
+    },
+}));
 
-export function addFeatures(mapSourceName, features, copy = false) {
-    return {
-        type: MAPSOURCE.ADD_FEATURES,
-        mapSourceName, features, copy
-    };
-}
+export const addFeatures = createAction('mapsource/add-features', (mapSourceName, features, copy = false) => ({
+    payload: {
+        mapSourceName,
+        features,
+        copy,
+    },
+}));
 
-export function clearFeatures(mapSourceName) {
-    return {
-        type: MAPSOURCE.CLEAR_FEATURES,
-        mapSourceName
-    };
-}
+export const clearFeatures = createAction('mapsource/clear-features');
 
+export const removeFeatures = createAction('mapsource/remove-features', (mapSourceName, filter) => ({
+    payload: {
+        mapSourceName,
+        filter,
+    },
+}));
 
-export function removeFeatures(mapSourceName, filter) {
-    return {
-        type: MAPSOURCE.REMOVE_FEATURES,
-        mapSourceName, filter
-    };
-}
+export const removeFeatureInternal = createAction('mapsource/remove-feature');
 
 /* Remove a specific feature from the layer.
  */
@@ -734,11 +726,7 @@ export function removeFeature(path, feature) {
             const id = feature.id || (feature.properties || {})[idProp];
             if (mapSource.type === 'vector') {
                 // just remove the feature from an in memory layer.
-                dispatch({
-                    type: MAPSOURCE.REMOVE_FEATURE,
-                    mapSourceName,
-                    id
-                });
+                dispatch(removeFeatureInternal({mapSourceName, id}));
                 // return a resolved promise.
                 return new Promise(resolve => resolve());
             } else if (mapSource.type === 'wfs') {
@@ -768,19 +756,17 @@ export function removeFeature(path, feature) {
 
 /* Modify a feature's geomtery
  */
-export function modifyFeatureGeometry(mapSourceName, id, geometry, idProp = 'uuid') {
-    return {
-        type: MAPSOURCE.MODIFY_GEOMETRY,
+export const modifyFeatureGeometry = createAction('mapsource/modify-feature-geometry', (mapSourceName, id, geometry, idProp = 'uuid') => ({
+    payload: {
         mapSourceName, id, geometry, idProp,
-    };
-}
+    },
+}));
 
-export function changeFeatures(mapSourceName, filter, properties) {
-    return {
-        type: MAPSOURCE.CHANGE_FEATURES,
-        mapSourceName, filter, properties
-    };
-}
+export const changeFeatures = createAction('mapsource/change-features', (mapSourceName, filter, properties) => ({
+    payload: {
+        mapSourceName, filter, properties,
+    },
+}));
 
 /* Get the active map-sources sorted by zIndex.
  *
@@ -806,13 +792,12 @@ export function getOrderedMapSources(mapSources) {
  *
  * @return action.
  */
-export function setMapSourceZIndex(mapSourceName, zIndex) {
-    return {
-        type: MAPSOURCE.SET_Z,
+export const setMapSourceZIndex = createAction('mapsource/set-z', (mapSourceName, zIndex) => ({
+    payload: {
         mapSourceName,
-        zIndex
-    };
-}
+        zIndex,
+    },
+}));
 
 /* Get an action for setting the opacity of a Map Source
  *
@@ -821,13 +806,13 @@ export function setMapSourceZIndex(mapSourceName, zIndex) {
  *
  * @return action.
  */
-export function setOpacity(mapSourceName, opacity) {
-    return {
-        type: MAPSOURCE.SET_OPACITY,
+export const setOpacity = createAction('mapsource/set-opacity', (mapSourceName, opacity) => ({
+    payload: {
         mapSourceName,
         opacity
-    };
-}
+    },
+}));
+
 
 /** Definition for a change of template action.
  *
@@ -836,13 +821,14 @@ export function setOpacity(mapSourceName, opacity) {
  * @param name          The template name.
  * @param template      A new template definition
  */
-export function setLayerTemplate(mapSourceName, layerName, name, template) {
-    return {
-        type: MAPSOURCE.SET_TEMPLATE,
+export const setLayerTemplate = createAction('mapsource/set-template', (mapSourceName, layerName, name, template) => ({
+    payload: {
         mapSourceName, layerName,
         name, template
-    };
-}
+    },
+}));
+
+export const setLayerVisibilityInternal = createAction('mapsource/set-layer-vis-internal');
 
 /** Change the visibility of a layer.
  *
@@ -855,12 +841,11 @@ export function setLayerVisibility(mapSourceName, layerName, on) {
         const mapState = getState().map;
 
         // turn off the actual layer.
-        dispatch({
-            type: MAPSOURCE.LAYER_VIS,
+        dispatch(setLayerVisibilityInternal({
             layerName,
             mapSourceName,
             on
-        });
+        }));
 
         // when the layer is turned off de-activate the editing tool
         const pathName = `${mapSourceName}/${layerName}`;
@@ -868,15 +853,10 @@ export function setLayerVisibility(mapSourceName, layerName, on) {
             dispatch(changeTool(null));
             dispatch(clearFeatures(EDIT_LAYER_NAME));
         }
-    };
-}
+    }
+};
 
-export function reloadSource(mapSourceName) {
-    return {
-        type: MAPSOURCE.RELOAD,
-        mapSourceName,
-    };
-}
+export const reloadSource = createAction('mapsource/reload');
 
 const cleanFeature = feature => {
     const newProps = Object.assign({}, feature.properties);

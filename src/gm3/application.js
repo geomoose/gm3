@@ -28,8 +28,6 @@
  *
  */
 
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
 import i18next from 'i18next';
 
 import * as Proj from 'ol/proj';
@@ -43,17 +41,6 @@ import * as serviceActions from './actions/service';
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
 import { setConfig } from './actions/config';
-
-import catalogReducer from './reducers/catalog';
-import msReducer from './reducers/mapSource';
-import mapReducer from './reducers/map';
-import toolbarReducer from './reducers/toolbar';
-import queryReducer from './reducers/query';
-import uiReducer from './reducers/ui';
-import cursorReducer from './reducers/cursor';
-import printReducer from './reducers/print';
-import configReducer from './reducers/config';
-import editorReducer from './reducers/editor';
 
 import Modal from './components/modal';
 
@@ -70,6 +57,7 @@ import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery 
 
 import i18nConfigure from './i18n';
 import { EDIT_LAYER_NAME, EDIT_STYLE, HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
+import { createStore } from './store';
 
 function hydrateConfig(userConfig) {
     const config = Object.assign({}, userConfig);
@@ -118,20 +106,7 @@ class Application {
 
         register(proj4);
 
-        // TODO: Combine Reducers here
-        this.store = createStore(combineReducers({
-            'mapSources': msReducer,
-            'catalog': catalogReducer,
-            'map': mapReducer,
-            'toolbar': toolbarReducer,
-            'query': queryReducer,
-            'ui': uiReducer,
-            'cursor': cursorReducer,
-            'print': printReducer,
-            'config': configReducer,
-            'editor': editorReducer,
-        }), applyMiddleware(thunk));
-
+        this.store = createStore();
         this.store.dispatch(setConfig(config));
 
         this.state = {};

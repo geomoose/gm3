@@ -22,56 +22,33 @@
  * SOFTWARE.
  */
 
-/** Reducer for the toolbar
- *
- */
+import { configureStore } from '@reduxjs/toolkit';
 
-import {createReducer} from '@reduxjs/toolkit';
-import {
-    addDrawer,
-    addTool,
-    remove,
-} from '../actions/toolbar';
+import catalogReducer from './reducers/catalog';
+import msReducer from './reducers/mapSource';
+import mapReducer from './reducers/map';
+import toolbarReducer from './reducers/toolbar';
+import queryReducer from './reducers/query';
+import uiReducer from './reducers/ui';
+import cursorReducer from './reducers/cursor';
+import printReducer from './reducers/print';
+import configReducer from './reducers/config';
+import editorReducer from './reducers/editor';
 
-/*
- * Toolbar tool definition
- * action.order
- * action.type
- * action.tool
- * * name
- * * label
- * * className
- * * actionType (tool, service)
- * * actionInfo
- * * order (first/last)
- *
- */
 
-const default_state = {};
-
-const add = (state, payload) => {
-    if (!state[payload.root]) {
-        state[payload.root] = [];
-    }
-    if (payload.order === 'first') {
-        state[payload.root].unshift(payload.tool);
-    } else {
-        state[payload.root].push(payload.tool);
-    }
+export const createStore = () => {
+    return configureStore({
+        reducer: {
+            'mapSources': msReducer,
+            'catalog': catalogReducer,
+            'map': mapReducer,
+            'toolbar': toolbarReducer,
+            'query': queryReducer,
+            'ui': uiReducer,
+            'cursor': cursorReducer,
+            'print': printReducer,
+            'config': configReducer,
+            'editor': editorReducer,
+        },
+    });
 }
-
-const reducer = createReducer({root: []}, {
-    [addDrawer]: (state, {payload}) => {
-        add(state, payload);
-    },
-    [addTool]: (state, {payload}) => {
-        add(state, payload);
-    },
-    [remove]: (state, {payload: name}) => {
-        for(const root in state) {
-            state[root] = state[root].filter(item => item.name !== name);
-        }
-    },
-});
-
-export default reducer;
