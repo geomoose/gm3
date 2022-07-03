@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2020 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,20 @@
  * SOFTWARE.
  */
 
-import { EDITOR } from '../actionTypes';
+import { createAction } from '@reduxjs/toolkit';
 
-export function setEditFeature(feature, isNew = false) {
-    return {
-        type: EDITOR.START_EDIT,
+export const setEditFeature = createAction('editor/set-feature', (feature, isNew = false) => ({
+    payload: {
         feature,
         isNew,
-    };
-}
+    },
+}));
 
-export function finishEditing() {
-    return {
-        type: EDITOR.FINISH_EDIT,
-    };
-}
+export const finishEditing = createAction('editor/finish-editing');
 
-export function removeFeature(source, feature) {
-    return {
-        type: EDITOR.REMOVE,
+export const removeFeature = createAction('editor/remove-feature', (source, feature) => ({
+    payload: {
         feature,
         source,
-    };
-}
+    },
+}));

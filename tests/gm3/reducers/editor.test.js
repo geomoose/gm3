@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,16 @@
  * SOFTWARE.
  */
 
-import reducer from 'gm3/reducers/editor'
-import {setEditFeature, finishEditing} from 'gm3/actions/edit'
+import {configureStore} from '@reduxjs/toolkit';
+import reducer from 'gm3/reducers/editor';
+import {setEditFeature, finishEditing} from 'gm3/actions/edit';
 
 describe('test the `edit` reducer', () => {
     it('sets and clears the editing feature', () => {
+        const store = configureStore({
+            reducer,
+        });
+
         const fakeFeature = {
             type: 'Feature',
             geometry: {
@@ -36,9 +41,10 @@ describe('test the `edit` reducer', () => {
             properties: {},
         };
 
-        let nextState = reducer();
+        let nextState = store.getState();
 
-        nextState = reducer(nextState, setEditFeature(fakeFeature));
+        store.dispatch(setEditFeature(fakeFeature));
+        nextState = store.getState();
         expect(nextState).toEqual({
             feature: fakeFeature,
             source: '',
@@ -46,7 +52,8 @@ describe('test the `edit` reducer', () => {
             isNew: false,
         });
 
-        nextState = reducer(nextState, finishEditing());
+        store.dispatch(finishEditing());
+        nextState = store.getState();
         expect(nextState).toEqual({
             feature: null,
             source: '',

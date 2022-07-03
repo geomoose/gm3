@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2020 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,14 @@
  * SOFTWARE.
  */
 
-import {EDITOR} from '../actionTypes';
+import { createReducer } from '@reduxjs/toolkit';
+
+import {
+    setEditFeature,
+    finishEditing,
+    removeFeature,
+} from '../actions/edit';
+
 
 const defaultState = {
     feature: null,
@@ -30,33 +37,23 @@ const defaultState = {
     modal: '',
 };
 
-const EditorReducer = (state = defaultState, action = {}) => {
-    switch(action.type) {
-        case EDITOR.START_EDIT:
-            return {
-                ...state,
-                feature: action.feature,
-                source: action.source || '',
-                isNew: action.isNew === true,
-                modal: 'edit',
-            };
-        case EDITOR.FINISH_EDIT:
-            return {
-                ...state,
-                feature: null,
-                source: '',
-                modal: '',
-            };
-        case EDITOR.REMOVE:
-            return {
-                ...state,
-                feature: action.feature,
-                source: action.source || '',
-                modal: 'remove',
-            };
-        default:
-            return state;
-    }
-};
+const reducer = createReducer(defaultState, {
+    [setEditFeature]: (state, {payload}) => {
+        state.feature = payload.feature;
+        state.source = payload.source || '';
+        state.isNew = payload.isNew === true;
+        state.modal = 'edit';
+    },
+    [finishEditing]: state => {
+        state.feature = null;
+        state.source = '';
+        state.modal = '';
+    },
+    [removeFeature]: (state, {payload}) => {
+        state.feature = payload.feature;
+        state.source = payload.source || '';
+        state.modal = 'remove';
+    },
+});
 
-export default EditorReducer;
+export default reducer;
