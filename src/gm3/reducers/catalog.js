@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,69 +26,41 @@
  *
  */
 
+import {createReducer} from '@reduxjs/toolkit';
 import uuid from 'uuid';
+import {
+    addLayer,
+    addGroup,
+    addChild,
+    setLegendVisibility,
+    setGroupExpand,
+} from '../actions/catalog';
 
-import { CATALOG } from '../actionTypes';
 
-function addGroup(state, action) {
-    const new_elem = {};
-    const ch = action.child;
-    new_elem[ch.id] = ch;
-    return Object.assign({}, state, new_elem);
-}
+const DEFAULT_CATALOG = {
+    root: {
+        id: uuid.v4(),
+        children: [],
+    },
+};
 
-export default function catalogReducer(state = {'root': {id: uuid.v4(), children: []}}, action) {
-    const new_layer = {};
+const reducer = createReducer(DEFAULT_CATALOG, {
+    [addLayer]: (state, {payload}) => {
+        state[payload.child.id] = payload.child;
+    },
+    [addGroup]: (state, {payload}) => {
+        state[payload.child.id] = payload.child;
+    },
+    [addChild]: (state, {payload}) => {
+        const parentId = payload.parentId || 'root';
+        state[parentId].children.push(payload.childId);
+    },
+    [setLegendVisibility]: (state, {payload}) => {
+        state[payload.id].legend = payload.on;
+    },
+    [setGroupExpand]: (state, {payload}) => {
+        state[payload.id].expand = payload.expand;
+    },
+});
 
-    switch(action.type) {
-        case CATALOG.ADD_LAYER:
-        case CATALOG.ADD_GROUP:
-            return addGroup(state, action);
-        case CATALOG.ADD_CHILD:
-            // this is a root-level child.
-            let p = action.parentId;
-            if(!p) {
-                p = 'root';
-            }
-
-            // create a copy of the group/root with the
-            //   new child added to its children list.
-            const new_elem = Object.assign({}, state[p], {
-                children: [
-                    ...state[p].children,
-                    action.childId
-                ]
-            });
-
-            // then create an 'update' object which will
-            //  properly mixin the new elements with the
-            //  rest of the state.
-            const mixin = {};
-            mixin[p] = new_elem;
-            return Object.assign({}, state, mixin);
-        case CATALOG.FAVORITE:
-            const new_fav_layer = {};
-            new_fav_layer[action.id] = Object.assign({}, state[action.id], {
-                favorite: action.favorite
-            });
-            return Object.assign({}, state, new_fav_layer);
-        case CATALOG.GROUP_VIS:
-            const new_group = {};
-            new_group[action.id] = Object.assign({}, state[action.id], {
-                expand: action.expand
-            });
-            return Object.assign({}, state, new_group);
-        case CATALOG.REFRESH:
-            new_layer[action.id] = Object.assign({}, state[action.id], {
-                refreshEnabled: action.refreshEnabled
-            });
-            return Object.assign({}, state, new_layer);
-        case CATALOG.LEGEND_VIS:
-            new_layer[action.id] = Object.assign({}, state[action.id], {
-                legend: action.on
-            });
-            return Object.assign({}, state, new_layer);
-        default:
-            return state;
-    }
-}
+export default reducer;

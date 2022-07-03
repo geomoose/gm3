@@ -47,8 +47,6 @@ import {
  *
  */
 
-const default_state = {};
-
 const add = (state, payload) => {
     if (!state[payload.root]) {
         state[payload.root] = [];
@@ -68,7 +66,7 @@ const reducer = createReducer({root: []}, {
         add(state, payload);
     },
     [remove]: (state, {payload: name}) => {
-        for(const root in state) {
+        for (const root in state) {
             state[root] = state[root].filter(item => item.name !== name);
         }
     },

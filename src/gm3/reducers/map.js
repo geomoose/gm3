@@ -26,7 +26,7 @@
  *
  */
 
-import { CONFIG, MAP } from '../actionTypes';
+import { MAP } from '../actionTypes';
 
 const default_view = {
     center: [0, 0],
@@ -85,7 +85,7 @@ export default function mapReducer(state = default_view, action) {
                 selectionBuffer: action.distance,
                 selectionBufferUnits: action.units || state.selectionBufferUnits,
             });
-        case CONFIG.SET:
+        case 'CONFIG.SET':
             return setConfigOptions(state, action.payload);
         case MAP.SET_EDIT_PATH:
             return Object.assign({}, state, {
