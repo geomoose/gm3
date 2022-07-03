@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,16 @@
  * SOFTWARE.
  */
 
-import { UI } from '../actionTypes';
+import { createAction } from '@reduxjs/toolkit';
 
-export function setUiHint(hintName) {
-    return {
-        type: UI.HINT, hint: hintName
-    };
-}
+export const setUiHint = createAction('ui/set-hint');
 
-export function clearUiHint() {
-    return {
-        type: UI.CLEAR_HINT
-    };
-}
+export const clearUiHint = createAction('ui/clear-hint');
 
-export function runAction(actionName) {
-    return {
-        type: UI.RUN_ACTION, action: actionName
-    }
-}
+export const runAction = createAction('ui/run-action');
 
-export function clearAction() {
-    return {
-        type: UI.CLEAR_ACTION
-    };
-}
+export const clearAction = createAction('ui/clear-action');
 
-export function showModal(modalKey) {
-    return {
-        type: UI.SHOW_MODAL,
-        payload: modalKey,
-    };
-}
+export const showModal = createAction('ui/show-modal');
 
-export function hideModal() {
-    return {
-        type: UI.SHOW_MODAL,
-        payload: '',
-    };
-}
+export const hideModal = createAction('ui/hide-modal');
