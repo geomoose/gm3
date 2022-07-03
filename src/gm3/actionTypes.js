@@ -74,12 +74,6 @@ export const SERVICE = {
     SHOW_FORM: 'SERVICE_SHOW_FORM',
 };
 
-export const PRINT = {
-    FINISHED: 'PRINT_DONE',
-    REQUEST: 'PRINT_REQUEST',
-    IMAGE: 'PRINT_IMAGE',
-};
-
 export const EDITOR = {
     START_EDIT: 'GM3_EDITOR_START_EDIT',
     FINISH_EDIT: 'GM3_EDITOR_FINISH_EDIT',

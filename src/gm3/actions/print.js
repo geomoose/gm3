@@ -22,27 +22,21 @@
  * SOFTWARE.
  */
 
-import { PRINT } from '../actionTypes';
+import {createAction} from '@reduxjs/toolkit';
 
 /* Action issued to start a print request.
  */
-export function printRequest(width, height, center, resolution, format = 'image/png') {
-    return {
-        type: PRINT.REQUEST,
+export const printRequest = createAction('print/request', (width, height, center, resolution) => ({
+    payload: {
         size: [width, height],
-        center: center,
-        resolution: resolution
-    };
-}
+        center,
+        resolution,
+    },
+}));
 
 /* Action issued when the print image data should be updated.
  */
-export function printImage(data) {
-    return {
-        type: PRINT.IMAGE,
-        data
-    };
-}
+export const printImage = createAction('print/image');
 
 /* Close out a print job.
  *
@@ -50,8 +44,4 @@ export function printImage(data) {
  * if it is not called then the print image stays in memory which
  * is pretty greedy.
  */
-export function printed() {
-    return {
-        type: PRINT.FINISHED
-    };
-}
+export const printed = createAction('print/finished');

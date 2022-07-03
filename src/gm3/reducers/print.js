@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,12 @@
  * SOFTWARE.
  */
 
-import { PRINT } from '../actionTypes';
-
+import { createReducer } from '@reduxjs/toolkit';
+import {
+    printRequest,
+    printImage,
+    printed,
+} from '../actions/print';
 
 const default_state = {
     state: 'printed',
@@ -32,31 +36,19 @@ const default_state = {
     request: null,
 };
 
-/* Example Request Structure:
- *
- * { size: [600, 400], center: [0,0], resolution: 1000 }
- *
- */
-export default function printReducer(state = default_state, action) {
-    switch(action.type) {
-        // requests come in specifying the size, center, and resolution.
-        case PRINT.REQUEST:
-            return Object.assign({}, state, {
-                state: 'printing',
-                request: action.request
-            });
-        case PRINT.IMAGE:
-            return Object.assign({}, state, {
-                state: 'printing',
-                printData: action.data
-            });
-        case PRINT.FINISHED:
-            return Object.assign({}, state, {
-                state: 'printed',
-                data: '',
-                request: null
-            });
-        default:
-            return state;
-    }
-};
+const reducer = createReducer(default_state, {
+    [printRequest]: (state, {payload: request}) => {
+        state.request = request;
+        state.state = 'printing';
+    },
+    [printImage]: (state, {payload: data}) => {
+        state.state = 'printing';
+        state.printData = data;
+    },
+    [printed]: state => {
+        state.state = 'printed';
+        state.request = null;
+    },
+});
+
+export default reducer;
