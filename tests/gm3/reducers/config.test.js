@@ -21,7 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import configReducer from 'gm3/reducers/config';
+import { configureStore } from '@reduxjs/toolkit';
+import { setConfig } from 'gm3/actions/config';
 
-import { createAction } from '@reduxjs/toolkit';
+describe('Test the config reducer', () => {
+    let store;
 
-export const setConfig = createAction('mapsource/config');
+    beforeEach(() => {
+        store = configureStore({
+            reducer: {
+                config: configReducer,
+            },
+        });
+    });
+
+    it('sets the configuration', () => {
+        store.dispatch(setConfig({
+            test: 'value',
+        }));
+
+        expect(store.getState().config.test).toBe('value');
+    });
+
+});

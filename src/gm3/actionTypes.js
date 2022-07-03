@@ -100,10 +100,6 @@ export const PRINT = {
     IMAGE: 'PRINT_IMAGE',
 };
 
-export const CONFIG = {
-    SET: 'GM3_CONFIG_SET',
-};
-
 export const EDITOR = {
     START_EDIT: 'GM3_EDITOR_START_EDIT',
     FINISH_EDIT: 'GM3_EDITOR_FINISH_EDIT',
