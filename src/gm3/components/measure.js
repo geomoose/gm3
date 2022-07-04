@@ -331,12 +331,10 @@ export class MeasureTool extends Component {
 }
 
 
-const mapToProps = function(store) {
-    return {
-        map: store.map,
-        cursor: store.cursor,
-        mapProjection: 'EPSG:3857',
-    }
-}
+const mapToProps = state => ({
+    map: state.map,
+    cursor: state.cursor,
+    mapProjection: 'EPSG:3857',
+});
 
 export default connect(mapToProps)(withTranslation()(MeasureTool));

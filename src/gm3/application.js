@@ -627,7 +627,10 @@ class Application {
         // convert the lon lat coordinates to map coordinates
         const xy = Proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
         // trigger a move.
-        this.store.dispatch(mapActions.move(xy, zoom));
+        this.store.dispatch(mapActions.setView({
+            center: xy,
+            zoom,
+        }));
     }
 
     /** Generic bridge to the application's store's dispatch function.

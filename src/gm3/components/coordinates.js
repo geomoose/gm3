@@ -26,12 +26,10 @@ import { connect } from 'react-redux';
 
 import CoordinateDisplay from './coordinate-display';
 
-const mapToProps = function(store) {
-    return {
-        coords: store.cursor.coords,
-        resolution: store.map.resolution,
-        zoom: store.map.zoom,
-    }
-}
+const mapToProps = state => ({
+    coords: state.cursor.coords,
+    resolution: state.map.resolution,
+    zoom: state.map.zoom,
+});
 
 export default connect(mapToProps)(CoordinateDisplay);

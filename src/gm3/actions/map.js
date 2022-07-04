@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,75 @@
  * SOFTWARE.
  */
 
+import { createAction } from '@reduxjs/toolkit';
+
 /** Actions for the Map.
  *
  */
 
 import { MAP } from '../actionTypes';
 
-export function move(center, zoom) {
-    return {
-        type: MAP.MOVE,
-        center,
-        zoom,
-    }
-}
+export const zoomToExtent = createAction('map/zoom-to-extent', (extent, projection) => ({
+    payload: {
+        extent,
+        projection,
+    },
+}));
+
+export const changeTool = createAction('map/change-tool', (tool, src = null) => ({
+    payload: {
+        tool,
+        src,
+    },
+}));
+
+export const addSelectionFeature = createAction('map/add-selection-feature');
+
+export const clearSelectionFeatures = createAction('map/clear-selection-features');
+
+/* Set the view of the map.
+ *
+ * @param view {Object} An object containing center and zoom or resolution.
+ *
+ * @return An action definition.
+ */
+export const setView = createAction('map/set-view');
+
+/* Set a buffer for selection features.
+ *
+ * @param distance {Float} Distance to buffer features
+ * @param units {String} Units of the buffer, defaults to meters in the reducer
+ *
+ * @return action definition
+ */
+export const setSelectionBuffer = createAction('map/set-selection-buffer', (distance, units) => ({
+    payload: {
+        distance,
+        units,
+    },
+}));
+
+/* Set the edit source, which is a hint as to where
+ * the current editing features originated from.
+ *
+ * @param editPath {String} The map-source name
+ *
+ * @return action definition.
+ */
+export const setEditPath = createAction('map/set-edit-path');
+
+/* Set the list of available editing tools.
+ *
+ * @param editTools {Array} An array of tool names.
+ *
+ * @return action definition
+ */
+export const setEditTools = createAction('map/set-edit-tools');
 
 export function cursor(coords) {
     return {
         type: MAP.CURSOR,
         coords
-    }
-}
-
-export function changeTool(tool, src = null) {
-    return {
-        type: MAP.CHANGE_TOOL,
-        tool, src
     }
 }
 
@@ -99,21 +143,6 @@ export function renderedResultsForQuery(queryId, target, data) {
     }
 }
 
-export function addSelectionFeature(feature) {
-    return {
-        type: MAP.ADD_SELECTION_FEATURE,
-        feature
-    }
-}
-
-export function zoomToExtent(extent, projection) {
-    return {
-        type: MAP.ZOOM_TO_EXTENT,
-        extent,
-        projection
-    }
-}
-
 export function removeQuery(queryId) {
     return {
         type: MAP.QUERY_REMOVE,
@@ -126,12 +155,6 @@ export function removeQueryResults(queryId, filter) {
         type: MAP.QUERY_RESULTS_REMOVE,
         id: queryId,
         filter
-    };
-}
-
-export function clearSelectionFeatures() {
-    return {
-        type: MAP.CLEAR_SELECTION_FEATURES
     };
 }
 
@@ -160,60 +183,6 @@ export function removeFilter(queryId, field) {
         id: queryId,
         field
     }
-}
-
-/* Set the view of the map.
- *
- * @param view {Object} An object containing center and zoom or resolution.
- *
- * @return An action definition.
- */
-export function setView(view) {
-    return Object.assign({
-        type: MAP.MOVE
-    }, view);
-}
-
-/* Set a buffer for selection features.
- *
- * @param distance {Float} Distance to buffer features
- * @param units {String} Units of the buffer, defaults to meters in the reducer
- *
- * @return action definition
- */
-export function setSelectionBuffer(distance, units) {
-    return {
-        type: MAP.BUFFER_SELECTION_FEATURES,
-        distance,
-        units,
-    };
-}
-
-/* Set the edit source, which is a hint as to where
- * the current editing features originated from.
- *
- * @param editPath {String} The map-source name
- *
- * @return action definition.
- */
-export function setEditPath(editPath) {
-    return {
-        type: MAP.SET_EDIT_PATH,
-        editPath,
-    };
-}
-
-/* Set the list of available editing tools.
- *
- * @param editTools {Array} An array of tool names.
- *
- * @return action definition
- */
-export function setEditTools(tools) {
-    return {
-        type: MAP.SET_EDIT_TOOLS,
-        tools,
-    };
 }
 
 /* Set the size of the map in the state as a hint
