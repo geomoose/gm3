@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,38 +22,17 @@
  * SOFTWARE.
  */
 
-/** Dictionary of GeoMoose Actions.
+import { createAction } from '@reduxjs/toolkit';
+
+export const setCursor = createAction('cursor/cursor');
+
+export const updateSketchGeometry = createAction('cursor/update-sketch-geometry');
+
+/* Set the size of the map in the state as a hint
+ * to other components.
  *
- *  Every action for GeoMoose needs to be mapped to
- *  one of the 'action' dictionaries below.
+ * @param size {Object} an object containing a width and height property.
  *
+ * @return action definition
  */
-
-export const MAP = {
-    QUERY_NEW: 'MAP_QUERY_NEW',
-    QUERY_PROGRESS: 'MAP_QUERY_PROGRESS',
-    QUERY_START: 'MAP_QUERY_START',
-    QUERY_FINISHED: 'MAP_QUERY_FINISHED',
-    QUERY_RESULTS: 'MAP_QUERY_RESULTS',
-    QUERY_REMOVE: 'MAP_QUERY_REMOVE',
-    QUERY_RESULTS_REMOVE: 'MAP_QUERY_FEATURES_REMOVE',
-
-    QUERY_RENDERED_RESULTS: 'MAP_QUERY_RENDERED_RESULTS',
-
-    ADD_FILTER: 'MAP_ADD_FILTER',
-    REMOVE_FILTER: 'MAP_REMOVE_FILTER',
-};
-
-export const QUERY = {
-    START: 'QUERY_START',
-    RESULTS: 'QUERY_RESULTS',
-    EMPTY: 'QUERY_EMPTY',
-    ADD: 'QUERY_ADD_ITEM',
-    REMOVE: 'QUERY_REMOVE_ITEM'
-};
-
-export const SERVICE = {
-    START: 'SERVICE_START',
-    FINISH: 'SERVICE_FINISH',
-    SHOW_FORM: 'SERVICE_SHOW_FORM',
-};
+export const resizeMap = createAction('cursor/resize-map');

@@ -40,6 +40,7 @@ import md5 from 'md5/md5';
 import * as mapSourceActions from '../../actions/mapSource';
 import * as mapActions from '../../actions/map';
 import {removeFeature, setEditFeature} from '../../actions/edit';
+import {setCursor, updateSketchGeometry, resizeMap} from '../../actions/cursor';
 
 import * as util from '../../util';
 import * as jsts from '../../jsts';
@@ -990,14 +991,12 @@ class Map extends React.Component {
         // and when the cursor moves, dispatch an action
         //  there as well.
         this.map.on('pointermove', (event) => {
-            const action = mapActions.cursor(event.coordinate);
-            this.props.store.dispatch(action);
-
+            this.props.store.dispatch(setCursor(event.coordinate));
             if(this.sketchFeature) {
                 // convert the sketch feature's geometry to JSON and kick it out
                 // to the store.
                 const json_geom = util.geomToJson(this.sketchFeature.getGeometry());
-                this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
+                this.props.store.dispatch(updateSketchGeometry(json_geom));
             }
         });
 
@@ -1199,13 +1198,13 @@ class Map extends React.Component {
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.store.dispatch(updateSketchGeometry(null));
                     });
                 } else {
                     this.drawTool.on('drawend', (evt) => {
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.store.dispatch(updateSketchGeometry(null));
 
                         let nextFeatures = [evt.feature];
                         if (type === 'MultiPoint') {
@@ -1495,7 +1494,7 @@ function mapDispatch(dispatch) {
         removeFeature: (path, feature) => {
             dispatch(removeFeature(path, feature));
         },
-        onMapResize: size => dispatch(mapActions.resize(size)),
+        onMapResize: size => dispatch(resizeMap(size)),
     };
 }
 

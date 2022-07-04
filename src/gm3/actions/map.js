@@ -87,12 +87,6 @@ export const setEditPath = createAction('map/set-edit-path');
  */
 export const setEditTools = createAction('map/set-edit-tools');
 
-export function cursor(coords) {
-    return {
-        type: MAP.CURSOR,
-        coords
-    }
-}
 
 export function createQuery(service, selection, fields, layers, single, runOptions = {}) {
     return {
@@ -158,13 +152,6 @@ export function removeQueryResults(queryId, filter) {
     };
 }
 
-export function updateSketchGeometry(geometry) {
-    return {
-        type: MAP.SKETCH_GEOMETRY,
-        geometry
-    };
-}
-
 /* Add a filter to a results set.
  */
 export function addFilter(queryId, filterDefn) {
@@ -183,18 +170,4 @@ export function removeFilter(queryId, field) {
         id: queryId,
         field
     }
-}
-
-/* Set the size of the map in the state as a hint
- * to other components.
- *
- * @param size {Object} an object containing a width and height property.
- *
- * @return action definition
- */
-export function resize(size) {
-    return {
-        type: MAP.RESIZE,
-        size,
-    };
 }
