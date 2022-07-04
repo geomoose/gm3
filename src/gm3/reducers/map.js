@@ -51,6 +51,7 @@ const defaultState = {
     selectionBufferUnits: 'ft',
     editPath: '',
     editTools: [],
+    projection: 'EPSG:3857',
 };
 
 /*

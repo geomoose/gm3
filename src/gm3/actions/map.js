@@ -88,16 +88,6 @@ export const setEditPath = createAction('map/set-edit-path');
 export const setEditTools = createAction('map/set-edit-tools');
 
 
-export function createQuery(service, selection, fields, layers, single, runOptions = {}) {
-    return {
-        type: MAP.QUERY_NEW,
-        query: {
-            service, selection, fields, layers, runOptions,
-        },
-        singleQuery: single
-    };
-}
-
 export function startQuery(queryId) {
     return {
         type: MAP.QUERY_START,

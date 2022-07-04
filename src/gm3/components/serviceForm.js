@@ -23,7 +23,11 @@
  */
 
 import React from 'react';
+import {connect} from 'react-redux';
 import {withTranslation} from 'react-i18next';
+
+import { changeTool } from '../actions/map';
+import { finishService } from '../actions/query';
 
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
@@ -33,7 +37,35 @@ import BufferInput from './serviceInputs/buffer';
 
 import DrawTool from './drawTool';
 
-function renderServiceField(fieldDef, value, onChange) {
+
+function normalizeSelection(selectionFeatures) {
+    // OpenLayers handles MultiPoint geometries in an awkward way,
+    // each feature is a 'MultiPoint' type but only contains one feature,
+    //  this normalizes that in order to be submitted properly to query services.
+    if(selectionFeatures && selectionFeatures.length > 0) {
+        if(selectionFeatures[0].geometry.type === 'MultiPoint') {
+            const all_coords = [];
+            for(const feature of selectionFeatures) {
+                if(feature.geometry.type === 'MultiPoint') {
+                    all_coords.push(feature.geometry.coordinates[0]);
+                }
+            }
+            return [{
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                    type: 'MultiPoint',
+                    coordinates: all_coords
+                }
+            }];
+        }
+    }
+    return selectionFeatures;
+}
+
+
+
+function renderServiceField(fieldDef, value, onChange, isFirst = false) {
     let InputClass = TextInput;
 
     if (fieldDef.type === 'select') {
@@ -49,6 +81,7 @@ function renderServiceField(fieldDef, value, onChange) {
 
     return (
         <InputClass
+            isFirst={isFirst}
             key={fieldDef.name}
             field={fieldDef}
             value={value}
@@ -57,12 +90,12 @@ function renderServiceField(fieldDef, value, onChange) {
     );
 }
 
-function getDefaultValues(serviceDef) {
+function getDefaultValues(serviceDef, defaultValues = {}) {
     // convert the values to a hash and memoize it into the state.
     const values = {};
     for (let i = 0, ii = serviceDef.fields.length; i < ii; i++) {
         const field = serviceDef.fields[i];
-        values[field.name] = field.default;
+        values[field.name] = defaultValues[field.name] || field.default;
     }
     return values;
 }
@@ -72,21 +105,24 @@ class ServiceForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            values: getDefaultValues(this.props.serviceDef),
+            values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
             validateFieldValuesResultMessage: null,
         };
 
+        this.firstInputRef = null;
+
         this.handleKeyboard = this.handleKeyboardShortcuts.bind(this);
+        this.setValue = this.setValue.bind(this);
     }
 
     submit() {
-        const service_def = this.props.serviceDef;
+        const serviceDef = this.props.serviceDef;
 
         // validate field values
         let validateFieldValuesResultValid = true;
         let validateFieldValuesResultMessage = null;
-        if (service_def.validateFieldValues) {
-            const validateFieldValuesResult = service_def.validateFieldValues(this.state.values);
+        if (serviceDef.validateFieldValues) {
+            const validateFieldValuesResult = serviceDef.validateFieldValues(this.state.values);
             validateFieldValuesResultValid = validateFieldValuesResult.valid;
             validateFieldValuesResultMessage = validateFieldValuesResult.message;
         }
@@ -113,17 +149,31 @@ class ServiceForm extends React.Component {
         }
     }
 
-    UNSAFE_componentWillUpdate(nextProps, nextState) {
-        if (
-            nextProps.serviceDef !== null && (
-                this.props.serviceName !== nextProps.serviceName
-            )
-        ) {
-            // 'rotate' the current service to the next services.
-            this.setState({
-                values: getDefaultValues(nextProps.serviceDef),
-                validateFieldValuesResultMessage: null,
-            });
+    setValue(fieldName, value) {
+        this.setState({
+            values: {
+                ...this.state.values,
+                [fieldName]: value,
+            },
+        });
+    }
+
+    resetDefaultValues() {
+        this.setState({
+            values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
+            validateFieldValuesResultMessage: null,
+        });
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.serviceName !== this.props.serviceName) {
+            this.resetDefaultValues();
+        } else {
+            // if there was a service change, don't accidentally submit
+            //  the old geometry on the new service.
+            if (this.props.serviceDef.autoGo && this.props.selectionFeatures.length > 0) {
+                this.props.onSubmit(this.state.values);
+            }
         }
     }
 
@@ -136,45 +186,38 @@ class ServiceForm extends React.Component {
     }
 
     render() {
-        const service_def = this.props.serviceDef;
+        const serviceDef = this.props.serviceDef;
 
-        const show_buffer = service_def.bufferAvailable;
+        const showBuffer = serviceDef.bufferAvailable;
 
-        const draw_tools = [];
-        if (service_def.drawToolsLabel) {
-            draw_tools.push((<label key='label'>{ service_def.drawToolsLabel }</label>));
+        const drawTools = [];
+        if (serviceDef.drawToolsLabel) {
+            drawTools.push((<label key='label'>{ serviceDef.drawToolsLabel }</label>));
         }
-        for(const gtype of ['Box', 'Point', 'MultiPoint', 'LineString', 'Polygon', 'Select', 'Modify']) {
-            const dt_key = 'draw_tool_' + gtype;
-            if(service_def.tools[gtype]) {
-                draw_tools.push(<DrawTool key={dt_key} geomType={gtype} />);
+        for (const gtype of ['Box', 'Point', 'MultiPoint', 'LineString', 'Polygon', 'Select', 'Modify']) {
+            if (serviceDef.tools[gtype]) {
+                drawTools.push(<DrawTool key={gtype} geomType={gtype} />);
             }
         }
 
-        const onChange = (fieldName, value) => {
-            const values = Object.assign({}, this.state.values);
-            values[fieldName] = value;
-            this.setState({values});
-        };
-
-        const buffer_input = !show_buffer ? false : (
+        const bufferInput = !showBuffer ? false : (
             <BufferInput key='buffer-input'/>
         );
 
-        const fields = this.props.serviceDef.fields.map((field) => {
-            return renderServiceField(field, this.state.values[field.name], onChange);
+        const fields = this.props.serviceDef.fields.map((field, idx) => {
+            return renderServiceField(field, this.state.values[field.name], this.setValue, idx === 0);
         });
 
         let inputs = [];
-        if (service_def.fieldsFirst === true) {
-            inputs = [fields, draw_tools, buffer_input];
+        if (serviceDef.fieldsFirst === true) {
+            inputs = [fields, drawTools, bufferInput];
         } else {
-            inputs = [draw_tools, buffer_input, fields];
+            inputs = [drawTools, bufferInput, fields];
         }
 
         return (
             <div className='service-form'>
-                <h3>{this.props.t(service_def.title)}</h3>
+                <h3>{this.props.t(serviceDef.title)}</h3>
                 { inputs }
                 {
                     !this.state.validateFieldValuesResultMessage ? false : (
@@ -209,4 +252,18 @@ class ServiceForm extends React.Component {
     }
 }
 
-export default withTranslation()(ServiceForm);
+
+ServiceForm.defaultProps = {
+    defaultValues: {},
+};
+
+const mapStateToProps = state => ({
+    selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
+});
+
+const mapDispatchToProps = {
+    changeTool,
+    finishService,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(ServiceForm));

@@ -31,9 +31,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { startService } from '../../actions/service';
+import { startService } from '../../actions/query';
 import { runAction, setUiHint } from '../../actions/ui';
-import { setSelectionBuffer, changeTool } from '../../actions/map';
+import { clearSelectionFeatures, setSelectionBuffer, changeTool } from '../../actions/map';
 
 export const ToolbarButton = ({tool, onClick, currentService, currentDrawTool}) => {
     const {t} = useTranslation();
@@ -74,8 +74,6 @@ function mapDispatch(dispatch, ownProps) {
     return {
         onClick: (tool, currentService, currentDrawTool) => {
             if(tool.actionType === 'service') {
-                // start the service
-                dispatch(startService(tool.name));
                 let defaultTool = null;
                 if (ownProps.serviceDef
                     && ownProps.serviceDef.tools
@@ -86,11 +84,15 @@ function mapDispatch(dispatch, ownProps) {
 
                 // reset the buffer if changing tools
                 if (tool.name !== currentService) {
+                    dispatch(clearSelectionFeatures());
                     dispatch(setSelectionBuffer(0));
                     dispatch(changeTool(defaultTool));
                 } else if (currentDrawTool === null) {
                     dispatch(changeTool(defaultTool));
                 }
+
+                // start the service
+                dispatch(startService(tool.name));
                 // give an indication that a new service has been started
                 dispatch(setUiHint('service-start'));
             } else if(tool.actionType === 'action') {

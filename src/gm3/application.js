@@ -38,6 +38,8 @@ import * as mapActions from './actions/map';
 import * as uiActions from './actions/ui';
 import * as serviceActions from './actions/service';
 
+import {createQuery, runQuery} from './actions/query';
+
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
 import { setConfig } from './actions/config';
@@ -359,8 +361,7 @@ class Application {
      *
      */
     dispatchQuery(service, selection, fields, layers, templatesIn = []) {
-        const single_query = this.config.multipleQuery ? false : true;
-        const template_promises = [];
+        const templatePromises = [];
 
         // convert the "templatesIn" to an array.
         let templates = templatesIn;
@@ -372,7 +373,7 @@ class Application {
         for(const layer of layers) {
             for(const template of templates) {
                 // gang the promises together.
-                template_promises.push(this.getTemplate(layer, template));
+                templatePromises.push(this.getTemplate(layer, template));
             }
         }
 
@@ -381,8 +382,9 @@ class Application {
 
         // require all the promises complete,
         //  then dispatch the store.
-        Promise.all(template_promises).then(() => {
-            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query, runOptions));
+        Promise.all(templatePromises).then(() => {
+            this.store.dispatch(createQuery(service, selection, fields, layers, runOptions));
+            this.store.dispatch(runQuery());
         });
     }
 

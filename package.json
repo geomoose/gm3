@@ -85,6 +85,7 @@
     "@reduxjs/toolkit": "^1.8.2",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
+    "@turf/boolean-intersects": "^6.5.0",
     "babel-jest": "^27.3.1",
     "jest-environment-jsdom": "^28.1.1",
     "prop-types": "^15.8.1",
