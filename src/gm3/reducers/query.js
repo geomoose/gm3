@@ -79,7 +79,6 @@ const reducer = createReducer(defaultState, {
     [runQuery.fulfilled]: (state, {payload}) => {
         state.results = payload;
         state.step = SERVICE_STEPS.RESULTS;
-        state.instance += 1;
     },
     [runQuery.rejected]: (state, action) => {
         console.error('Query error!', action.error);
