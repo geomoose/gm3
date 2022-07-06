@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { changeTool } from '../../../actions/map';
-import { finishService } from '../../../actions/service';
+import { finishService } from '../../../actions/query';
 import { Tool } from '../tools';
 
 const DRAW_TYPES = {

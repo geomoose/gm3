@@ -27,7 +27,10 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import { startService, finishService, createQuery, runQuery, addFilter, removeFilter } from '../actions/query';
+import {
+    startService, finishService, createQuery, runQuery, addFilter, removeFilter, setHotFilter, removeQueryResults
+} from '../actions/query';
+import { filterFeatures } from '../util';
 
 
 export const SERVICE_STEPS = {
@@ -39,17 +42,20 @@ export const SERVICE_STEPS = {
 
 const defaultState = {
     serviceName: null,
+    instance: 0,
     defaultValues: {},
     step: '',
-    // dep soon
-    order: ['query'],
     query: {},
     results: {},
     filter: [],
+    hotFilter: false,
 };
 
 const reducer = createReducer(defaultState, {
     [startService]: (state, {payload: {serviceName, defaultValues}}) => {
+        // the instance counter is used to delineate between
+        //  simultaneous calls to the same service.
+        state.instance += 1;
         state.serviceName = serviceName;
         state.defaultValues = defaultValues;
         state.step = SERVICE_STEPS.START;
@@ -73,6 +79,7 @@ const reducer = createReducer(defaultState, {
     [runQuery.fulfilled]: (state, {payload}) => {
         state.results = payload;
         state.step = SERVICE_STEPS.RESULTS;
+        state.instance += 1;
     },
     [runQuery.rejected]: (state, action) => {
         console.error('Query error!', action.error);
@@ -87,6 +94,14 @@ const reducer = createReducer(defaultState, {
         state.filter = state.filter.filter(filterDef => {
             return filterDef.length > 2 && filterDef[1] !== fieldName;
         });
+    },
+    [setHotFilter]: (state, {payload: filter}) => {
+        state.hotFilter = filter;
+    },
+    [removeQueryResults]: (state, {payload: filter}) => {
+        for (const path in state.results) {
+            state.results[path] = filterFeatures(state.results[path], filter);
+        }
     },
 });
 

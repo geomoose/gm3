@@ -36,9 +36,8 @@ import * as ExperimentalApi from './experimental';
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
 import * as uiActions from './actions/ui';
-import * as serviceActions from './actions/service';
 
-import {createQuery, runQuery} from './actions/query';
+import {startService, createQuery, runQuery, setHotFilter, removeQueryResults} from './actions/query';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
@@ -661,11 +660,12 @@ class Application {
     removeQueryResults(queryId, filter, options = {}) {
         const execRemove = choice => {
             if (choice === 'confirm') {
-                this.store.dispatch(mapActions.queryProgress(queryId));
-                this.store.dispatch(mapActions.removeQueryResults(queryId, filter));
-                // also remove the features from the results layer.
-                this.removeFeatures('results/results', filter);
-                this.store.dispatch(mapActions.finishQuery(queryId));
+                // With the new query structure,
+                //  this might be more dangerous than before but the 3.x
+                //  behaviour is current being preserved.
+                // TODO: Should this just apply as a filter in 4.x instead
+                //       of removing the result from teh queryset?
+                this.dispatch(removeQueryResults(filter));
             }
         };
 
@@ -737,8 +737,6 @@ class Application {
      *
      */
     startService(serviceName, options) {
-        this.store.dispatch(serviceActions.startService(serviceName));
-
         const nextTool = (options && options.changeTool)
             ? options.changeTool
             : this.services[serviceName].tools.default;
@@ -756,6 +754,8 @@ class Application {
             this.store.dispatch(mapSourceActions.clearFeatures('selection'));
             this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
         }
+
+        this.store.dispatch(startService(serviceName));
 
         this.store.dispatch(uiActions.setUiHint('service-start'));
     }
@@ -838,14 +838,13 @@ class Application {
     /* Short hand for toggling the highlight of features.
      */
     highlightFeatures(filter, on) {
-        const props = {displayClass: on ? 'hot' : ''};
-        this.changeResultFeatures(filter, props);
+        this.dispatch(setHotFilter(filter));
     }
 
     /* Clear highlight features
      */
     clearHighlight() {
-        this.highlightFeatures({displayClass: 'hot'}, false);
+        this.dispatch(setHotFilter(false));
     }
 
     /**

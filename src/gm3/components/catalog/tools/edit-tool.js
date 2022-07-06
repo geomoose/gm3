@@ -27,7 +27,7 @@ import { connect } from 'react-redux';
 
 import { setEditPath, setEditTools } from '../../../actions/map';
 import { setLayerVisibility } from '../../../actions/mapSource';
-import { finishService } from '../../../actions/service';
+import { finishService } from '../../../actions/query';
 import { Tool } from '../tools';
 import { DRAW_TOOLS } from '../../../defaults';
 import { getMapSourceName, getLayerName } from '../../../util';

@@ -85,7 +85,7 @@ export default class TextInput extends Component {
                     id={ 'input-' + id}
                     placeholder={ this.props.field.placeHolder }
                     className={this.props.field.helpText ? 'has-help-text' : ''}
-                    ref={r => this.inputRef = r}
+                    ref={r => { this.inputRef = r; }}
                 />
                 {this.props.field.helpText && (
                     <div className="helper-text" htmlFor={ 'input-' + id }>{ this.props.field.helpText }</div>

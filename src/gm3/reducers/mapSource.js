@@ -63,7 +63,11 @@ const modifyLayer = (layers, layerName, changeFn) => {
 
 const reducer = createReducer({}, {
     [add]: (state, {payload}) => {
-        state[payload.name] = payload;
+        state[payload.name] = {
+            features: [],
+            featuresVersion: 0,
+            ...payload,
+        };
     },
     [remove]: (state, {payload}) => {
         delete state[payload.mapSourceName];
@@ -99,7 +103,7 @@ const reducer = createReducer({}, {
         state[mapSourceName].opacity = opacity;
     },
     [reloadSource]: (state, {payload: mapSourceName}) => {
-        state[mapSourceName].featuresVersion = state[mapSourceName].featuresVersion ? state[mapSourceName].featuresVersion + 1 : 1;
+        state[mapSourceName].featuresVersion += 1;
         state[mapSourceName].params = {
             ...state[mapSourceName].params,
             _ck: '.' + (new Date()).getTime(),

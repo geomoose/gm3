@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2020 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,9 @@ import {FORMAT_OPTIONS, matchFeatures} from '../util';
 
 import { addFilter, removeFilter } from '../actions/map';
 import { getLayerFromPath } from '../actions/mapSource';
+
+import { getQueryResults } from '../selectors/query';
+import { SERVICE_STEPS } from '../reducers/query';
 
 import ModalDialog from './modal';
 
@@ -92,14 +95,14 @@ class FilterModal extends ModalDialog {
 
         // remove the filters from the property
         this.props.store.dispatch(
-            removeFilter(this.props.queryId, property)
+            removeFilter(property)
         );
 
         // add the new filters.
         for(const new_filter of new_filters) {
             // add/update this filter.
             this.props.store.dispatch(
-                addFilter(this.props.queryId, new_filter)
+                addFilter(new_filter)
             );
         }
     }
@@ -110,7 +113,7 @@ class FilterModal extends ModalDialog {
         } else if (status === 'clear') {
             // remove the filter from the query
             this.props.store.dispatch(
-                removeFilter(this.props.queryId, this.props.column.property)
+                removeFilter(this.props.column.property)
             );
             if(this.props.column.filter.type === 'list') {
                 const all_values = [];
@@ -317,7 +320,6 @@ class ColumnFilter extends React.Component {
                         column={this.props.column}
                         results={this.props.results}
                         store={this.props.store}
-                        queryId={this.props.queryId}
                     />
                 );
                 break;
@@ -330,7 +332,6 @@ class ColumnFilter extends React.Component {
                         column={this.props.column}
                         results={this.props.results}
                         store={this.props.store}
-                        queryId={this.props.queryId}
                     />
                 );
                 break;
@@ -343,7 +344,6 @@ class ColumnFilter extends React.Component {
                         column={this.props.column}
                         results={this.props.results}
                         store={this.props.store}
-                        queryId={this.props.queryId}
                     />
                 );
         }
@@ -406,9 +406,6 @@ class Grid extends React.Component {
         const header_cells = [];
         let col_id = 0;
 
-        // grid always handles the first query.
-        const query_id = this.props.queries.order[0];
-
         for(const column_def of headerConf) {
             let sort_tool = null;
             let sort_classes = 'icon sort';
@@ -430,7 +427,6 @@ class Grid extends React.Component {
                     store={ this.props.store }
                     column={ column_def }
                     results={results}
-                    queryId={ query_id }
                 />
             );
 
@@ -517,6 +513,7 @@ class Grid extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
+        /*
         // check to see if the grid should start open minimized.
         if (prevProps.queries.order[0] !== this.props.queries.order[0] && this.props.queries.order[0]) {
             const queryId = this.props.queries.order[0];
@@ -525,64 +522,63 @@ class Grid extends React.Component {
                 this.setState({minimized: true});
             }
         }
+        */
     }
 
     render() {
+        const query = this.props.query;
+
         let features = [];
         let display_table = false;
 
         let grid_cols, grid_row;
 
         // only render the first query.
-        const query_id = this.props.queries.order[0];
-        if(query_id) {
-            const query = this.props.queries[query_id];
-            if(query.progress === 'finished') {
-                const service = this.props.services[query.service];
-                const serviceName = service.alias || service.name;
-                const paths = Object.keys(query.results);
-                paths.forEach(layerPath => {
-                    let layer = null;
-                    try {
-                        layer = getLayerFromPath(this.props.mapSources, layerPath);
-                    } catch(err) {
-                        // no layer, no problem.
-                    }
+        if (query.step === SERVICE_STEPS.RESULTS) {
+            const service = this.props.services[query.serviceName];
+            const serviceName = service.alias || service.name;
+            const paths = Object.keys(query.results);
+            paths.forEach(layerPath => {
+                let layer = null;
+                try {
+                    layer = getLayerFromPath(this.props.mapSources, layerPath);
+                } catch(err) {
+                    // no layer, no problem.
+                }
 
-                    if(!!layer && !!layer.templates) {
-                        const columnTemplate = layer.templates[serviceName + '-grid-columns']
-                            || layer.templates.gridColumns;
+                if(layer !== null) {
+                    const columnTemplate = layer.templates[serviceName + '-grid-columns']
+                        || layer.templates.gridColumns;
 
-                        // try to parse the grid columns
-                        if (columnTemplate && typeof columnTemplate.contents === 'object') {
-                            grid_cols = columnTemplate.contents;
-                        } else {
-                            try {
-                                grid_cols = JSON.parse(columnTemplate.contents);
-                            } catch(err) {
-                                // swallow the error
-                            }
-                        }
-
-                        const rowTemplate = layer.templates[serviceName + '-grid-row']
-                            || layer.templates.gridRow;
-
-                        if (rowTemplate) {
-                            grid_row = rowTemplate.contents;
-                        }
-
-                        if(grid_cols && grid_row) {
-                            // render as a grid.
-                            features = matchFeatures(query.results[layerPath], query.filter);
-                            if(query.results[layerPath].length > 0) {
-                                display_table = true;
-                            }
-                        } else {
-                            // console.error(layerPath + ' does not have gridColumns or gridRow templates.');
+                    // try to parse the grid columns
+                    if (columnTemplate && typeof columnTemplate.contents === 'object') {
+                        grid_cols = columnTemplate.contents;
+                    } else {
+                        try {
+                            grid_cols = JSON.parse(columnTemplate.contents);
+                        } catch(err) {
+                            // swallow the error
                         }
                     }
-                });
-            }
+
+                    const rowTemplate = layer.templates[serviceName + '-grid-row']
+                        || layer.templates.gridRow;
+
+                    if (rowTemplate) {
+                        grid_row = rowTemplate.contents;
+                    }
+
+                    if(grid_cols && grid_row) {
+                        // render as a grid.
+                        features = matchFeatures(query.results[layerPath], query.filter);
+                        if(query.results[layerPath].length > 0) {
+                            display_table = true;
+                        }
+                    } else {
+                        // console.error(layerPath + ' does not have gridColumns or gridRow templates.');
+                    }
+                }
+            });
         }
 
         // render the empty string if there is nothing to show.
@@ -631,10 +627,10 @@ class Grid extends React.Component {
     }
 }
 
-const mapToProps = function(store) {
-    return {
-        queries: store.query,
-        mapSources: store.mapSources,
-    }
-}
-export default connect(mapToProps)(withTranslation()(Grid));
+const mapStateToProps = state => ({
+    query: state.query,
+    results: getQueryResults(state),
+    mapSources: state.mapSources,
+});
+
+export default connect(mapStateToProps)(withTranslation()(Grid));

@@ -32,13 +32,22 @@ export const addFilter = createAction('query/add-filter');
 
 export const removeFilter = createAction('query/remove-filter');
 
+/** Set the filter to highlight a specific subset of features
+ *  from the results. This is the "highlight the highlight"
+ *  seen when floating over the grid.
+ *  Set to `false` to clear any hot filtering.
+ */
+export const setHotFilter = createAction('query/set-hot-filter');
+
 export const runQuery = createAsyncThunk('query/run', (arg, {getState, dispatch}) => {
     const state = getState();
     const queryDef = state.query.query;
     const mapSources = state.mapSources;
 
     if (!queryDef.layers || queryDef.layers.length === 0) {
-        dispatch(finishQuery());
+        // if there are no layers defined, return
+        //  a resolved query with a completely empty set.
+        return new Promise(resolve => resolve([]));
     }
 
     const layerQueries = queryDef.layers.map(layer => {
@@ -64,12 +73,6 @@ export const runQuery = createAsyncThunk('query/run', (arg, {getState, dispatch}
             const results = {};
             allResults.forEach(result => {
                 results[result.layer] = result.features;
-                /* {
-                    features: result.features,
-                    error: result.error,
-                    message: result.message,
-                };
-                */
             });
             return results;
         });
@@ -106,3 +109,5 @@ export const bufferResults = createAsyncThunk('query/buffer-results', (arg, {get
         //       it is not possible to buffer nothing.
     }
 });
+
+export const removeQueryResults = createAction('query/remove-results');

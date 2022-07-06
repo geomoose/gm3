@@ -6,6 +6,7 @@ import { finishService } from '../../actions/query';
 
 import ServiceForm from '../serviceForm';
 import Results from './results';
+import MeasureTool from '../measure';
 
 import { SERVICE_STEPS } from '../../reducers/query';
 
@@ -45,6 +46,7 @@ const ServiceManager = function({
     defaultValues,
     selectionFeatures,
     finishService,
+    serviceInstance,
 }) {
     const serviceDef = services[serviceName];
 
@@ -58,7 +60,7 @@ const ServiceManager = function({
     }, [serviceDef]);
 
     useEffect(() => {
-        if (serviceDef && serviceReady === serviceDef.name) {
+        if (serviceDef && serviceReady === serviceInstance) {
             const selection = normalizeSelection(selectionFeatures);
             const fields = serviceDef.fields.map(field => ({
                 name: field.name,
@@ -85,7 +87,7 @@ const ServiceManager = function({
                 defaultValues={defaultValues}
                 onSubmit={values => {
                     setFieldValues(values);
-                    setServiceReady(serviceDef.name);
+                    setServiceReady(serviceInstance);
                 }}
                 onCancel={() => {
                     changeTool(null);
@@ -111,6 +113,7 @@ const ServiceManager = function({
 const mapStateToProps = state => ({
     serviceName: state.query.serviceName,
     serviceStep: state.query.step,
+    serviceInstance: state.query.instance,
     selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
 });
 

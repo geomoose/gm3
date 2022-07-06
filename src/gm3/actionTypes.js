@@ -45,15 +45,7 @@ export const MAP = {
 };
 
 export const QUERY = {
-    START: 'QUERY_START',
-    RESULTS: 'QUERY_RESULTS',
     EMPTY: 'QUERY_EMPTY',
     ADD: 'QUERY_ADD_ITEM',
     REMOVE: 'QUERY_REMOVE_ITEM'
-};
-
-export const SERVICE = {
-    START: 'SERVICE_START',
-    FINISH: 'SERVICE_FINISH',
-    SHOW_FORM: 'SERVICE_SHOW_FORM',
 };

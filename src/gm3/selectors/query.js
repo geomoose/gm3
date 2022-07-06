@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { matchFeatures } from '../util';
+import { matchFeatures, featureMatch } from '../util';
 
 // TODO: make this a selector
 import { getLayerFromPath } from '../actions/mapSource';
@@ -8,6 +8,7 @@ import { getLayerFromPath } from '../actions/mapSource';
 export const getAllResults = state => state.query.results;
 export const getFilter = state => state.query.filter;
 export const getServiceName = state => state.query.service;
+export const getHotFilter = state => state.query.hotFilter;
 
 // TODO: Move this to a map sources selector
 export const getMapSources = state => state.mapSources;
@@ -29,7 +30,8 @@ export const getHighlightResults = createSelector(
     getFilter,
     getServiceName,
     getMapSources,
-    (results, filter, serviceName, mapSources) => {
+    getHotFilter,
+    (results, filter, serviceName, mapSources, hotFilter) => {
         let features = [];
         for (const path in results) {
             const layer = getLayerFromPath(mapSources, path);
@@ -39,7 +41,28 @@ export const getHighlightResults = createSelector(
                 highlight = layer.templates[serviceName].highlight !== false;
             }
             if (highlight) {
-                features = features.concat(matchFeatures(results[path], filter));
+                let layerFeatures = matchFeatures(results[path], filter);
+                if (hotFilter) {
+                    layerFeatures = layerFeatures.map(feature => {
+                        // featureMatch uses a different query syntax than
+                        //  the rest of the filters, so requries the featureMatch
+                        //  function.
+                        if (featureMatch(feature, hotFilter)) {
+                            // this is necessary because the feature from
+                            //  the store has been frozen by immer
+                            feature = {
+                                type: 'Feature',
+                                geometry: {...feature.geometry},
+                                properties: {
+                                    ...feature.properties,
+                                    displayClass: 'hot',
+                                },
+                            }
+                        }
+                        return feature;
+                    });
+                }
+                features = features.concat(layerFeatures);
             }
         }
         return features;
