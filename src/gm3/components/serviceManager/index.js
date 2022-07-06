@@ -78,7 +78,7 @@ const ServiceManager = function({
     let contents = false;
 
     if (serviceName === 'measure') {
-        contents = <MeasureTool store={this.props.store} />;
+        contents = <MeasureTool store={store} />;
     } else if (serviceDef && serviceStep === SERVICE_STEPS.START) {
         contents = (
             <ServiceForm
