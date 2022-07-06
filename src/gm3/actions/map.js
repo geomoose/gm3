@@ -28,8 +28,6 @@ import { createAction } from '@reduxjs/toolkit';
  *
  */
 
-import { MAP } from '../actionTypes';
-
 export const zoomToExtent = createAction('map/zoom-to-extent', (extent, projection) => ({
     payload: {
         extent,
@@ -87,77 +85,3 @@ export const setEditPath = createAction('map/set-edit-path');
  */
 export const setEditTools = createAction('map/set-edit-tools');
 
-
-export function startQuery(queryId) {
-    return {
-        type: MAP.QUERY_START,
-        id: queryId
-    }
-}
-
-export function finishQuery(queryId) {
-    return {
-        type: MAP.QUERY_FINISHED,
-        id: queryId
-    }
-}
-
-export function queryProgress(queryId) {
-    return {
-        type: MAP.QUERY_PROGRESS,
-        id: queryId
-    };
-}
-
-export function resultsForQuery(queryId, layerName, failed, features, messageText = '') {
-    return {
-        type: MAP.QUERY_RESULTS,
-        id: queryId,
-        layer: layerName,
-        failed,
-        features,
-        messageText,
-    }
-}
-
-export function renderedResultsForQuery(queryId, target, data) {
-    return {
-        type: MAP.QUERY_RENDERED_RESULTS,
-        id: queryId, target, data
-    }
-}
-
-export function removeQuery(queryId) {
-    return {
-        type: MAP.QUERY_REMOVE,
-        id: queryId
-    };
-}
-
-export function removeQueryResults(queryId, filter) {
-    return {
-        type: MAP.QUERY_RESULTS_REMOVE,
-        id: queryId,
-        filter
-    };
-}
-
-/* Add a filter to a results set.
- */
-export function addFilter(queryId, filterDefn) {
-    return {
-        type: MAP.ADD_FILTER,
-        id: queryId,
-        filter: filterDefn
-    };
-}
-
-/* Remove a filter from a results set.
- */
-export function removeFilter(queryId, field) {
-    return {
-        type: MAP.REMOVE_FILTER,
-        id: queryId,
-        field
-    }
-}

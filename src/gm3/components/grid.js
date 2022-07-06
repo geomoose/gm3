@@ -32,7 +32,7 @@ import FileSaver from 'file-saver';
 
 import {FORMAT_OPTIONS, matchFeatures} from '../util';
 
-import { addFilter, removeFilter } from '../actions/map';
+import { addFilter, removeFilter } from '../actions/query';
 import { getLayerFromPath } from '../actions/mapSource';
 
 import { getQueryResults } from '../selectors/query';
