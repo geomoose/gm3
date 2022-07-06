@@ -137,7 +137,7 @@ describe('Toolbar component tests', () => {
         fireEvent.click(container.getElementsByClassName('tool')[0]);
 
         const state = store.getState();
-        expect(state.query.service).toBe('sample0');
+        expect(state.query.serviceName).toBe('sample0');
     });
 
     it('triggers an action when clicked.', function() {

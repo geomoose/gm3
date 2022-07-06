@@ -272,14 +272,14 @@ class Map extends React.Component {
      *
      */
     renderQueryLayer() {
-        if(this.props.mapSources.results) {
+        if (this.props.mapSources.results) {
             const src = this.olLayers.results.getSource();
             src.clear(true);
             src.addFeatures(GEOJSON_FORMAT.readFeatures({
                 type: 'FeatureCollection',
                 features: this.props.highlightResults,
             }));
-        } else {
+        } else if (this.props.highlightResults && this.props.highlightResults.length > 0) {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }
     }
