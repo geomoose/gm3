@@ -7,6 +7,7 @@ import { finishService } from '../../actions/query';
 import ServiceForm from '../serviceForm';
 import Results from './results';
 import MeasureTool from '../measure';
+import { LoadingIndicator } from './loading';
 
 import { SERVICE_STEPS } from '../../reducers/query';
 
@@ -95,6 +96,13 @@ const ServiceManager = function({
                 }}
             />
         );
+    } else if (serviceStep === SERVICE_STEPS.LOADING) {
+        contents = (
+            <div>
+                <LoadingIndicator />
+                Loading...
+            </div>
+        );
     } else if (serviceStep === SERVICE_STEPS.RESULTS) {
         contents = (
             <Results serviceDef={serviceDef} />
@@ -104,6 +112,7 @@ const ServiceManager = function({
     return (
         <Provider store={store}>
             <div className='service-manager'>
+                <LoadingIndicator />
                 { contents }
             </div>
         </Provider>

@@ -60,8 +60,8 @@ import i18nConfigure from './i18n';
 import { EDIT_LAYER_NAME, EDIT_STYLE, HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
 import { createStore } from './store';
 
-function hydrateConfig(userConfig) {
-    const config = Object.assign({}, userConfig);
+function hydrateConfig(userConfig = {}) {
+    const config = userConfig;
     // the depth of resultsStyle makes this slightly trickier to
     //  set the defaults, so it's handled individually.
     if (userConfig.resultsStyle) {

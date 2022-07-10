@@ -67,7 +67,6 @@
     "react-redux": "^8.0.2",
     "react-resize-detector": "^7.1.2",
     "redux": "^4.2.0",
-    "redux-thunk": "^2.4.1",
     "reqwest": "^2.0.5",
     "usng-map-collar": "^1.0.1",
     "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
