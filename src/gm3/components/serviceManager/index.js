@@ -98,10 +98,7 @@ const ServiceManager = function({
         );
     } else if (serviceStep === SERVICE_STEPS.LOADING) {
         contents = (
-            <div>
-                <LoadingIndicator />
-                Loading...
-            </div>
+            <LoadingIndicator />
         );
     } else if (serviceStep === SERVICE_STEPS.RESULTS) {
         contents = (
@@ -112,7 +109,6 @@ const ServiceManager = function({
     return (
         <Provider store={store}>
             <div className='service-manager'>
-                <LoadingIndicator />
                 { contents }
             </div>
         </Provider>

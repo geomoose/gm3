@@ -142,6 +142,11 @@ export const QueryResults = ({
                     {t('Filtered {{missing}} features from the results.', {missing: (allFeatureCount - featureCount)})}
                 </div>
             )}
+            {allFeatureCount === 0 && (
+                <div className="info-box">
+                    {t('Your query did not return any results. Adjust your selection area or filters and try again.')}
+                </div>
+            )}
             <div dangerouslySetInnerHTML={{__html: htmlContents}} />
         </div>
     );
