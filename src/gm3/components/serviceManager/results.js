@@ -6,6 +6,7 @@ import { zoomToExtent } from '../../actions/map';
 import { bufferResults } from '../../actions/query';
 import { DEFAULT_RESULTS_CONFIG } from '../../defaults';
 import { getExtentForQuery } from '../../util';
+import { getHighlightResults } from '../../selectors/query';
 
 
 import Modal from '../modal';
@@ -14,6 +15,7 @@ import Modal from '../modal';
 export const QueryResults = ({
     serviceDef,
     query,
+    allResults,
     results,
     resultsConfigFromConf,
     config,
@@ -27,7 +29,7 @@ export const QueryResults = ({
     const queryId = 'query-id-0';
     const queryDef = {
         ...query,
-        results,
+        results: allResults,
     };
 
     let htmlContents = '';
@@ -51,11 +53,11 @@ export const QueryResults = ({
     //  forget to specify a results title.
     const serviceTitle = serviceDef.resultsTitle || `${serviceDef.title} Results`;
 
-    let layerCount = 0, featureCount = 0;
-    for (const path in results) {
-        if (results[path].failed !== true) {
+    let layerCount = 0, allFeatureCount = 0, featureCount = results.length;
+    for (const path in allResults) {
+        if (allResults[path].failed !== true) {
             layerCount += 1;
-            featureCount += results[path].length;
+            allFeatureCount += allResults[path].length;
         }
     }
 
@@ -135,6 +137,11 @@ export const QueryResults = ({
                     )}
                 </div>
             )}
+            {(featureCount < allFeatureCount) && (
+                <div className="info-box">
+                    {t('Filtered {{missing}} features from the results.', {missing: (allFeatureCount - featureCount)})}
+                </div>
+            )}
             <div dangerouslySetInnerHTML={{__html: htmlContents}} />
         </div>
     );
@@ -148,7 +155,8 @@ const mapStateToProps = state => ({
         ...state.config.query,
     },
     query: state.query.query,
-    results: state.query.results,
+    allResults: state.query.results,
+    results: getHighlightResults(state),
     resultsConfigFromConf: {...DEFAULT_RESULTS_CONFIG, ...state.config.results},
 });
 
