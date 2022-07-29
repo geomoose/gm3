@@ -358,7 +358,7 @@ export function addFromXml(xml, config) {
                     contents: util.getXmlTextContents(template_xml)
                 };
             }
-            template_def.highlight = util.parseBoolean(template_xml.getAttribute('highlight')) !== false;
+            template_def.highlight = util.parseBoolean(template_xml.getAttribute('highlight'), true) !== false;
             layer.templates[template_name] = template_def;
         }
 
