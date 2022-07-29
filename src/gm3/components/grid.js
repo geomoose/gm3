@@ -549,7 +549,7 @@ class Grid extends React.Component {
                         // no layer, no problem.
                     }
 
-                    if(layer !== null) {
+                    if(!!layer && !!layer.templates) {
                         const columnTemplate = layer.templates[serviceName + '-grid-columns']
                             || layer.templates.gridColumns;
 

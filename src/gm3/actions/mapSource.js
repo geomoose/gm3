@@ -419,10 +419,12 @@ export function remove(path) {
  */
 export function getLayer(mapSources, layer) {
     const map_source = mapSources[layer.mapSourceName];
-    for(const l of map_source.layers) {
-        if(l.name === layer.layerName) { return l; }
+    if (map_source && map_source.layers) {
+        for (const l of map_source.layers) {
+            if(l.name === layer.layerName) { return l; }
+        }
     }
-    if(layer.layerName == null) {
+    if (!layer.layerName) {
         return map_source;
     }
     console.error('Cannot find layer', layer.mapSourceName, layer.layerName);

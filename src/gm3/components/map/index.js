@@ -801,7 +801,7 @@ class Map extends React.Component {
                 if (query.results[layer_path].failed !== true) {
                     const layer = mapSourceActions.getLayerFromPath(this.props.mapSources, layer_path);
                     let highlight = true;
-                    if (layer.templates[query.service]) {
+                    if (layer && layer.templates[query.service]) {
                         highlight = layer.templates[query.service].highlight !== false;
                     }
                     if (highlight) {
