@@ -25,6 +25,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation, useTranslation } from 'react-i18next';
+import { TableVirtuoso } from 'react-virtuoso';
 
 import {unparse as writeCsv} from 'papaparse';
 import Mark from 'markup-js';
@@ -403,37 +404,28 @@ class Grid extends React.Component {
     }
 
     getHeaderRow(results, headerConf) {
-        const header_cells = [];
-        let col_id = 0;
+        return headerConf.map((columnDef, colIdx) => {
+            let sortTool = null;
+            let sortClasses = 'icon sort';
 
-        for(const column_def of headerConf) {
-            let sort_tool = null;
-            let sort_classes = 'icon sort';
-            const sort_title = this.props.t('filter-sort');
-
-            if(column_def.sortAs) {
-                if(this.state.sortBy === column_def.property) {
-                    if(this.state.sortAsc) {
-                        sort_classes += ' asc';
-                    } else {
-                        sort_classes += ' desc';
-                    }
+            if (columnDef.sortAs) {
+                const sortTitle = this.props.t('filter-sort');
+                if (this.state.sortBy === columnDef.property) {
+                    sortClasses += this.state.sortAsc ? ' asc' : ' desc';
                 }
-                sort_tool = (<i title={ sort_title } onClick={ () => { this.nextSort(column_def); } } className={ sort_classes }></i>);
+                sortTool = (<i title={sortTitle} onClick={() => { this.nextSort(columnDef); }} className={sortClasses}></i>);
             }
 
-            const filter = (
-                <ColumnFilter
-                    store={ this.props.store }
-                    column={ column_def }
-                    results={results}
-                />
+            return (
+                <th key={`col${colIdx}`} >{columnDef.title} {sortTool}{' '}
+                    <ColumnFilter
+                        store={this.props.store}
+                        column={columnDef}
+                        results={results}
+                    />
+                </th>
             );
-
-            header_cells.push((<th key={'col' + col_id} >{ column_def.title } {sort_tool} {filter} </th>));
-            col_id++;
-        }
-        return header_cells;
+        });
     }
 
     sortResults(results) {
@@ -478,6 +470,27 @@ class Grid extends React.Component {
         return {__html: html};
     }
 
+    getRow(result, rowTemplate) {
+        const html = Mark.up(rowTemplate, result, FORMAT_OPTIONS);
+        // WARNING! If odd grid errors show up with row rendering,
+        //          start here!
+        // This code is potentially fragile but keeps the table
+        //  templates backwards compatible.
+        const strippedHTML = html.substring(html.indexOf('<td'), html.lastIndexOf('</td>') + 5);
+        // get the contents of the "<td>" cells
+        const tmpElement = document.createElement('tr');
+        tmpElement.innerHTML = strippedHTML;
+        const cells = tmpElement.getElementsByTagName('td');
+        const elements = [];
+
+        for (let i = 0, ii = cells.length; i < ii; i++) {
+            elements.push(
+                <td key={`cell-${i}`} dangerouslySetInnerHTML={{__html: cells[i].innerHTML}} />
+            );
+        }
+        return elements;
+    }
+
     resultsAsCSV(gridCols, features) {
         const attributes = [];
         const feature_data = [];
@@ -512,19 +525,6 @@ class Grid extends React.Component {
         FileSaver.saveAs(csv_blob, csv_name);
     }
 
-    componentDidUpdate(prevProps) {
-        /*
-        // check to see if the grid should start open minimized.
-        if (prevProps.queries.order[0] !== this.props.queries.order[0] && this.props.queries.order[0]) {
-            const queryId = this.props.queries.order[0];
-            const query = this.props.queries[queryId];
-            if (query && query.runOptions && query.runOptions.gridMinimized === true) {
-                this.setState({minimized: true});
-            }
-        }
-        */
-    }
-
     render() {
         const query = this.props.query;
 
@@ -533,7 +533,6 @@ class Grid extends React.Component {
 
         let grid_cols, grid_row;
 
-        // only render the first query.
         if (query.step === SERVICE_STEPS.RESULTS) {
             const service = this.props.services[query.serviceName];
             const serviceName = service.alias || service.name;
@@ -586,6 +585,10 @@ class Grid extends React.Component {
             return false;
         }
 
+        if (this.state.sortBy !== null ) {
+            features = this.sortResults(features);
+        }
+
         // when minimized, show the maximize button.
         const min_btn_class = this.state.minimized ? 'maximize' : 'minimize';
         const grid_class = this.state.minimized ? 'hide' : '';
@@ -611,17 +614,19 @@ class Grid extends React.Component {
                         <i className={'icon ' + min_btn_class}></i>
                     </span>
                 </div>
-                <div className={'grid-display ' + grid_class}>
-                    <table>
-                        <thead>
-                            <tr>
-                                { this.getHeaderRow(features, grid_cols) }
-                            </tr>
-                        </thead>
-                        <tbody dangerouslySetInnerHTML={this.getRows(features, grid_row)}>
-                        </tbody>
-                    </table>
-                </div>
+
+                <TableVirtuoso
+                    style={{height: 400}}
+                    data={features}
+                    fixedHeaderContent={(index, feature) => {
+                        return (
+                            <tr>{this.getHeaderRow(features, grid_cols)}</tr>
+                        );
+                    }}
+                    itemContent={(index, feature) => (
+                        this.getRow(feature, grid_row, grid_cols)
+                    )}
+                />
             </div>
         );
     }
