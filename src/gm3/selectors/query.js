@@ -25,6 +25,17 @@ export const getQueryResults = createSelector(
     }
 );
 
+export const getFlatResults = createSelector(
+    getAllResults,
+    (results) => {
+        let features = [];
+        for (const path in results) {
+            features = features.concat(results[path]);
+        }
+        return features;
+    }
+);
+
 export const getHighlightResults = createSelector(
     getAllResults,
     getFilter,

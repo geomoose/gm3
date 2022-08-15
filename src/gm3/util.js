@@ -860,3 +860,23 @@ export const getSquareBuffer = (point, buffer) => ({
         ]],
     },
 });
+
+/**
+ * Get the list of field names used in a filter definition
+ *
+ * @param filterDef - The definition of the filter.
+ * @param fieldNames - an accumulator array of the field names.
+ *
+ */
+export const getFilterFieldNames = (filterDef, fieldNames = []) => {
+    filterDef.forEach(elem => {
+        if (Array.isArray(elem)) {
+            if (elem[0] === 'get') {
+                fieldNames.push(elem[1]);
+            } else {
+                getFilterFieldNames(elem, fieldNames);
+            }
+        }
+    });
+    return fieldNames;
+}

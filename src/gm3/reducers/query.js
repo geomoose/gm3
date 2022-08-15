@@ -30,7 +30,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import {
     startService, finishService, createQuery, runQuery, addFilter, removeFilter, setHotFilter, removeQueryResults
 } from '../actions/query';
-import { filterFeatures } from '../util';
+import { filterFeatures, getFilterFieldNames } from '../util';
 
 
 export const SERVICE_STEPS = {
@@ -91,7 +91,8 @@ const reducer = createReducer(defaultState, {
     },
     [removeFilter]: (state, {payload: fieldName}) => {
         state.filter = state.filter.filter(filterDef => {
-            return filterDef.length > 2 && filterDef[1] !== fieldName;
+            const fieldNames = getFilterFieldNames(filterDef);
+            return fieldNames.indexOf(fieldName) < 0;
         });
     },
     [setHotFilter]: (state, {payload: filter}) => {
