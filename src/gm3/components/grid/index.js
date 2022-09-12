@@ -298,7 +298,7 @@ class Grid extends React.Component {
                 </div>
 
                 <TableVirtuoso
-                    style={{height: 400}}
+                    style={{transition: 'height 500ms', height: this.state.minimized ? 0 : 400}}
                     data={features}
                     fixedHeaderContent={(index, feature) => {
                         return (

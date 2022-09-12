@@ -35,23 +35,30 @@ import { startService } from '../../actions/query';
 import { runAction, setUiHint } from '../../actions/ui';
 import { clearSelectionFeatures, setSelectionBuffer, changeTool } from '../../actions/map';
 
+export const BaseToolbarButton = ({onClick, className, label}) => (
+    <button
+        className={`toolbar-button ${className}`}
+        onClick={onClick}
+        title={label}
+    >
+        <span className='icon'></span>
+        <span className='label'>{label}</span>
+    </button>
+);
+
 export const ToolbarButton = ({tool, onClick, currentService, currentDrawTool}) => {
     const {t} = useTranslation();
     const label = t(tool.label);
-
     const active = (tool.name === currentService);
-
     return (
-        <span
+        <BaseToolbarButton
+            key={tool.name}
             onClick={() => {
                 onClick(tool, currentService, currentDrawTool);
             }}
-            key={tool.name}
+            label={t(tool.label)}
             className={`${active ? 'active ' : ''}${tool.cssClass || 'tool ' + tool.name}`}
-            title={label}
-        >
-            <span className='icon'></span><span className='label'>{label}</span>
-        </span>
+        />
     );
 }
 

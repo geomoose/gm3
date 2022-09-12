@@ -24,17 +24,9 @@
 
 /** Example Results Grid CSS
  *
- *  DANGER! WARNING! VORSICHT!
- *  This is provided as a "developer" demo for GeoMoose with regards
- *  to the grid styling.  If the application is being written with a 
- *  more complete CSS/UI framework then this file may not need included,
- *  it makes some brash assumptions about browser compatibility (newer
- *  WebKits and Firefox) and may or may not break assumptions used
- *  by those kits.
  */
 
 .gm-grid .toolbar {
-    height: 20px;
     background-color: #eee;
 }
 
@@ -51,26 +43,12 @@
 
 .gm-grid table th, .gm-grid table td {
     border: 1px solid #ddd;
+    padding: 8px;
 }
 
 .gm-grid table thead tr {
     background-color: #CFE7B3;
 }
-
-/*
-table.grid thead tr {
-    display: block;
-    position: relative;
-    background-color: #CFE7B3;
-}
-
-table.grid tbody {
-    display: block;
-    overflow: auto;
-    width: 100%;
-    max-height: 250px;
-}
-*/
 
 .gm-grid table tbody tr:nth-child(odd) {
     background-color: #EFF8E3;

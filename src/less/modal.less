@@ -1,3 +1,7 @@
+@keyframes modalEnter {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
 
 .modal-blocker {
     position: fixed;
@@ -9,6 +13,12 @@
 
     background-color: rgba(0,0,0,.75);
     text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    animation: modalEnter 500ms;
 }
 
 .modal-frame {
@@ -18,29 +28,42 @@
     width: 400px;
     display: inline-block;
     text-align: left;
+
+    display: flex;
+    background: none;
+    flex-direction: column;
+
 }
 
 .modal-title {
-    background: #afa;
+    border-radius: 16px 16px 0px 0px;
     border-bottom: solid 1px #ccc;
+    padding: 8px;
+    background-color: #fafafa;
 
     h5 {
-        padding: 4px;
-        margin: 0;
         color: #333;
-        font-weight: normal;
+        font-weight: bold;
+        font-size: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 4px;
     }
 }
 
 .modal-body {
-    padding: 4px;
+    padding: 12px;
     max-height: 400px;
     overflow: auto;
+    flex: 1;
+    background-color: #fafafa;
 }
 
 .modal-footer {
-    padding: 0px;
+    border-radius: 0px 0px 16px 16px;
+    padding: 8px;
     background-color: #fafafa;
+
     border-top: solid 1px #ccc;
     display: flex;
 
@@ -50,6 +73,7 @@
         border: none;
         button {
             background-color: #7fbf7b;
+            width: 80%;
         }
     }
 }
@@ -76,6 +100,8 @@
         button {
             background-color: #f7f7f7;
             color: #4c9c39;
+            border: solid 1px #4c9c39;
+            padding: 11px;
         }
     }
 
