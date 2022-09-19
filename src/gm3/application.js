@@ -755,7 +755,7 @@ class Application {
             this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
         }
 
-        this.store.dispatch(startService(serviceName));
+        this.store.dispatch(startService(serviceName, options.defaultValues || {}));
 
         this.store.dispatch(uiActions.setUiHint('service-start'));
     }

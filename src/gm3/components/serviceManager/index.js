@@ -10,32 +10,7 @@ import MeasureTool from '../measure';
 import { LoadingIndicator } from './loading';
 
 import { SERVICE_STEPS } from '../../reducers/query';
-
-
-function normalizeSelection(selectionFeatures) {
-    // OpenLayers handles MultiPoint geometries in an awkward way,
-    // each feature is a 'MultiPoint' type but only contains one feature,
-    //  this normalizes that in order to be submitted properly to query services.
-    if(selectionFeatures && selectionFeatures.length > 0) {
-        if(selectionFeatures[0].geometry.type === 'MultiPoint') {
-            const all_coords = [];
-            for(const feature of selectionFeatures) {
-                if(feature.geometry.type === 'MultiPoint') {
-                    all_coords.push(feature.geometry.coordinates[0]);
-                }
-            }
-            return [{
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                    type: 'MultiPoint',
-                    coordinates: all_coords
-                }
-            }];
-        }
-    }
-    return selectionFeatures;
-}
+import { normalizeSelection } from '../../query/util';
 
 
 const ServiceManager = function({
@@ -62,16 +37,16 @@ const ServiceManager = function({
 
     useEffect(() => {
         if (serviceDef && serviceReady === serviceInstance) {
+            // when keepAlive is true, the background tool can stay on.
+            if (serviceDef.keepAlive !== true) {
+                changeTool(null);
+            }
+
             const selection = normalizeSelection(selectionFeatures);
             const fields = serviceDef.fields.map(field => ({
                 name: field.name,
                 value: fieldValues[field.name] || field.default,
             }));
-
-            // when keepAlive is true, the background tool can stay on.
-            if (serviceDef.keepAlive !== true) {
-                changeTool(null);
-            }
             serviceDef.query(selection, fields);
         }
     }, [serviceReady, serviceDef, changeTool, fieldValues, selectionFeatures]);
@@ -120,6 +95,7 @@ const mapStateToProps = state => ({
     serviceStep: state.query.step,
     serviceInstance: state.query.instance,
     selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
+    defaultValues: state.query.defaultValues,
 });
 
 const mapDispatchToProps = {

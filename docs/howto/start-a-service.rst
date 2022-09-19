@@ -13,3 +13,6 @@ start the identify service:
 
 Adding the above code at the end of the ``app.loadMapbook`` function
 will have the effect of starting the service at startup.
+
+Starting a service with default values
+--------------------------------------
