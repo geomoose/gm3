@@ -55,6 +55,7 @@ import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSou
 import Mark from 'markup-js';
 
 import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from './util';
+import { normalizeFieldValues, normalizeSelection } from './query/util';
 
 import i18nConfigure from './i18n';
 import { EDIT_LAYER_NAME, EDIT_STYLE, HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
@@ -737,9 +738,10 @@ class Application {
      *
      */
     startService(serviceName, options) {
+        const serviceDef = this.services[serviceName];
         const nextTool = (options && options.changeTool)
             ? options.changeTool
-            : this.services[serviceName].tools.default;
+            : serviceDef.tools.default;
 
         this.store.dispatch(mapActions.changeTool(nextTool));
 
@@ -755,7 +757,17 @@ class Application {
             this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
         }
 
-        this.store.dispatch(startService(serviceName, options.defaultValues || {}));
+        this.store.dispatch(startService(serviceName, options.defaultValues));
+
+        // when autoGo is set to true, the service will
+        //   start the query.
+        if (options.autoGo) {
+            const state = this.store.getState();
+            const selectionFeatures = state.mapSources.selection ? state.mapSources.selection.features : [];
+            const selection = normalizeSelection(selectionFeatures);
+            const fields = normalizeFieldValues(serviceDef, options.defaultValues);
+            serviceDef.query(selection, fields);
+        }
 
         this.store.dispatch(uiActions.setUiHint('service-start'));
     }
@@ -861,6 +873,31 @@ class Application {
         const [minx, miny] = this.lonLatToMeters(west, south);
         const [maxx, maxy] = this.lonLatToMeters(east, north);
         return [minx, miny, maxx, maxy];
+    }
+
+    /**
+     * Checks for a start-up service from the query-parameters
+     */
+    startServiceFromQuery() {
+        const query = parseQuery().query;
+        if (query.service) {
+            const serviceDef = this.services[query.service];
+            if (serviceDef) {
+                const urlValues = {};
+                for (const key in query) {
+                    if (key.substring(0, 6) === "field:") {
+                        const fieldName = key.substring(6);
+                        urlValues[fieldName] = query[key];
+                    }
+                }
+                this.startService(query.service, {
+                    autoGo: true,
+                    defaultValues: urlValues,
+                });
+            } else {
+                console.error('Failed to load service specified in ?service=');
+            }
+        }
     }
 };
 

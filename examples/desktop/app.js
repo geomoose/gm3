@@ -290,4 +290,8 @@ app.loadMapbook().then(function() {
     hash_tracker.startTracking();
 
     showTab('catalog');
+
+    // check the URL for starting up a service
+    // This is a new feature available starting in GeoMoose 3.11!
+    app.startServiceFromQuery();
 });

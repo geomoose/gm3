@@ -52,3 +52,8 @@ export const normalizeSelection = (selectionFeatures) => {
     return selectionFeatures;
 };
 
+export const normalizeFieldValues = (serviceDef, fieldValues = {}) =>
+    serviceDef.fields.map(field => ({
+        name: field.name,
+        value: fieldValues[field.name] || field.default,
+    }));

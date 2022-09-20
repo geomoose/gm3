@@ -10,7 +10,7 @@ import MeasureTool from '../measure';
 import { LoadingIndicator } from './loading';
 
 import { SERVICE_STEPS } from '../../reducers/query';
-import { normalizeSelection } from '../../query/util';
+import { normalizeFieldValues, normalizeSelection } from '../../query/util';
 
 
 const ServiceManager = function({
@@ -43,10 +43,7 @@ const ServiceManager = function({
             }
 
             const selection = normalizeSelection(selectionFeatures);
-            const fields = serviceDef.fields.map(field => ({
-                name: field.name,
-                value: fieldValues[field.name] || field.default,
-            }));
+            const fields = normalizeFieldValues(serviceDef, fieldValues);
             serviceDef.query(selection, fields);
         }
     }, [serviceReady, serviceDef, changeTool, fieldValues, selectionFeatures]);
