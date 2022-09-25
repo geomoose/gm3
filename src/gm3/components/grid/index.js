@@ -130,10 +130,18 @@ class Grid extends React.Component {
             if (sort_as === 'number') {
                 value_a = parseFloat(value_a);
                 value_b = parseFloat(value_b);
-                if (sort_asc) {
-                    return value_a < value_b ? -1 : 1;
+
+                // assume value a is less than value b
+                let sort_v = -1;
+                if (isNaN(value_b) || value_b === null) {
+                    sort_v = 1;
+                } else if (value_b < value_a) {
+                    sort_v = 1;
                 }
-                return value_b < value_a ? -1 : 1;
+                if (!sort_asc) {
+                    sort_v = sort_v * -1;
+                }
+                return sort_v;
             }
             if (sort_asc) {
                 return collator.compare(value_a, value_b);
