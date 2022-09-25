@@ -128,7 +128,7 @@ function SearchService(Application, options) {
         //  would be called by the service tab.
         Application.dispatchQuery(
             this.name,
-            selection,
+            null, // Search does not use a geometry filter
             this.prepareFields(fields),
             this.getSearchLayers(this.searchLayers, fields),
             templates

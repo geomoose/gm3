@@ -19,7 +19,7 @@ export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
         outputFormat = mapSource.params.outputFormat;
     }
 
-    const selection = [...query.selection];
+    const selection = Boolean(query.selection) ? [...query.selection] : null;
     if (selection && selection.length === 1) {
         selection[0] = applyPixelTolerance(
             selection[0], mapSource,
