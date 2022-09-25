@@ -40,6 +40,7 @@ const ModalButton = ({option, onClick}) => {
         >
             <button
                 onClick={() => { onClick(); }}
+                disabled={option.disabled === true}
             >
                 { t(option.label) }
             </button>
@@ -73,6 +74,7 @@ class ModalDialog extends React.Component {
             <ModalButton
                 key={option.value}
                 option={option}
+                disabled={option.disabled === true}
                 onClick={() => {
                     this.close(option.value);
                 }}

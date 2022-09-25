@@ -885,7 +885,7 @@ class Application {
             if (serviceDef) {
                 const urlValues = {};
                 for (const key in query) {
-                    if (key.substring(0, 6) === "field:") {
+                    if (key.substring(0, 6) === 'field:') {
                         const fieldName = key.substring(6);
                         urlValues[fieldName] = query[key];
                     }
