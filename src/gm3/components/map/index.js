@@ -868,8 +868,8 @@ class Map extends React.Component {
                     this.mapDiv = self;
                 }}
             >
+                <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
                 <AttributionDisplay store={this.props.store} />
-                {/* <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />*/}
 
                 <EditorModal store={this.props.store} />
                 <RemoveModal store={this.props.store} />
