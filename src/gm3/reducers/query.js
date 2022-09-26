@@ -59,7 +59,6 @@ const reducer = createReducer(defaultState, {
         state.serviceName = serviceName;
         state.defaultValues = defaultValues;
         state.step = SERVICE_STEPS.START;
-        state.results = {};
     },
     [finishService]: state => {
         state.serviceName = '';

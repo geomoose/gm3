@@ -26,9 +26,6 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withTranslation} from 'react-i18next';
 
-import { changeTool } from '../actions/map';
-import { finishService } from '../actions/query';
-
 import TextInput from './serviceInputs/text';
 import SelectInput from './serviceInputs/select';
 import LengthInput from './serviceInputs/length';
@@ -234,9 +231,4 @@ const mapStateToProps = state => ({
     selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
 });
 
-const mapDispatchToProps = {
-    changeTool,
-    finishService,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(ServiceForm));
+export default connect(mapStateToProps)(withTranslation()(ServiceForm));

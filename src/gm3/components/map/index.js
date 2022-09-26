@@ -530,10 +530,12 @@ class Map extends React.Component {
                 });
             } else if (type === 'Modify' || type === 'Edit' || type === 'Remove') {
                 let layer = null;
-                try {
-                    layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
-                } catch (err) {
-                    // swallow the error if the layer can't be found.
+                if (path !== null) {
+                    try {
+                        layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
+                    } catch (err) {
+                        // swallow the error if the layer can't be found.
+                    }
                 }
 
                 const modifyNext = editFeatures => {
@@ -561,8 +563,8 @@ class Map extends React.Component {
                     }
                 };
 
-                if (!map_source || ['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
-                    const layers = !map_source
+                if (is_selection || ['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
+                    const layers = is_selection
                         ? [this.selectionLayer]
                         : [this.olLayers[map_source_name]];
 
@@ -807,6 +809,7 @@ class Map extends React.Component {
 
                 // clear out the previous features
                 //  if changing the draw tool type.
+                /*
                 const drawTypes = ['Polygon', 'LineString', 'Box', 'Point', 'MultiPoint'];
                 if (drawTypes.indexOf(this.props.mapView.interactionType) >= 0) {
                     const typeDict = {
@@ -824,6 +827,7 @@ class Map extends React.Component {
                     this.props.setSelectionFeatures(keepers);
                     this.props.setFeatures('selection', keepers);
                 }
+                */
             }
 
             // note the size of the map
