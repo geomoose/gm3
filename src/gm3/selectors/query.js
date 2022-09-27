@@ -7,7 +7,7 @@ import { getLayerFromPath } from '../actions/mapSource';
 
 export const getAllResults = state => state.query.results;
 export const getFilter = state => state.query.filter;
-export const getServiceName = state => state.query.service;
+export const getServiceName = state => state.query.serviceName;
 export const getHotFilter = state => state.query.hotFilter;
 
 // TODO: Move this to a map sources selector
