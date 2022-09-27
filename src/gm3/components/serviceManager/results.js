@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
@@ -31,6 +31,19 @@ export const QueryResults = ({
         ...query,
         results: allResults,
     };
+
+    const zoomToResults = useCallback(() => {
+        const extent = getExtentForQuery(allResults);
+        if (extent) {
+            zoomToExtent(extent);
+        }
+    }, [allResults, zoomToExtent]);
+
+    useEffect(() => {
+        if (query.runOptions && query.runOptions.zoomToResults) {
+            zoomToResults();
+        }
+    }, [query, zoomToResults]);
 
     let htmlContents = '';
     if (serviceDef.renderQueryResults) {
@@ -125,12 +138,7 @@ export const QueryResults = ({
                     {resultsConfig.showZoomToAll && (
                         <div className='results-info-item zoomto'>
                             <div className='label'>{t('zoomto-results')}</div>
-                            <div className='value' onClick={() => {
-                                const extent = getExtentForQuery(results);
-                                if (extent) {
-                                    zoomToExtent(extent);
-                                }
-                            }}>
+                            <div className='value' onClick={zoomToResults}>
                                 <span className='icon zoomto'></span>
                             </div>
                         </div>

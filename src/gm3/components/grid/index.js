@@ -56,6 +56,7 @@ class Grid extends React.Component {
             sortAs: 'string',
             sortAsc: true,
             minimized: false,
+            showGrid: false,
             filterModal: null,
         };
 
@@ -206,6 +207,30 @@ class Grid extends React.Component {
         FileSaver.saveAs(csv_blob, csv_name);
     }
 
+    componentDidUpdate(prevProps) {
+        // The `showGrid` logic is used to prevent the grid
+        //  from "flashing" in appearance and being immeidately
+        //  minimized.
+        if (this.props.query.step !== prevProps.query.step) {
+            if (this.props.query.step === SERVICE_STEPS.RESULTS) {
+                let minimized = false;
+                if (this.props.query.query.runOptions) {
+                    if (this.props.query.query.runOptions.gridMinimized) {
+                        minimized = true;
+                    }
+                }
+                this.setState({
+                    minimized,
+                    showGrid: true,
+                });
+            } else {
+                this.setState({
+                    showGrid: false,
+                });
+            }
+        }
+    }
+
     render() {
         const query = this.props.query;
 
@@ -214,7 +239,7 @@ class Grid extends React.Component {
 
         let grid_cols, grid_row;
 
-        if (query.step === SERVICE_STEPS.RESULTS) {
+        if (query.step === SERVICE_STEPS.RESULTS && this.state.showGrid) {
             const service = this.props.services[query.serviceName];
             const serviceName = service.alias || service.name;
             const paths = Object.keys(query.results);

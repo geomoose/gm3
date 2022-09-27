@@ -739,7 +739,7 @@ class Map extends React.Component {
             bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
         }
         // move the map to the new extent.
-        this.map.getView().fit(bbox, {size: this.map.getSize()});
+        this.map.getView().fit(bbox, {size: this.map.getSize(), padding: [15, 15, 15, 15]});
     }
 
     /** Intercept extent changes during a part of the render
@@ -916,8 +916,6 @@ function mapState(state) {
     return {
         mapSources: state.mapSources,
         mapView: state.map,
-        queries: state.query,
-        serviceName: state.query.service,
         config: state.config.map || {},
         selectionStyle: state.config.selectionStyle || {},
         // resolve this to meters
