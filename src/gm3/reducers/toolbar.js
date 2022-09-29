@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,15 @@
  *
  */
 
-import { TOOLBAR } from '../actionTypes';
+import {createReducer} from '@reduxjs/toolkit';
+import {
+    addDrawer,
+    addTool,
+    remove,
+} from '../actions/toolbar';
 
 /*
- * TOOLBAR tool definition
+ * Toolbar tool definition
  * action.order
  * action.type
  * action.tool
@@ -42,48 +47,29 @@ import { TOOLBAR } from '../actionTypes';
  *
  */
 
-const default_state = {};
-
-export default function toolbarReducer(state = default_state, action) {
-    switch(action.type) {
-        case TOOLBAR.ADD:
-            // tools in drawers will have a different "root",
-            //  the  base "root" is what is shown in the toolbar itself
-            const root = action.root ? action.root : 'root';
-
-            // get the 'order' placement, should be first or last
-            const order = action.order ? action.order : 'last';
-
-            // fresh bake a state
-            const new_state = Object.assign({}, state);
-
-            // add a so-fresh-so-clean drawer node
-            //  if it doesn't exist.
-            if(!new_state[root]) {
-                new_state[root] = [];
-            }
-
-            if(order === 'first') {
-                new_state[root].unshift(action.tool);
-            } else {
-                new_state[root].push(action.tool);
-            }
-
-            return new_state;
-        case TOOLBAR.REMOVE:
-            // make a copy of the tools list but do not include
-            //  the tool to be removed.
-            const st = {};
-            for(const root in state) {
-                st[root] = [];
-                for(const item of state[root]) {
-                    if(item.name !== action.name) {
-                        st[root].push(item);
-                    }
-                }
-            }
-            return st;
-        default:
-            return state;
+const add = (state, payload) => {
+    if (!state[payload.root]) {
+        state[payload.root] = [];
     }
-};
+    if (payload.order === 'first') {
+        state[payload.root].unshift(payload.tool);
+    } else {
+        state[payload.root].push(payload.tool);
+    }
+}
+
+const reducer = createReducer({root: []}, {
+    [addDrawer]: (state, {payload}) => {
+        add(state, payload);
+    },
+    [addTool]: (state, {payload}) => {
+        add(state, payload);
+    },
+    [remove]: (state, {payload: name}) => {
+        for (const root in state) {
+            state[root] = state[root].filter(item => item.name !== name);
+        }
+    },
+});
+
+export default reducer;

@@ -23,13 +23,8 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ClearTool } from 'gm3/components/catalog/tools/clear';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Clear tool test', () => {
     it('renders a clear tool and dispatches an action', () => {
@@ -44,13 +39,12 @@ describe('Clear tool test', () => {
             },
         };
 
-        const wrapper = mount(<ClearTool {...props} />);
-
-        wrapper.find('i.icon').simulate('click');
-
-        wrapper.update();
-
-        wrapper.find('button').last().simulate('click');
+        render(<ClearTool {...props} />);
+        // this should open the "clear modal"
+        fireEvent.click(screen.getByRole('button'));
+        // now try to click on the clear button
+        //  in the modal.
+        fireEvent.click(screen.getByText('Clear'));
 
         expect(clicked).toBe(true);
     });

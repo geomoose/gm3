@@ -15,6 +15,12 @@ try {
     };
 }
 
+window.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn()
+}));
+
 // add an i18n setup
 i18n
     .use(initReactI18next)

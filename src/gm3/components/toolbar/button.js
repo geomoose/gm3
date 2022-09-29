@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,27 +31,34 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { startService } from '../../actions/service';
+import { startService } from '../../actions/query';
 import { runAction, setUiHint } from '../../actions/ui';
-import { setSelectionBuffer, changeTool } from '../../actions/map';
+import { clearSelectionFeatures, setSelectionBuffer, changeTool } from '../../actions/map';
+
+export const BaseToolbarButton = ({onClick, className, label}) => (
+    <button
+        className={`toolbar-button ${className}`}
+        onClick={onClick}
+        title={label}
+    >
+        <span className='icon'></span>
+        <span className='label'>{label}</span>
+    </button>
+);
 
 export const ToolbarButton = ({tool, onClick, currentService, currentDrawTool}) => {
     const {t} = useTranslation();
     const label = t(tool.label);
-
     const active = (tool.name === currentService);
-
     return (
-        <span
+        <BaseToolbarButton
+            key={tool.name}
             onClick={() => {
                 onClick(tool, currentService, currentDrawTool);
             }}
-            key={tool.name}
+            label={t(tool.label)}
             className={`${active ? 'active ' : ''}${tool.cssClass || 'tool ' + tool.name}`}
-            title={label}
-        >
-            <span className='icon'></span><span className='label'>{label}</span>
-        </span>
+        />
     );
 }
 
@@ -66,7 +73,7 @@ ToolbarButton.propTypes = {
 };
 
 const mapState = state => ({
-    currentService: state.query.service,
+    currentService: state.query.serviceName,
     currentDrawTool: state.map.interactionType,
 });
 
@@ -74,8 +81,6 @@ function mapDispatch(dispatch, ownProps) {
     return {
         onClick: (tool, currentService, currentDrawTool) => {
             if(tool.actionType === 'service') {
-                // start the service
-                dispatch(startService(tool.name));
                 let defaultTool = null;
                 if (ownProps.serviceDef
                     && ownProps.serviceDef.tools
@@ -86,11 +91,15 @@ function mapDispatch(dispatch, ownProps) {
 
                 // reset the buffer if changing tools
                 if (tool.name !== currentService) {
+                    dispatch(clearSelectionFeatures());
                     dispatch(setSelectionBuffer(0));
                     dispatch(changeTool(defaultTool));
                 } else if (currentDrawTool === null) {
                     dispatch(changeTool(defaultTool));
                 }
+
+                // start the service
+                dispatch(startService(tool.name));
                 // give an indication that a new service has been started
                 dispatch(setUiHint('service-start'));
             } else if(tool.actionType === 'action') {

@@ -23,13 +23,10 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { UploadTool } from 'gm3/components/catalog/tools/upload';
 
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('upload tool test', () => {
     it('renders a upload tool', () => {
@@ -42,9 +39,8 @@ describe('upload tool test', () => {
             },
         };
 
-        const wrapper = mount(<UploadTool {...props} />);
-        wrapper.find('i.icon').simulate('click');
-
+        render(<UploadTool {...props} />);
+        fireEvent.click(screen.getByRole('button'));
     });
 });
 

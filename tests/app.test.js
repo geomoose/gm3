@@ -32,7 +32,7 @@ import { runAction } from 'gm3/actions/ui';
 
 /* This is a bit of a hacky polyfill for requestAnimationFrame
  * which is needed by the openlayers map to drawer but is not
- * simulated by the jsdom/enzyme combination.
+ * simulated by the jsdom combination.
  * Original source:
  * - https://stackoverflow.com/questions/44111231/react-native-requestanimationframe-is-not-supported-in-node
  */

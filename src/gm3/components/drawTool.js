@@ -24,7 +24,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Translation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 import { changeTool } from '../actions/map';
 
@@ -82,19 +82,17 @@ class DrawTool extends React.Component {
 
     render() {
         const gtype = this.props.geomType;
+        const selected = this.props.interactionType === gtype;
 
         let tool_class = 'draw-tool';
-
         let select_options = '';
 
-
-        // ensures the state of the drawing tool
-        // matches what is checked.
-        if(this.props.interactionType === gtype) {
+        if (selected) {
             tool_class += ' selected';
         }
 
         const tool_label = `draw-${gtype.toLowerCase()}-label`;
+        const helperText = `draw-${gtype.toLowerCase()}-help`;
 
         if(gtype === 'Select') {
             select_options = (
@@ -105,22 +103,23 @@ class DrawTool extends React.Component {
         }
 
         return (
-            <Translation>
-                {t => (
-                    <div
-                        key={'draw-tool-' + gtype}
-                        className={tool_class}
-                        onClick={ () => {
-                            this.props.onChange(gtype, this.state.selectLayer);
-                        }}>
-                        <i className='radio-icon'></i>
-                        {` ${t(tool_label)}`}
-                        { select_options }
+            <div
+                key={'draw-tool-' + gtype}
+                className={tool_class}
+                onClick={() => {
+                    this.props.onChange(gtype, this.state.selectLayer);
+                }}>
+                <i className='radio-icon'></i>
+                { this.props.t(tool_label) }
+                { select_options }
+
+                {selected && this.props.i18n.exists(helperText) && (
+                    <div className='helper-text info-box'>
+                        {this.props.t(helperText)}
                     </div>
                 )}
-            </Translation>
+            </div>
         );
-
     }
 }
 
@@ -140,4 +139,4 @@ function mapDispatch(dispatch) {
     }
 }
 
-export default connect(mapState, mapDispatch)(DrawTool);
+export default connect(mapState, mapDispatch)(withTranslation()(DrawTool));

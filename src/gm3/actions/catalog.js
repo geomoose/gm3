@@ -27,11 +27,34 @@
  */
 
 import uuid from 'uuid';
-
-import { CATALOG } from '../actionTypes';
+import { createAction } from '@reduxjs/toolkit';
 
 import * as util from '../util';
 import * as mapSources from './mapSource';
+
+export const addLayer = createAction('catalog/add-layer');
+
+export const addGroup = createAction('catalog/add-group');
+
+export const addChild = createAction('catalog/add-child');
+
+/* Change the visibility of a legend.
+ */
+export const setLegendVisibility = createAction('catalog/set-legend-vis', (id, on) => ({
+    payload: {
+        id,
+        on,
+    },
+}));
+
+/** Toggle the state of a group
+ */
+export const setGroupExpand = createAction('catalog/set-group-expand', (groupId, expand) => ({
+    payload: {
+        id: groupId,
+        expand,
+    },
+}));
 
 
 /** Convert a group to a Javascript object.
@@ -171,17 +194,16 @@ function parseLayer(store, layerXml, exclusive = false) {
     return new_layer;
 }
 
-
 function subtreeActions(store, parent, subtreeXml) {
     let actions = [];
 
-    for(let i = 0, ii = subtreeXml.childNodes.length; i < ii; i++) {
+    for (let i = 0, ii = subtreeXml.childNodes.length; i < ii; i++) {
         const childNode = subtreeXml.childNodes[i];
-        let child = false, parent_id = null;
-        if(parent && parent.id) {
-            parent_id = parent.id;
+        let child = false, parentId = null;
+        if (parent && parent.id) {
+            parentId = parent.id;
         }
-        if(childNode.tagName === 'group') {
+        if (childNode.tagName === 'group') {
             const group = parseGroup(childNode);
 
             // carry any multiple=false settings down to the
@@ -190,18 +212,18 @@ function subtreeActions(store, parent, subtreeXml) {
                 group.multiple = false;
             }
 
-            actions.push({type: CATALOG.ADD_GROUP, child: group});
+            actions.push(addGroup({child: group}));
             child = group;
 
             // build the tree by recursion.
             actions = actions.concat(subtreeActions(store, group, childNode));
         } else if(childNode.tagName === 'layer') {
             const layer = parseLayer(store, childNode, parent && parent.multiple === false);
-            actions.push({type: CATALOG.ADD_LAYER, child: layer});
+            actions.push(addLayer({child: layer}));
             child = layer;
         }
         if(child && child.id) {
-            actions.push({type: CATALOG.ADD_CHILD, parentId: parent_id, childId: child.id});
+            actions.push(addChild({parentId, childId: child.id}));
         }
     }
     return actions;
@@ -225,22 +247,3 @@ export function parseCatalog(store, catalogXml) {
     return subtreeActions(store, null, catalogXml);
 }
 
-/* Change the visibility of a legend.
- */
-export function setLegendVisibility(layerId, on) {
-    return {
-        type: CATALOG.LEGEND_VIS,
-        id: layerId,
-        on
-    };
-}
-
-/** Toggle the state of a group
- */
-export function setGroupExpand(groupId, expand) {
-    return {
-        type: CATALOG.GROUP_VIS,
-        id: groupId,
-        expand,
-    };
-};

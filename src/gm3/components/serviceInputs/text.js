@@ -38,6 +38,7 @@ export default class TextInput extends Component {
         };
 
         this.onChange = this.onChange.bind(this);
+        this.inputRef = null;
     }
 
     getId() {
@@ -64,6 +65,12 @@ export default class TextInput extends Component {
         this.props.setValue(name, value);
     }
 
+    componentDidMount() {
+        if (this.props.isFirst) {
+            this.inputRef.focus();
+        }
+    }
+
 
     render() {
         const id = this.getId();
@@ -78,6 +85,7 @@ export default class TextInput extends Component {
                     id={ 'input-' + id}
                     placeholder={ this.props.field.placeHolder }
                     className={this.props.field.helpText ? 'has-help-text' : ''}
+                    ref={r => { this.inputRef = r; }}
                 />
                 {this.props.field.helpText && (
                     <div className="helper-text" htmlFor={ 'input-' + id }>{ this.props.field.helpText }</div>

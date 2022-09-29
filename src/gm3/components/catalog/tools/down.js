@@ -22,9 +22,11 @@
  * SOFTWARE.
  */
 
+import React from 'react';
 import UpTool from './up';
 
-export default class DownTool extends UpTool {
+const DownTool = props => {
+    return <UpTool {...props} />
 }
 
 DownTool.defaultProps = {
@@ -32,3 +34,5 @@ DownTool.defaultProps = {
     iconClass: 'down',
     direction: 1,
 };
+
+export default DownTool;

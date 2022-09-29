@@ -23,30 +23,35 @@
  */
 
 import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
 
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 
-import { Toolbar } from 'gm3/components/toolbar';
+import SmartToolbar, { Toolbar } from 'gm3/components/toolbar';
 import SmartToolbarButton, { ToolbarButton } from 'gm3/components/toolbar/button';
 import ToolbarDrawer from 'gm3/components/toolbar/drawer';
-
-import SmartToolbar from 'gm3/components/toolbar';
 
 import toolbarReducer from 'gm3/reducers/toolbar';
 import queryReducer from 'gm3/reducers/query';
 import mapReducer from 'gm3/reducers/map';
-import * as actions from 'gm3/actions/toolbar';
-
 import uiReducer from 'gm3/reducers/ui';
 
-import Enzyme, { shallow, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
-Enzyme.configure({ adapter: new Adapter() });
+import * as actions from 'gm3/actions/toolbar';
 
 
 describe('Toolbar component tests', () => {
+    let store = null;
+
+    beforeEach(() => {
+        store = createStore(combineReducers({
+            toolbar: toolbarReducer,
+            map: mapReducer,
+            query: queryReducer,
+            ui: uiReducer,
+        }));
+    });
+
     it('renders a toolbar button', () => {
         const tool = {
             name: 'sample0',
@@ -54,7 +59,7 @@ describe('Toolbar component tests', () => {
             actionType: 'service', actionDetail: 'sample'
         };
 
-        shallow(<ToolbarButton tool={tool} />);
+        render(<ToolbarButton tool={tool} />);
     });
 
     it('renders a drawer', () => {
@@ -64,7 +69,7 @@ describe('Toolbar component tests', () => {
             actionType: 'service', actionDetail: 'sample'
         };
 
-        shallow(<ToolbarDrawer label='Drawer Zero' tools={[tool]} services={{}} />);
+        render(<Provider store={store}><ToolbarDrawer label='Drawer Zero' tools={[tool]} services={{}} /></Provider>);
     });
 
     it('renders a toolbar', () => {
@@ -84,20 +89,10 @@ describe('Toolbar component tests', () => {
             drawer0: [tool]
         }
 
-        const store = createStore(combineReducers({
-            toolbar: toolbarReducer,
-            map: mapReducer,
-        }));
-
-        shallow(<Toolbar store={store} toolbar={toolbar} services={{}} />);
+        render(<Toolbar store={store} toolbar={toolbar} services={{}} />);
     });
 
     it('renders a toolbar from the store', function() {
-        const store = createStore(combineReducers({
-            toolbar: toolbarReducer,
-            map: mapReducer,
-            query: queryReducer,
-        }));
         store.dispatch(actions.addDrawer('root', {
             name: 'drawer0', label: 'Drawer 0',
         }));
@@ -106,15 +101,10 @@ describe('Toolbar component tests', () => {
             actionType: 'service', actionDetail: 'sample2'
         }));
 
-        mount(<SmartToolbar store={store} services={{}} />);
+        render(<SmartToolbar store={store} services={{}} />);
     });
 
     it('renders a toolbar from a mapbook fragment', function() {
-        const store = createStore(combineReducers({
-            'toolbar': toolbarReducer
-        }));
-
-
         const toolbarXml = `
             <toolbar>
                 <tool name="findme" title="Find Me" type="action"/>
@@ -129,50 +119,36 @@ describe('Toolbar component tests', () => {
         const xml = parser.parseFromString(toolbarXml, 'text/xml');
         const results = actions.parseToolbar(xml.getElementsByTagName('toolbar')[0]);
 
-
-        for(const action of results) {
+        results.forEach(action => {
             store.dispatch(action);
-        }
+        });
 
-        shallow(<SmartToolbar store={store}/>);
+        render(<SmartToolbar store={store} services={{}}/>);
     });
 
     it('changes the active service when clicked.', function() {
-        const store = createStore(combineReducers({
-            toolbar: toolbarReducer,
-            query: queryReducer,
-            map: mapReducer,
-        }));
-
         const tool = {
             name: 'sample0',
             label: 'Sample Zero',
             actionType: 'service'
         };
 
-        const btn = mount(<Provider store={store}><SmartToolbarButton tool={tool} /></Provider>);
-        btn.find('span.tool').simulate('click');
+        const {container} = render(<Provider store={store}><SmartToolbarButton tool={tool} /></Provider>);
+        fireEvent.click(container.getElementsByClassName('tool')[0]);
 
         const state = store.getState();
-        expect(state.query.service).toBe('sample0');
+        expect(state.query.serviceName).toBe('sample0');
     });
 
     it('triggers an action when clicked.', function() {
-        const store = createStore(combineReducers({
-            toolbar: toolbarReducer,
-            ui: uiReducer,
-            map: mapReducer,
-            query: queryReducer,
-        }));
-
         const tool = {
             name: 'sample0',
             label: 'Sample Zero',
             actionType: 'action'
         };
 
-        const btn = mount(<SmartToolbarButton tool={tool} store={store} />);
-        btn.find('span.tool').simulate('click');
+        const {container} = render(<SmartToolbarButton tool={tool} store={store} />);
+        fireEvent.click(container.getElementsByClassName('tool')[0]);
 
         expect(store.getState().ui.action).toBe('sample0');
     });

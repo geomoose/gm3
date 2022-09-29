@@ -25,6 +25,8 @@
 import Application from 'gm3/application';
 import { setUiHint } from 'gm3/actions/ui';
 
+import { act } from '@testing-library/react';
+
 import fs from 'fs';
 
 
@@ -88,7 +90,10 @@ describe('application api calls', () => {
 
     it('throws up an alert dialog', () => {
         const dialog_body = 'Body of dialog';
-        app.alert('dialog-signature', dialog_body);
+        act(() => {
+            app.alert('dialog-signature', dialog_body);
+        });
+
         let contents = document.getElementsByTagName('body')[0].innerHTML;
         expect(contents).toContain(dialog_body);
 
@@ -100,7 +105,9 @@ describe('application api calls', () => {
 
     it('throws up a confirmation dialog', () => {
         const dialog_body = 'Body of dialog';
-        app.confirm('confirm-signature', dialog_body);
+        act(() => {
+            app.confirm('confirm-signature', dialog_body);
+        });
         let contents = document.getElementsByTagName('body')[0].innerHTML;
         expect(contents).toContain(dialog_body);
 

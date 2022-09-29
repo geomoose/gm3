@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
 
 import Modal from 'gm3/components/modal';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 
 it('renders a one button Modal Dialog', () => {
@@ -38,18 +34,15 @@ it('renders a one button Modal Dialog', () => {
     const callback = jest.fn();
 
     // create the dialog.
-    const dialog = mount(
+    const {container} = render(
         <Modal title='Title' message='Testing message for dialog'
             open
             options={ [{label: 'Okay', value: 'okay'}] }
             onClose={ callback } />
     );
 
-    // open the dialog.
-    dialog.setState({open: true});
-
     // close the dialog by simulating a click on the button.
-    dialog.find('button').simulate('click');
+    fireEvent.click(container.getElementsByTagName('button')[0]);
 
     // ensure the call back was called with the closing value.
     expect(callback).toBeCalledWith('okay');

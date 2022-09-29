@@ -40,15 +40,14 @@ import md5 from 'md5/md5';
 import * as mapSourceActions from '../../actions/mapSource';
 import * as mapActions from '../../actions/map';
 import {removeFeature, setEditFeature} from '../../actions/edit';
+import {setCursor, updateSketchGeometry, resizeMap} from '../../actions/cursor';
+
+import {getHighlightResults} from '../../selectors/query';
 
 import * as util from '../../util';
 import * as jsts from '../../jsts';
 
 import GeoJSONFormat from 'ol/format/GeoJSON';
-import EsriJSONFormat from 'ol/format/EsriJSON';
-import GML2Format from 'ol/format/GML2';
-import WMSGetFeatureInfoFormat from 'ol/format/WMSGetFeatureInfo';
-
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import * as proj from 'ol/proj';
@@ -77,7 +76,7 @@ import * as bingLayer from './layers/bing';
 import * as usngLayer from './layers/usng';
 import {createLayer as createBlankLayer} from './layers/blank';
 
-import { buildWfsQuery, wfsGetFeatures} from './layers/wfs';
+import { wfsGetFeatures } from './layers/wfs';
 import {EDIT_LAYER_NAME} from '../../defaults';
 
 import EditorModal from '../editor';
@@ -225,527 +224,6 @@ class Map extends React.Component {
         }
     }
 
-    /** Make a WMS GetFeatureInfo query
-     *
-     *  @param queryId    The query id.
-     *  @param selection  The selection section of the query.
-     *  @param queryLayer The name of the layer being queried.
-     *
-     */
-    wmsGetFeatureInfoQuery(queryId, selection, queryLayer) {
-        const map_projection = this.map.getView().getProjection();
-
-        const view = this.props.mapView;
-
-        // get the map source
-        const ms_name = util.getMapSourceName(queryLayer);
-
-        const fail_layer = (message) => {
-            // dispatch a message that the query has failed.
-            this.props.store.dispatch(
-                // true for 'failed', empty array to prevent looping side-effects.
-                mapActions.resultsForQuery(queryId, queryLayer, true, [], message)
-            );
-
-            // TODO: This delay allows the state tree to refresh before
-            //       checking for completeness.
-            setTimeout(() => {
-                this.checkQueryForCompleteness(queryId, queryLayer);
-            }, 200);
-        };
-
-        const selectionPoints = selection.filter(feature =>
-            feature.geometry && feature.geometry.type === 'Point');
-
-        // check that we have a geometry, if not fail.
-        if (selectionPoints.length === 0) {
-            // set the failure
-            fail_layer('No valid selection geometry.');
-            // leave the function.
-            return;
-        }
-
-        const coords = selectionPoints[0].geometry.coordinates;
-        const src = this.olLayers[ms_name].getSource();
-
-        // TODO: Allow the configuration to specify GML vs GeoJSON,
-        //       but GeoMoose needs a real feature returned.
-        const params = {
-            'FEATURE_COUNT': 1000,
-            'QUERY_LAYERS': util.getLayerName(queryLayer),
-            'INFO_FORMAT': 'application/vnd.ogc.gml'
-        };
-
-        const info_url = src.getFeatureInfoUrl(coords, view.resolution, map_projection.getCode(), params);
-        fetch(info_url, {
-            headers: {
-                'Access-Control-Request-Headers': '*',
-            },
-        })
-            .then(r => r.text())
-            .then(responseText => {
-                // not all WMS services play nice and will return the
-                //  error message as a 200, so this still needs checked.
-                if(responseText) {
-                    const gml_format = new WMSGetFeatureInfoFormat();
-                    const features = gml_format.readFeatures(responseText);
-                    const js_features = GEOJSON_FORMAT.writeFeaturesObject(features).features;
-
-                    this.props.store.dispatch(
-                        mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                    );
-                } else {
-                    fail_layer();
-                }
-                this.checkQueryForCompleteness(queryId, queryLayer);
-            })
-            .catch((err, msg) => {
-                fail_layer();
-                this.checkQueryForCompleteness(queryId, queryLayer);
-            });
-    }
-
-    /** Iterate through the layers and ensure that they have all
-     *  been completed.  The state may not have been updated yet,
-     *  so if a layer has been recently completed then 'completedLayer'
-     *  is passed in to assume it has been populated despite what the state
-     *  says.
-     *
-     *  @param queryId  The id of the query to check for completeness.
-     *  @param completedLayer The path of a layer which has been recently completed.
-     *
-     *  @returns Nothing, dispatches a finishQuery action if all layers have been completed.
-     */
-    checkQueryForCompleteness(queryId, completedLayer) {
-        const query = this.props.queries[queryId];
-        let all_completed = true;
-
-        // check to see if there are results for all the layers.
-        if(query && query.layers) {
-            for(const layer of query.layers) {
-                all_completed = all_completed && (query.results[layer] || (layer === completedLayer));
-            }
-        } else if (query && query.layers.length > 0) {
-            all_completed = false;
-        }
-
-        if(all_completed) {
-            if (query.runOptions && query.runOptions.zoomToResults) {
-                this.props.zoomToResults(query);
-            }
-            this.props.store.dispatch(mapActions.finishQuery(queryId));
-        }
-    }
-
-    /** Create a WFS formatted query and send it
-     *
-     *  @param queryId
-     *  @param query
-     *
-     */
-    wfsGetFeatureQuery(queryId, query, queryLayer) {
-        const map_projection = this.map.getView().getProjection();
-
-        // get the map source
-        const ms_name = util.getMapSourceName(queryLayer);
-        const map_source = this.props.mapSources[ms_name];
-
-        // the internal storage mechanism requires features
-        //  returned from the query be stored in 4326 and then
-        //  reprojected on render.
-        let query_projection = map_projection;
-        if(map_source.wgs84Hack) {
-            query_projection = new proj.get('EPSG:4326');
-        }
-
-        let ol_layer = this.olLayers[ms_name];
-        if(!ol_layer) {
-            ol_layer = this.createLayer(map_source);
-        }
-
-        // check for the output_format based on the params
-        let output_format = 'text/xml; subtype=gml/2.1.2';
-        if(map_source.params.outputFormat) {
-            output_format = map_source.params.outputFormat;
-        }
-
-        if (query.selection && query.selection.length === 1) {
-            query.selection[0] = applyPixelTolerance(
-                query.selection[0], map_source,
-                this.props.mapView.resolution, 10);
-        }
-
-        const wfs_query_xml = buildWfsQuery(query, map_source, map_projection, output_format);
-
-        // Ensure all the extra URL params are attached to the
-        //  layer.
-        const wfs_url = map_source.urls[0] + '?' + util.formatUrlParameters(map_source.params);
-
-        const is_json_like = (output_format.toLowerCase().indexOf('json') > 0);
-
-        fetch(wfs_url, {
-            method: 'POST',
-            body: wfs_query_xml,
-            headers: {
-                'Access-Control-Request-Headers': '*',
-            },
-        })
-            .then(r => r.text())
-            .then(response => {
-                if(response) {
-                    // check for a WFS error message
-                    if(response.search(/(ows|wfs):exception/i) >= 0) {
-                        // parse the document.
-                        const wfs_doc = olXml.parse(response);
-                        const tags = ['ows:ExceptionText', 'wfs:ExceptionText'];
-                        let error_text = '';
-                        for(let t = 0, tt = tags.length; t < tt; t++) {
-                            const nodes = wfs_doc.getElementsByTagName(tags[t]);
-                            for(let n = 0, nn = nodes.length; n < nn; n++) {
-                                error_text += olXml.getAllTextContent(nodes[n]) + '\n';
-                            }
-                        }
-                        // ensure that the console variable exists
-                        if(typeof console !== undefined) {
-                            console.error(error_text);
-                        }
-
-                        // dispatch an error status.
-                        this.props.store.dispatch(
-                            mapActions.resultsForQuery(queryId, queryLayer, true, [], error_text)
-                        );
-                    } else {
-                        // place holder for features to be added.
-                        let js_features = [];
-                        if(is_json_like) {
-                            js_features = JSON.parse(response).features;
-                        } else {
-                            const gml_format = new GML2Format();
-                            const features = gml_format.readFeatures(response, {
-                                featureProjection: map_projection,
-                                dataProjection: query_projection
-                            });
-                            // be ready with some json.
-                            const json_format = new GeoJSONFormat();
-
-                            // create the features array.
-                            for(const feature of features) {
-                                // feature to JSON.
-                                const js_feature = json_format.writeFeatureObject(feature);
-                                // ensure that every feature has a "boundedBy" attribute.
-                                js_feature.properties.boundedBy = feature.getGeometry().getExtent();
-                                // add it to the stack.
-                                js_features.push(js_feature);
-                            }
-                        }
-
-                        // apply the transforms
-                        js_features = util.transformFeatures(map_source.transforms, js_features);
-
-                        this.props.store.dispatch(
-                            mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                        );
-                    }
-                }
-                this.checkQueryForCompleteness(queryId, queryLayer);
-            })
-            .catch(() => {
-                // dispatch a message that the query has failed.
-                this.props.store.dispatch(
-                    // true for 'failed', empty array to prevent looping side-effects.
-                    mapActions.resultsForQuery(queryId, queryLayer, true, [], 'Server error. Check network logs.')
-                );
-                this.checkQueryForCompleteness(queryId, queryLayer);
-            });
-    }
-
-
-    /** Create a FeatureService formatted query and send it
-     *
-     *  @param queryId
-     *  @param query
-     *
-     */
-    agsFeatureQuery(queryId, query, queryLayer) {
-        // get the map source
-        const ms_name = util.getMapSourceName(queryLayer);
-        const map_source = this.props.mapSources[ms_name];
-
-        // if the openlayers layer is not on, this fakes
-        //  one for use in the query.
-        let ol_layer = this.olLayers[ms_name];
-        if(!ol_layer) {
-            ol_layer = this.createLayer(map_source);
-        }
-
-        const fix_like = function(value) {
-            const new_value = value.replace('*', '%');
-            return new_value;
-        };
-
-        const simple_op = function(op, name, value) {
-            if(typeof(value) === 'number') {
-                return name + ' ' + op + ' ' + value;
-            } else {
-                return `${name} ${op} '${value}'`;
-            }
-        };
-
-        // map the functions from OpenLayers to the internal
-        //  types
-        const filter_mapping = {
-            'like': function(name, value) {
-                return name + ' like \'' + fix_like(value) + '\'';
-            },
-            'ilike': function(name, value) {
-                return 'upper(' + name + ') like upper(\'' + fix_like(value) + '\')';
-            },
-            'eq': function(name, value) {
-                return simple_op('=', name, value);
-            },
-            'ge': function(name, value) {
-                return simple_op('>=', name, value);
-            },
-            'gt': function(name, value) {
-                return simple_op('>', name, value);
-            },
-            'le': function(name, value) {
-                return simple_op('<=', name, value);
-            },
-            'lt': function(name, value) {
-                return simple_op('<', name, value);
-            },
-        };
-
-        // setup the necessary format converters.
-        const esri_format = new EsriJSONFormat();
-        const query_params = {
-            f: 'json',
-            returnGeometry: 'true',
-            spatialReference: JSON.stringify({
-                wkid: 102100
-            }),
-            inSR: 102100, outSR: 102100,
-            outFields: '*',
-        };
-
-        if (query.selection && query.selection.length > 0) {
-            const queryFeature = applyPixelTolerance(
-                query.selection[0], map_source,
-                this.props.mapView.resolution, 2);
-            const queryGeometry = queryFeature.geometry;
-
-            // make this an E**I geometry.
-            const ol_geom = GEOJSON_FORMAT.readGeometry(queryGeometry);
-
-            // translate the geometry to E**I-ish
-            const geom_type_lookup = {
-                'Point': 'esriGeometryPoint',
-                'MultiPoint': 'esriGeometryMultipoint',
-                'LineString': 'esriGeometryPolyline',
-                'Polygon': 'esriGeometryPolygon',
-            };
-
-            // setup the spatial filter.
-            query_params.geometryType = geom_type_lookup[queryGeometry.type];
-            query_params.geometry = esri_format.writeGeometry(ol_geom);
-            query_params.spatialRel = 'esriSpatialRelIntersects';
-            // for lines?:'esriSpatialRelEnvelopeIntersects';
-        }
-
-        // build the filter fields.
-        const where_statements = [];
-        for(const filter of query.fields) {
-            where_statements.push(filter_mapping[filter.comparitor](filter.name, filter.value));
-        }
-
-        query_params.where = where_statements.join(' and ');
-
-        const params = Object.assign({}, query_params, map_source.params);
-
-        // get the query service url.
-        const query_url = map_source.urls[0] + '/query/';
-        util.xhr({
-            url: query_url,
-            method: 'get',
-            type: 'jsonp',
-            data: params,
-            success: (response) => {
-                // not all WMS services play nice and will return the
-                //  error message as a 200, so this still needs checked.
-                if(response) {
-                    if (response.error && response.error.code !== 200){
-                        console.error(response.error);
-                        this.props.store.dispatch(
-                            // true for 'failed', empty array to prevent looping side-effects.
-                            mapActions.resultsForQuery(queryId, queryLayer, true, [])
-                        );
-                    } else {
-                        // convert the esri features to OL features.
-                        const features = esri_format.readFeatures(response);
-                        // be ready with some json.
-                        const json_format = new GeoJSONFormat();
-
-                        // create the features array.
-                        let js_features = [];
-                        for(const feature of features) {
-                            // feature to JSON.
-                            const js_feature = json_format.writeFeatureObject(feature);
-                            // ensure that every feature has a "boundedBy" attribute.
-                            js_feature.properties.boundedBy = feature.getGeometry().getExtent();
-                            // add it to the stack.
-                            js_features.push(js_feature);
-                        }
-
-                        // apply the transforms
-                        js_features = util.transformFeatures(map_source.transforms, js_features);
-
-                        this.props.store.dispatch(
-                            mapActions.resultsForQuery(queryId, queryLayer, false, js_features)
-                        );
-                    }
-                }
-            },
-            error: () => {
-                // dispatch a message that the query has failed.
-                this.props.store.dispatch(
-                    // true for 'failed', empty array to prevent looping side-effects.
-                    mapActions.resultsForQuery(queryId, queryLayer, true, [])
-                );
-            },
-            complete: () => {
-                this.checkQueryForCompleteness(queryId, queryLayer);
-            }
-        });
-
-    }
-
-    /** Run a query in memory.
-     *
-     */
-    vectorLayerQuery(queryId, query, queryLayer) {
-        // get the map source
-        const ms_name = util.getMapSourceName(queryLayer);
-
-        const map_source = this.props.mapSources[ms_name];
-
-        // if the openlayers layer is not on, this fakes
-        //  one for use in the query.
-        let ol_layer = this.olLayers[ms_name];
-        if(!ol_layer) {
-            ol_layer = this.createLayer(map_source);
-        }
-
-        // get the src
-        const src = ol_layer.getSource();
-
-        const format = new GeoJSONFormat();
-
-        const result_features = [];
-
-        const selection = query.selection ? query.selection[0] : null;
-        if(selection && selection.geometry && selection.geometry.type === 'Point') {
-            const coords = selection.geometry.coordinates;
-            src.forEachFeatureAtCoordinateDirect(coords, (feature) => {
-                const jsonFeature = format.writeFeatureObject(feature);
-                // the temp drawing feature has features set as null
-                if (jsonFeature.properties !== null) {
-                    result_features.push(jsonFeature);
-                }
-            });
-        }
-
-        this.props.store.dispatch(
-            mapActions.resultsForQuery(queryId, queryLayer, false, result_features)
-        );
-
-        this.checkQueryForCompleteness(queryId, queryLayer);
-    }
-
-
-    /** Execute a query
-     *
-     *  @param query
-     *
-     */
-    runQuery(queries, queryId) {
-        const query = queries[queryId];
-
-        if (!query.layers || query.layers.length === 0) {
-            // a ha! no layers in the query. consider it done.
-            this.props.finishQuery(queryId);
-        }
-
-        for(const query_layer of query.layers) {
-            // get the map source
-            const ms_name = util.getMapSourceName(query_layer);
-            const map_source = this.props.mapSources[ms_name];
-
-            // Run the appropriate query function
-            //  based on the map-source type
-            switch(map_source.type) {
-                case 'wms':
-                    this.wmsGetFeatureInfoQuery(queryId, query.selection, query_layer);
-                    break;
-                case 'wfs':
-                    this.wfsGetFeatureQuery(queryId, query, query_layer);
-                    break;
-                case 'ags-vector':
-                    this.agsFeatureQuery(queryId, query, query_layer);
-                    break;
-                case 'geojson':
-                case 'vector':
-                    this.vectorLayerQuery(queryId, query, query_layer);
-                    break;
-                default:
-                    // pass.
-            }
-        }
-    }
-
-    /** iterates through the queries and executes
-     *  any query with a 'progress=new' state.
-     *
-     *  @param Queries Array of query ids.
-     */
-    checkQueries(queries) {
-        for(const query_id in queries) {
-            const query = queries[query_id];
-            if(query && query.progress === 'new') {
-                // issue a 'started' modification so the query is
-                //  not run twice.
-                this.props.store.dispatch(mapActions.startQuery(query_id));
-                // run the query.
-                this.runQuery(queries, query_id);
-            }
-        }
-
-        if(queries.order.length > 0) {
-            const query_id = queries.order[0];
-            const query = queries[query_id];
-            if(query.progress === 'finished') {
-                // check the filters
-                const filter_json = JSON.stringify(query.filter);
-                const filter_md5 = md5(filter_json);
-
-                if(this.currentQueryId !== query_id
-                   || this.currentQueryFilter !== filter_md5) {
-
-                    this.renderQueryLayer(query);
-                    this.currentQueryId = query_id;
-                    this.currentQueryFilter = filter_md5;
-                }
-            }
-        } else {
-            // once there are no more queries,
-            //  clear the results from the map.
-            const results = this.props.mapSources.results;
-            if(results && results.features && results.features.length > 0) {
-                this.props.store.dispatch(mapSourceActions.clearFeatures('results', 'results'));
-            }
-        }
-    }
-
     /** Remove an interval to prevent a layer from being repeatedly
      *  refreshed.
      *
@@ -793,26 +271,15 @@ class Map extends React.Component {
     /* Render the query as a layer.
      *
      */
-    renderQueryLayer(query) {
-        if(this.props.mapSources.results) {
-            let features = [];
-            for (const layer_path in query.results) {
-                // ensure the layer_path does not have a failure.
-                if (query.results[layer_path].failed !== true) {
-                    const layer = mapSourceActions.getLayerFromPath(this.props.mapSources, layer_path);
-                    let highlight = true;
-                    if (layer && layer.templates[query.service]) {
-                        highlight = layer.templates[query.service].highlight !== false;
-                    }
-                    if (highlight) {
-                        // get the features, after applying the query filter
-                        features = features.concat(util.matchFeatures(query.results[layer_path], query.filter));
-                    }
-                }
-            }
-            // render the features from all the layers
-            this.props.setFeatures('results', features);
-        } else {
+    renderQueryLayer() {
+        if (this.props.mapSources.results) {
+            const src = this.olLayers.results.getSource();
+            src.clear(true);
+            src.addFeatures(GEOJSON_FORMAT.readFeatures({
+                type: 'FeatureCollection',
+                features: this.props.highlightResults,
+            }));
+        } else if (this.props.highlightResults && this.props.highlightResults.length > 0) {
             console.error('No "results" layer has been defined, cannot do smart query rendering.');
         }
     }
@@ -863,6 +330,8 @@ class Map extends React.Component {
             }
 
         }
+
+        this.renderQueryLayer();
     }
 
     /** Add features to the selection layer.
@@ -990,14 +459,12 @@ class Map extends React.Component {
         // and when the cursor moves, dispatch an action
         //  there as well.
         this.map.on('pointermove', (event) => {
-            const action = mapActions.cursor(event.coordinate);
-            this.props.store.dispatch(action);
-
+            this.props.store.dispatch(setCursor(event.coordinate));
             if(this.sketchFeature) {
                 // convert the sketch feature's geometry to JSON and kick it out
                 // to the store.
                 const json_geom = util.geomToJson(this.sketchFeature.getGeometry());
-                this.props.store.dispatch(mapActions.updateSketchGeometry(json_geom));
+                this.props.store.dispatch(updateSketchGeometry(json_geom));
             }
         });
 
@@ -1063,10 +530,12 @@ class Map extends React.Component {
                 });
             } else if (type === 'Modify' || type === 'Edit' || type === 'Remove') {
                 let layer = null;
-                try {
-                    layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
-                } catch (err) {
-                    // swallow the error if the layer can't be found.
+                if (path !== null) {
+                    try {
+                        layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
+                    } catch (err) {
+                        // swallow the error if the layer can't be found.
+                    }
                 }
 
                 const modifyNext = editFeatures => {
@@ -1094,8 +563,8 @@ class Map extends React.Component {
                     }
                 };
 
-                if (!map_source || ['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
-                    const layers = !map_source
+                if (is_selection || ['wfs', 'vector', 'geojson'].indexOf(map_source.type) >= 0) {
+                    const layers = is_selection
                         ? [this.selectionLayer]
                         : [this.olLayers[map_source_name]];
 
@@ -1199,13 +668,13 @@ class Map extends React.Component {
 
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.store.dispatch(updateSketchGeometry(null));
                     });
                 } else {
                     this.drawTool.on('drawend', (evt) => {
                         // drawing is finished, no longer sketching.
                         this.sketchFeature = null;
-                        this.props.store.dispatch(mapActions.updateSketchGeometry(null));
+                        this.props.store.dispatch(updateSketchGeometry(null));
 
                         let nextFeatures = [evt.feature];
                         if (type === 'MultiPoint') {
@@ -1270,7 +739,7 @@ class Map extends React.Component {
             bbox = proj.transformExtent(bbox, proj.get(bbox_code), map_proj);
         }
         // move the map to the new extent.
-        this.map.getView().fit(bbox, {size: this.map.getSize()});
+        this.map.getView().fit(bbox, {size: this.map.getSize(), padding: [15, 15, 15, 15]});
     }
 
     /** Intercept extent changes during a part of the render
@@ -1320,10 +789,6 @@ class Map extends React.Component {
             }
         }
 
-        // see if any queries need their results populated.
-        this.checkQueries(this.props.queries);
-
-
         // ensure the map is defined and ready.
         if(this.map) {
             // refresh all the map sources, as approriate.
@@ -1344,6 +809,7 @@ class Map extends React.Component {
 
                 // clear out the previous features
                 //  if changing the draw tool type.
+                /*
                 const drawTypes = ['Polygon', 'LineString', 'Box', 'Point', 'MultiPoint'];
                 if (drawTypes.indexOf(this.props.mapView.interactionType) >= 0) {
                     const typeDict = {
@@ -1361,6 +827,7 @@ class Map extends React.Component {
                     this.props.setSelectionFeatures(keepers);
                     this.props.setFeatures('selection', keepers);
                 }
+                */
             }
 
             // note the size of the map
@@ -1401,8 +868,8 @@ class Map extends React.Component {
                     this.mapDiv = self;
                 }}
             >
-                <AttributionDisplay store={this.props.store} />
                 <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
+                <AttributionDisplay store={this.props.store} />
 
                 <EditorModal store={this.props.store} />
                 <RemoveModal store={this.props.store} />
@@ -1449,13 +916,12 @@ function mapState(state) {
     return {
         mapSources: state.mapSources,
         mapView: state.map,
-        queries: state.query,
-        serviceName: state.query.service,
         config: state.config.map || {},
         selectionStyle: state.config.selectionStyle || {},
         // resolve this to meters
         selectionBuffer: util.convertLength(state.map.selectionBuffer, state.map.selectionBufferUnits, 'm'),
         selectionFeatures: state.map.selectionFeatures,
+        highlightResults: getHighlightResults(state),
     }
 }
 
@@ -1463,9 +929,6 @@ function mapDispatch(dispatch) {
     return {
         changeTool: (toolName, opt) => {
             dispatch(mapActions.changeTool(toolName, opt));
-        },
-        finishQuery: (queryId) => {
-            dispatch(mapActions.finishQuery(queryId));
         },
         onEditProperties: (feature, isNew = false) => {
             dispatch(setEditFeature(feature, isNew));
@@ -1480,12 +943,6 @@ function mapDispatch(dispatch) {
             dispatch(mapSourceActions.clearFeatures(mapSourceName));
             dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy));
         },
-        zoomToResults: (query) => {
-            const extent = util.getExtentForQuery(query.results);
-            if (extent) {
-                dispatch(mapActions.zoomToExtent(extent));
-            }
-        },
         setEditPath: path => dispatch(mapActions.setEditPath(path)),
         setEditTools: tools => dispatch(mapActions.setEditTools(tools)),
         saveFeature: (path, feature) => {
@@ -1495,7 +952,7 @@ function mapDispatch(dispatch) {
         removeFeature: (path, feature) => {
             dispatch(removeFeature(path, feature));
         },
-        onMapResize: size => dispatch(mapActions.resize(size)),
+        onMapResize: size => dispatch(resizeMap(size)),
     };
 }
 

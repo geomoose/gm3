@@ -27,203 +27,129 @@
  */
 
 import uuid from 'uuid';
-import { MAPSOURCE } from '../actionTypes';
+import { createReducer } from '@reduxjs/toolkit';
 import { changeFeatures, filterFeatures } from '../util';
 
-/** Use this to toggle boolean values on a layer.
- *
- *  @param state The current state.
- *  @param action The action definition from the user.
- *  @param attr   An attribute that should be found in both
- *                   the action and the layer.
- *
- * @returns a new state.
- */
-function setLayerAttribute(state, action, attr) {
-    // make a copy of the layers list
-    const layers = [];
-    if(!state[action.mapSourceName]) {
-        // no state changes if we can't find the mapsource.
-        return state;
-    }
+import {
+    add,
+    remove,
+    addLayer,
+    setLayerVisibilityInternal,
+    favoriteLayer,
+    setLayerTemplate,
+    setOpacity,
+    setMapSourceZIndex,
+    reloadSource,
+    addFeatures,
+    clearFeatures,
+    removeFeatureInternal,
+    removeFeatures,
+    changeFeatures as changeFeaturesAction,
+    modifyFeatureGeometry,
+} from '../actions/mapSource';
 
-    for(let i = 0, ii = state[action.mapSourceName].layers.length; i < ii; i++) {
-        // copy each layer and update the matching one.
-        const layer = Object.assign({}, state[action.mapSourceName].layers[i]);
-        if(layer.name === action.layerName) {
-            if(action.type === MAPSOURCE.SET_TEMPLATE) {
-                layer.templates[action.name] = action.template;
-            } else {
-                layer[attr] = action[attr];
-            }
+const ID_PROP = '_uuid';
+
+const modifyLayer = (layers, layerName, changeFn) => {
+    let found = false;
+    for (let i = 0, ii = layers.length; !found && i < ii; i++) {
+        if (layers[i].name === layerName) {
+            layers[i] = changeFn(layers[i]);
+            found = true;
         }
-        layers.push(layer);
     }
-
-    const ms = Object.assign({}, state[action.mapSourceName], {
-        layers
-    });
-
-    const mix = {};
-    mix[action.mapSourceName] = ms;
-
-    return Object.assign({}, state, mix);
+    return layers;
 }
 
-/** Change the features on a map-source.
- *
- *  This handles removing and adding features to a map-source. There is
- *  no bespoke 'update' process at this point.  New features are tagged
- *  with a "_uuid" property in order to identify them.
- *
- *  All features passed in should be *GeoJson* feature not OpenLayers
- *  features.  The map handles that.
- */
-function changeMapSourceFeatures(state, action) {
-    const map_source = state[action.mapSourceName];
-
-    let features = [];
-    let version = 1;
-
-    if(map_source.features) {
-        features = map_source.features.slice();
-        version = map_source.featuresVersion;
-    }
-
-    const id_prop = '_uuid';
-
-    switch(action.type) {
-        case MAPSOURCE.ADD_FEATURES:
-            // add an ID to the features
-            for(let x = 0, xx = action.features.length; !action.copy && x < xx; x++) {
-                const id_mixin = {};
-                id_mixin[id_prop] = uuid();
-                action.features[x].properties = Object.assign({},
-                    action.features[x].properties,
-                    id_mixin
-                );
-            }
-            features = features.concat(action.features);
-            version += 1;
-            break;
-        case MAPSOURCE.CLEAR_FEATURES:
-            features = [];
-            version += 1;
-            break;
-        // delete a specific feature
-        case MAPSOURCE.REMOVE_FEATURE:
-            features = [];
-            for(const f of map_source.features) {
-                if(f.properties[id_prop] !== action.id) {
-                    features.push(f);
-                }
-            }
-            version += 1;
-            break;
-        case MAPSOURCE.REMOVE_FEATURES:
-            features = filterFeatures(features, action.filter);
-            version += 1;
-            break;
-        case MAPSOURCE.CHANGE_FEATURES:
-            features = changeFeatures(map_source.features, action.filter, action.properties);
-            version += 1;
-            break;
-        case MAPSOURCE.MODIFY_GEOMETRY:
-            features = changeFeatures(map_source.features, {'_uuid': action.id}, null, action.geometry);
-            version += 1;
-            break;
-        default:
-            // do nothing.
-    }
-
-    const update_obj = {};
-    update_obj[action.mapSourceName] = Object.assign(map_source, {
-        features: features,
-        featuresVersion: version
-    });
-
-    return update_obj;
-}
-
-export const handleReload = (state, action) => {
-    const mixin = {};
-    const mapSource = state[action.mapSourceName];
-    mixin[action.mapSourceName] = Object.assign({}, mapSource, {
-        featuresVersion: mapSource.featuresVersion ? mapSource.featuresVersion + 1 : 1,
-        params: Object.assign({}, mapSource.params, {
+const reducer = createReducer({}, {
+    [add]: (state, {payload}) => {
+        state[payload.name] = {
+            features: [],
+            featuresVersion: 0,
+            ...payload,
+        };
+    },
+    [remove]: (state, {payload}) => {
+        delete state[payload.mapSourceName];
+    },
+    [addLayer]: (state, {payload}) => {
+        state[payload.mapSourceName].layers.push(payload.layer);
+    },
+    [setLayerVisibilityInternal]: (state, {payload: {mapSourceName, layerName, on}}) => {
+        state[mapSourceName].layers = modifyLayer(state[mapSourceName].layers, layerName, layer => {
+            layer.on = on;
+            return layer;
+        });
+    },
+    [favoriteLayer]: (state, {payload: {mapSourceName, layerName, favorite}}) => {
+        state[mapSourceName].layers = modifyLayer(state[mapSourceName].layers, layerName, layer => {
+            layer.favorite = favorite;
+            return layer;
+        });
+    },
+    [setLayerTemplate]: (state, {payload: {mapSourceName, layerName, name, template}}) => {
+        state[mapSourceName].layers = modifyLayer(state[mapSourceName].layers, layerName, layer => {
+            layer.templates = {
+                ...layer.templates,
+                [name]: template,
+            };
+            return layer
+        });
+    },
+    [setMapSourceZIndex]: (state, {payload: {mapSourceName, zIndex}}) => {
+        state[mapSourceName].zIndex = zIndex;
+    },
+    [setOpacity]: (state, {payload: {mapSourceName, opacity}}) => {
+        state[mapSourceName].opacity = opacity;
+    },
+    [reloadSource]: (state, {payload: mapSourceName}) => {
+        state[mapSourceName].featuresVersion += 1;
+        state[mapSourceName].params = {
+            ...state[mapSourceName].params,
             _ck: '.' + (new Date()).getTime(),
-        }),
-    });
-    return Object.assign({}, state, mixin);
-}
+        };
+    },
+    [addFeatures]: (state, {payload: {mapSourceName, features, copy}}) => {
+        if (!state[mapSourceName].features) {
+            state[mapSourceName].features = [];
+            state[mapSourceName].featuresVersion = 0;
+        }
 
-export default function mapSource(state = [], action) {
-    const new_elem = {};
+        // copy assumes a raw dump where the ID does not matter.
+        for(let i = 0, ii = features.length; !copy && i < ii; i++) {
+            features[i] = {
+                ...features[i],
+                properties: {
+                    ...features[i].properties,
+                    [ID_PROP]: uuid(),
+                },
+            };
+        }
+        state[mapSourceName].features = state[mapSourceName].features.concat(features);
+        state[mapSourceName].featuresVersion += 1;
+    },
+    [clearFeatures]: (state, {payload: mapSourceName}) => {
+        state[mapSourceName].features = [];
+        state[mapSourceName].featuresVersion += 1;
+    },
+    [removeFeatureInternal]: (state, {payload: {mapSourceName, id}}) => {
+        state[mapSourceName].features = state[mapSourceName].features.filter(feature => {
+            return feature.properties[ID_PROP] !== id;
+        });
+        state[mapSourceName].featuresVersion += 1;
+    },
+    [removeFeatures]: (state, {payload: {mapSourceName, filter}}) => {
+        state[mapSourceName].features = filterFeatures(state[mapSourceName].features, filter);
+        state[mapSourceName].featuresVersion += 1;
+    },
+    [changeFeaturesAction]: (state, {payload: {mapSourceName, filter, properties}}) => {
+        state[mapSourceName].features = changeFeatures(state[mapSourceName].features, filter, properties);
+        state[mapSourceName].featuresVersion += 1;
+    },
+    [modifyFeatureGeometry]: (state, {payload: {mapSourceName, id, geometry}}) => {
+        state[mapSourceName].features = changeFeatures(state[mapSourceName].features, {[ID_PROP]: id}, null, geometry);
+        state[mapSourceName].featuresVersion += 1;
+    },
+});
 
-    switch(action.type) {
-        case MAPSOURCE.SET_ATTRIBUTE:
-            return setLayerAttribute(state, action);
-        case MAPSOURCE.LAYER_VIS:
-            return setLayerAttribute(state, action, 'on');
-        case MAPSOURCE.LAYER_FAVORITE:
-            return setLayerAttribute(state, action, 'favorite');
-        case MAPSOURCE.SET_TEMPLATE:
-            return setLayerAttribute(state, action);
-        case MAPSOURCE.ADD:
-            new_elem[action.mapSource.name] = Object.assign({
-                layers: [],
-                params: {},
-                printable: true,
-                queryable: false
-            }, action.mapSource);
-            return Object.assign({}, state, new_elem);
-        case MAPSOURCE.SET_Z:
-            const new_z_ms = {};
-            new_z_ms[action.mapSourceName] = Object.assign({},
-                state[action.mapSourceName],
-                {zIndex: action.zIndex}
-            );
-            return Object.assign({}, state, new_z_ms);
-        case MAPSOURCE.SET_OPACITY:
-            const new_opacity_ms = {};
-            new_opacity_ms[action.mapSourceName] = Object.assign({},
-                state[action.mapSourceName],
-                {opacity: action.opacity},
-            );
-            return Object.assign({}, state, new_opacity_ms);
-        case MAPSOURCE.ADD_LAYER:
-            if(state[action.mapSourceName]) {
-                const ms = {};
-                ms[action.mapSourceName] = Object.assign({}, state[action.mapSourceName], {
-                    layers: [
-                        ...state[action.mapSourceName].layers,
-                        action.layer
-                    ]
-                });
-
-                return Object.assign({}, state, ms);
-            }
-
-            return state;
-        case MAPSOURCE.REFRESH:
-            if(state[action.mapSourceName]) {
-                const ms = {};
-                ms[action.mapSourceName] = Object.assign({}, state[action.mapSourceName], {
-                    refresh: action.refresh
-                });
-                return Object.assign({}, state, ms);
-            }
-            return state;
-        case MAPSOURCE.ADD_FEATURES:
-        case MAPSOURCE.CLEAR_FEATURES:
-        case MAPSOURCE.REMOVE_FEATURE:
-        case MAPSOURCE.REMOVE_FEATURES:
-        case MAPSOURCE.CHANGE_FEATURES:
-        case MAPSOURCE.MODIFY_GEOMETRY:
-            return Object.assign({}, state, changeMapSourceFeatures(state, action));
-        case MAPSOURCE.RELOAD:
-            return handleReload(state, action);
-        default:
-            return state;
-    }
-}
+export default reducer;

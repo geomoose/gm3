@@ -28,8 +28,6 @@
  *
  */
 
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
 import i18next from 'i18next';
 
 import * as Proj from 'ol/proj';
@@ -38,27 +36,17 @@ import * as ExperimentalApi from './experimental';
 import * as mapSourceActions from './actions/mapSource';
 import * as mapActions from './actions/map';
 import * as uiActions from './actions/ui';
-import * as serviceActions from './actions/service';
+
+import {startService, createQuery, runQuery, setHotFilter, removeQueryResults} from './actions/query';
 
 import { parseCatalog } from './actions/catalog';
 import { parseToolbar } from './actions/toolbar';
 import { setConfig } from './actions/config';
 
-import catalogReducer from './reducers/catalog';
-import msReducer from './reducers/mapSource';
-import mapReducer from './reducers/map';
-import toolbarReducer from './reducers/toolbar';
-import queryReducer from './reducers/query';
-import uiReducer from './reducers/ui';
-import cursorReducer from './reducers/cursor';
-import printReducer from './reducers/print';
-import configReducer from './reducers/config';
-import editorReducer from './reducers/editor';
-
 import Modal from './components/modal';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
@@ -67,12 +55,14 @@ import { getLayerFromPath, getVisibleLayers, getQueryableLayers, getActiveMapSou
 import Mark from 'markup-js';
 
 import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from './util';
+import { normalizeFieldValues, normalizeSelection } from './query/util';
 
 import i18nConfigure from './i18n';
 import { EDIT_LAYER_NAME, EDIT_STYLE, HIGHLIGHT_STYLE, HIGHLIGHT_HOT_STYLE, SELECTION_STYLE } from './defaults';
+import { createStore } from './store';
 
-function hydrateConfig(userConfig) {
-    const config = Object.assign({}, userConfig);
+function hydrateConfig(userConfig = {}) {
+    const config = userConfig;
     // the depth of resultsStyle makes this slightly trickier to
     //  set the defaults, so it's handled individually.
     if (userConfig.resultsStyle) {
@@ -118,20 +108,7 @@ class Application {
 
         register(proj4);
 
-        // TODO: Combine Reducers here
-        this.store = createStore(combineReducers({
-            'mapSources': msReducer,
-            'catalog': catalogReducer,
-            'map': mapReducer,
-            'toolbar': toolbarReducer,
-            'query': queryReducer,
-            'ui': uiReducer,
-            'cursor': cursorReducer,
-            'print': printReducer,
-            'config': configReducer,
-            'editor': editorReducer,
-        }), applyMiddleware(thunk));
-
+        this.store = createStore();
         this.store.dispatch(setConfig(config));
 
         this.state = {};
@@ -356,19 +333,21 @@ class Application {
         props.services = this.services;
 
         const e = React.createElement(component, props);
-        return ReactDOM.render(e, document.getElementById(domId));
+        const root = createRoot(document.getElementById(domId));
+        root.render(e);
     }
 
     addPlugin(component, domId, inProps = {}) {
         const props = Object.assign({
             store: this.store,
             React: React,
-            ReactDOM: ReactDOM,
+            ReactDOM: {createRoot},
         }, inProps);
         props.services = this.services;
 
         const e = React.createElement(component, props);
-        return ReactDOM.render(e, document.getElementById(domId));
+        const root = createRoot(document.getElementById(domId));
+        root.render(e);
     }
 
 
@@ -382,8 +361,7 @@ class Application {
      *
      */
     dispatchQuery(service, selection, fields, layers, templatesIn = []) {
-        const single_query = this.config.multipleQuery ? false : true;
-        const template_promises = [];
+        const templatePromises = [];
 
         // convert the "templatesIn" to an array.
         let templates = templatesIn;
@@ -395,7 +373,7 @@ class Application {
         for(const layer of layers) {
             for(const template of templates) {
                 // gang the promises together.
-                template_promises.push(this.getTemplate(layer, template));
+                templatePromises.push(this.getTemplate(layer, template));
             }
         }
 
@@ -404,8 +382,9 @@ class Application {
 
         // require all the promises complete,
         //  then dispatch the store.
-        Promise.all(template_promises).then(() => {
-            this.store.dispatch(mapActions.createQuery(service, selection, fields, layers, single_query, runOptions));
+        Promise.all(templatePromises).then(() => {
+            this.store.dispatch(createQuery(service, selection, fields, layers, runOptions));
+            this.store.dispatch(runQuery());
         });
     }
 
@@ -650,7 +629,10 @@ class Application {
         // convert the lon lat coordinates to map coordinates
         const xy = Proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857');
         // trigger a move.
-        this.store.dispatch(mapActions.move(xy, zoom));
+        this.store.dispatch(mapActions.setView({
+            center: xy,
+            zoom,
+        }));
     }
 
     /** Generic bridge to the application's store's dispatch function.
@@ -679,11 +661,12 @@ class Application {
     removeQueryResults(queryId, filter, options = {}) {
         const execRemove = choice => {
             if (choice === 'confirm') {
-                this.store.dispatch(mapActions.queryProgress(queryId));
-                this.store.dispatch(mapActions.removeQueryResults(queryId, filter));
-                // also remove the features from the results layer.
-                this.removeFeatures('results/results', filter);
-                this.store.dispatch(mapActions.finishQuery(queryId));
+                // With the new query structure,
+                //  this might be more dangerous than before but the 3.x
+                //  behaviour is current being preserved.
+                // TODO: Should this just apply as a filter in 4.x instead
+                //       of removing the result from teh queryset?
+                this.dispatch(removeQueryResults(filter));
             }
         };
 
@@ -755,11 +738,10 @@ class Application {
      *
      */
     startService(serviceName, options) {
-        this.store.dispatch(serviceActions.startService(serviceName));
-
+        const serviceDef = this.services[serviceName];
         const nextTool = (options && options.changeTool)
             ? options.changeTool
-            : this.services[serviceName].tools.default;
+            : serviceDef.tools.default;
 
         this.store.dispatch(mapActions.changeTool(nextTool));
 
@@ -773,6 +755,18 @@ class Application {
             });
             this.store.dispatch(mapSourceActions.clearFeatures('selection'));
             this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
+        }
+
+        this.store.dispatch(startService(serviceName, options.defaultValues));
+
+        // when autoGo is set to true, the service will
+        //   start the query.
+        if (options.autoGo) {
+            const state = this.store.getState();
+            const selectionFeatures = state.mapSources.selection ? state.mapSources.selection.features : [];
+            const selection = normalizeSelection(selectionFeatures);
+            const fields = normalizeFieldValues(serviceDef, options.defaultValues);
+            serviceDef.query(selection, fields);
         }
 
         this.store.dispatch(uiActions.setUiHint('service-start'));
@@ -821,9 +815,9 @@ class Application {
             open: true,
         };
 
-        // create the element
         const e = React.createElement(Modal, props);
-        ReactDOM.render(e, modal_div);
+        const root = createRoot(modal_div);
+        root.render(e);
     }
 
     showModal(modalKey) {
@@ -856,14 +850,13 @@ class Application {
     /* Short hand for toggling the highlight of features.
      */
     highlightFeatures(filter, on) {
-        const props = {displayClass: on ? 'hot' : ''};
-        this.changeResultFeatures(filter, props);
+        this.dispatch(setHotFilter(filter));
     }
 
     /* Clear highlight features
      */
     clearHighlight() {
-        this.highlightFeatures({displayClass: 'hot'}, false);
+        this.dispatch(setHotFilter(false));
     }
 
     /**
@@ -880,6 +873,31 @@ class Application {
         const [minx, miny] = this.lonLatToMeters(west, south);
         const [maxx, maxy] = this.lonLatToMeters(east, north);
         return [minx, miny, maxx, maxy];
+    }
+
+    /**
+     * Checks for a start-up service from the query-parameters
+     */
+    startServiceFromQuery() {
+        const query = parseQuery().query;
+        if (query.service) {
+            const serviceDef = this.services[query.service];
+            if (serviceDef) {
+                const urlValues = {};
+                for (const key in query) {
+                    if (key.substring(0, 6) === 'field:') {
+                        const fieldName = key.substring(6);
+                        urlValues[fieldName] = query[key];
+                    }
+                }
+                this.startService(query.service, {
+                    autoGo: true,
+                    defaultValues: urlValues,
+                });
+            } else {
+                console.error('Failed to load service specified in ?service=');
+            }
+        }
     }
 };
 

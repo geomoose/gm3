@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,33 @@
  * SOFTWARE.
  */
 
-/** Tracks the state of the map.
+/** Tracks extra map state that updates frequently but is of limited use.
  *
  */
+import { createReducer } from '@reduxjs/toolkit';
+import {
+    setCursor,
+    updateSketchGeometry,
+    resizeMap,
+} from '../actions/cursor';
 
-import { MAP } from '../actionTypes';
-
-const default_view = {
+const defaultState = {
     coords: [0, 0],
     sketchGeometry: null,
     // size can be null by default, this is meant to be a hint only!
     size: null,
 };
 
-export default function cursorReducer(state = default_view, action) {
-    switch(action.type) {
-        case MAP.CURSOR:
-            return Object.assign({}, state, {coords: action.coords});
-        case MAP.SKETCH_GEOMETRY:
-            return Object.assign({}, state, {sketchGeometry: action.geometry});
-        case MAP.RESIZE:
-            return Object.assign({}, state, {
-                size: action.size,
-            });
-        default:
-            return state;
-    }
-};
+const reducer = createReducer(defaultState, {
+    [setCursor]: (state, {payload: coords}) => {
+        state.coords = coords;
+    },
+    [updateSketchGeometry]: (state, {payload: geometry}) => {
+        state.sketchGeometry = geometry;
+    },
+    [resizeMap]: (state, {payload: size}) => {
+        state.size = size;
+    },
+});
+
+export default reducer;

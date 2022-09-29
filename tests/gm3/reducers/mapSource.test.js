@@ -93,7 +93,7 @@ const createTestStore = () => {
     }), applyMiddleware(thunk));
 }
 
-describe('test the `map` reducer', () => {
+describe('test the `mapSources` reducer', () => {
     let store = null;
 
     // before each test refresh the store.

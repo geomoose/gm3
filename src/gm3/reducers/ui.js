@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,16 @@
  *
  */
 
-import uuid from 'uuid';
-import { UI } from '../actionTypes';
+import {createReducer} from '@reduxjs/toolkit';
+
+import {
+    setUiHint,
+    clearUiHint,
+    runAction,
+    clearAction,
+    showModal,
+    hideModal,
+} from '../actions/ui';
 
 const defaultState = {
     stateId: 0,
@@ -36,30 +44,29 @@ const defaultState = {
     modal: '',
 };
 
-export default function uiReducer(state = defaultState, action) {
-    switch(action.type) {
-        case UI.HINT:
-            return Object.assign({}, state, {
-                stateId: uuid(),
-                hint: action.hint
-            });
-        case UI.CLEAR_HINT:
-            return Object.assign({}, state, {
-                stateId: uuid(),
-                hint: null
-            });
-        case UI.RUN_ACTION:
-            return Object.assign({}, state, {stateId: uuid(), action: action.action});
-        case UI.CLEAR_ACTION:
-            return Object.assign({}, state, {stateId: uuid(), action: null});
-        case UI.SHOW_MODAL:
-            return Object.assign({},
-                state,
-                {
-                    modal: action.payload,
-                },
-            );
-        default:
-            return state;
-    }
-}
+const reducer = createReducer(defaultState, {
+    [setUiHint]: (state, {payload: hint}) => {
+        state.hint = hint;
+        state.stateId++;
+    },
+    [clearUiHint]: state => {
+        state.hint = null;
+        state.stateId++;
+    },
+    [runAction]: (state, {payload: action}) => {
+        state.action = action;
+        state.stateId++;
+    },
+    [clearAction]: state => {
+        state.action = null;
+        state.stateId++;
+    },
+    [showModal]: (state, {payload}) => {
+        state.modal = payload;
+    },
+    [hideModal]: state => {
+        state.modal = '';
+    },
+});
+
+export default reducer;

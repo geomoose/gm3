@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,20 @@
  *
  */
 
-import { CONFIG, MAP } from '../actionTypes';
+import { createReducer } from '@reduxjs/toolkit';
 
-const default_view = {
+import {
+    setView,
+    zoomToExtent,
+    changeTool,
+    addSelectionFeature,
+    clearSelectionFeatures,
+    setSelectionBuffer,
+    setEditPath,
+    setEditTools,
+} from '../actions/map';
+
+const defaultState = {
     center: [0, 0],
     zoom: 1,
     resolution: null,
@@ -40,8 +51,10 @@ const default_view = {
     selectionBufferUnits: 'ft',
     editPath: '',
     editTools: [],
+    projection: 'EPSG:3857',
 };
 
+/*
 function setConfigOptions(state, config) {
     const mixin = {};
     if (config.map && config.map.defaultUnits) {
@@ -49,54 +62,55 @@ function setConfigOptions(state, config) {
     }
     return Object.assign({}, state, mixin);
 }
+*/
 
-export default function mapReducer(state = default_view, action) {
+const reducer = createReducer(defaultState, {
+    [setView]: (state, {payload}) => {
+        state.extent = null;
+        if (Boolean(payload.center)) {
+            state.center = payload.center;
+        }
+        if (Boolean(payload.zoom)) {
+            state.zoom = payload.zoom;
+        }
+        if (Boolean(payload.resolution)) {
+            state.resolution = payload.resolution;
+        }
+    },
+    [zoomToExtent]: (state, {payload}) => {
+        state.extent = {
+            bbox: payload.extent,
+            projection: payload.projection,
+        };
+    },
+    [changeTool]: (state, {payload}) => {
+        state.activeSource = payload.src;
+        state.interactionType = payload.tool;
+    },
+    [addSelectionFeature]: (state, {payload: feature}) => {
+        state.selectionFeatures.push(feature);
+    },
+    [clearSelectionFeatures]: state => {
+        state.selectionFeatures = [];
+    },
+    [setSelectionBuffer]: (state, {payload}) => {
+        state.selectionBuffer = payload.distance;
+        state.selectionBufferUnits = payload.units || state.selectionBufferUnits;
+    },
+    [setEditPath]: (state, {payload: editPath}) => {
+        state.editPath = editPath;
+    },
+    [setEditTools]: (state, {payload: tools}) => {
+        state.editTools = tools;
+    },
+});
+
+/*
+export default function mapReducer(state = defaultState, action) {
     switch(action.type) {
-        case MAP.MOVE:
-            // 'extent' should be null except for the case when it is being
-            //  set in order to zoom there.  After the 'zoom' action happens
-            //  it is reset to null.
-            const new_view = {
-                extent: null
-            };
-            for(const key of ['center', 'zoom', 'resolution']) {
-                if(typeof(action[key]) !== 'undefined') {
-                    new_view[key] = action[key];
-                }
-            }
-            return Object.assign({}, state, new_view);
-        case MAP.ZOOM_TO_EXTENT:
-            return Object.assign({}, state, {extent: {bbox: action.extent, projection: action.projection}});
-        case MAP.CHANGE_TOOL:
-            return Object.assign({}, state, {
-                activeSource: action.src,
-                interactionType: action.tool
-            })
-        case MAP.ADD_SELECTION_FEATURE:
-            return Object.assign({}, state, {
-                selectionFeatures: [action.feature].concat(state.selectionFeatures)
-            });
-        case MAP.CLEAR_SELECTION_FEATURES:
-            return Object.assign({}, state, {
-                selectionFeatures: []
-            });
-        case MAP.BUFFER_SELECTION_FEATURES:
-            return Object.assign({}, state, {
-                selectionBuffer: action.distance,
-                selectionBufferUnits: action.units || state.selectionBufferUnits,
-            });
-        case CONFIG.SET:
+        case 'CONFIG.SET':
             return setConfigOptions(state, action.payload);
-        case MAP.SET_EDIT_PATH:
-            return Object.assign({}, state, {
-                editPath: action.editPath,
-            });
-        case MAP.SET_EDIT_TOOLS:
-            return {
-                ...state,
-                editTools: action.tools,
-            };
-        default:
-            return state;
-    }
 };
+*/
+
+export default reducer;

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,9 @@
  */
 
 import React from 'react';
-
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { screen, render, fireEvent } from '@testing-library/react';
 
 import { FadeTool } from 'gm3/components/catalog/tools/fade';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('Fade tool test', () => {
     it('renders a fade tool and dispatches an action', () => {
@@ -50,9 +46,8 @@ describe('Fade tool test', () => {
             },
         };
 
-        const wrapper = mount(<FadeTool {...props} />);
-        wrapper.find('i.icon').simulate('click');
-
+        render(<FadeTool {...props} />);
+        fireEvent.click(screen.getByRole('button'));
         expect(clicked).toBe(true);
     });
 });

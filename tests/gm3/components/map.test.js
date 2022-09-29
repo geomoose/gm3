@@ -33,17 +33,15 @@ import editorReducer from 'gm3/reducers/editor';
 
 import { createStore, combineReducers } from 'redux';
 
-import Enzyme, { mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 
 import * as mapActions from 'gm3/actions/map';
 import * as msActions from 'gm3/actions/mapSource';
 
-Enzyme.configure({ adapter: new Adapter() });
-
 /* This is a bit of a hacky polyfill for requestAnimationFrame
  * which is needed by the openlayers map to drawer but is not
- * simulated by the jsdom/enzyme combination.
+ * simulated by the jsdom combination.
  * Original source:
  * - https://stackoverflow.com/questions/44111231/react-native-requestanimationframe-is-not-supported-in-node
  */
@@ -75,7 +73,7 @@ describe('map component tests', () => {
         });
 
         it('creates a map', () => {
-            mount(<div>
+            render(<div>
                 <Map store={store} />
             </div>);
         });
@@ -96,7 +94,7 @@ describe('map component tests', () => {
                     zoom: 12
                 }));
 
-                mount(
+                render(
                     <div style={{height: '500px', width: '500px'}}>
                         <Map mapId='map' store={store}/>
                     </div>
@@ -104,103 +102,108 @@ describe('map component tests', () => {
             });
 
             it('adds a wms layer', () => {
-                store.dispatch(msActions.add({
-                    type: 'wms',
-                    urls: [
-                        'http://test/wms?'
-                    ],
-                    name: 'test0',
-                    label: 'test0-label',
-                    opacity: 1,
-                    queryable: false,
-                    refresh: null,
-                    layers: [],
-                    params: {}
-                }));
+                act(() => {
+                    store.dispatch(msActions.add({
+                        type: 'wms',
+                        urls: [
+                            'http://test/wms?'
+                        ],
+                        name: 'test0',
+                        label: 'test0-label',
+                        opacity: 1,
+                        queryable: false,
+                        refresh: null,
+                        layers: [],
+                        params: {}
+                    }));
 
-                store.dispatch(msActions.addLayer('test0', {
-                    name: 'test1',
-                    on: true,
-                    label: 'test1-label'
-                }));
+                    store.dispatch(msActions.addLayer('test0', {
+                        name: 'test1',
+                        on: true,
+                        label: 'test1-label'
+                    }));
+                });
 
             });
 
             it('adds an XYZ layer', () => {
-                store.dispatch(msActions.add({
-                    name: 'osm',
-                    type: 'xyz',
-                    label: 'OSM',
-                    urls: [
-                        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    ],
-                    layers: [{
-                        name: 'osm_mapnik',
-                        on: true
-                    }]
-                }));
+                act(() => {
+                    store.dispatch(msActions.add({
+                        name: 'osm',
+                        type: 'xyz',
+                        label: 'OSM',
+                        urls: [
+                            'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        ],
+                        layers: [{
+                            name: 'osm_mapnik',
+                            on: true
+                        }]
+                    }));
 
-                // this tests "updating" the OSM layer's URLs.
-                store.dispatch(msActions.add({
-                    name: 'osm',
-                    type: 'xyz',
-                    label: 'OSM',
-                    urls: [
-                        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    ],
-                    layers: [{
-                        name: 'osm_mapnik',
-                        on: true
-                    }]
-                }));
+                    // this tests "updating" the OSM layer's URLs.
+                    store.dispatch(msActions.add({
+                        name: 'osm',
+                        type: 'xyz',
+                        label: 'OSM',
+                        urls: [
+                            'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        ],
+                        layers: [{
+                            name: 'osm_mapnik',
+                            on: true
+                        }]
+                    }));
+                });
             });
 
             it('adds an ags tile layer', () => {
-                store.dispatch(msActions.add({
-                    name: 'ags-test',
-                    type: 'ags',
-                    label: 'AGS',
-                    urls: [
-                        'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
-                    ],
-                    layers: [{
-                        name: 'NatGeo_World_map',
-                        on: true
-                    }]
-                }));
+                act(() => {
+                    store.dispatch(msActions.add({
+                        name: 'ags-test',
+                        type: 'ags',
+                        label: 'AGS',
+                        urls: [
+                            'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
+                        ],
+                        layers: [{
+                            name: 'NatGeo_World_map',
+                            on: true
+                        }]
+                    }));
 
-                store.dispatch(msActions.add({
-                    name: 'ags-test',
-                    type: 'ags',
-                    label: 'AGS',
-                    urls: [
-                        'https://demo.services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
-                    ],
-                    layers: [{
-                        name: 'NatGeo_World_map',
-                        on: true
-                    }]
-                }));
+                    store.dispatch(msActions.add({
+                        name: 'ags-test',
+                        type: 'ags',
+                        label: 'AGS',
+                        urls: [
+                            'https://demo.services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer'
+                        ],
+                        layers: [{
+                            name: 'NatGeo_World_map',
+                            on: true
+                        }]
+                    }));
+                });
             });
 
             it('adds a bing layer', () => {
-
-                store.dispatch(msActions.add({
-                    name: 'bing-test',
-                    type: 'bing',
-                    label: 'Bing',
-                    layers: [{
-                        name: 'roads',
-                        on: true
-                    }],
-                    params: {
-                        key: 'garbage-sample-key'
-                    }
-                }));
-
+                act(() => {
+                    store.dispatch(msActions.add({
+                        name: 'bing-test',
+                        type: 'bing',
+                        label: 'Bing',
+                        layers: [{
+                            name: 'roads',
+                            on: true
+                        }],
+                        params: {
+                            key: 'garbage-sample-key'
+                        }
+                    }));
+                });
             });
-
         });
     }
 });

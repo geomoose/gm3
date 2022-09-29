@@ -35,8 +35,10 @@ import { useTranslation } from 'react-i18next';
 const ToolbarDrawer = ({label, tools, services}) => {
     const {t} = useTranslation();
     return (
-        <div className='drawer tool'>
-            <span className='drawer icon'></span><span className='label'>{t(label)}</span>
+        <div className='drawer'>
+            <button className='drawer tool'>
+                <span className='drawer icon'></span><span className='label'>{t(label)}</span>
+            </button>
             <div className='drawer-contents'>
                 {
                     tools.map((tool, i) => {

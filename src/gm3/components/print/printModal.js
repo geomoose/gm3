@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -437,9 +437,11 @@ export class PrintModal extends Modal {
     }
 
     renderFooter() {
+        const disabled = !this.props.printData;
+
         const buttons = [
-            this.renderOption({value: 'dismiss', label: 'Cancel'}),
-            this.renderOption({value: 'print', label: 'Print'})
+            this.renderOption({value: 'dismiss', label: 'Cancel', disabled}),
+            this.renderOption({value: 'print', label: 'Print', disabled})
         ];
 
         return (

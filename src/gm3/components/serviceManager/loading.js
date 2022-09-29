@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2022 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,28 @@
  * SOFTWARE.
  */
 
-import { SERVICE } from '../actionTypes';
+import React, {useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
+import GeoMooseLogo from './logo';
 
-export function finishService() {
-    return {
-        type: SERVICE.FINISH
+const styleString = `
+    @keyframes jumparound {
+        0% { transform: translateY(0px); }
+        75% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
     }
-}
+`;
 
-export function startService(serviceName) {
-    return {
-        type: SERVICE.START,
-        service: serviceName
-    }
-}
 
-export function showServiceForm(show) {
-    return {
-        type: SERVICE.SHOW_FORM,
-        show,
-    };
+export const LoadingIndicator = () => {
+    const {t} = useTranslation()
+    return (
+        <React.Fragment>
+            <style type="text/css">{styleString}</style>
+            <div style={{marginTop: 20, textAlign: 'center'}}>
+                <GeoMooseLogo />
+                <div>{t('Loading...')}</div>
+            </div>
+        </React.Fragment>
+    );
 }

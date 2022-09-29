@@ -23,16 +23,20 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createStore, combineReducers } from 'redux';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
 
-import Application from 'gm3/application';
 import DrawTool from 'gm3/components/drawTool';
 
+import msReducer from 'gm3/reducers/mapSource';
+import mapReducer from 'gm3/reducers/map';
 
 it('renders a drawtool', () => {
-    const div = document.createElement('div');
+    const store = createStore(combineReducers({
+        'mapSources': msReducer,
+        'map': mapReducer,
+    }));
 
-    const app = new Application();
-
-    ReactDOM.render(<DrawTool store={ app.store } geomType="Point" />, div);
+    render(<Provider store={store}><DrawTool geomType="Point" /></Provider>);
 });
