@@ -7,45 +7,46 @@ Web-based Spatial Data Protocols (read-only)
 --------------------------------------------
 
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-| Data Source Protocol              | Protocol Type                  | GeoMoose mapsource type                  |  Display | Feature Info "identify"                         | Search (by attribute values)          | Select (by spatial feature)           |
+| Data Source Protocol              | Protocol Type                  | GeoMoose mapsource type                  |  Display | Identify (single click)                         | Select (by spatial feature)           | Search (by attribute values)          |
 +===================================+================================+==========================================+==========+=================================================+=======================================+=======================================+
-| **Image Tile Servers**            | XYZ (e.g OSM))                 | xyz                                      | Yes      | No                                              | No                                    | No                                    |
+| **Image Tile Servers**            | XYZ (e.g OSM)                  | xyz                                      | Yes      | *Not supported by Protocol*                                                                                                     |
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-|                                   | Bing                           | bing                                     | Yes      | No                                              | No                                    | No                                    |
+|                                   | Bing                           | bing                                     | Yes      | *Not supported by Protocol*                                                                                                     |
 +                                   +--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
 |                                   | Google                         | *no support* (Google licensing limitation)                                                                                                                                            |
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
 | **UMN MapServer**                 | "classic" CGI                  | *no support* (use MapServer's **OGC OWS** protocols listed below)                                                                                                                     |
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-| **OGC OWS**                       | WMS: v1.1.1                    | wms                                      | Yes      | Yes (no highlight [1]_ ), INFO_FORMAT=GML       | No, use query-as ->vector [2]_        | No, use query-as ->vector [2]_        |
+| **OGC OWS**                       | WMS: v1.1.1                    | wms                                      | Yes      | Yes (no highlight [1]_ ), INFO_FORMAT=GML       | No, use query-as [2]_                 | No, use query-as [2]_                 |
 +                                   +--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
 | (UMN MapServer, geoserver)        | WFS: v1.1.0                    | wfs                                      | Yes      | Yes, INFO_FORMAT=GML, GeoJSON                   | Yes                                   | Yes                                   |
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-| **Arc GIS Server** v10+           | MapServer */export?f=image*    | ags                                      | Yes      | Yes if *Supported Operation:Query* [3]_         |Yes if *Supported Operation:Query* [3]_|Yes if *Supported Operation:Query* [3]_|
+| **Arc GIS Server** v10+           | MapServer */export?f=image*    | ags                                      | Yes      | No [3]_                                         | No [3]_                               | No [3]_                               |
 +                                   +--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-|                                   | MapServer */tile/{z}/{y}/{x}*  | xyz                                      | Yes      | No                                              | No                                    | No                                    |
+|                                   | MapServer */tile/{z}/{y}/{x}*  | xyz                                      | Yes      | *Not supported by Protocol*                                                                                                     |
 +                                   +--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-|                                   | MapServer */query?f=json*      | ags-vector                               | Yes      | Yes                                             | Yes                                   | Yes                                   |
+|                                   | MapServer */query?f=json*      | ags-vector                               | Yes      | Yes if *Supported Operation:Query* [4]_         |Yes if *Supported Operation:Query* [4]_|Yes if *Supported Operation:Query* [4]_|
 +                                   +--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-|                                   | FeatureServer */query?f=json*  | ags-vector                               | Yes      | Yes                                             | Yes                                   | Yes                                   |
+|                                   | FeatureServer */query?f=json*  | ags-vector                               | Yes      | Yes if *Supported Operation:Query* [4]_         |Yes if *Supported Operation:Query* [4]_|Yes if *Supported Operation:Query* [4]_|
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
-| **Vector files**                  | GeoJSON                        | geojson                                  | Yes      | Yes                                             | Yes                                   | Yes                                   |
+| **Vector files**                  | GeoJSON                        | geojson                                  | Yes      | No [3]_                                         | No [3]_                               | No [3]_                               |
 +-----------------------------------+--------------------------------+------------------------------------------+----------+-------------------------------------------------+---------------------------------------+---------------------------------------+
 
-.. [1] Feature highlight is not supported for WMS layer unless the server allows a query format of GML.
-.. [2] Use two mapsources, one wms (for display), the other wfs for the query. Add a "query-as" attribute to the wms layer (:any:`query-as`).
-.. [3] The layer on the AGS server must be configured to have "Supported Operations: Query".
+.. [1] Feature highlight is not supported for WMS layer unless the server allows a query result format (INFO_FORMAT) of GML.
+.. [2] Use two mapsources, one wms (for display), the other wfs for the query. Add a "query-as" attribute to the wms layer.
+.. [3] GeoMoose does not currently support this query operations for this mapsource type.
+.. [4] The layer on the AGS server must be configured to have "Supported Operations: Query".
 
 Local File Load/Save
 --------------------
 
-+-----------------------+--------------+----------------+---------+--------------------------+--------+---------------+
-| Data Source Protocol  | File Format  | mapsource type | Display | Feature Info  "Identify" | Search | Select        |
-+=======================+==============+================+=========+==========================+========+===============+
-| Local file load/save  | GeoJSON      |  vector        | Yes     | Yes                      | No     | by Point only |
-+                       +--------------+----------------+---------+--------------------------+--------+---------------+
-|                       | KML          |  vector        | Yes     | Yes                      | No     | by Point only |
-+-----------------------+--------------+----------------+---------+--------------------------+--------+---------------+
++-----------------------+--------------+----------------+---------+-------------------------+---------------+--------+
+| Data Source Protocol  | File Format  | mapsource type | Display | Identify (single click) | Select        | Search |
++=======================+==============+================+=========+=========================+===============+========+
+| Local file load/save  | GeoJSON      |  vector        | Yes     | Yes                     | by Point only | No     |
++                       +--------------+----------------+---------+-------------------------+---------------+--------+
+|                       | KML          |  vector        | Yes     | Yes                     | by Point only | No     |
++-----------------------+--------------+----------------+---------+-------------------------+---------------+--------+
 
 Feature Editing Support
 -----------------------
