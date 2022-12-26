@@ -19,6 +19,8 @@ examples/geomoose
 *~
 *.bak
 *.swp
+# Created by PyCharm editor
+docs/.idea
 
 # macOS droppings
 .DS_Store
