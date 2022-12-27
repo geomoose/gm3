@@ -22,7 +22,9 @@ export const startService = createAsyncThunk('query/start-service', ({serviceNam
     if (state.query.serviceName !== serviceName) {
         // clear the selection features
         dispatch(clearSelectionFeatures());
-        dispatch(clearFeatures('selection'));
+        if (state.mapSources.selection) {
+            dispatch(clearFeatures('selection'));
+        }
     }
     dispatch(changeService(serviceName, defaultValues));
 });
