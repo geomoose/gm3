@@ -5,6 +5,7 @@ GeoMoose Documentation
     :maxdepth: 2
     :glob:
 
+    introduction
     quickstarts/index
     workshop/index
     customize

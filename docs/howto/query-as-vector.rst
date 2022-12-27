@@ -1,3 +1,5 @@
+.. _query-as:
+
 How-to display a raster layer and query as a vector layer
 =========================================================
 
