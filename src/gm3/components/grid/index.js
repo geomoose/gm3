@@ -22,337 +22,361 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import { TableVirtuoso } from 'react-virtuoso';
+import React from "react";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
+import { TableVirtuoso } from "react-virtuoso";
 
-import {unparse as writeCsv} from 'papaparse';
-import Mark from 'markup-js';
-import FileSaver from 'file-saver';
+import { unparse as writeCsv } from "papaparse";
+import Mark from "markup-js";
+import FileSaver from "file-saver";
 
-import {FORMAT_OPTIONS, matchFeatures} from '../../util';
+import { FORMAT_OPTIONS, matchFeatures } from "../../util";
 
-import { getLayerFromPath } from '../../actions/mapSource';
+import { getLayerFromPath } from "../../actions/mapSource";
 
-import { getFlatResults, getQueryResults } from '../../selectors/query';
-import { SERVICE_STEPS } from '../../reducers/query';
+import { getFlatResults, getQueryResults } from "../../selectors/query";
+import { SERVICE_STEPS } from "../../reducers/query";
 
-import FilterModal from './filter-modal';
+import FilterModal from "./filter-modal";
 
 /* Renders query results as a table that can be sorted, filtered,
  * and downloaded as a CSV file.
  *
  */
 class Grid extends React.Component {
+  constructor() {
+    super();
 
-    constructor() {
-        super();
+    // configure the default state of the sort,
+    //  null means in results-order.
+    this.state = {
+      sortBy: null,
+      sortAs: "string",
+      sortAsc: true,
+      minimized: false,
+      showGrid: false,
+      filterModal: null,
+    };
 
-        // configure the default state of the sort,
-        //  null means in results-order.
-        this.state = {
-            sortBy: null,
-            sortAs: 'string',
-            sortAsc: true,
-            minimized: false,
-            showGrid: false,
-            filterModal: null,
-        };
+    this.nextSort = this.nextSort.bind(this);
+  }
 
-        this.nextSort = this.nextSort.bind(this);
+  nextSort(column) {
+    // rotate to the next sort type
+    if (this.state.sortBy === column.property) {
+      // when sorted ascending, go to descending
+      if (this.state.sortAsc) {
+        this.setState({ sortAsc: false });
+        // if the sort is descending already, go
+        //  back to a neutral state
+      } else {
+        this.setState({ sortBy: null, sortAsc: true });
+      }
+    } else {
+      const sortAs = column.sortAs ? column.sortAs : "string";
+      this.setState({
+        sortBy: column.property,
+        sortAsc: true,
+        sortAs: sortAs,
+      });
     }
+  }
 
-    nextSort(column) {
-        // rotate to the next sort type
-        if(this.state.sortBy === column.property) {
-            // when sorted ascending, go to descending
-            if(this.state.sortAsc) {
-                this.setState({sortAsc: false});
-            // if the sort is descending already, go
-            //  back to a neutral state
-            } else {
-                this.setState({sortBy: null, sortAsc: true});
-            }
-        } else {
-            const sort_as = column.sortAs ? column.sortAs : 'string';
-            this.setState({sortBy: column.property, sortAsc: true, sortAs: sort_as} );
+  getHeaderRow(results, headerConf) {
+    return headerConf.map((columnDef, colIdx) => {
+      let sortTool = false;
+      let filterControl = false;
+      let sortClasses = "icon sort";
+
+      if (columnDef.sortAs) {
+        const sortTitle = this.props.t("filter-sort");
+        if (this.state.sortBy === columnDef.property) {
+          sortClasses += this.state.sortAsc ? " asc" : " desc";
         }
-    }
-
-    getHeaderRow(results, headerConf) {
-        return headerConf.map((columnDef, colIdx) => {
-            let sortTool = false;
-            let filterControl = false;
-            let sortClasses = 'icon sort';
-
-            if (columnDef.sortAs) {
-                const sortTitle = this.props.t('filter-sort');
-                if (this.state.sortBy === columnDef.property) {
-                    sortClasses += this.state.sortAsc ? ' asc' : ' desc';
-                }
-                sortTool = (<i title={sortTitle} onClick={() => { this.nextSort(columnDef); }} className={sortClasses}></i>);
-            }
-
-            if (columnDef.filter) {
-                // TODO: Get a translation friendly title attribute
-                filterControl = (
-                    <i
-                        title='Filter'
-                        onClick={() => {
-                            this.setState({
-                                filterModal: columnDef,
-                            });
-                        }}
-                        className='filter icon'
-                    />
-                );
-            }
-
-            return (
-                <th key={`col${colIdx}`} >{columnDef.title} {sortTool}{' '}
-                    {filterControl}
-                </th>
-            );
-        });
-    }
-
-    sortResults(results) {
-        const collator = Intl.Collator();
-        const sorted_results = [].concat(results);
-
-        const sort_col = this.state.sortBy;
-        const sort_asc = this.state.sortAsc;
-        const sort_as = this.state.sortAs;
-
-        sorted_results.sort((a, b) => {
-            let value_a = a.properties[sort_col];
-            let value_b = b.properties[sort_col];
-            if (sort_as === 'number') {
-                value_a = parseFloat(value_a);
-                value_b = parseFloat(value_b);
-
-                // assume value a is less than value b
-                let sort_v = -1;
-                if (isNaN(value_b) || value_b === null) {
-                    sort_v = 1;
-                } else if (value_b < value_a) {
-                    sort_v = 1;
-                }
-                if (!sort_asc) {
-                    sort_v = sort_v * -1;
-                }
-                return sort_v;
-            }
-            if (sort_asc) {
-                return collator.compare(value_a, value_b);
-            }
-            return collator.compare(value_b, value_a);
-        });
-        return sorted_results;
-    }
-
-    getRow(result, rowTemplate) {
-        const html = Mark.up(rowTemplate, result, FORMAT_OPTIONS);
-        // WARNING! If odd grid errors show up with row rendering,
-        //          start here!
-        // This code is potentially fragile but keeps the table
-        //  templates backwards compatible.
-        const strippedHTML = html.substring(html.indexOf('<td'), html.lastIndexOf('</td>') + 5);
-        // get the contents of the "<td>" cells
-        const tmpElement = document.createElement('tr');
-        tmpElement.innerHTML = strippedHTML;
-        const cells = tmpElement.getElementsByTagName('td');
-        const elements = [];
-
-        for (let i = 0, ii = cells.length; i < ii; i++) {
-            elements.push(
-                <td key={`cell-${i}`} dangerouslySetInnerHTML={{__html: cells[i].innerHTML}} />
-            );
-        }
-        return elements;
-    }
-
-    resultsAsCSV(gridCols, features) {
-        const attributes = [];
-        const feature_data = [];
-
-        // get the export columns
-        for(const column of gridCols) {
-            if(column.property) {
-                attributes.push(column.property);
-            }
-        }
-
-        // add the 'header' row with the attribute names
-        feature_data.push(attributes);
-
-        // for each feature, create a row.
-        for(const feature of features) {
-            const row = [];
-            for(const attr of attributes) {
-                row.push(feature.properties[attr]);
-            }
-            feature_data.push(row);
-        }
-
-        // create the data
-        const csv_blob = new Blob([writeCsv(feature_data)], {type: 'text/csv;charset=utf-8'});
-
-        // create a unique string
-        const uniq = '' + (new Date()).getTime();
-        const csv_name = 'download_' + uniq + '.csv';
-
-        // now have FileSaver 'normalize' how to do a save-as.
-        FileSaver.saveAs(csv_blob, csv_name);
-    }
-
-    componentDidUpdate(prevProps) {
-        // The `showGrid` logic is used to prevent the grid
-        //  from "flashing" in appearance and being immeidately
-        //  minimized.
-        if (this.props.query.step !== prevProps.query.step) {
-            if (this.props.query.step === SERVICE_STEPS.RESULTS) {
-                let minimized = false;
-                if (this.props.query.query.runOptions) {
-                    if (this.props.query.query.runOptions.gridMinimized) {
-                        minimized = true;
-                    }
-                }
-                this.setState({
-                    minimized,
-                    showGrid: true,
-                });
-            } else {
-                this.setState({
-                    showGrid: false,
-                });
-            }
-        }
-    }
-
-    render() {
-        const query = this.props.query;
-
-        let features = [];
-        let display_table = false;
-
-        let grid_cols, grid_row;
-
-        if (query.step === SERVICE_STEPS.RESULTS && this.state.showGrid) {
-            const service = this.props.services[query.serviceName];
-            const serviceName = service.alias || service.name;
-            const paths = Object.keys(query.results);
-            paths.forEach(layerPath => {
-                let layer = null;
-                try {
-                    layer = getLayerFromPath(this.props.mapSources, layerPath);
-                } catch(err) {
-                    // no layer, no problem.
-                }
-
-                if(layer !== null) {
-                    const columnTemplate = layer.templates[serviceName + '-grid-columns']
-                        || layer.templates.gridColumns;
-
-                    // try to parse the grid columns
-                    if (columnTemplate && typeof columnTemplate.contents === 'object') {
-                        grid_cols = columnTemplate.contents;
-                    } else {
-                        try {
-                            grid_cols = JSON.parse(columnTemplate.contents);
-                        } catch(err) {
-                            // swallow the error
-                        }
-                    }
-
-                    const rowTemplate = layer.templates[serviceName + '-grid-row']
-                        || layer.templates.gridRow;
-
-                    if (rowTemplate) {
-                        grid_row = rowTemplate.contents;
-                    }
-
-                    if(grid_cols && grid_row) {
-                        // render as a grid.
-                        features = matchFeatures(query.results[layerPath], query.filter);
-                        if(query.results[layerPath].length > 0) {
-                            display_table = true;
-                        }
-                    } else {
-                        // console.error(layerPath + ' does not have gridColumns or gridRow templates.');
-                    }
-                }
-            });
-        }
-
-        // render the empty string if there is nothing to show.
-        if(!display_table) {
-            return false;
-        }
-
-        if (this.state.sortBy !== null ) {
-            features = this.sortResults(features);
-        }
-
-        // when minimized, show the maximize button.
-        const min_btn_class = this.state.minimized ? 'maximize' : 'minimize';
-        const grid_class = this.state.minimized ? 'hide' : '';
-        const toggle_grid = () => {
-            this.setState({minimized: !this.state.minimized});
-        };
-
-        return (
-            <div className='gm-grid'>
-                {this.state.filterModal && (
-                    <FilterModal
-                        store={this.props.store}
-                        column={this.state.filterModal}
-                        filters={this.props.filters}
-                        results={this.props.allResults}
-                        onClose={() => this.setState({filterModal: null})}
-                    />
-                )}
-                <div className='toolbar'>
-                    <span
-                        onClick={ () => { this.resultsAsCSV(grid_cols, features) } }
-                        className={'tool download'}
-                        title={ this.props.t('grid-download-csv')}
-                    >
-                        <i className='icon download'></i>
-                    </span>
-                    <span
-                        onClick={ toggle_grid }
-                        className={'tool ' + min_btn_class}
-                        title={ this.props.t('grid-min-max') }
-                    >
-                        <i className={'icon ' + min_btn_class}></i>
-                    </span>
-                </div>
-
-                <TableVirtuoso
-                    style={{transition: 'height 500ms', height: this.state.minimized ? 0 : 400}}
-                    data={features}
-                    fixedHeaderContent={(index, feature) => {
-                        return (
-                            <tr>{this.getHeaderRow(features, grid_cols)}</tr>
-                        );
-                    }}
-                    itemContent={(index, feature) => (
-                        this.getRow(feature, grid_row, grid_cols)
-                    )}
-                />
-            </div>
+        sortTool = (
+          <i
+            title={sortTitle}
+            onClick={() => {
+              this.nextSort(columnDef);
+            }}
+            className={sortClasses}
+          ></i>
         );
+      }
+
+      if (columnDef.filter) {
+        // TODO: Get a translation friendly title attribute
+        filterControl = (
+          <i
+            title="Filter"
+            onClick={() => {
+              this.setState({
+                filterModal: columnDef,
+              });
+            }}
+            className="filter icon"
+          />
+        );
+      }
+
+      return (
+        <th key={`col${colIdx}`}>
+          {columnDef.title} {sortTool} {filterControl}
+        </th>
+      );
+    });
+  }
+
+  sortResults(results) {
+    const collator = Intl.Collator();
+    const sortedResults = [].concat(results);
+
+    const sortCol = this.state.sortBy;
+    const sortAsc = this.state.sortAsc;
+    const sortAs = this.state.sortAs;
+
+    sortedResults.sort((a, b) => {
+      let valueA = a.properties[sortCol];
+      let valueB = b.properties[sortCol];
+      if (sortAs === "number") {
+        valueA = parseFloat(valueA);
+        valueB = parseFloat(valueB);
+
+        // assume value a is less than value b
+        let sortValue = -1;
+        if (isNaN(valueB) || valueB === null) {
+          sortValue = 1;
+        } else if (valueB < valueA) {
+          sortValue = 1;
+        }
+        if (!sortAsc) {
+          sortValue = sortValue * -1;
+        }
+        return sortValue;
+      }
+      if (sortAsc) {
+        return collator.compare(valueA, valueB);
+      }
+      return collator.compare(valueB, valueA);
+    });
+    return sortedResults;
+  }
+
+  getRow(result, rowTemplate) {
+    const html = Mark.up(rowTemplate, result, FORMAT_OPTIONS);
+    // WARNING! If odd grid errors show up with row rendering,
+    //          start here!
+    // This code is potentially fragile but keeps the table
+    //  templates backwards compatible.
+    const strippedHTML = html.substring(
+      html.indexOf("<td"),
+      html.lastIndexOf("</td>") + 5
+    );
+    // get the contents of the "<td>" cells
+    const tmpElement = document.createElement("tr");
+    tmpElement.innerHTML = strippedHTML;
+    const cells = tmpElement.getElementsByTagName("td");
+    const elements = [];
+
+    for (let i = 0, ii = cells.length; i < ii; i++) {
+      elements.push(
+        <td
+          key={`cell-${i}`}
+          dangerouslySetInnerHTML={{ __html: cells[i].innerHTML }}
+        />
+      );
     }
+    return elements;
+  }
+
+  resultsAsCSV(gridCols, features) {
+    const attributes = [];
+    const featureData = [];
+
+    // get the export columns
+    for (const column of gridCols) {
+      if (column.property) {
+        attributes.push(column.property);
+      }
+    }
+
+    // add the 'header' row with the attribute names
+    featureData.push(attributes);
+
+    // for each feature, create a row.
+    for (const feature of features) {
+      const row = [];
+      for (const attr of attributes) {
+        row.push(feature.properties[attr]);
+      }
+      featureData.push(row);
+    }
+
+    // create the data
+    const csvBlob = new Blob([writeCsv(featureData)], {
+      type: "text/csv;charset=utf-8",
+    });
+
+    // create a unique string
+    const uniq = "" + new Date().getTime();
+    const csvName = "download_" + uniq + ".csv";
+
+    // now have FileSaver 'normalize' how to do a save-as.
+    FileSaver.saveAs(csvBlob, csvName);
+  }
+
+  componentDidUpdate(prevProps) {
+    // The `showGrid` logic is used to prevent the grid
+    //  from "flashing" in appearance and being immeidately
+    //  minimized.
+    if (this.props.query.step !== prevProps.query.step) {
+      if (this.props.query.step === SERVICE_STEPS.RESULTS) {
+        let minimized = false;
+        if (this.props.query.query.runOptions) {
+          if (this.props.query.query.runOptions.gridMinimized) {
+            minimized = true;
+          }
+        }
+        this.setState({
+          minimized,
+          showGrid: true,
+        });
+      } else {
+        this.setState({
+          showGrid: false,
+        });
+      }
+    }
+  }
+
+  render() {
+    const query = this.props.query;
+
+    let features = [];
+    let displayTable = false;
+
+    let gridCols, gridRow;
+
+    if (query.step === SERVICE_STEPS.RESULTS && this.state.showGrid) {
+      const service = this.props.services[query.serviceName];
+      const serviceName = service.alias || service.name;
+      const paths = Object.keys(query.results);
+      paths.forEach((layerPath) => {
+        let layer = null;
+        try {
+          layer = getLayerFromPath(this.props.mapSources, layerPath);
+        } catch (err) {
+          // no layer, no problem.
+        }
+
+        if (layer !== null) {
+          const columnTemplate =
+            layer.templates[serviceName + "-grid-columns"] ||
+            layer.templates.gridColumns;
+
+          // try to parse the grid columns
+          if (columnTemplate && typeof columnTemplate.contents === "object") {
+            gridCols = columnTemplate.contents;
+          } else {
+            try {
+              gridCols = JSON.parse(columnTemplate.contents);
+            } catch (err) {
+              // swallow the error
+            }
+          }
+
+          const rowTemplate =
+            layer.templates[serviceName + "-grid-row"] ||
+            layer.templates.gridRow;
+
+          if (rowTemplate) {
+            gridRow = rowTemplate.contents;
+          }
+
+          if (gridCols && gridRow) {
+            // render as a grid.
+            features = matchFeatures(query.results[layerPath], query.filter);
+            if (query.results[layerPath].length > 0) {
+              displayTable = true;
+            }
+          } else {
+            // console.error(layerPath + ' does not have gridColumns or gridRow templates.');
+          }
+        }
+      });
+    }
+
+    // render the empty string if there is nothing to show.
+    if (!displayTable) {
+      return false;
+    }
+
+    if (this.state.sortBy !== null) {
+      features = this.sortResults(features);
+    }
+
+    // when minimized, show the maximize button.
+    const minimizeButtonClass = this.state.minimized ? "maximize" : "minimize";
+    const toggleGrid = () => {
+      this.setState({ minimized: !this.state.minimized });
+    };
+
+    return (
+      <div className="gm-grid">
+        {this.state.filterModal && (
+          <FilterModal
+            store={this.props.store}
+            column={this.state.filterModal}
+            filters={this.props.filters}
+            results={this.props.allResults}
+            onClose={() => this.setState({ filterModal: null })}
+          />
+        )}
+        <div className="toolbar">
+          <span
+            onClick={() => {
+              this.resultsAsCSV(gridCols, features);
+            }}
+            className={"tool download"}
+            title={this.props.t("grid-download-csv")}
+          >
+            <i className="icon download"></i>
+          </span>
+          <span
+            onClick={toggleGrid}
+            className={"tool " + minimizeButtonClass}
+            title={this.props.t("grid-min-max")}
+          >
+            <i className={"icon " + minimizeButtonClass}></i>
+          </span>
+        </div>
+
+        <TableVirtuoso
+          style={{
+            transition: "height 500ms",
+            // TODO: Make grid height a configurable options
+            height: this.state.minimized ? 0 : 400,
+          }}
+          data={features}
+          fixedHeaderContent={(index, feature) => {
+            return <tr>{this.getHeaderRow(features, gridCols)}</tr>;
+          }}
+          itemContent={(index, feature) =>
+            this.getRow(feature, gridRow, gridCols)
+          }
+        />
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = state => ({
-    query: state.query,
-    results: getQueryResults(state),
-    allResults: getFlatResults(state),
-    mapSources: state.mapSources,
-    filters: state.query.filter,
+const mapStateToProps = (state) => ({
+  query: state.query,
+  results: getQueryResults(state),
+  allResults: getFlatResults(state),
+  mapSources: state.mapSources,
+  filters: state.query.filter,
 });
 
 export default connect(mapStateToProps)(withTranslation()(Grid));

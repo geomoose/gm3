@@ -22,33 +22,29 @@
  * SOFTWARE.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import {
-    printRequest,
-    printImage,
-    printed,
-} from '../actions/print';
+import { createReducer } from "@reduxjs/toolkit";
+import { printRequest, printImage, printed } from "../actions/print";
 
-const default_state = {
-    state: 'printed',
-    // populated with a png or jpeg base64 string,
-    printData: '',
-    request: null,
+const defaultState = {
+  state: "printed",
+  // populated with a png or jpeg base64 string,
+  printData: "",
+  request: null,
 };
 
-const reducer = createReducer(default_state, {
-    [printRequest]: (state, {payload: request}) => {
-        state.request = request;
-        state.state = 'printing';
-    },
-    [printImage]: (state, {payload: data}) => {
-        state.state = 'printing';
-        state.printData = data;
-    },
-    [printed]: state => {
-        state.state = 'printed';
-        state.request = null;
-    },
+const reducer = createReducer(defaultState, {
+  [printRequest]: (state, { payload: request }) => {
+    state.request = request;
+    state.state = "printing";
+  },
+  [printImage]: (state, { payload: data }) => {
+    state.state = "printing";
+    state.printData = data;
+  },
+  [printed]: (state) => {
+    state.state = "printed";
+    state.request = null;
+  },
 });
 
 export default reducer;

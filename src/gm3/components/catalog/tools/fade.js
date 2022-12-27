@@ -21,64 +21,70 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import { connect } from "react-redux";
 
-import { setOpacity } from '../../../actions/mapSource';
+import { setOpacity } from "../../../actions/mapSource";
 
-import { Tool } from '../tools';
-
+import { Tool } from "../tools";
 
 /** Tool to "fade" a layer. Aka, take away opacity.
  */
-export const FadeTool = ({tip, iconClass, layer, mapSources, direction, onFade}) => {
-    return (
-        <Tool
-            tip={tip}
-            iconClass={iconClass}
-            onClick={() => {
-                // collect the map sources
-                const map_sources = {};
-                for(let i = 0, ii = layer.src.length; i < ii; i++) {
-                    const ms_name = layer.src[i].mapSourceName;
-                    map_sources[ms_name] = mapSources[ms_name].opacity;
-                }
+export const FadeTool = ({
+  tip,
+  iconClass,
+  layer,
+  mapSources,
+  direction,
+  onFade,
+}) => {
+  return (
+    <Tool
+      tip={tip}
+      iconClass={iconClass}
+      onClick={() => {
+        // collect the map sources
+        const fadeSources = {};
+        for (let i = 0, ii = layer.src.length; i < ii; i++) {
+          const msName = layer.src[i].mapSourceName;
+          fadeSources[msName] = mapSources[msName].opacity;
+        }
 
-                for(const ms_name in map_sources) {
-                    let new_opacity = map_sources[ms_name] += direction;
+        for (const msName in fadeSources) {
+          let newOpacity = (fadeSources[msName] += direction);
 
-                    // check the bounds
-                    if(new_opacity < 0) {
-                        new_opacity = 0;
-                    } else if(new_opacity > 1) {
-                        new_opacity = 1;
-                    }
+          // check the bounds
+          if (newOpacity < 0) {
+            newOpacity = 0;
+          } else if (newOpacity > 1) {
+            newOpacity = 1;
+          }
 
-                    onFade(ms_name, new_opacity);
-                }
-            }}
-        />
-    );
-}
+          onFade(msName, newOpacity);
+        }
+      }}
+    />
+  );
+};
 
 FadeTool.defaultProps = {
-    tip: 'fade-tip',
-    iconClass: 'fade',
-    direction: -.1,
+  tip: "fade-tip",
+  iconClass: "fade",
+  direction: -0.1,
 };
 
 function mapState(state) {
-    return {
-        mapSources: state.mapSources,
-    };
+  return {
+    mapSources: state.mapSources,
+  };
 }
 
 function mapDispatch(dispatch) {
-    return {
-        onFade: (mapSourceName, opacity) => {
-            dispatch(setOpacity(mapSourceName, opacity));
-        },
-    }
+  return {
+    onFade: (mapSourceName, opacity) => {
+      dispatch(setOpacity(mapSourceName, opacity));
+    },
+  };
 }
 
 export default connect(mapState, mapDispatch)(FadeTool);

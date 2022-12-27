@@ -22,43 +22,52 @@
  * SOFTWARE.
  */
 
-import React from 'react';
+import React from "react";
 
-const PrintPreviewImage = ({printData, previewSize}) => {
-    if (printData && printData.substring(0, 3) === 'err') {
-        return (<div className='error-message'>
-            There was an error generating the print image.<br/>
-            This is likely due to a cross-origin/CORS error with a map-source
-            which is being served from an external server. Check:
-            <ol>
-                <li>The server supports cross-origin requests.</li>
-                <li>That the cross-origin param is set in the mapbook.</li>
-                <li>
-                    If the server does not support cross-origin requests, set the map-source's printable
-                    attribute to false.
-                </li>
-            </ol>
-        </div>);
-    }
+const PrintPreviewImage = ({ printData, previewSize }) => {
+  if (printData && printData.substring(0, 3) === "err") {
     return (
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            {printData && (
-                <img
-                    style={{
-                        border: 'solid 1px #333',
-                        maxWidth: previewSize + 'px',
-                        maxHeight: previewSize + 'px',
-                    }}
-                    alt='map preview'
-                    src={printData}
-                />
-            )}
-        </div>
+      <div className="error-message">
+        There was an error generating the print image.
+        <br />
+        This is likely due to a cross-origin/CORS error with a map-source which
+        is being served from an external server. Check:
+        <ol>
+          <li>The server supports cross-origin requests.</li>
+          <li>That the cross-origin param is set in the mapbook.</li>
+          <li>
+            If the server does not support cross-origin requests, set the
+            map-source's printable attribute to false.
+          </li>
+        </ol>
+      </div>
     );
-}
+  }
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {printData && (
+        <img
+          style={{
+            border: "solid 1px #333",
+            maxWidth: previewSize + "px",
+            maxHeight: previewSize + "px",
+          }}
+          alt="map preview"
+          src={printData}
+        />
+      )}
+    </div>
+  );
+};
 
 PrintPreviewImage.defaultProps = {
-    previewSize: 180,
+  previewSize: 180,
 };
 
 export default PrintPreviewImage;

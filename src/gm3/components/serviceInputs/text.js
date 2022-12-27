@@ -22,75 +22,81 @@
  * SOFTWARE.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import uuid from 'uuid';
+import uuid from "uuid";
 
-export const getId = () => (uuid.v4());
+export const getId = () => uuid.v4();
 
 export default class TextInput extends Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
+    this.state = {
+      value: props.value
+        ? props.value
+        : props.field.default
+        ? props.field.default
+        : "",
+    };
 
-        this.state = {
-            value: props.value ? props.value : props.field.default ? props.field.default : ''
-        };
+    this.onChange = this.onChange.bind(this);
+    this.inputRef = null;
+  }
 
-        this.onChange = this.onChange.bind(this);
-        this.inputRef = null;
+  getId() {
+    return getId();
+  }
+
+  getValue() {
+    return this.state.value;
+  }
+
+  getName() {
+    return this.props.field.name;
+  }
+
+  onChange(evt) {
+    const v = evt.target.value;
+    this.setState({ value: v });
+
+    this.setValue(this.getName(), v);
+  }
+
+  setValue(name, value) {
+    // do nothing, this is meant for the parent to hook into.
+    this.props.setValue(name, value);
+  }
+
+  componentDidMount() {
+    if (this.props.isFirst) {
+      this.inputRef.focus();
     }
+  }
 
-    getId() {
-        return getId();
-    }
+  render() {
+    const id = this.getId();
 
-    getValue() {
-        return this.state.value;
-    }
-
-    getName() {
-        return this.props.field.name;
-    }
-
-    onChange(evt) {
-        const v = evt.target.value;
-        this.setState({value: v});
-
-        this.setValue(this.getName(), v);
-    }
-
-    setValue(name, value) {
-        // do nothing, this is meant for the parent to hook into.
-        this.props.setValue(name, value);
-    }
-
-    componentDidMount() {
-        if (this.props.isFirst) {
-            this.inputRef.focus();
-        }
-    }
-
-
-    render() {
-        const id = this.getId();
-
-        return (
-            <div className='service-input'>
-                <label htmlFor={ 'input-' + id }>{ this.props.field.label }</label>
-                <input
-                    onChange={this.onChange}
-                    value={this.state.value}
-                    type="text"
-                    id={ 'input-' + id}
-                    placeholder={ this.props.field.placeHolder }
-                    className={this.props.field.helpText ? 'has-help-text' : ''}
-                    ref={r => { this.inputRef = r; }}
-                />
-                {this.props.field.helpText && (
-                    <div className="helper-text" htmlFor={ 'input-' + id }>{ this.props.field.helpText }</div>
-                )}
-            </div>
-        );
-    }
+    return (
+      <div className="service-input">
+        <label htmlFor={"input-" + id}>{this.props.field.label}</label>
+        <input
+          onChange={this.onChange}
+          value={this.state.value}
+          type="text"
+          id={"input-" + id}
+          placeholder={this.props.field.placeHolder}
+          className={this.props.field.helpText ? "has-help-text" : ""}
+          ref={(r) => {
+            this.inputRef = r;
+          }}
+        />
+        {this.props.field.helpText && (
+          <div className="helper-text" htmlFor={"input-" + id}>
+            {this.props.field.helpText}
+          </div>
+        )}
+      </div>
+    );
+  }
 }

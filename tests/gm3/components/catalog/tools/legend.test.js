@@ -22,30 +22,29 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+import React from "react";
+import { screen, render, fireEvent } from "@testing-library/react";
 
-import { LegendToggle } from 'gm3/components/catalog/tools/legend';
+import { LegendToggle } from "gm3/components/catalog/tools/legend";
 
-describe('Legend tool test', () => {
-    it('renders a legend tool and dispatches an action', () => {
-        let clicked = false;
+describe("Legend tool test", () => {
+  it("renders a legend tool and dispatches an action", () => {
+    let clicked = false;
 
-        const props = {
-            onToggleLegend: function() {
-                clicked = true;
-            },
-            layer: {
-                src: ['test/test'],
-            },
-            mapSources: {
-                'test': {},
-            },
-        };
+    const props = {
+      onToggleLegend: function () {
+        clicked = true;
+      },
+      layer: {
+        src: ["test/test"],
+      },
+      mapSources: {
+        test: {},
+      },
+    };
 
-        render(<LegendToggle {...props} />);
-        fireEvent.click(screen.getByRole('button'));
-        expect(clicked).toBe(true);
-    });
+    render(<LegendToggle {...props} />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(clicked).toBe(true);
+  });
 });
-

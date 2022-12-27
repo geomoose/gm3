@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import FadeTool from './fade';
+import React from "react";
+import FadeTool from "./fade";
 
-const UnfadeTool = props => <FadeTool {...props} />;
+const UnfadeTool = (props) => <FadeTool {...props} />;
 
 UnfadeTool.defaultProps = {
-    tip: 'unfade-tip',
-    iconClass: 'unfade',
-    direction: .1,
+  tip: "unfade-tip",
+  iconClass: "unfade",
+  direction: 0.1,
 };
 
 export default UnfadeTool;

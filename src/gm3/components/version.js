@@ -21,16 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from 'react';
+import React from "react";
 
-import { getVersion } from '../util';
+import { getVersion } from "../util";
 
 /** Small component that renders the application version.
  */
 export default class Version extends React.Component {
-    render() {
-        return (
-            <span className="version">{ getVersion() }</span>
-        );
-    }
-};
+  render() {
+    return <span className="version">{getVersion()}</span>;
+  }
+}

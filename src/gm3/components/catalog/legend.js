@@ -22,85 +22,94 @@
  * SOFTWARE.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
-import { getLegend } from '../map';
+import { getLegend } from "../map";
 
-import { isLayerOn } from '../../util';
+import { isLayerOn } from "../../util";
 
 class CatalogLegend extends Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
+    this.renderLegend = this.renderLegend.bind(this);
+  }
 
-        this.renderLegend = this.renderLegend.bind(this);
-    }
+  htmlLegend(html) {
+    return { __html: html };
+  }
 
-    htmlLegend(html) {
-        return {__html: html};
-    }
+  renderLegend(src) {
+    const legend = getLegend(
+      this.props.mapSources[src.mapSourceName],
+      this.props.mapView,
+      src.layerName
+    );
 
-    renderLegend(src) {
-        const legend = getLegend(
-            this.props.mapSources[src.mapSourceName],
-            this.props.mapView,
-            src.layerName
+    const key = "legend_" + src.mapSourceName + "_" + src.layerName;
+    let legendIdx = 0;
+
+    switch (legend.type) {
+      case "html":
+        return (
+          <div
+            key={key}
+            className="legend-html"
+            dangerouslySetInnerHTML={this.htmlLegend(legend.html)}
+          />
         );
-
-        const key = 'legend_' + src.mapSourceName + '_' + src.layerName;
-        let legend_idx = 0;
-
-        switch(legend.type) {
-            case 'html':
-                return (
-                    <div
-                        key={key}
-                        className='legend-html'
-                        dangerouslySetInnerHTML={this.htmlLegend(legend.html)}
-                    />
-                );
-            case 'img':
-                const img_tags = [];
-                legend_idx = 0;
-                for(const img_src of legend.images) {
-                    img_tags.push((<img alt='layer legend' key={key + legend_idx} className='legend-image' src={img_src}/>));
-                    legend_idx += 1;
-                }
-                return (<div key={key} className='legend-images'> { img_tags } </div>);
-            case 'nolegend':
-            default:
-                // no legend, no DOM'ing.
-                return false;
+      case "img":
+        const imageTags = [];
+        legendIdx = 0;
+        for (const imgSrc of legend.images) {
+          imageTags.push(
+            <img
+              alt="layer legend"
+              key={key + legendIdx}
+              className="legend-image"
+              src={imgSrc}
+            />
+          );
+          legendIdx += 1;
         }
+        return (
+          <div key={key} className="legend-images">
+            {" "}
+            {imageTags}{" "}
+          </div>
+        );
+      case "nolegend":
+      default:
+        // no legend, no DOM'ing.
+        return false;
+    }
+  }
+
+  render() {
+    // check to see if there are any layers on in the
+    // map-source
+    const layer = this.props.layer;
+
+    // short the rendering a legend if the layer
+    // is not on.
+    if (!isLayerOn(this.props.mapSources, layer)) {
+      return false;
     }
 
-    render() {
-        // check to see if there are any layers on in the
-        // map-source
-        const layer = this.props.layer;
-
-        // short the rendering a legend if the layer
-        // is not on.
-        if(!isLayerOn(this.props.mapSources, layer)) {
-            return false;
-        }
-
-        // put a legend on it.
-        return (<div className='catalog-legend'>
-            { layer.src.map(this.renderLegend) }
-        </div>);
-    }
+    // put a legend on it.
+    return (
+      <div className="catalog-legend">{layer.src.map(this.renderLegend)}</div>
+    );
+  }
 }
 
-
-const mapCatalogToProps = function(store) {
-    return {
-        mapSources: store.mapSources,
-        mapView: store.map
-    }
-}
-
+const mapCatalogToProps = function (store) {
+  return {
+    mapSources: store.mapSources,
+    mapView: store.map,
+  };
+};
 
 export default connect(mapCatalogToProps)(CatalogLegend);

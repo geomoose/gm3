@@ -22,79 +22,83 @@
  * SOFTWARE.
  */
 
+import React from "react";
+import { connect } from "react-redux";
 
-import React from 'react';
-import { connect } from 'react-redux';
+import { setMapSourceZIndex } from "../../../actions/mapSource";
+import { getLayersByZOrder } from "../../../util";
 
-import { setMapSourceZIndex } from '../../../actions/mapSource';
-import { getLayersByZOrder } from '../../../util';
-
-import { Tool } from '../tools';
+import { Tool } from "../tools";
 
 /* Move the layer up in the stack.
  */
 export class UpTool extends React.Component {
-    onClick() {
-        // this is the map-source to go "up"
-        const up_src = this.props.layer.src[0];
-        const layer_order = getLayersByZOrder(this.props.catalog, this.props.mapSources);
+  onClick() {
+    // this is the map-source to go "up"
+    const upSrc = this.props.layer.src[0];
+    const layerOrder = getLayersByZOrder(
+      this.props.catalog,
+      this.props.mapSources
+    );
 
-        const actions = [];
-        for(let i = 0, ii = layer_order.length; i < ii; i++) {
-            const layer = layer_order[i];
-            if(layer.layer.src[0].mapSourceName === up_src.mapSourceName) {
-                const swap = i + this.props.direction;
-                if(swap >= 0 && swap < ii) {
-                    const current_z = layer.zIndex;
-                    const new_z = layer_order[swap].zIndex;
-                    const other_ms = layer_order[swap].layer.src[0].mapSourceName;
+    const actions = [];
+    for (let i = 0, ii = layerOrder.length; i < ii; i++) {
+      const layer = layerOrder[i];
+      if (layer.layer.src[0].mapSourceName === upSrc.mapSourceName) {
+        const swap = i + this.props.direction;
+        if (swap >= 0 && swap < ii) {
+          const currentZ = layer.zIndex;
+          const newZ = layerOrder[swap].zIndex;
+          const otherMs = layerOrder[swap].layer.src[0].mapSourceName;
 
-                    actions.push({mapSourceName: up_src.mapSourceName, z: new_z});
-                    actions.push({mapSourceName: other_ms, z: current_z});
-                }
-            }
+          actions.push({
+            mapSourceName: upSrc.mapSourceName,
+            z: newZ,
+          });
+          actions.push({ mapSourceName: otherMs, z: currentZ });
         }
-
-        for(let i = 0, ii = actions.length; i < ii; i++) {
-            const action = actions[i];
-            this.props.setZIndex(action.mapSourceName, action.z);
-        }
+      }
     }
 
-    render() {
-        return (
-            <Tool
-                tip={this.props.tip}
-                iconClass={this.props.iconClass}
-                onClick={() => {
-                    this.onClick();
-                }}
-            />
-        );
+    for (let i = 0, ii = actions.length; i < ii; i++) {
+      const action = actions[i];
+      this.props.setZIndex(action.mapSourceName, action.z);
     }
+  }
+
+  render() {
+    return (
+      <Tool
+        tip={this.props.tip}
+        iconClass={this.props.iconClass}
+        onClick={() => {
+          this.onClick();
+        }}
+      />
+    );
+  }
 }
 
 UpTool.defaultProps = {
-    tip: 'layer-up-tip',
-    iconClass: 'up',
-    direction: -1,
-    setZIndex: function() {
-    },
+  tip: "layer-up-tip",
+  iconClass: "up",
+  direction: -1,
+  setZIndex: function () {},
 };
 
 function mapState(state) {
-    return {
-        catalog: state.catalog,
-        mapSources: state.mapSources,
-    };
+  return {
+    catalog: state.catalog,
+    mapSources: state.mapSources,
+  };
 }
 
 function mapDispatch(dispatch) {
-    return {
-        setZIndex: (mapSourceName, z) => {
-            dispatch(setMapSourceZIndex(mapSourceName, z));
-        },
-    };
+  return {
+    setZIndex: (mapSourceName, z) => {
+      dispatch(setMapSourceZIndex(mapSourceName, z));
+    },
+  };
 }
 
 export default connect(mapState, mapDispatch)(UpTool);

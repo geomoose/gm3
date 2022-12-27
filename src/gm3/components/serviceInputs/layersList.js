@@ -21,55 +21,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import SelectInput from './select';
+import SelectInput from "./select";
 
-import { getQueryableLayers, getLayerByPath } from '../../actions/mapSource';
+import { getQueryableLayers, getLayerByPath } from "../../actions/mapSource";
 
 // special list of layers that should never float to the top.
-const TO_THE_BOTTOM = [
-    'sketch/default',
-];
+const TO_THE_BOTTOM = ["sketch/default"];
 
 export class LayersListInput extends SelectInput {
-    getOptions() {
-        const options = [];
-        for(let i = 0, ii = this.props.layers.length; i < ii; i++) {
-            const layer = getLayerByPath(this.props.mapSources, this.props.layers[i]);
-            options.push({
-                value: this.props.layers[i],
-                label: layer.label,
-            });
-        }
-
-        return options.sort((a, b) => {
-            if (TO_THE_BOTTOM.indexOf(a.value) >= 0) {
-                return 1;
-            } else if (TO_THE_BOTTOM.indexOf(b.value) >= 0) {
-                return -1;
-            }
-            return a < b ? -1 : 1;
-        });
+  getOptions() {
+    const options = [];
+    for (let i = 0, ii = this.props.layers.length; i < ii; i++) {
+      const layer = getLayerByPath(this.props.mapSources, this.props.layers[i]);
+      options.push({
+        value: this.props.layers[i],
+        label: layer.label,
+      });
     }
+
+    return options.sort((a, b) => {
+      if (TO_THE_BOTTOM.indexOf(a.value) >= 0) {
+        return 1;
+      } else if (TO_THE_BOTTOM.indexOf(b.value) >= 0) {
+        return -1;
+      }
+      return a < b ? -1 : 1;
+    });
+  }
 }
 
 LayersListInput.propTypes = {
-    layers: PropTypes.array,
+  layers: PropTypes.array,
 };
 
 LayersListInput.defaultProps = {
-    mapSources: {},
-    layers: [],
+  mapSources: {},
+  layers: [],
 };
 
 function mapState(state, ownProps) {
-    const filter_layers = (ownProps.filter && ownProps.filter.layers) ? ownProps.filter.layers : null;
-    return {
-        layers: filter_layers ? filter_layers : getQueryableLayers(state.mapSources, ownProps.field.filter),
-        mapSources: state.mapSources,
-    };
+  const filterLayers =
+    ownProps.filter && ownProps.filter.layers ? ownProps.filter.layers : null;
+  return {
+    layers: filterLayers
+      ? filterLayers
+      : getQueryableLayers(state.mapSources, ownProps.field.filter),
+    mapSources: state.mapSources,
+  };
 }
 
 export default connect(mapState)(LayersListInput);

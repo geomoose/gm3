@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-import fs from 'fs';
+import fs from "fs";
 
-import Application from 'gm3/application';
+import Application from "gm3/application";
 
-import ZoomToAction from 'services/zoomto';
+import ZoomToAction from "services/zoomto";
 
-import { runAction } from 'gm3/actions/ui';
+import { runAction } from "gm3/actions/ui";
 
 /* This is a bit of a hacky polyfill for requestAnimationFrame
  * which is needed by the openlayers map to drawer but is not
@@ -37,12 +37,17 @@ import { runAction } from 'gm3/actions/ui';
  * - https://stackoverflow.com/questions/44111231/react-native-requestanimationframe-is-not-supported-in-node
  */
 if (!window.requestAnimationFrame) {
-    const targetTime = 0
-    window.requestAnimationFrame = function(callbackFun) {
-        const currentTime = +new Date()
-        const timeoutCb = function() { callbackFun(+new Date()) }
-        return window.setTimeout(timeoutCb, Math.max(targetTime + 16, currentTime) - currentTime)
-    }
+  const targetTime = 0;
+  window.requestAnimationFrame = function (callbackFun) {
+    const currentTime = +new Date();
+    const timeoutCb = function () {
+      callbackFun(+new Date());
+    };
+    return window.setTimeout(
+      timeoutCb,
+      Math.max(targetTime + 16, currentTime) - currentTime
+    );
+  };
 }
 
 /** This is intended to create a basic "dummy" app
@@ -50,30 +55,32 @@ if (!window.requestAnimationFrame) {
  *  and not just their individualized issues.
  *
  */
-describe('real lyfe test', () => {
-    // define a new app
-    const app = new Application({
-        mapserver_url: '/cgi-bin/mapserv',
-        mapfile_root: '/test/path/'
-    });
+describe("real lyfe test", () => {
+  // define a new app
+  const app = new Application({
+    // eslint-disable-next-line camelcase
+    mapserver_url: "/cgi-bin/mapserv",
+    // eslint-disable-next-line camelcase
+    mapfile_root: "/test/path/",
+  });
 
-    it('loads examples/desktop/mapbook.xml', (done) => {
-        fs.readFile('examples/desktop/mapbook.xml', (err, contents) => {
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(contents, 'text/xml');
-            app.loadMapbook({content: xml}).then(() => {
-                done();
-            });
-        });
+  it("loads examples/desktop/mapbook.xml", (done) => {
+    fs.readFile("examples/desktop/mapbook.xml", (err, contents) => {
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(contents, "text/xml");
+      app.loadMapbook({ content: xml }).then(() => {
+        done();
+      });
     });
+  });
 
-    it('registers an action', () => {
-        app.registerAction('zoomto', ZoomToAction, {
-            extent: [-10, -10, 10, 10]
-        });
+  it("registers an action", () => {
+    app.registerAction("zoomto", ZoomToAction, {
+      extent: [-10, -10, 10, 10],
     });
+  });
 
-    it('triggers the action', () => {
-        app.store.dispatch(runAction('zoomto'));
-    });
+  it("triggers the action", () => {
+    app.store.dispatch(runAction("zoomto"));
+  });
 });

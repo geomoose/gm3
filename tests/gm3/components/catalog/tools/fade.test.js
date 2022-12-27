@@ -22,33 +22,33 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+import React from "react";
+import { screen, render, fireEvent } from "@testing-library/react";
 
-import { FadeTool } from 'gm3/components/catalog/tools/fade';
+import { FadeTool } from "gm3/components/catalog/tools/fade";
 
-describe('Fade tool test', () => {
-    it('renders a fade tool and dispatches an action', () => {
-        let clicked = false;
-        const props = {
-            onFade: function() {
-                clicked = true;
-            },
-            layer: {
-                src: [{
-                    mapSourceName: 'test',
-                    layerName: 'test',
-                }],
-            },
-            mapSources: {
-                'test': {
-                },
-            },
-        };
+describe("Fade tool test", () => {
+  it("renders a fade tool and dispatches an action", () => {
+    let clicked = false;
+    const props = {
+      onFade: function () {
+        clicked = true;
+      },
+      layer: {
+        src: [
+          {
+            mapSourceName: "test",
+            layerName: "test",
+          },
+        ],
+      },
+      mapSources: {
+        test: {},
+      },
+    };
 
-        render(<FadeTool {...props} />);
-        fireEvent.click(screen.getByRole('button'));
-        expect(clicked).toBe(true);
-    });
+    render(<FadeTool {...props} />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(clicked).toBe(true);
+  });
 });
-

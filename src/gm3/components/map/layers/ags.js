@@ -26,25 +26,25 @@
  *
  */
 
-import TileLayer from 'ol/layer/Tile';
-import ArcRestSource from 'ol/source/TileArcGISRest';
+import TileLayer from "ol/layer/Tile";
+import ArcRestSource from "ol/source/TileArcGISRest";
 
 /** Create the parameters for a ArcGIS REST Services layer.
  *
  */
 function defineSource(mapSource) {
-    let cx_origin = null;
-    if(mapSource.params['cross-origin']) {
-        cx_origin = mapSource.params['cross-origin'];
-    } else if (mapSource.urls[0].indexOf('http') === 0) {
-        cx_origin = 'anonymous';
-    }
+  let crossOrigin = null;
+  if (mapSource.params["cross-origin"]) {
+    crossOrigin = mapSource.params["cross-origin"];
+  } else if (mapSource.urls[0].indexOf("http") === 0) {
+    crossOrigin = "anonymous";
+  }
 
-    return {
-        crossOrigin: cx_origin,
-        url: mapSource.urls[0],
-        params: mapSource.params,
-    }
+  return {
+    crossOrigin: crossOrigin,
+    url: mapSource.urls[0],
+    params: mapSource.params,
+  };
 }
 
 /** Return an OpenLayers Layer for the ArcGIS REST Services source.
@@ -54,24 +54,23 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    return new TileLayer({
-        source: new ArcRestSource(defineSource(mapSource)),
-        minResolution: mapSource.minresolution,
-        maxResolution: mapSource.maxresolution,
-    });
+  return new TileLayer({
+    source: new ArcRestSource(defineSource(mapSource)),
+    minResolution: mapSource.minresolution,
+    maxResolution: mapSource.maxresolution,
+  });
 }
 
 /** Ensure that the ArcGIS REST Services parameters all match.
  */
 export function updateLayer(map, layer, mapSource) {
-    // pull in the open layers source
-    const src = layer.getSource();
-    // get the new definition
-    const defn = defineSource(mapSource);
+  // pull in the open layers source
+  const src = layer.getSource();
+  // get the new definition
+  const defn = defineSource(mapSource);
 
-    // if the url changed, update that as well.
-    if(src.getUrls()[0] !== defn.url) {
-        src.setUrl(defn.url);
-    }
+  // if the url changed, update that as well.
+  if (src.getUrls()[0] !== defn.url) {
+    src.setUrl(defn.url);
+  }
 }
-

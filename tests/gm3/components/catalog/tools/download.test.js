@@ -22,37 +22,35 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
-import { DownloadTool } from 'gm3/components/catalog/tools/download';
+import { DownloadTool } from "gm3/components/catalog/tools/download";
 
+describe("Download tool test", () => {
+  it("renders a download tool and dispatches an action", () => {
+    let clicked = false;
 
-describe('Download tool test', () => {
-    it('renders a download tool and dispatches an action', () => {
-        let clicked = false;
+    const props = {
+      onDownload: function () {
+        clicked = true;
+      },
+      layer: {
+        src: ["test/test"],
+      },
+      mapSources: {
+        test: {},
+      },
+    };
 
-        const props = {
-            onDownload: function() {
-                clicked = true;
-            },
-            layer: {
-                src: ['test/test'],
-            },
-            mapSources: {
-                'test': {},
-            },
-        };
+    render(<DownloadTool {...props} />);
 
-        render(<DownloadTool {...props} />);
+    // click on the tool
+    fireEvent.click(screen.getByRole("button"));
 
-        // click on the tool
-        fireEvent.click(screen.getByRole('button'));
+    // click the download button
+    fireEvent.click(screen.getByText("Okay"));
 
-        // click the download button
-        fireEvent.click(screen.getByText('Okay'));
-
-        expect(clicked).toBe(true);
-    });
+    expect(clicked).toBe(true);
+  });
 });
-

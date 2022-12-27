@@ -22,65 +22,64 @@
  * SOFTWARE.
  */
 export const HIGHLIGHT_STYLE = {
-    'circle-radius': 4,
-    'circle-color': '#ffff00',
-    'circle-stroke-color': '#ffff00',
-    'line-color': '#ffff00',
-    'line-width': 4,
-    'fill-color': '#ffff00',
-    'fill-opacity': 0.25,
-    'line-opacity': 0.25,
-
+  "circle-radius": 4,
+  "circle-color": "#ffff00",
+  "circle-stroke-color": "#ffff00",
+  "line-color": "#ffff00",
+  "line-width": 4,
+  "fill-color": "#ffff00",
+  "fill-opacity": 0.25,
+  "line-opacity": 0.25,
 };
 
 export const HIGHLIGHT_HOT_STYLE = {
-    'circle-radius': 4,
-    'circle-color': '#ff0000',
-    'circle-stroke-color': '#ff0000',
-    'line-color': '#ff0000',
-    'line-width': 4,
-    'fill-color': '#ff0000',
-    'fill-opacity': 0.50,
-    'line-opacity': 0.50,
+  "circle-radius": 4,
+  "circle-color": "#ff0000",
+  "circle-stroke-color": "#ff0000",
+  "line-color": "#ff0000",
+  "line-width": 4,
+  "fill-color": "#ff0000",
+  "fill-opacity": 0.5,
+  "line-opacity": 0.5,
 };
 
 export const SELECTION_STYLE = {
-    'circle-radius': 4,
-    'circle-color': '#8470ff',
-    'circle-stroke-color': '#8470ff',
-    'line-color': '#fc8d59',
-    'line-width': 6,
-    'line-opacity': 0.80,
-    'fill-color': '#91bfdb',
-    'fill-opacity': 0.25,
+  "circle-radius": 4,
+  "circle-color": "#8470ff",
+  "circle-stroke-color": "#8470ff",
+  "line-color": "#fc8d59",
+  "line-width": 6,
+  "line-opacity": 0.8,
+  "fill-color": "#91bfdb",
+  "fill-opacity": 0.25,
 };
 
 export const EDIT_STYLE = {
-    'circle-radius': 10,
-    'circle-color': '#d53e4f',
-    'circle-stroke-color': '#d53e4f',
-    'line-color': '#d53e4f',
-    'line-width': 6,
-    'line-opacity': 0.80,
-    'fill-color': '#d53e4f33',
-    'fill-opacity': 0.25,
+  "circle-radius": 10,
+  "circle-color": "#d53e4f",
+  "circle-stroke-color": "#d53e4f",
+  "line-color": "#d53e4f",
+  "line-width": 6,
+  "line-opacity": 0.8,
+  "fill-color": "#d53e4f33",
+  "fill-opacity": 0.25,
 };
 
-export const EDIT_LAYER_NAME = 'edit-temp';
+export const EDIT_LAYER_NAME = "edit-temp";
 
 export const DEFAULT_RESULTS_CONFIG = {
-    showBufferAll: false,
-    showZoomToAll: true,
-    showLayerCount: true,
-    showFeatureCount: true,
-    maxBufferFeatures: 100,
+  showBufferAll: false,
+  showZoomToAll: true,
+  showLayerCount: true,
+  showFeatureCount: true,
+  maxBufferFeatures: 100,
 };
 
 export const DRAW_TOOLS = [
-    'draw-point',
-    'draw-polygon',
-    'draw-line',
-    'draw-modify',
-    'draw-remove',
-    'draw-edit',
+  "draw-point",
+  "draw-polygon",
+  "draw-line",
+  "draw-modify",
+  "draw-remove",
+  "draw-edit",
 ];

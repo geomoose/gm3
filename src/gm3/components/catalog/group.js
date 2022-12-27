@@ -21,53 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from 'react';
-import PropTypes from 'prop-types';
-import MetadataTool from './tools/metadata';
+import React from "react";
+import PropTypes from "prop-types";
 
 export default class CatalogGroup extends React.Component {
-    render() {
-        const group = this.props.group;
+  render() {
+    const group = this.props.group;
 
-        let classes = 'group';
-        let is_open = '';
-        if(group.expand) {
-            classes += ' gm-expand';
-            is_open = 'open';
-        } else {
-            classes += ' gm-collapse';
-        }
-
-        return (
-            <div key={group.id} className={classes}>
-                <div
-                    onClick={() => {
-                        this.props.onExpand();
-                    }}
-                    className='group-label'
-                >
-                    <i className={'folder icon ' + is_open}></i>
-                    {group.label}{' '}
-                    {
-                        !group.metadata_url ? false : (
-                            <MetadataTool href={group.metadata_url} />
-                        )
-                    }
-                </div>
-                <div className='children'>
-                    { this.props.children }
-                </div>
-            </div>
-        );
+    let classes = "group";
+    let isOpen = "";
+    if (group.expand) {
+      classes += " gm-expand";
+      isOpen = "open";
+    } else {
+      classes += " gm-collapse";
     }
+
+    return (
+      <div key={group.id} className={classes}>
+        <div
+          onClick={() => {
+            this.props.onExpand();
+          }}
+          className="group-label"
+        >
+          <i className={"folder icon " + isOpen}></i>
+          {group.label}
+        </div>
+        <div className="children">{this.props.children}</div>
+      </div>
+    );
+  }
 }
 
 CatalogGroup.defaultProps = {
-    onExpand: () => {
-    },
+  onExpand: () => {},
 };
 
 CatalogGroup.propTypes = {
-    onExpand: PropTypes.func,
-    group: PropTypes.object.isRequired,
+  onExpand: PropTypes.func,
+  group: PropTypes.object.isRequired,
 };

@@ -22,65 +22,68 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import { favoriteLayer, getLayerFromSources } from '../../actions/mapSource';
-
+import { favoriteLayer, getLayerFromSources } from "../../actions/mapSource";
 
 export function isFavorite(mapSources, layer) {
-    let fav = true;
-    for(let i = 0, ii = layer.src.length; i < ii; i++) {
-        const src = layer.src[i];
+  let fav = true;
+  for (let i = 0, ii = layer.src.length; i < ii; i++) {
+    const src = layer.src[i];
 
-        const ms_layer = getLayerFromSources(mapSources, src.mapSourceName, src.layerName);
-        fav = fav && ms_layer.favorite;
-    }
-    return fav;
+    const msLayer = getLayerFromSources(
+      mapSources,
+      src.mapSourceName,
+      src.layerName
+    );
+    fav = fav && msLayer.favorite;
+  }
+  return fav;
 }
 
 class LayerFavorite extends React.Component {
-    render() {
-        const is_fav = isFavorite(this.props.mapSources, this.props.layer);
+  render() {
+    const isFav = isFavorite(this.props.mapSources, this.props.layer);
 
-        let classes = 'favorite icon';
-        if(!is_fav) {
-            classes += ' not';
-        }
-
-        return (
-            <i
-                className={ classes }
-                onClick={() => {
-                    this.props.onToggleFavorite(this.props.layer, !is_fav);
-                }}
-            />
-        );
+    let classes = "favorite icon";
+    if (!isFav) {
+      classes += " not";
     }
+
+    return (
+      <i
+        className={classes}
+        onClick={() => {
+          this.props.onToggleFavorite(this.props.layer, !isFav);
+        }}
+      />
+    );
+  }
 }
 
 LayerFavorite.propTypes = {
-    mapSources: PropTypes.object.isRequired,
-    layer: PropTypes.object.isRequired,
-    onToggleFavorite: PropTypes.func.isRequired,
+  mapSources: PropTypes.object.isRequired,
+  layer: PropTypes.object.isRequired,
+  onToggleFavorite: PropTypes.func.isRequired,
 };
 
 function mapStateProps(state) {
-    return {
-        mapSources: state.mapSources,
-    };
+  return {
+    mapSources: state.mapSources,
+  };
 }
 
 function mapDispatchProps(dispatch) {
-    return {
-        onToggleFavorite: (layer, favorite) => {
-            for(let i = 0, ii = layer.src.length; i < ii; i++) {
-                const src = layer.src[i];
-                dispatch(favoriteLayer(src.mapSourceName, src.layerName, favorite));
-            }
-        },
-    }
+  return {
+    onToggleFavorite: (layer, favorite) => {
+      for (let i = 0, ii = layer.src.length; i < ii; i++) {
+        const src = layer.src[i];
+        dispatch(favoriteLayer(src.mapSourceName, src.layerName, favorite));
+      }
+    },
+  };
 }
 
 export default connect(mapStateProps, mapDispatchProps)(LayerFavorite);

@@ -26,47 +26,47 @@
  *
  */
 
-import {createReducer} from '@reduxjs/toolkit';
+import { createReducer } from "@reduxjs/toolkit";
 
 import {
-    setUiHint,
-    clearUiHint,
-    runAction,
-    clearAction,
-    showModal,
-    hideModal,
-} from '../actions/ui';
+  setUiHint,
+  clearUiHint,
+  runAction,
+  clearAction,
+  showModal,
+  hideModal,
+} from "../actions/ui";
 
 const defaultState = {
-    stateId: 0,
-    hint: null,
-    action: null,
-    modal: '',
+  stateId: 0,
+  hint: null,
+  action: null,
+  modal: "",
 };
 
 const reducer = createReducer(defaultState, {
-    [setUiHint]: (state, {payload: hint}) => {
-        state.hint = hint;
-        state.stateId++;
-    },
-    [clearUiHint]: state => {
-        state.hint = null;
-        state.stateId++;
-    },
-    [runAction]: (state, {payload: action}) => {
-        state.action = action;
-        state.stateId++;
-    },
-    [clearAction]: state => {
-        state.action = null;
-        state.stateId++;
-    },
-    [showModal]: (state, {payload}) => {
-        state.modal = payload;
-    },
-    [hideModal]: state => {
-        state.modal = '';
-    },
+  [setUiHint]: (state, { payload: hint }) => {
+    state.hint = hint;
+    state.stateId++;
+  },
+  [clearUiHint]: (state) => {
+    state.hint = null;
+    state.stateId++;
+  },
+  [runAction]: (state, { payload: action }) => {
+    state.action = action;
+    state.stateId++;
+  },
+  [clearAction]: (state) => {
+    state.action = null;
+    state.stateId++;
+  },
+  [showModal]: (state, { payload }) => {
+    state.modal = payload;
+  },
+  [hideModal]: (state) => {
+    state.modal = "";
+  },
 });
 
 export default reducer;

@@ -22,20 +22,26 @@
  * SOFTWARE.
  */
 
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
-export const setEditFeature = createAction('editor/set-feature', (feature, isNew = false) => ({
+export const setEditFeature = createAction(
+  "editor/set-feature",
+  (feature, isNew = false) => ({
     payload: {
-        feature,
-        isNew,
+      feature,
+      isNew,
     },
-}));
+  })
+);
 
-export const finishEditing = createAction('editor/finish-editing');
+export const finishEditing = createAction("editor/finish-editing");
 
-export const removeFeature = createAction('editor/remove-feature', (source, feature) => ({
+export const removeFeature = createAction(
+  "editor/remove-feature",
+  (source, feature) => ({
     payload: {
-        feature,
-        source,
+      feature,
+      source,
     },
-}));
+  })
+);

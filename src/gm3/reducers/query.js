@@ -26,82 +26,88 @@
  *
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer } from "@reduxjs/toolkit";
 import {
-    changeService, finishService, createQuery, runQuery, addFilter, removeFilter, setHotFilter, removeQueryResults
-} from '../actions/query';
-import { filterFeatures, getFilterFieldNames } from '../util';
-
+  changeService,
+  finishService,
+  createQuery,
+  runQuery,
+  addFilter,
+  removeFilter,
+  setHotFilter,
+  removeQueryResults,
+} from "../actions/query";
+import { filterFeatures, getFilterFieldNames } from "../util";
 
 export const SERVICE_STEPS = {
-    START: 'start',
-    FINISHED: 'finished',
-    LOADING: 'loading',
-    RESULTS: 'results',
+  START: "start",
+  FINISHED: "finished",
+  LOADING: "loading",
+  RESULTS: "results",
 };
 
 const defaultState = {
-    serviceName: null,
-    instance: 0,
-    defaultValues: {},
-    step: '',
-    query: {},
-    results: {},
-    filter: [],
-    hotFilter: false,
+  serviceName: null,
+  instance: 0,
+  defaultValues: {},
+  step: "",
+  query: {},
+  results: {},
+  filter: [],
+  hotFilter: false,
 };
 
 const reducer = createReducer(defaultState, {
-    [changeService]: (state, {payload: {serviceName, defaultValues}}) => {
-        // the instance counter is used to delineate between
-        //  simultaneous calls to the same service.
-        state.instance += 1;
-        state.serviceName = serviceName;
-        state.defaultValues = defaultValues;
-        state.step = SERVICE_STEPS.START;
-    },
-    [finishService]: state => {
-        state.serviceName = '';
-        state.defaultValues = {};
-        state.step = SERVICE_STEPS.FINISHED;
-    },
-    [createQuery]: (state, {payload}) => {
-        state.query = payload;
-        // when starting a new query reset the results
-        //   and filters
-        state.results = {};
-        state.filter = [];
-    },
-    [runQuery.pending]: state => {
-        state.step = SERVICE_STEPS.LOADING;
-    },
-    [runQuery.fulfilled]: (state, {payload}) => {
-        state.results = payload;
-        state.step = SERVICE_STEPS.RESULTS;
-    },
-    [runQuery.rejected]: (state, action) => {
-        console.error('Query error!', action.error);
-        state.results = {};
-        // TODO: Throw in a better error display?
-        state.step = SERVICE_STEPS.RESULTS;
-    },
-    [addFilter]: (state, {payload}) => {
-        state.filter.push(payload);
-    },
-    [removeFilter]: (state, {payload: fieldName}) => {
-        state.filter = state.filter.filter(filterDef => {
-            const fieldNames = getFilterFieldNames(filterDef);
-            return fieldNames.indexOf(fieldName) < 0;
-        });
-    },
-    [setHotFilter]: (state, {payload: filter}) => {
-        state.hotFilter = filter;
-    },
-    [removeQueryResults]: (state, {payload: filter}) => {
-        for (const path in state.results) {
-            state.results[path] = filterFeatures(state.results[path], filter);
-        }
-    },
+  [changeService]: (state, { payload: { serviceName, defaultValues } }) => {
+    // the instance counter is used to delineate between
+    //  simultaneous calls to the same service.
+    state.instance += 1;
+    state.serviceName = serviceName;
+    state.defaultValues = defaultValues;
+    state.step = SERVICE_STEPS.START;
+  },
+  [finishService]: (state) => {
+    state.serviceName = "";
+    state.defaultValues = {};
+    state.step = SERVICE_STEPS.FINISHED;
+  },
+  [createQuery]: (state, { payload }) => {
+    state.query = payload;
+    // when starting a new query reset the results
+    //   and filters
+    state.results = {};
+    state.filter = [];
+  },
+  [runQuery.pending]: (state) => {
+    state.step = SERVICE_STEPS.LOADING;
+  },
+  [runQuery.fulfilled]: (state, { payload }) => {
+    state.results = payload;
+    state.step = SERVICE_STEPS.RESULTS;
+  },
+  [runQuery.rejected]: (state, action) => {
+    console.error("Query error!", action.error);
+    state.results = {};
+    // TODO: Throw in a better error display?
+    state.step = SERVICE_STEPS.RESULTS;
+  },
+  [addFilter]: (state, { payload }) => {
+    state.filter.push(payload);
+  },
+  [removeFilter]: (state, { payload: fieldName }) => {
+    state.filter = state.filter.filter((filterDef) => {
+      const fieldNames = getFilterFieldNames(filterDef);
+      return fieldNames.indexOf(fieldName) < 0;
+    });
+  },
+  [setHotFilter]: (state, { payload: filter }) => {
+    state.hotFilter = filter;
+  },
+  [removeQueryResults]: (state, { payload: filter }) => {
+    for (const path in state.results) {
+      state.results[path] = filterFeatures(state.results[path], filter);
+    }
+  },
 });
 
 export default reducer;

@@ -29,12 +29,15 @@
  *
  */
 function FindMeAction(Application, options) {
-
     // allow the targetting of a layer, but default to the highlight layer
-    this.targetLayer = options.targetLayer ? options.targetLayer : 'results/results';
+    this.targetLayer = options.targetLayer
+        ? options.targetLayer
+        : "results/results";
 
     // default the map projection to web-mercator
-    this.mapProjection = options.mapProjection ? options.mapProjection : 'EPSG:3857';
+    this.mapProjection = options.mapProjection
+        ? options.mapProjection
+        : "EPSG:3857";
 
     // Buffer is the distance in map coordinates to buffer around
     //  the points when zooming to it's extent, defaults to 100m
@@ -48,33 +51,39 @@ function FindMeAction(Application, options) {
      *  @param fields    is an array containing any user-input
      *                   given to the service.
      */
-    this.run = function(selection, fields) {
-        if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.gotoPosition.bind(this));
+    this.run = function (selection, fields) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                this.gotoPosition.bind(this)
+            );
         } else {
-            alert('Geolocation is not supported.');
+            alert("Geolocation is not supported.");
         }
-    }
+    };
 
-    this.gotoPosition = function(loc) {
+    this.gotoPosition = function (loc) {
         var lat = loc.coords.latitude;
         var lon = loc.coords.longitude;
         var coord = [lon, lat];
 
         // turn the coordinate into a fake feature
         var fake_feature = {
-            type: 'Feature',
+            type: "Feature",
             geometry: {
-                type: 'Point',
-                coordinates: [lon, lat]
+                type: "Point",
+                coordinates: [lon, lat],
             },
             properties: {
-                label: 'Location'
-            }
+                label: "Location",
+            },
         };
 
         // put the feature in map projection.
-        var map_feature = gm3.util.projectFeatures([fake_feature], 'EPSG:4326', this.mapProjection)[0];
+        var map_feature = gm3.util.projectFeatures(
+            [fake_feature],
+            "EPSG:4326",
+            this.mapProjection
+        )[0];
 
         Application.clearFeatures(this.targetLayer);
 
@@ -85,8 +94,13 @@ function FindMeAction(Application, options) {
         var x = map_feature.geometry.coordinates[0],
             y = map_feature.geometry.coordinates[1];
 
-        Application.zoomToExtent([x - b, y - b, x + b, y + b], this.mapProjection);
-    }
+        Application.zoomToExtent(
+            [x - b, y - b, x + b, y + b],
+            this.mapProjection
+        );
+    };
 }
 
-if(typeof(module) !== 'undefined') { module.exports = FindMeAction; }
+if (typeof module !== "undefined") {
+    module.exports = FindMeAction;
+}

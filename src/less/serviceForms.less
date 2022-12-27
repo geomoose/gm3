@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-
 @keyframes grow {
     from {
         max-height: 0px;
@@ -33,7 +32,8 @@
     }
 }
 
-.radio-option,.draw-tool {
+.radio-option,
+.draw-tool {
     cursor: pointer;
     padding-left: 5px;
 
@@ -54,7 +54,8 @@
     }
 }
 
-.radio-option.selected,.draw-tool.selected {
+.radio-option.selected,
+.draw-tool.selected {
     .radio-icon {
         &:before {
             content: @fa-var-check-circle-o;
@@ -62,14 +63,14 @@
     }
 }
 
-
 .service-manager {
     padding-left: 4px;
 
     .tab-controls {
         padding-top: 1em;
 
-        .go-button, .close-button {
+        .go-button,
+        .close-button {
             font-size: 1.25em;
             border: none;
             background: none;
@@ -84,7 +85,8 @@
             float: left;
         }
 
-        .go-icon, .close-icon {
+        .go-icon,
+        .close-icon {
             .fa;
         }
 
@@ -112,7 +114,8 @@
             margin-top: 7px;
         }
 
-        select, input {
+        select,
+        input {
             margin-left: 5px;
         }
 
@@ -136,7 +139,7 @@
         }
     }
 
-    input[type='text'] {
+    input[type="text"] {
         width: 90%;
     }
 

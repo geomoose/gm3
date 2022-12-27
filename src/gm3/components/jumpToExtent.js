@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
 
-import { zoomToExtent } from '../actions/map';
+import { zoomToExtent } from "../actions/map";
 
 /**
  * JumpToExtent
@@ -38,36 +38,45 @@ import { zoomToExtent } from '../actions/map';
  *      - in the form [minx, miny, maxx, maxy]
  *      - Extent must be in the same projection as the map
  */
-export const JumpToExtent = ({locations, onZoomTo}) => {
-    const {t} = useTranslation();
+export const JumpToExtent = ({ locations, onZoomTo }) => {
+  const { t } = useTranslation();
 
-    const options = locations.map(function(location, index) {
-        return <option key={index} value={index}>{location.label}</option>;
-    });
-
+  const options = locations.map(function (location, index) {
     return (
-        <select value="default" onChange={(evt) => {
-            onZoomTo(locations[evt.target.value].extent);
-        }}>
-            <option disabled key="default" value="default">{t('zoomto-extent')}</option>
-            {options}
-        </select>
+      <option key={index} value={index}>
+        {location.label}
+      </option>
     );
-}
+  });
+
+  return (
+    <select
+      value="default"
+      onChange={(evt) => {
+        onZoomTo(locations[evt.target.value].extent);
+      }}
+    >
+      <option disabled key="default" value="default">
+        {t("zoomto-extent")}
+      </option>
+      {options}
+    </select>
+  );
+};
 
 JumpToExtent.defaultProps = {
-    locations: [],
-    onZoomTo: (extent) => {
-        // do nothing.
-    },
+  locations: [],
+  onZoomTo: (extent) => {
+    // do nothing.
+  },
 };
 
 function mapDispatch(dispatch) {
-    return {
-        onZoomTo: (extent) => {
-            dispatch(zoomToExtent(extent));
-        },
-    };
+  return {
+    onZoomTo: (extent) => {
+      dispatch(zoomToExtent(extent));
+    },
+  };
 }
 
 export default connect(undefined, mapDispatch)(JumpToExtent);

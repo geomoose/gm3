@@ -23,12 +23,12 @@
  */
 
 @folder-color: #333333;
-@refresh-icon-disabled-color: #82A984;
-@refresh-icon-enabled-color: #5DF265;
+@refresh-icon-disabled-color: #82a984;
+@refresh-icon-enabled-color: #5df265;
 @icon-size: 20px;
 
 .icon {
-    font: normal normal normal @icon-size/1 mapskin;
+    font: normal normal normal @icon-size / 1 mapskin;
     cursor: pointer;
     margin-right: 0.5em;
     vertical-align: middle;
@@ -38,16 +38,33 @@
     }
 }
 
-.icon.upload, .icon.clear, .icon.download, .icon.remove, .icon.refresh,
-.icon.legend, .icon.up, .icon.down, .icon.edit,
-.icon.fade, .icon.unfade, .icon.metadata,
-.icon.sort, .icon.remove, .icon.filter,
-.icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox,
+.icon.upload,
+.icon.clear,
+.icon.download,
+.icon.remove,
+.icon.refresh,
+.icon.legend,
+.icon.up,
+.icon.down,
+.icon.edit,
+.icon.fade,
+.icon.unfade,
+.icon.metadata,
+.icon.sort,
+.icon.remove,
+.icon.filter,
+.icon.favorite,
+.icon.refresh,
+.icon.folder,
+.icon.checkbox,
 .icon.radio,
-.icon.save, .icon.cancel, .icon.undo, .icon.stop, .icon.close
-{
+.icon.save,
+.icon.cancel,
+.icon.undo,
+.icon.stop,
+.icon.close {
     .fa;
-    font-size: @icon-size/1;
+    font-size: @icon-size / 1;
 }
 
 .icon.close {
@@ -92,7 +109,6 @@
     }
 }
 
-
 .icon.line {
     &:before {
         content: "\e01c";
@@ -130,10 +146,11 @@
 }
 
 .icon.fade {
-    opacity: .50;
+    opacity: 0.5;
 }
 
-.icon.fade, .icon.unfade {
+.icon.fade,
+.icon.unfade {
     &:before {
         content: @fa-var-adjust;
     }
@@ -156,7 +173,6 @@
         content: @fa-var-sort-amount-asc;
     }
 }
-
 
 .icon.sort.desc {
     &:before {

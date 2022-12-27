@@ -26,66 +26,71 @@
  *
  */
 
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
-export const addTool = createAction('toolbar/add', (root, tool, order = 'last') => ({
+export const addTool = createAction(
+  "toolbar/add",
+  (root, tool, order = "last") => ({
     payload: {
-        order,
-        root: root || 'root',
-        tool,
+      order,
+      root: root || "root",
+      tool,
     },
-}));
+  })
+);
 
-export const addDrawer = createAction('toolbar/add-drawer', (root, drawer, order = 'last') => ({
+export const addDrawer = createAction(
+  "toolbar/add-drawer",
+  (root, drawer, order = "last") => ({
     payload: {
-        root: root || 'root',
-        order,
-        tool: {
-            name: drawer.name,
-            label: drawer.label,
-            actionType: 'drawer',
-            actionDetail: '',
-            tip: drawer.tip,
-        }
-    }
-}));
+      root: root || "root",
+      order,
+      tool: {
+        name: drawer.name,
+        label: drawer.label,
+        actionType: "drawer",
+        actionDetail: "",
+      },
+    },
+  })
+);
 
-export const remove = createAction('toolbar/remove');
+export const remove = createAction("toolbar/remove");
 
 function parseTool(toolXml) {
-    return {
-        name: toolXml.getAttribute('name'),
-        label: toolXml.getAttribute('title'),
-        actionType: toolXml.getAttribute('type'),
-        actionDetail: toolXml.getAttribute('action'),
-        cssClass: toolXml.getAttribute('css-class'),
-        tip: toolXml.getAttribute('tip'),
-    }
+  return {
+    name: toolXml.getAttribute("name"),
+    label: toolXml.getAttribute("title"),
+    actionType: toolXml.getAttribute("type"),
+    actionDetail: toolXml.getAttribute("action"),
+    cssClass: toolXml.getAttribute("css-class"),
+  };
 }
 
 function parseDrawer(drawerXml) {
-    return {
-        name: drawerXml.getAttribute('name'),
-        label: drawerXml.getAttribute('title'),
-        tip: drawerXml.getAttribute('tip'),
-    }
+  return {
+    name: drawerXml.getAttribute("name"),
+    label: drawerXml.getAttribute("title"),
+  };
 }
 
 function parseChildren(rootName, node) {
-    let actions = [];
-    for(const child of node.childNodes) {
-        if(child.tagName === 'drawer') {
-            const drawer = parseDrawer(child)
-            actions.push(addDrawer(rootName, drawer));
-            actions = actions.concat(parseChildren(drawer.name, child));
-        } else if(child.tagName === 'tool') {
-            actions.push(addTool(rootName, parseTool(child)));
-        }
+  let actions = [];
+  for (const child of node.childNodes) {
+    if (child.tagName === "drawer") {
+      const drawer = parseDrawer(child);
+      actions.push(addDrawer(rootName, drawer));
+      actions = actions.concat(parseChildren(drawer.name, child));
+    } else if (child.tagName === "tool") {
+      actions.push(addTool(rootName, parseTool(child)));
     }
-    return actions;
+  }
+  return actions;
 }
 
 export function parseToolbar(toolbarXml) {
-    if(!toolbarXml) { return []; }
-    return parseChildren('root', toolbarXml);
+  if (!toolbarXml) {
+    return [];
+  }
+  return parseChildren("root", toolbarXml);
 }

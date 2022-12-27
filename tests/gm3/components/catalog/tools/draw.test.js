@@ -22,33 +22,31 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
-import { DrawTool } from 'gm3/components/catalog/tools/draw-tool';
+import { DrawTool } from "gm3/components/catalog/tools/draw-tool";
 
+describe("Download tool test", () => {
+  it("renders a download tool and dispatches an action", () => {
+    let clicked = false;
 
-describe('Download tool test', () => {
-    it('renders a download tool and dispatches an action', () => {
-        let clicked = false;
+    const props = {
+      changeTool: function () {
+        clicked = true;
+      },
+      drawType: "polygon",
+      tip: "draw a polygon",
+      layer: {
+        src: ["test/test"],
+      },
+      mapSources: {
+        test: {},
+      },
+    };
 
-        const props = {
-            changeTool: function() {
-                clicked = true;
-            },
-            drawType: 'polygon',
-            tip: 'draw a polygon',
-            layer: {
-                src: ['test/test'],
-            },
-            mapSources: {
-                'test': {},
-            },
-        };
-
-        render(<DrawTool {...props} />);
-        fireEvent.click(screen.getByRole('button'));
-        expect(clicked).toBe(true);
-    });
+    render(<DrawTool {...props} />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(clicked).toBe(true);
+  });
 });
-

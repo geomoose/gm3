@@ -22,21 +22,20 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
+import React from "react";
+import { render } from "@testing-library/react";
 
-import MetadataTool from 'gm3/components/catalog/tools/metadata';
+import MetadataTool from "gm3/components/catalog/tools/metadata";
 
-describe('Metadata tool test', () => {
-    it('renders a metadata tool and dispatches an action', () => {
-        const TEST_HREF = '/meta.html';
+describe("Metadata tool test", () => {
+  it("renders a metadata tool and dispatches an action", () => {
+    const TEST_HREF = "/meta.html";
 
-        const props = {
-            href: TEST_HREF,
-        };
+    const props = {
+      href: TEST_HREF,
+    };
 
-        const {container} = render(<MetadataTool {...props} />);
-        expect(container.innerHTML).toContain(TEST_HREF);
-    });
+    const { container } = render(<MetadataTool {...props} />);
+    expect(container.innerHTML).toContain(TEST_HREF);
+  });
 });
-
