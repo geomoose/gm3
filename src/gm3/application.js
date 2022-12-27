@@ -757,7 +757,7 @@ class Application {
             this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
         }
 
-        this.store.dispatch(startService(serviceName, options.defaultValues));
+        this.store.dispatch(startService({serviceName, defaultValues: options.defaultValues}));
 
         // when autoGo is set to true, the service will
         //   start the query.

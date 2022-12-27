@@ -9,12 +9,23 @@ import { getMapSourceName } from '../util';
 import { changeTool, setSelectionBuffer, clearSelectionFeatures, addSelectionFeature } from './map';
 import { clearFeatures, addFeatures } from './mapSource';
 
-export const startService = createAction('query/start-service', (serviceName, defaultValues = {}) => ({
+export const changeService = createAction('query/change-service', (serviceName, defaultValues = {}) => ({
     payload: {
         serviceName,
         defaultValues,
     },
 }));
+
+export const startService = createAsyncThunk('query/start-service', ({serviceName, defaultValues = {}}, {getState, dispatch}) => {
+    const state = getState();
+
+    if (state.query.serviceName !== serviceName) {
+        // clear the selection features
+        dispatch(clearSelectionFeatures());
+        dispatch(clearFeatures('selection'));
+    }
+    dispatch(changeService(serviceName, defaultValues));
+});
 
 export const finishService = createAction('query/finish-service');
 
@@ -103,7 +114,7 @@ export const bufferResults = createAsyncThunk('query/buffer-results', (arg, {get
         dispatch(clearFeatures('selection'));
         dispatch(addFeatures('selection', features));
 
-        dispatch(startService('buffer-select'));
+        dispatch(changeService('buffer-select'));
     } else {
         // TODO: Dispatch an error message that it
         //       it is not possible to buffer nothing.

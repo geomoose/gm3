@@ -99,7 +99,7 @@ function mapDispatch(dispatch, ownProps) {
                 }
 
                 // start the service
-                dispatch(startService(tool.name));
+                dispatch(startService({serviceName: tool.name}));
                 // give an indication that a new service has been started
                 dispatch(setUiHint('service-start'));
             } else if(tool.actionType === 'action') {

@@ -31,7 +31,7 @@ const ServiceManager = function({
 
     // when the service name changes, reset the field values
     useEffect(() => {
-        setServiceReady(false);
+        setServiceReady(-1);
         setFieldValues({});
     }, [serviceDef]);
 
