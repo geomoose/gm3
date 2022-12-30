@@ -743,21 +743,7 @@ class Application {
             ? options.changeTool
             : serviceDef.tools.default;
 
-        this.store.dispatch(mapActions.changeTool(nextTool));
-
-        if (options && options.withFeatures) {
-            // reset the buffer when adding features.
-            this.store.dispatch(mapActions.setSelectionBuffer(0));
-            // dispatch the features
-            this.store.dispatch(mapActions.clearSelectionFeatures());
-            options.withFeatures.forEach(feature => {
-                this.store.dispatch(mapActions.addSelectionFeature(feature));
-            });
-            this.store.dispatch(mapSourceActions.clearFeatures('selection'));
-            this.store.dispatch(mapSourceActions.addFeatures('selection', options.withFeatures));
-        }
-
-        this.store.dispatch(startService(serviceName, options.defaultValues));
+        this.store.dispatch(startService({serviceName, defaultTool: nextTool, defaultValues: options.defaultValues, withFeatures: options.withFeatures}));
 
         // when autoGo is set to true, the service will
         //   start the query.
@@ -768,8 +754,6 @@ class Application {
             const fields = normalizeFieldValues(serviceDef, options.defaultValues);
             serviceDef.query(selection, fields);
         }
-
-        this.store.dispatch(uiActions.setUiHint('service-start'));
     }
 
     /** Handle updating the UI, does nothing in vanilla form.
