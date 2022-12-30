@@ -8,6 +8,7 @@ import { getMapSourceName } from '../util';
 
 import { changeTool, setSelectionBuffer, clearSelectionFeatures, addSelectionFeature } from './map';
 import { clearFeatures, addFeatures } from './mapSource';
+import { setUiHint } from './ui';
 
 export const changeService = createAction('query/change-service', (serviceName, defaultValues = {}) => ({
     payload: {
@@ -16,17 +17,36 @@ export const changeService = createAction('query/change-service', (serviceName, 
     },
 }));
 
-export const startService = createAsyncThunk('query/start-service', ({serviceName, defaultValues = {}}, {getState, dispatch}) => {
+export const startService = createAsyncThunk('query/start-service', ({serviceName, defaultTool = null, defaultValues = {}, withFeatures = []}, {getState, dispatch}) => {
     const state = getState();
+    const currentService = state.query.serviceName;
+    const currentDrawTool = state.map?.interactionType;
 
-    if (state.query.serviceName !== serviceName) {
-        // clear the selection features
+    // if the service is changing then reset the
+    //  buffer and selection geometry settings.
+    if (serviceName !== currentService) {
         dispatch(clearSelectionFeatures());
+        dispatch(setSelectionBuffer(0));
+        dispatch(changeTool(defaultTool));
         if (state.mapSources.selection) {
             dispatch(clearFeatures('selection'));
         }
+    } else if (currentDrawTool === null) {
+        dispatch(changeTool(defaultTool));
     }
+
+    // start a service "with [these] features"
+    if (withFeatures.length > 0) {
+        withFeatures.forEach(feature => {
+            dispatch(addSelectionFeature(feature));
+        });
+        if (state.mapSources.selection) {
+            dispatch(addFeatures('selection', withFeatures));
+        }
+    }
+
     dispatch(changeService(serviceName, defaultValues));
+    dispatch(setUiHint('service-start'));
 });
 
 export const finishService = createAction('query/finish-service');
