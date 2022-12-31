@@ -549,6 +549,7 @@
             <tool name="search" title="Search Parcels" type="service"/>
             <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
             <tool name="geocode" title="Geocode an Address" type="service"/>
+            <tool name="search-super" css-class="tool search" title="Super search" type="service"/>
         </drawer>
 
         <tool name="findme" title="Find Me" type="action"/>

@@ -172,13 +172,105 @@ app.loadMapbook().then(function() {
         zoomToResults: true
     });
 
-
     app.registerService('search-firestations', SearchService, {
         searchLayers: ['firestations/fire_stations'],
         fields: [
             {type: 'text', label: 'Station city', name: 'Dak_GIS__4'}
         ]
     });
+
+    // This is an example of a very complex search that gives
+    //  the user more control over the shape of their query.
+    //
+    const operators = [
+      {value: '', label: 'Do not use'},
+      {value: 'ilike', label: 'Similar to'},
+      {value: 'eq', label: 'Equal to'}
+    ];
+    app.registerService('search-super', SearchService, {
+        title: 'Super search',
+        searchLayers: ['vector-parcels/parcels'],
+        fields: [
+          {type: 'select', label: '', name: 'and_or', options: [
+            {value: 'and', label: 'Match all'},
+            {value: 'or', label: 'Match any'}
+          ]},
+          {type: 'select', label: 'Parcel ID', name: 'pin_op', options: [
+            {value: '', label: 'Do not use'},
+            {value: 'in', label: 'In list'},
+            {value: 'eq', label: 'Is equal to'}
+          ]},
+          {type: 'text', label: '', name: 'pin_value'},
+          {type: 'select', label: 'Street name', name: 'street_op', options: operators},
+          {type: 'text', label: '', name: 'street_value'},
+          {type: 'select', label: 'Address', name: 'address_op', options: operators},
+          {type: 'text', label: '', name: 'address_value'},
+          {type: 'select', label: 'City', name: 'city_op',
+            options: [
+              {value: '', label: 'Do not use'},
+              {value: 'eq', label: 'Is equal to'}
+            ]
+          },
+          {type: 'select', label: '', name: 'city_value',
+            options: [
+              {value: 'NORTHFIELD', label: 'Northfield'},
+              {value: 'FARMINGTON', label: 'Farmington'}
+            ]
+          }
+        ],
+        prepareFields: function(fields) {
+            const query = [];
+            // convert the fields into a an object to make
+            //   lookup in the loop easier.
+            const values = {};
+            fields.forEach(function(field) {
+                values[field.name] = field.value;
+            });
+            // the fields names in the form are generic,
+            //  this is the list of field names in the datset
+            const fieldLookup = {
+                pin: 'PIN',
+                street: 'STREETNAME',
+                address: 'BLDG_NUM',
+                city: 'CITY'
+            };
+            ['pin', 'street', 'address', 'city'].forEach(function(input) {
+                const op = values[input + '_op'];
+                const fieldName = fieldLookup[input];
+                const fieldValue = values[input + '_value'];
+                if (op === 'ilike') {
+                    query.push({
+                        comparitor: 'ilike',
+                        name: fieldName,
+                        value: '%' + fieldValue + '%'
+                    });
+                } else if (op === 'in') {
+                  // "in" is a meta-operator, it needs converted to
+                  // an "or" query.
+                  const values = fieldValue.replace(' ', '').split(',');
+                  query.push(['or'].concat(values.map(function(value) {
+                    return {
+                      comparitor: 'eq',
+                      name: fieldName,
+                      value: value,
+                    };
+                  })));
+                } else if (!!op) {
+                    // trust that the specified operator exists
+                    query.push({
+                        comparitor: op,
+                        name: fieldName,
+                        value: fieldValue
+                    });
+                }
+            });
+            if (values['and_or'] === 'or') {
+                return [['or'].concat(query)];
+            }
+            return query;
+        }
+    });
+
     app.registerService('select', SelectService, {
         // set the default layer
         defaultLayer: 'vector-parcels/parcels',
@@ -295,3 +387,4 @@ app.loadMapbook().then(function() {
     // This is a new feature available starting in GeoMoose 3.11!
     app.startServiceFromQuery();
 });
+
