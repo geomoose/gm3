@@ -5,6 +5,8 @@ The code below shows a very complex example of a data search
 that is intended for power users. It uses GeoMoose's demo-parcel
 layer.
 
+.. figure:: images/complex-search.png
+
 
 Configure the search service
 ----------------------------
