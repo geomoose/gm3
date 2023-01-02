@@ -46,6 +46,7 @@ export class Toolbar extends React.Component {
                                         label={ tool.label }
                                         tools={ this.props.toolbar[tool.name] }
                                         services={ this.props.services }
+                                        tip={ tool.tip }
                                     />
                                 );
                             } else {

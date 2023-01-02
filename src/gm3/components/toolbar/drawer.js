@@ -32,12 +32,14 @@ import PropTypes from 'prop-types';
 import ToolbarButton from './button';
 import { useTranslation } from 'react-i18next';
 
-const ToolbarDrawer = ({label, tools, services}) => {
+const ToolbarDrawer = ({label, tip, tools, services}) => {
     const {t} = useTranslation();
+    const drawerLabel = t(label);
+    const drawerTip = !!tip ? t(tip) : drawerLabel;
     return (
         <div className='drawer'>
-            <button className='drawer tool'>
-                <span className='drawer icon'></span><span className='label'>{t(label)}</span>
+            <button className='drawer tool' title={drawerTip}>
+                <span className='drawer icon'></span><span className='label'>{drawerLabel}</span>
             </button>
             <div className='drawer-contents'>
                 {
@@ -60,11 +62,13 @@ const ToolbarDrawer = ({label, tools, services}) => {
 
 ToolbarDrawer.defaultProps = {
     label: 'Unititled drawer',
+    tip: '',
     tools: [],
 }
 
 ToolbarDrawer.propTypes = {
     label: PropTypes.string,
+    tip: PropTypes.string,
     tools: PropTypes.array,
 }
 
