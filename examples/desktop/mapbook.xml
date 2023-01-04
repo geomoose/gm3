@@ -540,11 +540,11 @@
         <tool name="measure" title="Measure" type="service"/>
         <tool name="print" title="Print" type="action"/>
 
-        <tool name="identify" title="Identify" type="service"/>
+        <tool name="identify" title="Identify" type="service" tip="Identify features on the map"/>
 
         <tool name="select" title="Select Features" type="service"/>
 
-        <drawer name="searches" title="Search">
+        <drawer name="searches" title="Search" tip="Collection of search services">
             <tool name="search-runways" title="Search Runways" type="service"/>
             <tool name="search" title="Search Parcels" type="service"/>
             <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
