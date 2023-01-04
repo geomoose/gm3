@@ -23,6 +23,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import MetadataTool from './tools/metadata';
 
 export default class CatalogGroup extends React.Component {
     render() {
@@ -45,7 +46,13 @@ export default class CatalogGroup extends React.Component {
                     }}
                     className='group-label'
                 >
-                    <i className={'folder icon ' + is_open}></i>{group.label}
+                    <i className={'folder icon ' + is_open}></i>
+                    {group.label}{' '}
+                    {
+                        !group.metadata_url ? false : (
+                            <MetadataTool href={group.metadata_url} />
+                        )
+                    }
                 </div>
                 <div className='children'>
                     { this.props.children }

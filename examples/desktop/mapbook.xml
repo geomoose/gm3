@@ -480,6 +480,8 @@
 
         <group title="Overlays" expand="true">
             <group title="County Layers">
+                <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
+
                 <layer src="places/default" />
 
                 <layer title="Vector Parcels" src="vector-parcels/parcels">
