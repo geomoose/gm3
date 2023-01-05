@@ -58,6 +58,7 @@ export const runQuery = createAsyncThunk('query/run', (arg, {getState, dispatch}
             case 'wfs':
                 return wfsGetFeatureQuery(layer, state.map, mapSource, queryDef);
             case 'ags-vector':
+            case 'ags':
                 return agsFeatureQuery(layer, state.map, mapSource, queryDef);
             case 'geojson':
             case 'vector':

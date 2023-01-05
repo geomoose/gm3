@@ -517,6 +517,7 @@ function isQueryable(mapSource) {
     }
     // check by type
     switch(mapSource.type) {
+        case 'ags':
         case 'wms':
         case 'wfs':
         case 'ags-vector':
