@@ -86,7 +86,10 @@ function IdentifyService(Application, options) {
         //  it would be necessary to put that code here and then manually tell
         //  the application when the query has finished, at which point resultsAsHtml()
         //  would be called by the service tab.
-        if(visible_layers.length > 0) {
+
+        if (!selection || selection.length === 0) {
+            Application.alert('identify-point-required', 'A point is required for this query!');
+        } else if (visible_layers.length > 0) {
             Application.dispatchQuery(this.name, selection, fields, visible_layers, templates);
         } else {
             Application.alert('no-identify-layers', 'No layers to identify!');

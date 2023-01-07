@@ -26,7 +26,7 @@
  *
  */
 
-import React from 'react';
+import React, {useCallback} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -35,41 +35,56 @@ import { startService } from '../../actions/query';
 import { runAction, setUiHint } from '../../actions/ui';
 import { clearSelectionFeatures, setSelectionBuffer, changeTool } from '../../actions/map';
 
-export const BaseToolbarButton = ({onClick, className, label}) => (
+export const BaseToolbarButton = ({onClick, className, label, tip}) => (
     <button
         className={`toolbar-button ${className}`}
         onClick={onClick}
-        title={label}
+        title={tip || label}
     >
         <span className='icon'></span>
         <span className='label'>{label}</span>
     </button>
 );
 
-export const ToolbarButton = ({tool, onClick, currentService, currentDrawTool}) => {
+export const ToolbarButton = ({tool, runAction, startService, currentService, currentDrawTool, serviceDef}) => {
     const {t} = useTranslation();
     const label = t(tool.label);
+    const tip = !!tool.tip ? t(tool.tip) : label;
     const active = (tool.name === currentService);
+
+    const onClick = useCallback(() => {
+        if (tool.actionType === 'service') {
+            let defaultTool = null;
+            if (serviceDef
+              && serviceDef.tools
+              && serviceDef.tools.default
+            ) {
+                defaultTool = serviceDef.tools.default;
+            }
+            startService({serviceName: tool.name, defaultTool});
+        } else if (tool.actionType === 'action') {
+            runAction(tool.name);
+        }
+    }, [startService, tool, serviceDef]);
+
     return (
         <BaseToolbarButton
             key={tool.name}
-            onClick={() => {
-                onClick(tool, currentService, currentDrawTool);
-            }}
-            label={t(tool.label)}
+            onClick={onClick}
+            label={label}
+            tip={tip}
             className={`${active ? 'active ' : ''}${tool.cssClass || 'tool ' + tool.name}`}
         />
     );
 }
 
-ToolbarButton.defaultProps = {
-    onClick: (tool, currentService) => {
-    },
-};
-
 ToolbarButton.propTypes = {
     tool: PropTypes.object.isRequired,
-    onClick: PropTypes.func,
+    runAction: PropTypes.func,
+    startService: PropTypes.func,
+    currentService: PropTypes.string,
+    currentDrawTool: PropTypes.string,
+    serviceDef: PropTypes.object,
 };
 
 const mapState = state => ({
@@ -77,36 +92,9 @@ const mapState = state => ({
     currentDrawTool: state.map.interactionType,
 });
 
-function mapDispatch(dispatch, ownProps) {
-    return {
-        onClick: (tool, currentService, currentDrawTool) => {
-            if(tool.actionType === 'service') {
-                let defaultTool = null;
-                if (ownProps.serviceDef
-                    && ownProps.serviceDef.tools
-                    && ownProps.serviceDef.tools.default
-                ) {
-                    defaultTool = ownProps.serviceDef.tools.default;
-                }
-
-                // reset the buffer if changing tools
-                if (tool.name !== currentService) {
-                    dispatch(clearSelectionFeatures());
-                    dispatch(setSelectionBuffer(0));
-                    dispatch(changeTool(defaultTool));
-                } else if (currentDrawTool === null) {
-                    dispatch(changeTool(defaultTool));
-                }
-
-                // start the service
-                dispatch(startService(tool.name));
-                // give an indication that a new service has been started
-                dispatch(setUiHint('service-start'));
-            } else if(tool.actionType === 'action') {
-                dispatch(runAction(tool.name));
-            }
-        }
-    };
-}
+const mapDispatch = {
+    runAction,
+    startService,
+};
 
 export default connect(mapState, mapDispatch)(ToolbarButton);

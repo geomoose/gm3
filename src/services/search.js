@@ -117,8 +117,9 @@ function SearchService(Application, options) {
         // check which templates should try and load
         var templates = [this.template];
         if (this.showGrid) {
-            templates.push('@search-grid-columns');
-            templates.push('@search-grid-row');
+            const templateName = !!this.alias ? this.alias : this.name;
+            templates.push('@' + templateName + '-grid-columns');
+            templates.push('@' + templateName + '-grid-row');
         }
 
         // Application.dispatchQuery is used to query a set of map-sources

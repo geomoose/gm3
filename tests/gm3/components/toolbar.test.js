@@ -25,17 +25,12 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 
-import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
+import { createStore } from 'gm3/store';
 
 import SmartToolbar, { Toolbar } from 'gm3/components/toolbar';
 import SmartToolbarButton, { ToolbarButton } from 'gm3/components/toolbar/button';
 import ToolbarDrawer from 'gm3/components/toolbar/drawer';
-
-import toolbarReducer from 'gm3/reducers/toolbar';
-import queryReducer from 'gm3/reducers/query';
-import mapReducer from 'gm3/reducers/map';
-import uiReducer from 'gm3/reducers/ui';
 
 import * as actions from 'gm3/actions/toolbar';
 
@@ -44,12 +39,7 @@ describe('Toolbar component tests', () => {
     let store = null;
 
     beforeEach(() => {
-        store = createStore(combineReducers({
-            toolbar: toolbarReducer,
-            map: mapReducer,
-            query: queryReducer,
-            ui: uiReducer,
-        }));
+        store = createStore();
     });
 
     it('renders a toolbar button', () => {
