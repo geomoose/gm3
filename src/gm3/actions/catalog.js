@@ -72,12 +72,18 @@ function parseGroup(groupXml) {
         label: groupXml.getAttribute('title'),
         expand: util.parseBoolean(groupXml.getAttribute('expand')),
         // multiple=true is checkboxes, false is radio buttons
-        multiple: util.parseBoolean(groupXml.getAttribute('multiple'), true)
+        multiple: util.parseBoolean(groupXml.getAttribute('multiple'), true),
+        metadata_url: null,
     };
 
     const p = groupXml.parentNode;
     if(p && p.tagName === 'group') {
         new_group.parent = p.getAttribute('uuid');
+    }
+
+    const metadata = util.getTagContents(groupXml, 'metadata', true)[0];
+    if (metadata) {
+        new_group.metadata_url = metadata;
     }
 
     return new_group;

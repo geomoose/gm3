@@ -95,12 +95,15 @@ export function getTagContents(xml, tagName, multiple) {
     const tags = xml.getElementsByTagName(tagName);
     for(let i = 0, ii = tags.length; i < ii; i++) {
         const tag = tags[i];
-        const node_value = getXmlTextContents(tag);
-        // when multiple is not true, return the first value.
-        if(multiple === true) {
-            contents.push(node_value);
-        } else {
-            return node_value;
+        // ensure this does not go too deep.
+        if (tag.parentNode === xml) {
+            const node_value = getXmlTextContents(tag);
+            // when multiple is not true, return the first value.
+            if(multiple === true) {
+                contents.push(node_value);
+            } else {
+                return node_value;
+            }
         }
     }
 
