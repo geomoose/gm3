@@ -3,7 +3,7 @@ How-to add Identify
 
 If you would like to have your map users to be able to get information
 on specific features using the Identify tool, you must: \* ensure the
-``<map-source>`` type is one of: ``wms``, ``mapserver``, ``wfs``,
+``<map-source>`` type is one of: ``wms``, ``ags`` (using query-as), ``mapserver``, ``wfs``,
 ``mapserver-wfs``, or ``ags-vector`` \* add an identify template to the
 layer in the ``<map-source>`` (see below) \* have the user display the
 layer in the Catalog
@@ -34,7 +34,7 @@ shown in the Super Tab, something like:
     boundedBy: -10443124.4532125805088.070692-10358662.5561045947016.049725
     AREA: 5163166424.00009
     PERIMETER: 309931.11344
-    COUNTY_: 84
+    COUNTY: 84
     COUNTY_ID: 21
     COUNTY_NUM: 1
     COUNTYNAME: Aitkin
