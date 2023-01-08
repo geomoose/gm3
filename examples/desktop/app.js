@@ -79,7 +79,7 @@ app.loadMapbook().then(function() {
         fields: [
             {type: 'text', label: 'Name', name: 'Name'},
         ],
-        searchLayers: ['ags-vector-dc21/runways'],
+        searchLayers: ['ags-polygons-query/runways'],
         validateFieldValues: function (fields) {
             let nonEmpty = 0;
             const validateFieldValuesResult = {
@@ -247,8 +247,20 @@ app.loadMapbook().then(function() {
                 extent: app.bboxToMeters(-93.3,44.47,-93.0, 44.63)
             },
             {
+                label: 'Duluth harbor',
+                extent: app.bboxToMeters(-92.12, 46.74, -92.08, 46.78)
+            },
+            {
+                label: 'Minneapolis',
+                extent: app.bboxToMeters(-93.58, 44.55, -93.0, 45.2228)
+            },
+            {
                 label: 'Dakota County',
                 extent: app.bboxToMeters(-93.4,44.5,-92.7, 44.91)
+            },
+			{
+                label: 'Grant County',
+                extent: app.bboxToMeters(-96.31, 45.58, -95.74, 46.23)
             },
             {
                 label: 'Minnesota',
