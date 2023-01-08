@@ -28,7 +28,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import {
-    startService, finishService, createQuery, runQuery, addFilter, removeFilter, setHotFilter, removeQueryResults
+    changeService, finishService, createQuery, runQuery, addFilter, removeFilter, setHotFilter, removeQueryResults
 } from '../actions/query';
 import { filterFeatures, getFilterFieldNames } from '../util';
 
@@ -52,7 +52,7 @@ const defaultState = {
 };
 
 const reducer = createReducer(defaultState, {
-    [startService]: (state, {payload: {serviceName, defaultValues}}) => {
+    [changeService]: (state, {payload: {serviceName, defaultValues}}) => {
         // the instance counter is used to delineate between
         //  simultaneous calls to the same service.
         state.instance += 1;

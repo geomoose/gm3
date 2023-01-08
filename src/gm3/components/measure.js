@@ -25,6 +25,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { getArea } from 'ol/sphere';
 
 import DrawTool from './drawTool';
 
@@ -208,18 +209,8 @@ export class MeasureTool extends Component {
      * @return JSX
      */
     renderArea(geom) {
-        let point0 = new olPoint(geom.coordinates[0][0]);
-        point0 = point0.transform(this.props.mapProjection, 'EPSG:4326');
-
-        // determine an appropriate utm zone for measurement.
-        const utm_zone = proj.get(util.getUtmZone(point0.getCoordinates()));
-
-        const utm_geom = util.jsonToGeom(geom).transform(this.props.mapProjection, utm_zone)
-
-        const area_m = utm_geom.getArea();
-
+        const area_m  = getArea(util.jsonToGeom(geom));
         const area = util.metersAreaToUnits(area_m, this.state.units);
-
         return (
             <table className='measured-area'>
                 <tbody>
@@ -251,7 +242,7 @@ export class MeasureTool extends Component {
             return ( <CoordinateDisplay coords={ g.coordinates } projections={ this.props.pointProjections } resolution={ this.props.map.resolution } /> );
         } else if (g.type === 'LineString') {
             return this.renderSegments(g);
-        } else if (g.type === 'Polygon') {
+        } else if (g.type === 'Polygon' || g.type === 'MultiPolygon') {
             // assume polygon
             return this.renderArea(g);
         }
@@ -292,7 +283,7 @@ export class MeasureTool extends Component {
                     { this.renderUnitOption('ch') }
                 </div>
             );
-        } else if(measurement_type === 'Polygon') {
+        } else if(measurement_type && measurement_type.indexOf('Polygon') >= 0) {
             return (
                 <div className='measure-units'>
                     <b>{units}:</b>

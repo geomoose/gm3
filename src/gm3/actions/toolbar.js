@@ -45,6 +45,7 @@ export const addDrawer = createAction('toolbar/add-drawer', (root, drawer, order
             label: drawer.label,
             actionType: 'drawer',
             actionDetail: '',
+            tip: drawer.tip,
         }
     }
 }));
@@ -58,6 +59,7 @@ function parseTool(toolXml) {
         actionType: toolXml.getAttribute('type'),
         actionDetail: toolXml.getAttribute('action'),
         cssClass: toolXml.getAttribute('css-class'),
+        tip: toolXml.getAttribute('tip'),
     }
 }
 
@@ -65,6 +67,7 @@ function parseDrawer(drawerXml) {
     return {
         name: drawerXml.getAttribute('name'),
         label: drawerXml.getAttribute('title'),
+        tip: drawerXml.getAttribute('tip'),
     }
 }
 
