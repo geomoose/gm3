@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-import UsngGrid from 'usng-map-collar/UsngGrid';
+import UsngGrid from "usng-map-collar/UsngGrid";
 
 export const createLayer = () => {
-    return new UsngGrid();
+  return new UsngGrid();
 };
 
 export const updateLayer = (olMap, olLayer, mapSource) => {
-    // basically, if there are any visible layers turn make it visible
-    const visible = mapSource.layers.filter(layer => layer.on).length > 0;
-    olLayer.setVisible(visible);
+  // basically, if there are any visible layers turn make it visible
+  const visible = mapSource.layers.filter((layer) => layer.on).length > 0;
+  olLayer.setVisible(visible);
 };

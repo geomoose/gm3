@@ -22,21 +22,24 @@
  * SOFTWARE.
  */
 
-import {createAction} from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
 /* Action issued to start a print request.
  */
-export const printRequest = createAction('print/request', (width, height, center, resolution) => ({
+export const printRequest = createAction(
+  "print/request",
+  (width, height, center, resolution) => ({
     payload: {
-        size: [width, height],
-        center,
-        resolution,
+      size: [width, height],
+      center,
+      resolution,
     },
-}));
+  })
+);
 
 /* Action issued when the print image data should be updated.
  */
-export const printImage = createAction('print/image');
+export const printImage = createAction("print/image");
 
 /* Close out a print job.
  *
@@ -44,4 +47,4 @@ export const printImage = createAction('print/image');
  * if it is not called then the print image stays in memory which
  * is pretty greedy.
  */
-export const printed = createAction('print/finished');
+export const printed = createAction("print/finished");

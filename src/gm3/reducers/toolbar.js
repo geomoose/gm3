@@ -26,12 +26,8 @@
  *
  */
 
-import {createReducer} from '@reduxjs/toolkit';
-import {
-    addDrawer,
-    addTool,
-    remove,
-} from '../actions/toolbar';
+import { createReducer } from "@reduxjs/toolkit";
+import { addDrawer, addTool, remove } from "../actions/toolbar";
 
 /*
  * Toolbar tool definition
@@ -48,28 +44,31 @@ import {
  */
 
 const add = (state, payload) => {
-    if (!state[payload.root]) {
-        state[payload.root] = [];
-    }
-    if (payload.order === 'first') {
-        state[payload.root].unshift(payload.tool);
-    } else {
-        state[payload.root].push(payload.tool);
-    }
-}
+  if (!state[payload.root]) {
+    state[payload.root] = [];
+  }
+  if (payload.order === "first") {
+    state[payload.root].unshift(payload.tool);
+  } else {
+    state[payload.root].push(payload.tool);
+  }
+};
 
-const reducer = createReducer({root: []}, {
-    [addDrawer]: (state, {payload}) => {
-        add(state, payload);
+const reducer = createReducer(
+  { root: [] },
+  {
+    [addDrawer]: (state, { payload }) => {
+      add(state, payload);
     },
-    [addTool]: (state, {payload}) => {
-        add(state, payload);
+    [addTool]: (state, { payload }) => {
+      add(state, payload);
     },
-    [remove]: (state, {payload: name}) => {
-        for (const root in state) {
-            state[root] = state[root].filter(item => item.name !== name);
-        }
+    [remove]: (state, { payload: name }) => {
+      for (const root in state) {
+        state[root] = state[root].filter((item) => item.name !== name);
+      }
     },
-});
+  }
+);
 
 export default reducer;

@@ -22,38 +22,33 @@
  * SOFTWARE.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer } from "@reduxjs/toolkit";
 
-import {
-    setEditFeature,
-    finishEditing,
-    removeFeature,
-} from '../actions/edit';
-
+import { setEditFeature, finishEditing, removeFeature } from "../actions/edit";
 
 const defaultState = {
-    feature: null,
-    source: '',
-    modal: '',
+  feature: null,
+  source: "",
+  modal: "",
 };
 
 const reducer = createReducer(defaultState, {
-    [setEditFeature]: (state, {payload}) => {
-        state.feature = payload.feature;
-        state.source = payload.source || '';
-        state.isNew = payload.isNew === true;
-        state.modal = 'edit';
-    },
-    [finishEditing]: state => {
-        state.feature = null;
-        state.source = '';
-        state.modal = '';
-    },
-    [removeFeature]: (state, {payload}) => {
-        state.feature = payload.feature;
-        state.source = payload.source || '';
-        state.modal = 'remove';
-    },
+  [setEditFeature]: (state, { payload }) => {
+    state.feature = payload.feature;
+    state.source = payload.source || "";
+    state.isNew = payload.isNew === true;
+    state.modal = "edit";
+  },
+  [finishEditing]: (state) => {
+    state.feature = null;
+    state.source = "";
+    state.modal = "";
+  },
+  [removeFeature]: (state, { payload }) => {
+    state.feature = payload.feature;
+    state.source = payload.source || "";
+    state.modal = "remove";
+  },
 });
 
 export default reducer;

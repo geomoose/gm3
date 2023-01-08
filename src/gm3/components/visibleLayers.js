@@ -22,62 +22,59 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Provider, connect } from 'react-redux';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Provider, connect } from "react-redux";
 
-import CatalogLayer from './catalog/layer';
-import { getLayersByZOrder } from '../util';
+import CatalogLayer from "./catalog/layer";
+import { getLayersByZOrder } from "../util";
 
 /* VisibleLayers Tab.
  *
  * Displays layers in their map layer order.
  *
  */
-const VisibleLayers = ({store, catalog, mapSources}) => {
-    const {t} = useTranslation();
+const VisibleLayers = ({ store, catalog, mapSources }) => {
+  const { t } = useTranslation();
 
-    // get the list of layers order'd by the stack order
-    const layers = getLayersByZOrder(catalog, mapSources);
-    const n_layers = layers.length;
+  // get the list of layers order'd by the stack order
+  const layers = getLayersByZOrder(catalog, mapSources);
+  const nLayers = layers.length;
 
-    let contents;
+  let contents;
 
-    if(n_layers > 0) {
-        const catalog_layers = [];
-        for(let i = 0, ii = layers.length; i < ii; i++) {
-            const layer = layers[i];
-            catalog_layers.push(
-                <CatalogLayer
-                    key={'layer-' + i}
-                    layer={layer.layer}
-                    forceTools={['up', 'down']}
-                />
-            );
-        }
-        contents = catalog_layers;
-    } else {
-        contents = (<i>No layers are visible</i>);
+  if (nLayers > 0) {
+    const catalogLayers = [];
+    for (let i = 0, ii = layers.length; i < ii; i++) {
+      const layer = layers[i];
+      catalogLayers.push(
+        <CatalogLayer
+          key={"layer-" + i}
+          layer={layer.layer}
+          forceTools={["up", "down"]}
+        />
+      );
     }
+    contents = catalogLayers;
+  } else {
+    contents = <i>No layers are visible</i>;
+  }
 
-    return (
-        <Provider store={store}>
-            <div className="catalog visble-layers visible-layers flat">
-                <div className="info-box">
-                    { t('visible-layers-help') }
-                </div>
-                { contents }
-            </div>
-        </Provider>
-    );
-}
+  return (
+    <Provider store={store}>
+      <div className="catalog visble-layers visible-layers flat">
+        <div className="info-box">{t("visible-layers-help")}</div>
+        {contents}
+      </div>
+    </Provider>
+  );
+};
 
-
-const mapFavoritesToProps = function(store) {
-    return {
-        mapSources: store.mapSources,
-        catalog: store.catalog
-    }
-}
+const mapFavoritesToProps = function (store) {
+  return {
+    mapSources: store.mapSources,
+    catalog: store.catalog,
+  };
+};
 
 export default connect(mapFavoritesToProps)(VisibleLayers);

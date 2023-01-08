@@ -22,59 +22,68 @@
  * SOFTWARE.
  */
 
-import * as jsts from 'gm3/jsts';
+import * as jsts from "gm3/jsts";
 
 // this is necessary to configure the UTM projections
-import { configureProjections } from 'gm3/util';
-import { register } from 'ol/proj/proj4';
-import proj4 from 'proj4';
+import { configureProjections } from "gm3/util";
+import { register } from "ol/proj/proj4";
+import proj4 from "proj4";
 
-describe('test basic jsts stuff', function() {
-    beforeEach(() => {
-        configureProjections(proj4);
-        register(proj4);
-    });
+describe("test basic jsts stuff", function () {
+  beforeEach(() => {
+    configureProjections(proj4);
+    register(proj4);
+  });
 
-    it('buffers a point', function() {
-        const point = {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-                type: 'Point',
-                coordinates: [0, 0]
-            }
-        };
+  it("buffers a point", function () {
+    const point = {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "Point",
+        coordinates: [0, 0],
+      },
+    };
 
-        const polygon = jsts.buffer(point, 1);
-        expect(polygon.type).toBe('Polygon');
-    });
+    const polygon = jsts.buffer(point, 1);
+    expect(polygon.type).toBe("Polygon");
+  });
 
-    it('unions a couple of polygons', function() {
-        const features = [
-            {
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: [[
-                        [0, 0], [-1, 0], [0, 1], [0, 0]
-                    ]]
-                }
-            },
-            {
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: [
-                        [[-1, 0], [-1, 1], [0, 1], [-1, 0]]
-                    ]
-                }
-            }
-        ];
+  it("unions a couple of polygons", function () {
+    const features = [
+      {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [0, 0],
+              [-1, 0],
+              [0, 1],
+              [0, 0],
+            ],
+          ],
+        },
+      },
+      {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Polygon",
+          coordinates: [
+            [
+              [-1, 0],
+              [-1, 1],
+              [0, 1],
+              [-1, 0],
+            ],
+          ],
+        },
+      },
+    ];
 
-        const shp = jsts.bufferAndUnion(features, 1);
-        expect(shp).toBeDefined();
-    });
-
+    const shp = jsts.bufferAndUnion(features, 1);
+    expect(shp).toBeDefined();
+  });
 });

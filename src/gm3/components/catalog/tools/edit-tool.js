@@ -21,71 +21,76 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import { setEditPath, setEditTools } from '../../../actions/map';
-import { setLayerVisibility } from '../../../actions/mapSource';
-import { finishService } from '../../../actions/query';
-import { Tool } from '../tools';
-import { DRAW_TOOLS } from '../../../defaults';
-import { getMapSourceName, getLayerName } from '../../../util';
+import { setEditPath, setEditTools } from "../../../actions/map";
+import { setLayerVisibility } from "../../../actions/mapSource";
+import { finishService } from "../../../actions/query";
+import { Tool } from "../tools";
+import { DRAW_TOOLS } from "../../../defaults";
+import { getMapSourceName, getLayerName } from "../../../util";
 
+export const EditTool = ({
+  layer,
+  service,
+  setEditPath,
+  setEditTools,
+  setLayerVisibility,
+  finishService,
+}) => {
+  const src = layer.src[0];
+  const path = src.mapSourceName + "/" + src.layerName;
 
-export const EditTool = ({layer, service, setEditPath, setEditTools, setLayerVisibility, finishService}) => {
-    const src = layer.src[0];
-    const path = src.mapSourceName + '/' + src.layerName;
+  return (
+    <Tool
+      iconClass="modify"
+      tip="draw-open-tip"
+      onClick={() => {
+        // ensure all the services are stopped
+        if (service) {
+          finishService();
+        }
+        // start the editing mode for this path.
+        setEditPath(path);
 
-    return (
-        <Tool
-            iconClass="modify"
-            tip="draw-open-tip"
-            onClick={() => {
-                // ensure all the services are stopped
-                if (service) {
-                    finishService();
-                }
-                // start the editing mode for this path.
-                setEditPath(path);
+        // determine which tools are available
+        const layerTools = [];
+        for (let i = 0, ii = DRAW_TOOLS.length; i < ii; i++) {
+          if (layer.tools.indexOf(DRAW_TOOLS[i]) >= 0) {
+            layerTools.push(DRAW_TOOLS[i]);
+          }
+        }
+        // set the edit tools.
+        setEditTools(layerTools);
 
-                // determine which tools are available
-                const layerTools = [];
-                for (let i = 0, ii = DRAW_TOOLS.length; i < ii; i++) {
-                    if (layer.tools.indexOf(DRAW_TOOLS[i]) >= 0) {
-                        layerTools.push(DRAW_TOOLS[i]);
-                    }
-                }
-                // set the edit tools.
-                setEditTools(layerTools);
-
-                // ensure the layer is on
-                setLayerVisibility(getMapSourceName(path), getLayerName(path), true);
-            }}
-        />
-    );
-}
+        // ensure the layer is on
+        setLayerVisibility(getMapSourceName(path), getLayerName(path), true);
+      }}
+    />
+  );
+};
 
 EditTool.propTypes = {
-    changeTool: PropTypes.func,
-    layer: PropTypes.object.isRequired,
+  changeTool: PropTypes.func,
+  layer: PropTypes.object.isRequired,
 };
 
 EditTool.defaultProps = {
-    changeTool: () => {
-    },
-    drawType: 'point',
+  changeTool: () => {},
+  drawType: "point",
 };
 
-const mapState = state => ({
-    service: state.query.service,
+const mapState = (state) => ({
+  service: state.query.service,
 });
 
 const mapDispatch = {
-    finishService,
-    setEditPath,
-    setEditTools,
-    setLayerVisibility,
+  finishService,
+  setEditPath,
+  setEditTools,
+  setLayerVisibility,
 };
 
 export default connect(mapState, mapDispatch)(EditTool);

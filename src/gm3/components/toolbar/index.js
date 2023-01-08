@@ -26,53 +26,52 @@
  *
  */
 
-import React from 'react';
-import { connect, Provider } from 'react-redux';
+import React from "react";
+import { connect, Provider } from "react-redux";
 
-import ToolbarButton from './button';
-import ToolbarDrawer from './drawer';
+import ToolbarButton from "./button";
+import ToolbarDrawer from "./drawer";
 
 export class Toolbar extends React.Component {
-    render() {
-        return (
-            <Provider store={this.props.store}>
-                <div className='toolbar'>
-                    {
-                        this.props.toolbar.root.map((tool) => {
-                            if(tool.actionType === 'drawer') {
-                                return (
-                                    <ToolbarDrawer
-                                        key={ tool.name }
-                                        label={ tool.label }
-                                        tools={ this.props.toolbar[tool.name] }
-                                        services={ this.props.services }
-                                        tip={ tool.tip }
-                                    />
-                                );
-                            } else {
-                                return (
-                                    <ToolbarButton
-                                        tool={ tool }
-                                        key={ tool.name }
-                                        serviceDef={
-                                            tool.actionType === 'service' ? this.props.services[tool.name] : undefined
-                                        }
-                                    />
-                                );
-                            }
-                        })
-                    }
-                </div>
-            </Provider>
-        );
-    }
+  render() {
+    return (
+      <Provider store={this.props.store}>
+        <div className="toolbar">
+          {this.props.toolbar.root.map((tool) => {
+            if (tool.actionType === "drawer") {
+              return (
+                <ToolbarDrawer
+                  key={tool.name}
+                  label={tool.label}
+                  tools={this.props.toolbar[tool.name]}
+                  services={this.props.services}
+                  tip={tool.tip}
+                />
+              );
+            } else {
+              return (
+                <ToolbarButton
+                  tool={tool}
+                  key={tool.name}
+                  serviceDef={
+                    tool.actionType === "service"
+                      ? this.props.services[tool.name]
+                      : undefined
+                  }
+                />
+              );
+            }
+          })}
+        </div>
+      </Provider>
+    );
+  }
 }
 
-
-const mapToolbarToProps = function(state) {
-    return {
-        toolbar: state.toolbar,
-    }
-}
+const mapToolbarToProps = function (state) {
+  return {
+    toolbar: state.toolbar,
+  };
+};
 
 export default connect(mapToolbarToProps)(Toolbar);

@@ -26,50 +26,49 @@
  *
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
-import ToolbarButton from './button';
-import { useTranslation } from 'react-i18next';
+import ToolbarButton from "./button";
+import { useTranslation } from "react-i18next";
 
-const ToolbarDrawer = ({label, tip, tools, services}) => {
-    const {t} = useTranslation();
-    const drawerLabel = t(label);
-    const drawerTip = !!tip ? t(tip) : drawerLabel;
-    return (
-        <div className='drawer'>
-            <button className='drawer tool' title={drawerTip}>
-                <span className='drawer icon'></span><span className='label'>{drawerLabel}</span>
-            </button>
-            <div className='drawer-contents'>
-                {
-                    tools.map((tool, i) => {
-                        return (
-                            <ToolbarButton
-                                key={`btn${i}`}
-                                tool={tool}
-                                serviceDef={
-                                    tool.actionType === 'service' ? services[tool.name] : undefined
-                                }
-                            />
-                        );
-                    })
-                }
-            </div>
-        </div>
-    );
-}
+const ToolbarDrawer = ({ label, tip, tools, services }) => {
+  const { t } = useTranslation();
+  const drawerLabel = t(label);
+  const drawerTip = !!tip ? t(tip) : drawerLabel;
+  return (
+    <div className="drawer">
+      <button className="drawer tool" title={drawerTip}>
+        <span className="drawer icon"></span>
+        <span className="label">{drawerLabel}</span>
+      </button>
+      <div className="drawer-contents">
+        {tools.map((tool, i) => {
+          return (
+            <ToolbarButton
+              key={`btn${i}`}
+              tool={tool}
+              serviceDef={
+                tool.actionType === "service" ? services[tool.name] : undefined
+              }
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 ToolbarDrawer.defaultProps = {
-    label: 'Unititled drawer',
-    tip: '',
-    tools: [],
-}
+  label: "Unititled drawer",
+  tip: "",
+  tools: [],
+};
 
 ToolbarDrawer.propTypes = {
-    label: PropTypes.string,
-    tip: PropTypes.string,
-    tools: PropTypes.array,
-}
+  label: PropTypes.string,
+  tip: PropTypes.string,
+  tools: PropTypes.array,
+};
 
 export default ToolbarDrawer;

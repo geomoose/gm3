@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
-export const setUiHint = createAction('ui/set-hint');
+export const setUiHint = createAction("ui/set-hint");
 
-export const clearUiHint = createAction('ui/clear-hint');
+export const clearUiHint = createAction("ui/clear-hint");
 
-export const runAction = createAction('ui/run-action');
+export const runAction = createAction("ui/run-action");
 
-export const clearAction = createAction('ui/clear-action');
+export const clearAction = createAction("ui/clear-action");
 
-export const showModal = createAction('ui/show-modal');
+export const showModal = createAction("ui/show-modal");
 
-export const hideModal = createAction('ui/hide-modal');
+export const hideModal = createAction("ui/hide-modal");

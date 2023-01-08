@@ -22,36 +22,36 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import { connect } from "react-redux";
 
-import { setLegendVisibility } from '../../../actions/catalog';
+import { setLegendVisibility } from "../../../actions/catalog";
 
-import { Tool } from '../tools';
+import { Tool } from "../tools";
 
 /* Toggle whether a legend is visible or not.
  *
  */
 export class LegendToggle extends React.Component {
-    render() {
-        return (
-            <Tool
-                tip='toggle-legend-tip'
-                iconClass='legend'
-                onClick={() => {
-                    this.props.onToggleLegend(this.props.layer);
-                }}
-            />
-        );
-    }
+  render() {
+    return (
+      <Tool
+        tip="toggle-legend-tip"
+        iconClass="legend"
+        onClick={() => {
+          this.props.onToggleLegend(this.props.layer);
+        }}
+      />
+    );
+  }
 }
 
 function mapDispatch(dispatch) {
-    return {
-        onToggleLegend: (layer) => {
-            dispatch(setLegendVisibility(layer.id, layer.legend !== true));
-        },
-    };
+  return {
+    onToggleLegend: (layer) => {
+      dispatch(setLegendVisibility(layer.id, layer.legend !== true));
+    },
+  };
 }
 
 export default connect(undefined, mapDispatch)(LegendToggle);

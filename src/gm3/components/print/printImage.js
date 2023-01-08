@@ -22,100 +22,100 @@
  * SOFTWARE.
  */
 
-import React, { useRef, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useRef, useEffect, useState } from "react";
+import { connect } from "react-redux";
 
-import Map from '../map';
+import Map from "../map";
 
-import { printImage } from '../../actions/print';
+import { printImage } from "../../actions/print";
 
 const getImage = (parentElement, exportSize) => {
-    // a derivation of https://openlayers.org/en/latest/examples/export-map.html
-    const mapCanvas = document.createElement('canvas');
-    mapCanvas.width = exportSize[0];
-    mapCanvas.height = exportSize[1];
+  // a derivation of https://openlayers.org/en/latest/examples/export-map.html
+  const mapCanvas = document.createElement("canvas");
+  mapCanvas.width = exportSize[0];
+  mapCanvas.height = exportSize[1];
 
-    const mapContext = mapCanvas.getContext('2d');
+  const mapContext = mapCanvas.getContext("2d");
 
-    if (parentElement) {
-        const canvases = parentElement.getElementsByTagName('canvas');
-        for (let i = 0, ii = canvases.length; i < ii; i++) {
-            const canvas = canvases[i];
-            if (canvas.width > 0) {
-                const opacity = canvas.parentNode.style.opacity;
-                mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
-                const transform = canvas.style.transform;
-                // Get the transform parameters from the style's transform matrix
-                const matrix = transform
-                    // eslint-disable-next-line
+  if (parentElement) {
+    const canvases = parentElement.getElementsByTagName("canvas");
+    for (let i = 0, ii = canvases.length; i < ii; i++) {
+      const canvas = canvases[i];
+      if (canvas.width > 0) {
+        const opacity = canvas.parentNode.style.opacity;
+        mapContext.globalAlpha = opacity === "" ? 1 : Number(opacity);
+        const transform = canvas.style.transform;
+        // Get the transform parameters from the style's transform matrix
+        const matrix = transform
+          // eslint-disable-next-line
                     .match(/^matrix\(([^\(]*)\)$/)[1]
-                    .split(',')
-                    .map(Number);
-                // Apply the transform to the export map context
-                CanvasRenderingContext2D.prototype.setTransform.apply(
-                    mapContext,
-                    matrix
-                );
-                mapContext.drawImage(canvas, 0, 0);
-            }
-        }
+          .split(",")
+          .map(Number);
+        // Apply the transform to the export map context
+        CanvasRenderingContext2D.prototype.setTransform.apply(
+          mapContext,
+          matrix
+        );
+        mapContext.drawImage(canvas, 0, 0);
+      }
     }
+  }
 
-    return mapCanvas.toDataURL('image/png');
-}
-
-const PrintImage = props => {
-    const [image, setImage] = useState('');
-    const parentRef = useRef();
-
-    const parentStyle = {
-        display: 'inline-block',
-        width: props.width + 'px',
-        height: props.height + 'px',
-    };
-
-    const center = props.mapView.center;
-    const rez = props.mapView.resolution;
-
-    // empty the print image whenever something changes.
-    useEffect(() => {
-        setImage('');
-        props.printImage('');
-    }, [props.width, props.height, center, rez]);
-
-    useEffect(() => {
-        props.printImage(image);
-    }, [image]);
-
-    return (
-        <div style={parentStyle} ref={parentRef}>
-            <Map
-                store={props.store}
-                center={center}
-                resolution={rez}
-                printOnly={true}
-                mapRenderedCallback={() => {
-                    if (parentRef.current) {
-                        setImage(getImage(parentRef.current, [props.width, props.height]));
-                    }
-                }}
-            />
-        </div>
-    );
-}
-
-PrintImage.defaultProps = {
-    width: 600,
-    height: 400,
+  return mapCanvas.toDataURL("image/png");
 };
 
-const mapToProps = state => ({
-    mapView: state.map,
+const PrintImage = (props) => {
+  const [image, setImage] = useState("");
+  const parentRef = useRef();
+  const { printImage } = props;
+
+  const parentStyle = {
+    display: "inline-block",
+    width: props.width + "px",
+    height: props.height + "px",
+  };
+
+  const center = props.mapView.center;
+  const rez = props.mapView.resolution;
+
+  // empty the print image whenever something changes.
+  useEffect(() => {
+    setImage("");
+    printImage("");
+  }, [printImage, props.width, props.height, center, rez]);
+
+  useEffect(() => {
+    printImage(image);
+  }, [printImage, image]);
+
+  return (
+    <div style={parentStyle} ref={parentRef}>
+      <Map
+        store={props.store}
+        center={center}
+        resolution={rez}
+        printOnly={true}
+        mapRenderedCallback={() => {
+          if (parentRef.current) {
+            setImage(getImage(parentRef.current, [props.width, props.height]));
+          }
+        }}
+      />
+    </div>
+  );
+};
+
+PrintImage.defaultProps = {
+  width: 600,
+  height: 400,
+};
+
+const mapToProps = (state) => ({
+  mapView: state.map,
 });
 
 const mapDispatchToProps = {
-    printImage,
+  printImage,
 };
-
 
 export default connect(mapToProps, mapDispatchToProps)(PrintImage);

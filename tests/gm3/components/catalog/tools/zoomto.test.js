@@ -22,43 +22,48 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+import React from "react";
+import { screen, render, fireEvent } from "@testing-library/react";
 
-import { ZoomToTool } from 'gm3/components/catalog/tools/zoomto';
+import { ZoomToTool } from "gm3/components/catalog/tools/zoomto";
 
-describe('Zoom-to tool test', () => {
-    it('renders a zoom to tool', () => {
-        let clicked = false;
+describe("Zoom-to tool test", () => {
+  it("renders a zoom to tool", () => {
+    let clicked = false;
 
-        const props = {
-            onZoomTo: function() {
-                clicked = true;
+    const props = {
+      onZoomTo: function () {
+        clicked = true;
+      },
+      layer: {
+        src: [
+          {
+            mapSourceName: "test",
+            layerName: "test",
+          },
+        ],
+      },
+      mapSources: {
+        test: {
+          features: [
+            {
+              geometry: {
+                type: "LineString",
+                coordinates: [
+                  [0, 0],
+                  [1, 0],
+                  [1, 1],
+                ],
+              },
+              properties: {},
             },
-            layer: {
-                src: [{
-                    mapSourceName: 'test',
-                    layerName: 'test',
-                }],
-            },
-            mapSources: {
-                'test': {
-                    features: [
-                        {
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: [[0, 0], [1, 0], [1, 1]],
-                            },
-                            properties: {},
-                        },
-                    ],
-                },
-            },
-        };
+          ],
+        },
+      },
+    };
 
-        render(<ZoomToTool {...props} />);
-        fireEvent.click(screen.getByRole('button'));
-        expect(clicked).toBe(true);
-    });
+    render(<ZoomToTool {...props} />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(clicked).toBe(true);
+  });
 });
-

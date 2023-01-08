@@ -30,66 +30,65 @@
  *
  */
 
-import { BufferOp, GeoJSONReader, GeoJSONWriter } from 'turf-jsts';
-import turf_union from '@turf/union';
-import * as proj from 'ol/proj';
-import { jsonToGeom, geomToJson, getUtmZone } from './util';
+import { BufferOp, GeoJSONReader, GeoJSONWriter } from "turf-jsts";
+import turfUnion from "@turf/union";
+import * as proj from "ol/proj";
+import { jsonToGeom, geomToJson, getUtmZone } from "./util";
 
 export function buffer(feature, meters) {
-    return bufferFeature(feature, meters).geometry;
+  return bufferFeature(feature, meters).geometry;
 }
 
 function getAnchorPoint(feature, empty = null) {
-    let anchorPoint = empty;
-    const gtype = feature.geometry.type;
-    if (gtype === 'Point') {
-        anchorPoint = feature.geometry.coordinates;
-    } else if(gtype === 'MultiPoint' || gtype === 'LineString') {
-        anchorPoint = feature.geometry.coordinates[0];
-    } else if(gtype === 'MultiLineString' || gtype === 'Polygon') {
-        anchorPoint = feature.geometry.coordinates[0][0];
-    } else if(gtype === 'MuliPolygon') {
-        anchorPoint = feature.geometry.cooredinates[0][0][0];
-    }
-    return anchorPoint;
+  let anchorPoint = empty;
+  const gtype = feature.geometry.type;
+  if (gtype === "Point") {
+    anchorPoint = feature.geometry.coordinates;
+  } else if (gtype === "MultiPoint" || gtype === "LineString") {
+    anchorPoint = feature.geometry.coordinates[0];
+  } else if (gtype === "MultiLineString" || gtype === "Polygon") {
+    anchorPoint = feature.geometry.coordinates[0][0];
+  } else if (gtype === "MuliPolygon") {
+    anchorPoint = feature.geometry.cooredinates[0][0][0];
+  }
+  return anchorPoint;
 }
 
 export function bufferFeature(feature, meters) {
-    // Start on null island.
-    const pos_pt = getAnchorPoint(feature, [0, 0]);
+  // Start on null island.
+  const posPt = getAnchorPoint(feature, [0, 0]);
 
-    // find the feature's location in UTM space.
-    const utmZone = proj.get(getUtmZone(pos_pt));
+  // find the feature's location in UTM space.
+  const utmZone = proj.get(getUtmZone(posPt));
 
-    // convert the geometry to an OL geometry
-    let geom = jsonToGeom(feature.geometry);
+  // convert the geometry to an OL geometry
+  let geom = jsonToGeom(feature.geometry);
 
-    // project it to UTM
-    geom = geom.transform('EPSG:4326', utmZone);
+  // project it to UTM
+  geom = geom.transform("EPSG:4326", utmZone);
 
-    // back again to JSON after reprojection
-    let meters_geojson = geomToJson(geom);
+  // back again to JSON after reprojection
+  let metersGeoJson = geomToJson(geom);
 
-    // JSTS buffer operation
-    const reader = new GeoJSONReader();
-    const jstsGeom = reader.read(meters_geojson);
-    const buffered = BufferOp.bufferOp(jstsGeom, meters);
-    const writer = new GeoJSONWriter();
+  // JSTS buffer operation
+  const reader = new GeoJSONReader();
+  const jstsGeom = reader.read(metersGeoJson);
+  const buffered = BufferOp.bufferOp(jstsGeom, meters);
+  const writer = new GeoJSONWriter();
 
-    // buffer by meters
-    meters_geojson = writer.write(buffered);
+  // buffer by meters
+  metersGeoJson = writer.write(buffered);
 
-    // back to 4326
-    const final_geom = jsonToGeom(meters_geojson).transform(utmZone, 'EPSG:4326');
+  // back to 4326
+  const finalGeom = jsonToGeom(metersGeoJson).transform(utmZone, "EPSG:4326");
 
-    // return the geometry wrapped in a feature.
-    return {
-        type: 'Feature',
-        properties: {},
-        geometry: geomToJson(final_geom),
-    };
+  // return the geometry wrapped in a feature.
+  return {
+    type: "Feature",
+    properties: {},
+    geometry: geomToJson(finalGeom),
+  };
 }
-
 
 /** Takes in an array of GeoJSON features, buffers them
  *  and returns a GeoJSON feature.
@@ -100,40 +99,40 @@ export function bufferFeature(feature, meters) {
  * @returns GeoJSON feature.
  */
 export function bufferAndUnion(features, meters) {
-    let geometry = null;
+  let geometry = null;
 
-    for(let i = 0, ii = features.length; i < ii; i++) {
-        // buffer the geometry.
-        const g = bufferFeature(features[i], meters);
-        // if the output geometry is still null, then set the
-        //  first member to the new geometry
-        if(geometry === null) {
-            geometry = g;
-        // otherwise buffer it.
-        } else {
-            geometry = turf_union(geometry, g);
-        }
+  for (let i = 0, ii = features.length; i < ii; i++) {
+    // buffer the geometry.
+    const g = bufferFeature(features[i], meters);
+    // if the output geometry is still null, then set the
+    //  first member to the new geometry
+    if (geometry === null) {
+      geometry = g;
+      // otherwise buffer it.
+    } else {
+      geometry = turfUnion(geometry, g);
     }
+  }
 
-    return geometry.geometry;
+  return geometry.geometry;
 }
 
 export function union(features) {
-    const distance = pt => Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1]);
-    // sort the features by their bounding boxes.
-    const sortedFeatures = features.sort((a, b) => {
-        const ptA = getAnchorPoint(a);
-        const ptB = getAnchorPoint(b);
-        if (ptA === null) {
-            return 1;
-        } else if (ptB === null) {
-            return -1;
-        }
-        return distance(ptA) < distance(ptB) ? -1 : 1;
-    });
-    let unionFeature = {...sortedFeatures[0]};
-    for (let i = 1, ii = sortedFeatures.length; i < ii; i++) {
-        unionFeature = turf_union(unionFeature, sortedFeatures[i]);
+  const distance = (pt) => Math.sqrt(pt[0] * pt[0] + pt[1] * pt[1]);
+  // sort the features by their bounding boxes.
+  const sortedFeatures = features.sort((a, b) => {
+    const ptA = getAnchorPoint(a);
+    const ptB = getAnchorPoint(b);
+    if (ptA === null) {
+      return 1;
+    } else if (ptB === null) {
+      return -1;
     }
-    return unionFeature;
+    return distance(ptA) < distance(ptB) ? -1 : 1;
+  });
+  let unionFeature = { ...sortedFeatures[0] };
+  for (let i = 1, ii = sortedFeatures.length; i < ii; i++) {
+    unionFeature = turfUnion(unionFeature, sortedFeatures[i]);
+  }
+  return unionFeature;
 }

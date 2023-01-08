@@ -22,25 +22,25 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
-import { UploadTool } from 'gm3/components/catalog/tools/upload';
+import { UploadTool } from "gm3/components/catalog/tools/upload";
 
+describe("upload tool test", () => {
+  it("renders a upload tool", () => {
+    const props = {
+      layer: {
+        src: [
+          {
+            mapSourceName: "test",
+            layerName: "test",
+          },
+        ],
+      },
+    };
 
-describe('upload tool test', () => {
-    it('renders a upload tool', () => {
-        const props = {
-            layer: {
-                src: [{
-                    mapSourceName: 'test',
-                    layerName: 'test',
-                }],
-            },
-        };
-
-        render(<UploadTool {...props} />);
-        fireEvent.click(screen.getByRole('button'));
-    });
+    render(<UploadTool {...props} />);
+    fireEvent.click(screen.getByRole("button"));
+  });
 });
-

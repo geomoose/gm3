@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-
-import { createReducer } from '@reduxjs/toolkit';
-import { setConfig } from '../actions/config';
+import { createReducer } from "@reduxjs/toolkit";
+import { setConfig } from "../actions/config";
 
 const DEFAULT_CONFIG = {
-    map: {},
+  map: {},
 };
 
-const reducer = createReducer(DEFAULT_CONFIG, builder => {
-    builder.addCase(setConfig, (state, action) => {
-        const config = action.payload;
-        return {...state, ...config};
-    });
+const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
+  builder.addCase(setConfig, (state, action) => {
+    const config = action.payload;
+    return { ...state, ...config };
+  });
 });
 
 export default reducer;
