@@ -26,45 +26,46 @@
  *
  */
 
-import TileLayer from 'ol/layer/Tile';
-import BingSource from 'ol/source/BingMaps';
+import TileLayer from "ol/layer/Tile";
+import BingSource from "ol/source/BingMaps";
 
 /** Create the parameters for a Bing Services layer.
  *
  */
 function defineSource(mapSource) {
-    //  If both roads and aerials are specified,
-    //  "AerialWithLabels" is requested.
-    let aerials_on = false, roads_on = false;
-    for(const layer of mapSource.layers) {
-        if(layer.on === true) {
-            if(layer.name === 'aerials') {
-                aerials_on = true;
-            } else if(layer.name === 'roads') {
-                roads_on = true;
-            }
-        }
+  //  If both roads and aerials are specified,
+  //  "AerialWithLabels" is requested.
+  let aerialsOn = false,
+    roadsOn = false;
+  for (const layer of mapSource.layers) {
+    if (layer.on === true) {
+      if (layer.name === "aerials") {
+        aerialsOn = true;
+      } else if (layer.name === "roads") {
+        roadsOn = true;
+      }
     }
+  }
 
-    let image_style = 'Road';
-    if(aerials_on && roads_on) {
-        image_style = 'AerialWithLabels';
-    } else if(aerials_on) {
-        image_style = 'Aerial';
-    } else if(roads_on) {
-        image_style = 'Road';
-    } else {
-        for(const layer of mapSource.layers) {
-            if(layer.on === true) {
-                image_style = layer.name;
-            }
-        }
+  let imageStyle = "Road";
+  if (aerialsOn && roadsOn) {
+    imageStyle = "AerialWithLabels";
+  } else if (aerialsOn) {
+    imageStyle = "Aerial";
+  } else if (roadsOn) {
+    imageStyle = "Road";
+  } else {
+    for (const layer of mapSource.layers) {
+      if (layer.on === true) {
+        imageStyle = layer.name;
+      }
     }
+  }
 
-    return {
-        key: mapSource.params.key,
-        imagerySet: image_style
-    }
+  return {
+    key: mapSource.params.key,
+    imagerySet: imageStyle,
+  };
 }
 
 /** Return an OpenLayers Layer for the Bing Services source.
@@ -74,22 +75,22 @@ function defineSource(mapSource) {
  *  @returns OpenLayers Layer instance.
  */
 export function createLayer(mapSource) {
-    return new TileLayer({
-        source: new BingSource(defineSource(mapSource)),
-        minResolution: mapSource.minresolution,
-        maxResolution: mapSource.maxresolution,
-    });
+  return new TileLayer({
+    source: new BingSource(defineSource(mapSource)),
+    minResolution: mapSource.minresolution,
+    maxResolution: mapSource.maxresolution,
+  });
 }
 
 /** Ensure that the Bing Services parameters all match.
  */
 export function updateLayer(map, layer, mapSource) {
-    // pull in the open layers source
-    const src = layer.getSource();
-    // get the new definition
-    const defn = defineSource(mapSource);
+  // pull in the open layers source
+  const src = layer.getSource();
+  // get the new definition
+  const defn = defineSource(mapSource);
 
-    if(defn.imagerySet !== src.getImagerySet()) {
-        layer.setSource(new BingSource(defn));
-    }
+  if (defn.imagerySet !== src.getImagerySet()) {
+    layer.setSource(new BingSource(defn));
+  }
 }

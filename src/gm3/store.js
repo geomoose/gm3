@@ -22,33 +22,32 @@
  * SOFTWARE.
  */
 
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
 
-import catalogReducer from './reducers/catalog';
-import msReducer from './reducers/mapSource';
-import mapReducer from './reducers/map';
-import toolbarReducer from './reducers/toolbar';
-import queryReducer from './reducers/query';
-import uiReducer from './reducers/ui';
-import cursorReducer from './reducers/cursor';
-import printReducer from './reducers/print';
-import configReducer from './reducers/config';
-import editorReducer from './reducers/editor';
-
+import catalogReducer from "./reducers/catalog";
+import msReducer from "./reducers/mapSource";
+import mapReducer from "./reducers/map";
+import toolbarReducer from "./reducers/toolbar";
+import queryReducer from "./reducers/query";
+import uiReducer from "./reducers/ui";
+import cursorReducer from "./reducers/cursor";
+import printReducer from "./reducers/print";
+import configReducer from "./reducers/config";
+import editorReducer from "./reducers/editor";
 
 export const createStore = () => {
-    return configureStore({
-        reducer: {
-            'mapSources': msReducer,
-            'catalog': catalogReducer,
-            'map': mapReducer,
-            'toolbar': toolbarReducer,
-            'query': queryReducer,
-            'ui': uiReducer,
-            'cursor': cursorReducer,
-            'print': printReducer,
-            'config': configReducer,
-            'editor': editorReducer,
-        },
-    });
-}
+  return configureStore({
+    reducer: {
+      mapSources: msReducer,
+      catalog: catalogReducer,
+      map: mapReducer,
+      toolbar: toolbarReducer,
+      query: queryReducer,
+      ui: uiReducer,
+      cursor: cursorReducer,
+      print: printReducer,
+      config: configReducer,
+      editor: editorReducer,
+    },
+  });
+};

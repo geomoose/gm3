@@ -22,122 +22,119 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-const ModalTitle = ({title}) => {
-    const {t} = useTranslation();
-    return (
-        <h5>{t(title)}</h5>
-    );
+const ModalTitle = ({ title }) => {
+  const { t } = useTranslation();
+  return <h5>{t(title)}</h5>;
 };
 
-const ModalButton = ({option, onClick}) => {
-    const {t} = useTranslation();
-    return (
-        <div
-            className="button-parent"
-        >
-            <button
-                onClick={() => { onClick(); }}
-                disabled={option.disabled === true}
-            >
-                { t(option.label) }
-            </button>
-        </div>
-
-    );
-}
+const ModalButton = ({ option, onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="button-parent">
+      <button
+        onClick={() => {
+          onClick();
+        }}
+        disabled={option.disabled === true}
+      >
+        {t(option.label)}
+      </button>
+    </div>
+  );
+};
 
 class ModalDialog extends React.Component {
+  constructor(props) {
+    super(props);
+    this.renderBody = this.renderBody.bind(this);
+    this.renderFooter = this.renderFooter.bind(this);
+    this.state = {};
+  }
 
-    constructor(props) {
-        super(props);
-        this.renderBody = this.renderBody.bind(this);
-        this.renderFooter = this.renderFooter.bind(this);
-        this.state = {};
+  getTitle() {
+    return this.props.title;
+  }
+
+  renderBody() {
+    if (this.props.children) {
+      return this.props.children;
+    }
+    return this.props.message;
+  }
+
+  renderOption(option) {
+    return (
+      <ModalButton
+        key={option.value}
+        option={option}
+        disabled={option.disabled === true}
+        onClick={() => {
+          this.close(option.value);
+        }}
+      />
+    );
+  }
+
+  getFooterClass(n) {
+    const footerClasses = {
+      1: "one",
+      2: "two",
+      3: "three",
+    };
+    return "modal-footer " + footerClasses[n];
+  }
+
+  getOptions() {
+    return this.props.options;
+  }
+
+  renderFooter() {
+    const options = this.getOptions();
+    const footerClass = this.getFooterClass(options.length);
+
+    const buttons = [];
+    for (const option of options) {
+      buttons.push(this.renderOption(option));
+    }
+    return <div className={footerClass}>{buttons}</div>;
+  }
+
+  close(response) {
+    if (this.props.onClose) {
+      this.props.onClose(response);
+    }
+  }
+
+  render() {
+    if (!this.props.open) {
+      return false;
     }
 
-    getTitle() {
-        return this.props.title;
-    }
+    return (
+      <div className="modal-blocker">
+        <div className="modal-frame">
+          <div className="modal-title">
+            <ModalTitle title={this.getTitle()} />
+          </div>
+          <div
+            className="modal-body"
+            style={this.BodyProps && this.BodyProps.style}
+          >
+            {this.renderBody()}
+          </div>
 
-    renderBody() {
-        if(this.props.children) {
-            return this.props.children;
-        }
-        return this.props.message;
-    }
-
-    renderOption(option) {
-        return (
-            <ModalButton
-                key={option.value}
-                option={option}
-                disabled={option.disabled === true}
-                onClick={() => {
-                    this.close(option.value);
-                }}
-            />
-        );
-    }
-
-    getFooterClass(n) {
-        const footer_classes = {
-            1: 'one', 2: 'two', 3: 'three'
-        };
-        return 'modal-footer ' + footer_classes[n];
-    }
-
-    getOptions() {
-        return this.props.options;
-    }
-
-    renderFooter() {
-        const options = this.getOptions();
-        const footer_class = this.getFooterClass(options.length);
-
-        const buttons = [];
-        for(const option of options) {
-            buttons.push(this.renderOption(option));
-        }
-        return (
-            <div className={footer_class}>
-                { buttons }
-            </div>
-        );
-    }
-
-    close(response) {
-        if(this.props.onClose) {
-            this.props.onClose(response);
-        }
-    }
-
-    render() {
-        if (!this.props.open) {
-            return false;
-        }
-
-        return (
-            <div className='modal-blocker'>
-                <div className='modal-frame'>
-                    <div className='modal-title'>
-                        <ModalTitle title={this.getTitle()} />
-                    </div>
-                    <div className='modal-body' style={this.BodyProps && this.BodyProps.style}>
-                        { this.renderBody() }
-                    </div>
-
-                    { this.renderFooter() }
-                </div>
-            </div>
-        );
-    }
+          {this.renderFooter()}
+        </div>
+      </div>
+    );
+  }
 }
 
 ModalDialog.defaultProps = {
-    open: false,
+  open: false,
 };
 
 export default ModalDialog;

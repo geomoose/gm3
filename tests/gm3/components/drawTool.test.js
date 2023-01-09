@@ -22,21 +22,27 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { createStore, combineReducers } from 'redux';
-import { Provider } from 'react-redux';
-import { render } from '@testing-library/react';
+import React from "react";
+import { createStore, combineReducers } from "redux";
+import { Provider } from "react-redux";
+import { render } from "@testing-library/react";
 
-import DrawTool from 'gm3/components/drawTool';
+import DrawTool from "gm3/components/drawTool";
 
-import msReducer from 'gm3/reducers/mapSource';
-import mapReducer from 'gm3/reducers/map';
+import msReducer from "gm3/reducers/mapSource";
+import mapReducer from "gm3/reducers/map";
 
-it('renders a drawtool', () => {
-    const store = createStore(combineReducers({
-        'mapSources': msReducer,
-        'map': mapReducer,
-    }));
+it("renders a drawtool", () => {
+  const store = createStore(
+    combineReducers({
+      mapSources: msReducer,
+      map: mapReducer,
+    })
+  );
 
-    render(<Provider store={store}><DrawTool geomType="Point" /></Provider>);
+  render(
+    <Provider store={store}>
+      <DrawTool geomType="Point" />
+    </Provider>
+  );
 });

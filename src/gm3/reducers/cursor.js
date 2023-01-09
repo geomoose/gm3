@@ -25,30 +25,26 @@
 /** Tracks extra map state that updates frequently but is of limited use.
  *
  */
-import { createReducer } from '@reduxjs/toolkit';
-import {
-    setCursor,
-    updateSketchGeometry,
-    resizeMap,
-} from '../actions/cursor';
+import { createReducer } from "@reduxjs/toolkit";
+import { setCursor, updateSketchGeometry, resizeMap } from "../actions/cursor";
 
 const defaultState = {
-    coords: [0, 0],
-    sketchGeometry: null,
-    // size can be null by default, this is meant to be a hint only!
-    size: null,
+  coords: [0, 0],
+  sketchGeometry: null,
+  // size can be null by default, this is meant to be a hint only!
+  size: null,
 };
 
 const reducer = createReducer(defaultState, {
-    [setCursor]: (state, {payload: coords}) => {
-        state.coords = coords;
-    },
-    [updateSketchGeometry]: (state, {payload: geometry}) => {
-        state.sketchGeometry = geometry;
-    },
-    [resizeMap]: (state, {payload: size}) => {
-        state.size = size;
-    },
+  [setCursor]: (state, { payload: coords }) => {
+    state.coords = coords;
+  },
+  [updateSketchGeometry]: (state, { payload: geometry }) => {
+    state.sketchGeometry = geometry;
+  },
+  [resizeMap]: (state, { payload: size }) => {
+    state.size = size;
+  },
 });
 
 export default reducer;

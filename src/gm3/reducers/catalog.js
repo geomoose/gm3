@@ -26,41 +26,40 @@
  *
  */
 
-import {createReducer} from '@reduxjs/toolkit';
-import uuid from 'uuid';
+import { createReducer } from "@reduxjs/toolkit";
+import uuid from "uuid";
 import {
-    addLayer,
-    addGroup,
-    addChild,
-    setLegendVisibility,
-    setGroupExpand,
-} from '../actions/catalog';
-
+  addLayer,
+  addGroup,
+  addChild,
+  setLegendVisibility,
+  setGroupExpand,
+} from "../actions/catalog";
 
 const DEFAULT_CATALOG = {
-    root: {
-        id: uuid.v4(),
-        children: [],
-    },
+  root: {
+    id: uuid.v4(),
+    children: [],
+  },
 };
 
 const reducer = createReducer(DEFAULT_CATALOG, {
-    [addLayer]: (state, {payload}) => {
-        state[payload.child.id] = payload.child;
-    },
-    [addGroup]: (state, {payload}) => {
-        state[payload.child.id] = payload.child;
-    },
-    [addChild]: (state, {payload}) => {
-        const parentId = payload.parentId || 'root';
-        state[parentId].children.push(payload.childId);
-    },
-    [setLegendVisibility]: (state, {payload}) => {
-        state[payload.id].legend = payload.on;
-    },
-    [setGroupExpand]: (state, {payload}) => {
-        state[payload.id].expand = payload.expand;
-    },
+  [addLayer]: (state, { payload }) => {
+    state[payload.child.id] = payload.child;
+  },
+  [addGroup]: (state, { payload }) => {
+    state[payload.child.id] = payload.child;
+  },
+  [addChild]: (state, { payload }) => {
+    const parentId = payload.parentId || "root";
+    state[parentId].children.push(payload.childId);
+  },
+  [setLegendVisibility]: (state, { payload }) => {
+    state[payload.id].legend = payload.on;
+  },
+  [setGroupExpand]: (state, { payload }) => {
+    state[payload.id].expand = payload.expand;
+  },
 });
 
 export default reducer;

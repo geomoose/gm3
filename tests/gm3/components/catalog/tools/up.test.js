@@ -22,51 +22,55 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import React from "react";
+import { render, fireEvent, screen } from "@testing-library/react";
 
-import { UpTool } from 'gm3/components/catalog/tools/up';
+import { UpTool } from "gm3/components/catalog/tools/up";
 
-describe('UpTool test', () => {
-    it('renders an up tool', () => {
-        const props = {
-            setZIndex: function() {
+describe("UpTool test", () => {
+  it("renders an up tool", () => {
+    const props = {
+      setZIndex: function () {},
+      layer: {
+        src: [
+          {
+            mapSourceName: "test",
+            layerName: "test",
+          },
+        ],
+      },
+      catalog: {
+        root: {
+          children: ["zzz", "xxx"],
+        },
+        zzz: {
+          src: [{ mapSourceName: "test", layerName: "test" }],
+        },
+        xxx: {
+          src: [{ mapSourceName: "test2", layerName: "test3" }],
+        },
+      },
+      mapSources: {
+        test: {
+          layers: [
+            {
+              name: "test",
+              on: true,
             },
-            layer: {
-                src: [{
-                    mapSourceName: 'test',
-                    layerName: 'test',
-                }],
+          ],
+        },
+        test2: {
+          layers: [
+            {
+              name: "test3",
+              on: true,
             },
-            catalog: {
-                root: {
-                    children: ['zzz', 'xxx'],
-                },
-                'zzz': {
-                    src: [{mapSourceName: 'test', layerName: 'test'}],
-                },
-                'xxx': {
-                    src: [{mapSourceName: 'test2', layerName: 'test3'}],
-                },
-            },
-            mapSources: {
-                'test': {
-                    layers: [{
-                        name: 'test',
-                        on: true,
-                    }],
-                },
-                'test2': {
-                    layers: [{
-                        name: 'test3',
-                        on: true,
-                    }],
-                },
-            },
-        };
+          ],
+        },
+      },
+    };
 
-        render(<UpTool {...props} />);
-        fireEvent.click(screen.getByRole('button'));
-    });
+    render(<UpTool {...props} />);
+    fireEvent.click(screen.getByRole("button"));
+  });
 });
-

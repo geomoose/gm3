@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
-import CoordinateDisplay from './coordinate-display';
+import CoordinateDisplay from "./coordinate-display";
 
-const mapToProps = state => ({
-    coords: state.cursor.coords,
-    resolution: state.map.resolution,
-    zoom: state.map.zoom,
+const mapToProps = (state) => ({
+  coords: state.cursor.coords,
+  resolution: state.map.resolution,
+  zoom: state.map.zoom,
 });
 
 export default connect(mapToProps)(CoordinateDisplay);

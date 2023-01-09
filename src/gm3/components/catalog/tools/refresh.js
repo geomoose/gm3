@@ -22,72 +22,70 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import { setRefresh } from '../../../actions/mapSource';
+import { setRefresh } from "../../../actions/mapSource";
 
-import { Tool } from '../tools';
-
+import { Tool } from "../tools";
 
 export function isRefreshingOn(mapSources, layer) {
-    for(let i = 0, ii = layer.src.length; i < ii; i++) {
-        const src = layer.src[i];
-        if(mapSources[src.mapSourceName].refresh) {
-            return true;
-        }
+  for (let i = 0, ii = layer.src.length; i < ii; i++) {
+    const src = layer.src[i];
+    if (mapSources[src.mapSourceName].refresh) {
+      return true;
     }
+  }
 
-    return false;
+  return false;
 }
 
-
 export class LayerRefresh extends React.Component {
-    render() {
-        const refreshing = isRefreshingOn(this.props.mapSources, this.props.layer);
+  render() {
+    const refreshing = isRefreshingOn(this.props.mapSources, this.props.layer);
 
-        let classes = 'refresh';
-        if(refreshing) {
-            classes += ' on';
-        }
-
-        return (
-            <Tool
-                tip='layer-refresh-tip'
-                iconClass={classes}
-                onClick={() => {
-                    this.props.onToggleRefresh(this.props.layer, !refreshing);
-                }}
-            />
-        );
+    let classes = "refresh";
+    if (refreshing) {
+      classes += " on";
     }
+
+    return (
+      <Tool
+        tip="layer-refresh-tip"
+        iconClass={classes}
+        onClick={() => {
+          this.props.onToggleRefresh(this.props.layer, !refreshing);
+        }}
+      />
+    );
+  }
 }
 
 LayerRefresh.propTypes = {
-    mapSources: PropTypes.object.isRequired,
-    layer: PropTypes.object.isRequired,
-    onToggleRefresh: PropTypes.func.isRequired,
+  mapSources: PropTypes.object.isRequired,
+  layer: PropTypes.object.isRequired,
+  onToggleRefresh: PropTypes.func.isRequired,
 };
 
 function mapStateProps(state) {
-    return {
-        mapSources: state.mapSources,
-    };
+  return {
+    mapSources: state.mapSources,
+  };
 }
 
 function mapDispatchProps(dispatch) {
-    return {
-        onToggleRefresh: (layer, refresh) => {
-            // turn off refreshing by setting it to null.
-            const seconds = refresh ? layer.refresh : null;
+  return {
+    onToggleRefresh: (layer, refresh) => {
+      // turn off refreshing by setting it to null.
+      const seconds = refresh ? layer.refresh : null;
 
-            for(let i = 0, ii = layer.src.length; i < ii; i++) {
-                const src = layer.src[i];
-                dispatch(setRefresh(src.mapSourceName, seconds));
-            }
-        },
-    }
+      for (let i = 0, ii = layer.src.length; i < ii; i++) {
+        const src = layer.src[i];
+        dispatch(setRefresh(src.mapSourceName, seconds));
+      }
+    },
+  };
 }
 
 export default connect(mapStateProps, mapDispatchProps)(LayerRefresh);

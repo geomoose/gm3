@@ -26,32 +26,32 @@
  *
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer } from "@reduxjs/toolkit";
 
 import {
-    setView,
-    zoomToExtent,
-    changeTool,
-    addSelectionFeature,
-    clearSelectionFeatures,
-    setSelectionBuffer,
-    setEditPath,
-    setEditTools,
-} from '../actions/map';
+  setView,
+  zoomToExtent,
+  changeTool,
+  addSelectionFeature,
+  clearSelectionFeatures,
+  setSelectionBuffer,
+  setEditPath,
+  setEditTools,
+} from "../actions/map";
 
 const defaultState = {
-    center: [0, 0],
-    zoom: 1,
-    resolution: null,
-    extent: null,
-    activeSource: null,
-    interactionType: null,
-    selectionFeatures: [],
-    selectionBuffer: 0,
-    selectionBufferUnits: 'ft',
-    editPath: '',
-    editTools: [],
-    projection: 'EPSG:3857',
+  center: [0, 0],
+  zoom: 1,
+  resolution: null,
+  extent: null,
+  activeSource: null,
+  interactionType: null,
+  selectionFeatures: [],
+  selectionBuffer: 0,
+  selectionBufferUnits: "ft",
+  editPath: "",
+  editTools: [],
+  projection: "EPSG:3857",
 };
 
 /*
@@ -65,44 +65,44 @@ function setConfigOptions(state, config) {
 */
 
 const reducer = createReducer(defaultState, {
-    [setView]: (state, {payload}) => {
-        state.extent = null;
-        if (Boolean(payload.center)) {
-            state.center = payload.center;
-        }
-        if (Boolean(payload.zoom)) {
-            state.zoom = payload.zoom;
-        }
-        if (Boolean(payload.resolution)) {
-            state.resolution = payload.resolution;
-        }
-    },
-    [zoomToExtent]: (state, {payload}) => {
-        state.extent = {
-            bbox: payload.extent,
-            projection: payload.projection,
-        };
-    },
-    [changeTool]: (state, {payload}) => {
-        state.activeSource = payload.src;
-        state.interactionType = payload.tool;
-    },
-    [addSelectionFeature]: (state, {payload: feature}) => {
-        state.selectionFeatures.push(feature);
-    },
-    [clearSelectionFeatures]: state => {
-        state.selectionFeatures = [];
-    },
-    [setSelectionBuffer]: (state, {payload}) => {
-        state.selectionBuffer = payload.distance;
-        state.selectionBufferUnits = payload.units || state.selectionBufferUnits;
-    },
-    [setEditPath]: (state, {payload: editPath}) => {
-        state.editPath = editPath;
-    },
-    [setEditTools]: (state, {payload: tools}) => {
-        state.editTools = tools;
-    },
+  [setView]: (state, { payload }) => {
+    state.extent = null;
+    if (Boolean(payload.center)) {
+      state.center = payload.center;
+    }
+    if (Boolean(payload.zoom)) {
+      state.zoom = payload.zoom;
+    }
+    if (Boolean(payload.resolution)) {
+      state.resolution = payload.resolution;
+    }
+  },
+  [zoomToExtent]: (state, { payload }) => {
+    state.extent = {
+      bbox: payload.extent,
+      projection: payload.projection,
+    };
+  },
+  [changeTool]: (state, { payload }) => {
+    state.activeSource = payload.src;
+    state.interactionType = payload.tool;
+  },
+  [addSelectionFeature]: (state, { payload: feature }) => {
+    state.selectionFeatures.push(feature);
+  },
+  [clearSelectionFeatures]: (state) => {
+    state.selectionFeatures = [];
+  },
+  [setSelectionBuffer]: (state, { payload }) => {
+    state.selectionBuffer = payload.distance;
+    state.selectionBufferUnits = payload.units || state.selectionBufferUnits;
+  },
+  [setEditPath]: (state, { payload: editPath }) => {
+    state.editPath = editPath;
+  },
+  [setEditTools]: (state, { payload: tools }) => {
+    state.editTools = tools;
+  },
 });
 
 /*

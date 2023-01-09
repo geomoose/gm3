@@ -22,50 +22,50 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { Provider, connect } from 'react-redux';
-import { Translation } from 'react-i18next';
+import React from "react";
+import { Provider, connect } from "react-redux";
+import { Translation } from "react-i18next";
 
-import { renderFlatTree } from './catalog';
-import { isFavorite } from './catalog/layer-favorite';
-
+import { renderFlatTree } from "./catalog";
+import { isFavorite } from "./catalog/layer-favorite";
 
 export class FavoriteLayers extends React.Component {
-    render() {
-        const is_favorite = (layer) => {
-            return isFavorite(this.props.mapSources, layer);
-        };
+  render() {
+    const favoriteFilterFn = (layer) => {
+      return isFavorite(this.props.mapSources, layer);
+    };
 
-        const favorites = renderFlatTree(this.props.dispatch, this.props.catalog, 'root', this.props.resolution, is_favorite);
+    const favorites = renderFlatTree(
+      this.props.dispatch,
+      this.props.catalog,
+      "root",
+      this.props.resolution,
+      favoriteFilterFn
+    );
 
-        return (
-            <Provider store={this.props.store}>
-                <Translation>
-                    { t => (
-                        <div className="catalog favorites flat">
-                            <div
-                                className="info-box"
-                                dangerouslySetInnerHTML={{ __html: t('favorites-help') }} >
-                            </div>
-                            {
-                                favorites.length > 0 ? '' : (
-                                    <i>{t('no-favorites')}</i>
-                                )
-                            }
-                            { favorites }
-                        </div>
-                    )}
-                </Translation>
-            </Provider>
-        );
-    }
+    return (
+      <Provider store={this.props.store}>
+        <Translation>
+          {(t) => (
+            <div className="catalog favorites flat">
+              <div
+                className="info-box"
+                dangerouslySetInnerHTML={{ __html: t("favorites-help") }}
+              ></div>
+              {favorites.length > 0 ? "" : <i>{t("no-favorites")}</i>}
+              {favorites}
+            </div>
+          )}
+        </Translation>
+      </Provider>
+    );
+  }
 }
 
-
-const mapFavoritesToProps = state => ({
-    mapSources: state.mapSources,
-    catalog: state.catalog,
-    resolution: state.map ? state.map.resolution : -1,
+const mapFavoritesToProps = (state) => ({
+  mapSources: state.mapSources,
+  catalog: state.catalog,
+  resolution: state.map ? state.map.resolution : -1,
 });
 
 export default connect(mapFavoritesToProps)(FavoriteLayers);

@@ -22,40 +22,38 @@
  * SOFTWARE.
  */
 
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers } from "redux";
 
-import reducer from 'gm3/reducers/ui'
-import * as actions from 'gm3/actions/ui'
+import reducer from "gm3/reducers/ui";
+import * as actions from "gm3/actions/ui";
 
-describe('test the `ui` reducer', () => {
-    let store = null;
+describe("test the `ui` reducer", () => {
+  let store = null;
 
-    // before each test refresh the store.
-    beforeEach(() => {
-        store = createStore(combineReducers({
-            'ui': reducer
-        }));
-    });
+  // before each test refresh the store.
+  beforeEach(() => {
+    store = createStore(
+      combineReducers({
+        ui: reducer,
+      })
+    );
+  });
 
-    it('sets and clears the ui hint', () => {
-        // set the hint ot test-hint and verify the change in the state
-        store.dispatch(actions.setUiHint('test-hint'));
-        expect(store.getState().ui.hint).toBe('test-hint');
+  it("sets and clears the ui hint", () => {
+    // set the hint ot test-hint and verify the change in the state
+    store.dispatch(actions.setUiHint("test-hint"));
+    expect(store.getState().ui.hint).toBe("test-hint");
 
-        // clear the hint and see if it is null
-        store.dispatch(actions.clearUiHint());
-        expect(store.getState().ui.hint).toBe(null);
-    });
+    // clear the hint and see if it is null
+    store.dispatch(actions.clearUiHint());
+    expect(store.getState().ui.hint).toBe(null);
+  });
 
-    it('sets a run action', () => {
-        store.dispatch(actions.runAction('test-action'));
-        expect(store.getState().ui.action).toBe('test-action');
+  it("sets a run action", () => {
+    store.dispatch(actions.runAction("test-action"));
+    expect(store.getState().ui.action).toBe("test-action");
 
-        store.dispatch(actions.clearAction());
-        expect(store.getState().ui.action).toBe(null);
-
-    });
-
-
-
+    store.dispatch(actions.clearAction());
+    expect(store.getState().ui.action).toBe(null);
+  });
 });

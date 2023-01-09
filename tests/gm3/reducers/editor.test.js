@@ -22,43 +22,43 @@
  * SOFTWARE.
  */
 
-import {configureStore} from '@reduxjs/toolkit';
-import reducer from 'gm3/reducers/editor';
-import {setEditFeature, finishEditing} from 'gm3/actions/edit';
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "gm3/reducers/editor";
+import { setEditFeature, finishEditing } from "gm3/actions/edit";
 
-describe('test the `edit` reducer', () => {
-    it('sets and clears the editing feature', () => {
-        const store = configureStore({
-            reducer,
-        });
-
-        const fakeFeature = {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: [0, 0],
-            },
-            properties: {},
-        };
-
-        let nextState = store.getState();
-
-        store.dispatch(setEditFeature(fakeFeature));
-        nextState = store.getState();
-        expect(nextState).toEqual({
-            feature: fakeFeature,
-            source: '',
-            modal: 'edit',
-            isNew: false,
-        });
-
-        store.dispatch(finishEditing());
-        nextState = store.getState();
-        expect(nextState).toEqual({
-            feature: null,
-            source: '',
-            modal: '',
-            isNew: false,
-        });
+describe("test the `edit` reducer", () => {
+  it("sets and clears the editing feature", () => {
+    const store = configureStore({
+      reducer,
     });
+
+    const fakeFeature = {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [0, 0],
+      },
+      properties: {},
+    };
+
+    let nextState = store.getState();
+
+    store.dispatch(setEditFeature(fakeFeature));
+    nextState = store.getState();
+    expect(nextState).toEqual({
+      feature: fakeFeature,
+      source: "",
+      modal: "edit",
+      isNew: false,
+    });
+
+    store.dispatch(finishEditing());
+    nextState = store.getState();
+    expect(nextState).toEqual({
+      feature: null,
+      source: "",
+      modal: "",
+      isNew: false,
+    });
+  });
 });

@@ -22,28 +22,30 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import React from "react";
+import { render, fireEvent } from "@testing-library/react";
 
-import Modal from 'gm3/components/modal';
+import Modal from "gm3/components/modal";
 
+it("renders a one button Modal Dialog", () => {
+  // create a dummy call back that can be monitored
+  //  by the testing suite.
+  const callback = jest.fn();
 
-it('renders a one button Modal Dialog', () => {
-    // create a dummy call back that can be monitored
-    //  by the testing suite.
-    const callback = jest.fn();
+  // create the dialog.
+  const { container } = render(
+    <Modal
+      title="Title"
+      message="Testing message for dialog"
+      open
+      options={[{ label: "Okay", value: "okay" }]}
+      onClose={callback}
+    />
+  );
 
-    // create the dialog.
-    const {container} = render(
-        <Modal title='Title' message='Testing message for dialog'
-            open
-            options={ [{label: 'Okay', value: 'okay'}] }
-            onClose={ callback } />
-    );
+  // close the dialog by simulating a click on the button.
+  fireEvent.click(container.getElementsByTagName("button")[0]);
 
-    // close the dialog by simulating a click on the button.
-    fireEvent.click(container.getElementsByTagName('button')[0]);
-
-    // ensure the call back was called with the closing value.
-    expect(callback).toBeCalledWith('okay');
+  // ensure the call back was called with the closing value.
+  expect(callback).toBeCalledWith("okay");
 });

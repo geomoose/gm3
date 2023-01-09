@@ -22,25 +22,20 @@
  * SOFTWARE.
  */
 
+import * as WmsLayer from "gm3/components/map/layers/wms";
 
-import * as WmsLayer from 'gm3/components/map/layers/wms';
+describe("WMS Layer Tests", function () {
+  it('tests that two "?" marks are not included in the url', () => {
+    const mapSource = {
+      urls: ["http://localhost/wms?"],
+      params: {},
+    };
 
-describe('WMS Layer Tests', function() {
+    const mapView = {
+      resolution: 30,
+    };
 
-    it('tests that two "?" marks are not included in the url', () => {
-        const mapSource = {
-            urls: [
-                'http://localhost/wms?'
-            ],
-            params: {},
-        };
-
-        const mapView = {
-            resolution: 30,
-        };
-
-        const legend_def = WmsLayer.getLegend(mapSource, mapView, 'test');
-
-        expect(legend_def.images[0].indexOf('??')).toBeLessThan(0);
-    });
+    const legendDef = WmsLayer.getLegend(mapSource, mapView, "test");
+    expect(legendDef.images[0].indexOf("??")).toBeLessThan(0);
+  });
 });

@@ -21,19 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-const MetadataTool = ({href}) => {
-    const {t} = useTranslation();
-    return (
-        <a className='metadata' href={ href } target='_blank'
-            rel='noopener noreferrer'
-            title={t('view-metadata-tip')}
-        >
-            <i className='icon metadata'></i>
-        </a>
-    );
-}
+const MetadataTool = ({ href }) => {
+  const { t } = useTranslation();
+  return (
+    <a
+      className="metadata"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={t("view-metadata-tip")}
+    >
+      <i className="icon metadata"></i>
+    </a>
+  );
+};
 
 export default MetadataTool;

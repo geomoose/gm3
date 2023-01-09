@@ -22,29 +22,37 @@
  * SOFTWARE.
  */
 
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
 /** Actions for the Map.
  *
  */
 
-export const zoomToExtent = createAction('map/zoom-to-extent', (extent, projection) => ({
+export const zoomToExtent = createAction(
+  "map/zoom-to-extent",
+  (extent, projection) => ({
     payload: {
-        extent,
-        projection,
+      extent,
+      projection,
     },
-}));
+  })
+);
 
-export const changeTool = createAction('map/change-tool', (tool, src = null) => ({
+export const changeTool = createAction(
+  "map/change-tool",
+  (tool, src = null) => ({
     payload: {
-        tool,
-        src,
+      tool,
+      src,
     },
-}));
+  })
+);
 
-export const addSelectionFeature = createAction('map/add-selection-feature');
+export const addSelectionFeature = createAction("map/add-selection-feature");
 
-export const clearSelectionFeatures = createAction('map/clear-selection-features');
+export const clearSelectionFeatures = createAction(
+  "map/clear-selection-features"
+);
 
 /* Set the view of the map.
  *
@@ -52,7 +60,7 @@ export const clearSelectionFeatures = createAction('map/clear-selection-features
  *
  * @return An action definition.
  */
-export const setView = createAction('map/set-view');
+export const setView = createAction("map/set-view");
 
 /* Set a buffer for selection features.
  *
@@ -61,12 +69,15 @@ export const setView = createAction('map/set-view');
  *
  * @return action definition
  */
-export const setSelectionBuffer = createAction('map/set-selection-buffer', (distance, units) => ({
+export const setSelectionBuffer = createAction(
+  "map/set-selection-buffer",
+  (distance, units) => ({
     payload: {
-        distance,
-        units,
+      distance,
+      units,
     },
-}));
+  })
+);
 
 /* Set the edit source, which is a hint as to where
  * the current editing features originated from.
@@ -75,7 +86,7 @@ export const setSelectionBuffer = createAction('map/set-selection-buffer', (dist
  *
  * @return action definition.
  */
-export const setEditPath = createAction('map/set-edit-path');
+export const setEditPath = createAction("map/set-edit-path");
 
 /* Set the list of available editing tools.
  *
@@ -83,5 +94,4 @@ export const setEditPath = createAction('map/set-edit-path');
  *
  * @return action definition
  */
-export const setEditTools = createAction('map/set-edit-tools');
-
+export const setEditTools = createAction("map/set-edit-tools");

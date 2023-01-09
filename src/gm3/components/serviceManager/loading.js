@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-import React, {useEffect} from 'react';
-import {useTranslation} from 'react-i18next';
-import GeoMooseLogo from './logo';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import GeoMooseLogo from "./logo";
 
 const styleString = `
     @keyframes jumparound {
@@ -34,16 +34,15 @@ const styleString = `
     }
 `;
 
-
 export const LoadingIndicator = () => {
-    const {t} = useTranslation()
-    return (
-        <React.Fragment>
-            <style type="text/css">{styleString}</style>
-            <div style={{marginTop: 20, textAlign: 'center'}}>
-                <GeoMooseLogo />
-                <div>{t('Loading...')}</div>
-            </div>
-        </React.Fragment>
-    );
-}
+  const { t } = useTranslation();
+  return (
+    <React.Fragment>
+      <style type="text/css">{styleString}</style>
+      <div style={{ marginTop: 20, textAlign: "center" }}>
+        <GeoMooseLogo />
+        <div>{t("Loading...")}</div>
+      </div>
+    </React.Fragment>
+  );
+};

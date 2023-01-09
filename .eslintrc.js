@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2016-2022 GeoMoose
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,54 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-/** Reducer for the toolbar
- *
- */
-
-import { createReducer } from "@reduxjs/toolkit";
-import { addDrawer, addTool, remove } from "../actions/toolbar";
-
-/*
- * Toolbar tool definition
- * action.order
- * action.type
- * action.tool
- * * name
- * * label
- * * className
- * * actionType (tool, service)
- * * actionInfo
- * * order (first/last)
- *
- */
-
-const add = (state, payload) => {
-  if (!state[payload.root]) {
-    state[payload.root] = [];
-  }
-  if (payload.order === "first") {
-    state[payload.root].unshift(payload.tool);
-  } else {
-    state[payload.root].push(payload.tool);
-  }
+module.exports = {
+  parser: "@babel/eslint-parser",
+  extends: ["react-app", "prettier"],
+  plugins: ["prettier"],
+  rules: {
+    "prettier/prettier": "error",
+    "camelcase": "warn",
+  },
 };
-
-const reducer = createReducer(
-  { root: [] },
-  {
-    [addDrawer]: (state, { payload }) => {
-      add(state, payload);
-    },
-    [addTool]: (state, { payload }) => {
-      add(state, payload);
-    },
-    [remove]: (state, { payload: name }) => {
-      for (const root in state) {
-        state[root] = state[root].filter((item) => item.name !== name);
-      }
-    },
-  }
-);
-
-export default reducer;

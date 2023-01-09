@@ -22,213 +22,232 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import {connect} from 'react-redux';
-import {withTranslation} from 'react-i18next';
+import React from "react";
+import { connect } from "react-redux";
+import { withTranslation } from "react-i18next";
 
-import TextInput from './serviceInputs/text';
-import SelectInput from './serviceInputs/select';
-import LengthInput from './serviceInputs/length';
-import LayersInput from './serviceInputs/layersList';
-import BufferInput from './serviceInputs/buffer';
+import TextInput from "./serviceInputs/text";
+import SelectInput from "./serviceInputs/select";
+import LengthInput from "./serviceInputs/length";
+import LayersInput from "./serviceInputs/layersList";
+import BufferInput from "./serviceInputs/buffer";
 
-import DrawTool from './drawTool';
-
+import DrawTool from "./drawTool";
 
 function renderServiceField(fieldDef, value, onChange, isFirst = false) {
-    let InputClass = TextInput;
+  let InputClass = TextInput;
 
-    if (fieldDef.type === 'select') {
-        InputClass = SelectInput;
-    } else if (fieldDef.type === 'length') {
-        InputClass = LengthInput;
-    } else if (fieldDef.type === 'layers-list') {
-        InputClass = LayersInput;
-    } else if(fieldDef.type === 'hidden') {
-        // render nothing and like it.
-        return false;
-    }
+  if (fieldDef.type === "select") {
+    InputClass = SelectInput;
+  } else if (fieldDef.type === "length") {
+    InputClass = LengthInput;
+  } else if (fieldDef.type === "layers-list") {
+    InputClass = LayersInput;
+  } else if (fieldDef.type === "hidden") {
+    // render nothing and like it.
+    return false;
+  }
 
-    return (
-        <InputClass
-            isFirst={isFirst}
-            key={fieldDef.name}
-            field={fieldDef}
-            value={value}
-            setValue={onChange}
-        />
-    );
+  return (
+    <InputClass
+      isFirst={isFirst}
+      key={fieldDef.name}
+      field={fieldDef}
+      value={value}
+      setValue={onChange}
+    />
+  );
 }
 
 function getDefaultValues(serviceDef, defaultValues = {}) {
-    // convert the values to a hash and memoize it into the state.
-    const values = {};
-    for (let i = 0, ii = serviceDef.fields.length; i < ii; i++) {
-        const field = serviceDef.fields[i];
-        values[field.name] = defaultValues[field.name] || field.default;
-    }
-    return values;
+  // convert the values to a hash and memoize it into the state.
+  const values = {};
+  for (let i = 0, ii = serviceDef.fields.length; i < ii; i++) {
+    const field = serviceDef.fields[i];
+    values[field.name] = defaultValues[field.name] || field.default;
+  }
+  return values;
 }
-
 
 class ServiceForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
-            validateFieldValuesResultMessage: null,
-        };
+  constructor(props) {
+    super(props);
+    this.state = {
+      values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
+      validateFieldValuesResultMessage: null,
+    };
 
-        this.firstInputRef = null;
+    this.firstInputRef = null;
 
-        this.handleKeyboard = this.handleKeyboardShortcuts.bind(this);
-        this.setValue = this.setValue.bind(this);
+    this.handleKeyboard = this.handleKeyboardShortcuts.bind(this);
+    this.setValue = this.setValue.bind(this);
+  }
+
+  submit() {
+    const serviceDef = this.props.serviceDef;
+
+    // validate field values
+    let validateFieldValuesResultValid = true;
+    let validateFieldValuesResultMessage = null;
+    if (serviceDef.validateFieldValues) {
+      const validateFieldValuesResult = serviceDef.validateFieldValues(
+        this.state.values
+      );
+      validateFieldValuesResultValid = validateFieldValuesResult.valid;
+      validateFieldValuesResultMessage = validateFieldValuesResult.message;
+    }
+    if (validateFieldValuesResultValid) {
+      this.props.onSubmit(this.state.values);
+    } else {
+      // update state validation message
+      this.setState({ validateFieldValuesResultMessage });
+    }
+  }
+
+  /** Function to handle bashing 'Enter' and causing
+   *  the service form to submit.
+   *
+   *  @param evt The event from the div.
+   *
+   */
+  handleKeyboardShortcuts(evt) {
+    const code = evt.which;
+    if (code === 13) {
+      this.submit();
+    } else if (code === 27) {
+      this.props.onCancel();
+    }
+  }
+
+  setValue(fieldName, value) {
+    this.setState({
+      values: {
+        ...this.state.values,
+        [fieldName]: value,
+      },
+    });
+  }
+
+  resetDefaultValues() {
+    this.setState({
+      values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
+      validateFieldValuesResultMessage: null,
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.serviceName !== this.props.serviceName) {
+      this.resetDefaultValues();
+    } else {
+      // if there was a service change, don't accidentally submit
+      //  the old geometry on the new service.
+      if (
+        this.props.serviceDef.autoGo &&
+        this.props.selectionFeatures.length > 0
+      ) {
+        this.props.onSubmit(this.state.values);
+      }
+    }
+  }
+
+  componentDidMount() {
+    document.addEventListener("keyup", this.handleKeyboard);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keyup", this.handleKeyboard);
+  }
+
+  render() {
+    const serviceDef = this.props.serviceDef;
+
+    const showBuffer = serviceDef.bufferAvailable;
+
+    const drawTools = [];
+    if (serviceDef.drawToolsLabel) {
+      drawTools.push(<label key="label">{serviceDef.drawToolsLabel}</label>);
+    }
+    for (const gtype of [
+      "Box",
+      "Point",
+      "MultiPoint",
+      "LineString",
+      "Polygon",
+      "Select",
+      "Modify",
+    ]) {
+      if (serviceDef.tools[gtype]) {
+        drawTools.push(<DrawTool key={gtype} geomType={gtype} />);
+      }
     }
 
-    submit() {
-        const serviceDef = this.props.serviceDef;
+    const bufferInput = !showBuffer ? (
+      false
+    ) : (
+      <BufferInput key="buffer-input" />
+    );
 
-        // validate field values
-        let validateFieldValuesResultValid = true;
-        let validateFieldValuesResultMessage = null;
-        if (serviceDef.validateFieldValues) {
-            const validateFieldValuesResult = serviceDef.validateFieldValues(this.state.values);
-            validateFieldValuesResultValid = validateFieldValuesResult.valid;
-            validateFieldValuesResultMessage = validateFieldValuesResult.message;
-        }
-        if (validateFieldValuesResultValid) {
-            this.props.onSubmit(this.state.values);
-        } else {
-            // update state validation message
-            this.setState( {validateFieldValuesResultMessage} );
-        }
+    const fields = this.props.serviceDef.fields.map((field, idx) => {
+      return renderServiceField(
+        field,
+        this.state.values[field.name],
+        this.setValue,
+        idx === 0
+      );
+    });
+
+    let inputs = [];
+    if (serviceDef.fieldsFirst === true) {
+      inputs = [fields, drawTools, bufferInput];
+    } else {
+      inputs = [drawTools, bufferInput, fields];
     }
 
-    /** Function to handle bashing 'Enter' and causing
-     *  the service form to submit.
-     *
-     *  @param evt The event from the div.
-     *
-     */
-    handleKeyboardShortcuts(evt) {
-        const code = evt.which;
-        if(code === 13) {
-            this.submit();
-        } else if(code === 27) {
-            this.props.onCancel();
-        }
-    }
-
-    setValue(fieldName, value) {
-        this.setState({
-            values: {
-                ...this.state.values,
-                [fieldName]: value,
-            },
-        });
-    }
-
-    resetDefaultValues() {
-        this.setState({
-            values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
-            validateFieldValuesResultMessage: null,
-        });
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.serviceName !== this.props.serviceName) {
-            this.resetDefaultValues();
-        } else {
-            // if there was a service change, don't accidentally submit
-            //  the old geometry on the new service.
-            if (this.props.serviceDef.autoGo && this.props.selectionFeatures.length > 0) {
-                this.props.onSubmit(this.state.values);
-            }
-        }
-    }
-
-    componentDidMount() {
-        document.addEventListener('keyup', this.handleKeyboard);
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('keyup', this.handleKeyboard);
-    }
-
-    render() {
-        const serviceDef = this.props.serviceDef;
-
-        const showBuffer = serviceDef.bufferAvailable;
-
-        const drawTools = [];
-        if (serviceDef.drawToolsLabel) {
-            drawTools.push((<label key='label'>{ serviceDef.drawToolsLabel }</label>));
-        }
-        for (const gtype of ['Box', 'Point', 'MultiPoint', 'LineString', 'Polygon', 'Select', 'Modify']) {
-            if (serviceDef.tools[gtype]) {
-                drawTools.push(<DrawTool key={gtype} geomType={gtype} />);
-            }
-        }
-
-        const bufferInput = !showBuffer ? false : (
-            <BufferInput key='buffer-input'/>
-        );
-
-        const fields = this.props.serviceDef.fields.map((field, idx) => {
-            return renderServiceField(field, this.state.values[field.name], this.setValue, idx === 0);
-        });
-
-        let inputs = [];
-        if (serviceDef.fieldsFirst === true) {
-            inputs = [fields, drawTools, bufferInput];
-        } else {
-            inputs = [drawTools, bufferInput, fields];
-        }
-
-        return (
-            <div className='service-form'>
-                <h3>{this.props.t(serviceDef.title)}</h3>
-                { inputs }
-                {
-                    !this.state.validateFieldValuesResultMessage ? false : (
-                        <div className="query-error">
-                            <div className="error-header">Error</div>
-                            <div className="error-contents">
-                                { this.state.validateFieldValuesResultMessage }
-                            </div>
-                        </div>
-                    )
-                }
-                <div className='tab-controls'>
-                    <button
-                        className='close-button'
-                        onClick={() => {
-                            this.props.onCancel();
-                        }}
-                    >
-                        <i className='close-icon'></i> {this.props.t('Close')}
-                    </button>
-                    <button
-                        className='go-button'
-                        onClick={() => {
-                            this.submit();
-                        }}
-                    >
-                        <i className='go-icon'></i> {this.props.t('go')}
-                    </button>
-                </div>
+    return (
+      <div className="service-form">
+        <h3>{this.props.t(serviceDef.title)}</h3>
+        {inputs}
+        {!this.state.validateFieldValuesResultMessage ? (
+          false
+        ) : (
+          <div className="query-error">
+            <div className="error-header">Error</div>
+            <div className="error-contents">
+              {this.state.validateFieldValuesResultMessage}
             </div>
-        );
-    }
+          </div>
+        )}
+        <div className="tab-controls">
+          <button
+            className="close-button"
+            onClick={() => {
+              this.props.onCancel();
+            }}
+          >
+            <i className="close-icon"></i> {this.props.t("Close")}
+          </button>
+          <button
+            className="go-button"
+            onClick={() => {
+              this.submit();
+            }}
+          >
+            <i className="go-icon"></i> {this.props.t("go")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 }
 
-
 ServiceForm.defaultProps = {
-    defaultValues: {},
+  defaultValues: {},
 };
 
-const mapStateToProps = state => ({
-    selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
+const mapStateToProps = (state) => ({
+  selectionFeatures: state.mapSources.selection
+    ? state.mapSources.selection.features
+    : [],
 });
 
 export default connect(mapStateToProps)(withTranslation()(ServiceForm));
