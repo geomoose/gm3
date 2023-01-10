@@ -478,7 +478,7 @@
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" draw-edit="true" />
 
-        <group title="Overlays" expand="true">
+        <group title="Overlays" expand="true" tip="Layers that sit above the basemaps">
             <group title="County Layers">
                 <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
 
