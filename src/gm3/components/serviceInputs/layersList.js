@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import SelectInput from "./select";
@@ -31,18 +30,21 @@ import { getQueryableLayers, getLayerByPath } from "../../actions/mapSource";
 // special list of layers that should never float to the top.
 const TO_THE_BOTTOM = ["sketch/default"];
 
-export class LayersListInput extends SelectInput {
-  getOptions() {
-    const options = [];
-    for (let i = 0, ii = this.props.layers.length; i < ii; i++) {
-      const layer = getLayerByPath(this.props.mapSources, this.props.layers[i]);
-      options.push({
-        value: this.props.layers[i],
-        label: layer.label,
-      });
-    }
+export const getLayerOptions = (inputFilter, mapSources) => {
+  const layers =
+    inputFilter && inputFilter.layers
+      ? inputFilter.layers
+      : getQueryableLayers(mapSources, inputFilter);
 
-    return options.sort((a, b) => {
+  return layers
+    .map((path) => {
+      const layer = getLayerByPath(mapSources, path);
+      return {
+        value: path,
+        label: layer.label,
+      };
+    })
+    .sort((a, b) => {
       if (TO_THE_BOTTOM.indexOf(a.value) >= 0) {
         return 1;
       } else if (TO_THE_BOTTOM.indexOf(b.value) >= 0) {
@@ -50,25 +52,16 @@ export class LayersListInput extends SelectInput {
       }
       return a < b ? -1 : 1;
     });
+};
+
+export class LayersListInput extends SelectInput {
+  getOptions() {
+    return getLayerOptions(this.props.field?.filter, this.props.mapSources);
   }
 }
 
-LayersListInput.propTypes = {
-  layers: PropTypes.array,
-};
-
-LayersListInput.defaultProps = {
-  mapSources: {},
-  layers: [],
-};
-
 function mapState(state, ownProps) {
-  const filterLayers =
-    ownProps.filter && ownProps.filter.layers ? ownProps.filter.layers : null;
   return {
-    layers: filterLayers
-      ? filterLayers
-      : getQueryableLayers(state.mapSources, ownProps.field.filter),
     mapSources: state.mapSources,
   };
 }

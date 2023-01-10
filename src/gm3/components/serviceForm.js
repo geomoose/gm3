@@ -29,7 +29,7 @@ import { withTranslation } from "react-i18next";
 import TextInput from "./serviceInputs/text";
 import SelectInput from "./serviceInputs/select";
 import LengthInput from "./serviceInputs/length";
-import LayersInput from "./serviceInputs/layersList";
+import LayersInput, { getLayerOptions } from "./serviceInputs/layersList";
 import BufferInput from "./serviceInputs/buffer";
 
 import DrawTool from "./drawTool";
@@ -59,12 +59,22 @@ function renderServiceField(fieldDef, value, onChange, isFirst = false) {
   );
 }
 
-function getDefaultValues(serviceDef, defaultValues = {}) {
+function getDefaultValues(serviceDef, mapSources, defaultValues = {}) {
   // convert the values to a hash and memoize it into the state.
   const values = {};
   for (let i = 0, ii = serviceDef.fields.length; i < ii; i++) {
     const field = serviceDef.fields[i];
     values[field.name] = defaultValues[field.name] || field.default;
+    if (!values[field.name]) {
+      if (field.type === "select" && field.options.length > 0) {
+        values[field.name] = field.options[0].value;
+      } else if (field.type === "layer") {
+        const layerOptions = getLayerOptions(field.filter, mapSources);
+        if (layerOptions.length > 0) {
+          values[field.name] = layerOptions[0].value;
+        }
+      }
+    }
   }
   return values;
 }
@@ -73,7 +83,11 @@ class ServiceForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
+      values: getDefaultValues(
+        this.props.serviceDef,
+        this.props.mapSources,
+        this.props.defaultValues
+      ),
       validateFieldValuesResultMessage: null,
     };
 
@@ -85,7 +99,6 @@ class ServiceForm extends React.Component {
 
   submit() {
     const serviceDef = this.props.serviceDef;
-
     // validate field values
     let validateFieldValuesResultValid = true;
     let validateFieldValuesResultMessage = null;
@@ -120,17 +133,22 @@ class ServiceForm extends React.Component {
   }
 
   setValue(fieldName, value) {
+    const nextValues = {
+      ...this.state.values,
+      [fieldName]: value,
+    };
     this.setState({
-      values: {
-        ...this.state.values,
-        [fieldName]: value,
-      },
+      values: nextValues,
     });
   }
 
   resetDefaultValues() {
     this.setState({
-      values: getDefaultValues(this.props.serviceDef, this.props.defaultValues),
+      values: getDefaultValues(
+        this.props.serviceDef,
+        this.props.mapSources,
+        this.props.defaultValues
+      ),
       validateFieldValuesResultMessage: null,
     });
   }
@@ -245,6 +263,7 @@ ServiceForm.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
+  mapSources: state.mapSources,
   selectionFeatures: state.mapSources.selection
     ? state.mapSources.selection.features
     : [],
