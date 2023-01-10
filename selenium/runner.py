@@ -17,8 +17,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import tests
 
 desired_cap = {
- 'browser': 'IE',
- 'browser_version': '11.0',
+ 'browser': 'Edge',
+ 'browser_version': 'latest',
  'os': 'Windows',
  'os_version': '10',
  'resolution': '1280x1024',
