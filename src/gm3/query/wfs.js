@@ -5,15 +5,13 @@ import GML2Format from "ol/format/GML2";
 import { applyPixelTolerance } from "./util";
 import { transformFeatures, formatUrlParameters } from "../util";
 
-import { buildWfsQuery } from "../components/map/layers/wfs";
+import {
+  buildWfsQuery,
+  getQueryProjection,
+} from "../components/map/layers/wfs";
 
 export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
-  // the internal storage mechanism requires features
-  //  returned from the query be stored in 4326 and then
-  //  reprojected on render.
-  const queryProjection = mapSource.wgs84Hack
-    ? "EPSG:4326"
-    : mapState.projection;
+  const queryProjection = getQueryProjection(mapSource, mapState.projection);
 
   // check for the outputFormat based on the params
   let outputFormat = "text/xml; subtype=gml/2.1.2";

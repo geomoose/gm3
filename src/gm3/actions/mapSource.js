@@ -36,7 +36,13 @@ import {
 } from "../components/map/layers/wfs";
 import { EDIT_LAYER_NAME } from "../defaults";
 
-import * as util from "../util";
+import {
+  parseBoolean,
+  getTagContents,
+  getXmlTextContents,
+  getMapSourceName,
+  getLayerName,
+} from "../util";
 
 let MS_Z_INDEX = 100000;
 
@@ -135,7 +141,7 @@ function parseProperties(msXml) {
         for (let x = 0, xx = options.length; x < xx; x++) {
           propDef.options.push({
             value: options[x].getAttribute("value"),
-            label: util.getXmlTextContents(options[x]),
+            label: getXmlTextContents(options[x]),
           });
         }
       }
@@ -174,8 +180,8 @@ export const favoriteLayer = createAction(
  *  @returns Object defining the map source
  */
 function mapServerToDestType(msXml, conf, destType) {
-  let urls = util.getTagContents(msXml, "url", true);
-  const mapfile = util.getTagContents(msXml, "file", true)[0];
+  let urls = getTagContents(msXml, "url", true);
+  const mapfile = getTagContents(msXml, "file", true)[0];
 
   // if the url is null then default to the
   //  mapserver url.
@@ -220,11 +226,13 @@ function mapServerToWFS(msXml, conf) {
 
   /* MapServer has a pretty major bug, it will not properly
    * reproject bounding boxes for non-WGS84 layers when doing
-   * WFS queries.  This tells the query engine in the map component,
-   * to use an internal work-around ... aka ... "hack".
+   * WFS queries.
+   * This forces using a query of projection of 4326 if it
+   * otherwise not set
    */
-  wfsConf.wgs84Hack = true;
-
+  if (!wfsConf.srcProj) {
+    wfsConf.srcProj = "EPSG:4326";
+  }
   return wfsConf;
 }
 
@@ -235,14 +243,14 @@ export function addFromXml(xml, config) {
   // initialize the map source object.
   const mapSource = {
     name: xml.getAttribute("name"),
-    urls: util.getTagContents(xml, "url", true),
+    urls: getTagContents(xml, "url", true),
     type: xml.getAttribute("type"),
     label: xml.getAttribute("title"),
     opacity: xml.getAttribute("opacity"),
     zIndex: xml.getAttribute("z-index"),
-    queryable: util.parseBoolean(xml.getAttribute("queryable"), true),
+    queryable: parseBoolean(xml.getAttribute("queryable"), true),
     // assume layers are printable
-    printable: util.parseBoolean(xml.getAttribute("printable"), true),
+    printable: parseBoolean(xml.getAttribute("printable"), true),
     refresh: null,
     layers: [],
     transforms: {},
@@ -250,6 +258,7 @@ export function addFromXml(xml, config) {
     config: {},
     properties: [],
     idProperty: "_uuid",
+    srcProj: xml.getAttribute("src-proj"),
   };
 
   // handle setting up the zIndex
@@ -315,9 +324,9 @@ export function addFromXml(xml, config) {
 
     const layer = {
       name: layerXml.getAttribute("name"),
-      on: util.parseBoolean(layerXml.getAttribute("status")),
-      favorite: util.parseBoolean(layerXml.getAttribute("favorite")),
-      selectable: util.parseBoolean(layerXml.getAttribute("selectable")),
+      on: parseBoolean(layerXml.getAttribute("status")),
+      favorite: parseBoolean(layerXml.getAttribute("favorite")),
+      selectable: parseBoolean(layerXml.getAttribute("selectable")),
       label: layerTitle ? layerTitle : mapSource.label,
       templates: {},
       legend: null,
@@ -332,14 +341,14 @@ export function addFromXml(xml, config) {
     if (legends.length > 0) {
       layer.legend = {
         type: legends[0].getAttribute("type"),
-        contents: util.getXmlTextContents(legends[0]),
+        contents: getXmlTextContents(legends[0]),
       };
     }
 
     // pull in an HTML attribution as available.
     const attribution = layerXml.getElementsByTagName("attribution");
     if (attribution.length > 0) {
-      layer.attribution = util.getXmlTextContents(attribution[0]);
+      layer.attribution = getXmlTextContents(attribution[0]);
     }
 
     const templates = layerXml.getElementsByTagName("template");
@@ -351,7 +360,7 @@ export function addFromXml(xml, config) {
 
       const templateSrc = templateXml.getAttribute("src");
       const templateAlias = templateXml.getAttribute("alias");
-      const autoTemplate = util.parseBoolean(templateXml.getAttribute("auto"));
+      const autoTemplate = parseBoolean(templateXml.getAttribute("auto"));
       if (templateAlias) {
         templateDef = {
           type: "alias",
@@ -369,17 +378,16 @@ export function addFromXml(xml, config) {
       } else {
         templateDef = {
           type: "local",
-          contents: util.getXmlTextContents(templateXml),
+          contents: getXmlTextContents(templateXml),
         };
       }
       templateDef.highlight =
-        util.parseBoolean(templateXml.getAttribute("highlight"), true) !==
-        false;
+        parseBoolean(templateXml.getAttribute("highlight"), true) !== false;
       layer.templates[templateName] = templateDef;
     }
 
     // check to see if there are any style definitions
-    const style = util.getTagContents(layerXml, "style", false);
+    const style = getTagContents(layerXml, "style", false);
     if (style && style.length > 0) {
       // convert to JSON
       try {
@@ -394,7 +402,7 @@ export function addFromXml(xml, config) {
     }
 
     // check to see if there are any filter definitions
-    const filter = util.getTagContents(layerXml, "filter", false);
+    const filter = getTagContents(layerXml, "filter", false);
     if (filter && filter.length > 0) {
       // convert to JSON
       try {
@@ -526,8 +534,8 @@ export function getActiveMapSources(mapSources, onlyPrintable = false) {
 }
 
 export function getLayerFromPath(mapSources, path) {
-  const mapSourceName = util.getMapSourceName(path);
-  const layerName = util.getLayerName(path);
+  const mapSourceName = getMapSourceName(path);
+  const layerName = getLayerName(path);
 
   return getLayer(mapSources, {
     mapSourceName: mapSourceName,
@@ -754,11 +762,11 @@ export function removeFeature(path, feature) {
   return (dispatch, getState) => {
     const mapSources = getState().mapSources;
     const layer = getLayerFromPath(mapSources, path);
-    const layerSrcName = util.getMapSourceName(path);
+    const layerSrcName = getMapSourceName(path);
 
     let mapSourceName = layerSrcName;
     if (layer && layer.queryAs && layer.queryAs.length > 0) {
-      mapSourceName = util.getMapSourceName(layer.queryAs[0]);
+      mapSourceName = getMapSourceName(layer.queryAs[0]);
     }
 
     const mapSource = getState().mapSources[mapSourceName];
@@ -945,11 +953,11 @@ export function saveFeature(path, feature) {
   return (dispatch, getState) => {
     const mapSources = getState().mapSources;
     const layer = getLayerFromPath(mapSources, path);
-    const layerSrcName = util.getMapSourceName(path);
+    const layerSrcName = getMapSourceName(path);
 
     let mapSourceName = layerSrcName;
     if (layer && layer.queryAs && layer.queryAs.length > 0) {
-      mapSourceName = util.getMapSourceName(layer.queryAs[0]);
+      mapSourceName = getMapSourceName(layer.queryAs[0]);
     }
 
     const mapSource = getState().mapSources[mapSourceName];
