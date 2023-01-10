@@ -126,6 +126,16 @@ class UploadModal extends Modal {
     // grab the list of files.
     const files = this.refs.fileInput.files;
 
+    // just skip to the end of there are no files.
+    if (files.length === 0) {
+      this.setState({
+        progress: "finished",
+        features: 0,
+        invalid: 0,
+      });
+      return false;
+    }
+
     // setup a file reader.
     const reader = new FileReader();
 
