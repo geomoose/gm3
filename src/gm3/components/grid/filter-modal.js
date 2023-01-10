@@ -121,7 +121,7 @@ class ListFilterModal extends FilterModal {
     const prop = this.props.column.property;
     const filterValues = props.filters
       .filter((filterDef) => {
-        return getFilterFieldNames(filterDef).indexOf(prop > 0);
+        return getFilterFieldNames(filterDef).indexOf(prop) >= 0;
       })
       .map((filterDef) => getListFilterValues(filterDef))
       .flatMap((v) => v);
