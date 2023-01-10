@@ -57,11 +57,12 @@ export class ClearTool extends React.Component {
           <ModalDialog
             title="Clear features"
             open={this.state.open}
-            onClose={() => {
+            onClose={(closeOpt) => {
               this.setState({ open: false });
-
-              const src = this.props.layer.src[0];
-              this.props.clearFeatures(src.mapSourceName);
+              if (closeOpt === "clear") {
+                const src = this.props.layer.src[0];
+                this.props.clearFeatures(src.mapSourceName);
+              }
             }}
             options={[
               { label: "Cancel", value: "dismiss" },
