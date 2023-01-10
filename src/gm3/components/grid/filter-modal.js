@@ -75,9 +75,9 @@ class FilterModal extends ModalDialog {
   }
 
   close(status) {
-    if (status === "set") {
+    if (status === "set" && this.state.value.length > 0) {
       this.setFilter();
-    } else if (status === "clear") {
+    } else if (status === "clear" || this.state.value.length === 0) {
       // remove the filter from the query
       this.props.store.dispatch(removeFilter(this.props.column.property));
     }
@@ -166,6 +166,11 @@ class ListFilterModal extends FilterModal {
 
   renderBody() {
     const isChecked = (value) => this.state.selectedValues[value] === true;
+    const nSelected = Object.keys(this.state.selectedValues).filter(
+      (value) => this.state.selectedValues[value]
+    ).length;
+    // none selected is the same as all selected.
+    const isAllSelected = nSelected === this.state.orderedValues.length;
 
     const toggleSelected = (value) => {
       const nextSelected = {
@@ -179,20 +184,50 @@ class ListFilterModal extends FilterModal {
       });
     };
 
+    const toggleAll = () => {
+      const selectAll = !isAllSelected;
+      const nextSelected = {};
+      this.state.orderedValues.forEach((value) => {
+        nextSelected[value] = selectAll;
+      });
+      this.setState({
+        selectedValues: nextSelected,
+        value: this.state.orderedValues.filter((value) => nextSelected[value]),
+      });
+    };
+
     return (
-      <div>
-        {this.state.orderedValues.map((value) => (
-          <div
-            key={isEmpty(value) ? "(empty)" : value}
-            className="checkbox"
-            onClick={() => {
-              toggleSelected(value);
-            }}
-          >
-            <i className={`icon checkbox ${isChecked(value) ? "on" : ""}`} />
-            {isEmpty(value) ? "(empty)" : value}
-          </div>
-        ))}
+      <div
+        style={{
+          position: "relative",
+          maxHeight: "400px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          className="checkbox"
+          onClick={() => toggleAll()}
+          style={{ marginBottom: "4px" }}
+        >
+          <i className={`icon checkbox ${isAllSelected ? "on" : ""}`} />
+          {isAllSelected ? "Select none" : "Select all"}
+        </div>
+        <div style={{ flex: 1, overflow: "auto" }}>
+          {this.state.orderedValues.map((value) => (
+            <div
+              key={isEmpty(value) ? "(empty)" : value}
+              className="checkbox"
+              onClick={() => {
+                toggleSelected(value);
+              }}
+            >
+              <i className={`icon checkbox ${isChecked(value) ? "on" : ""}`} />
+              {isEmpty(value) ? "(empty)" : value}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
