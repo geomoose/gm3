@@ -79,7 +79,7 @@
 -->
     <map-source name="wfs-points"                 type="wfs"     title="Parcel Points">
         <url>https://demo.geomoose.org/cgi-bin/mapserv7</url>
-        <param name="map" value="/srv/demo/src/3.0/gm3-demo-data/demo/parcels/parcels.map"/>
+        <param name="map" value="/srv/demo/src/3.x/gm3-demo-data/demo/parcels/parcels.map"/>
         <param name="typename" value="ms:parcels_points"/>
         <config name="pixel-tolerance" value="3" />
         <layer name="parcels_points" title="WFS Parcel Points">
@@ -103,7 +103,7 @@
     </map-source>
     <map-source name="wfs-lines"                  type="wfs"     title="Pipelines">
         <url>https://demo.geomoose.org/cgi-bin/mapserv7</url>
-        <param name="map" value="/srv/demo/src/3.0/gm3-demo-data/demo/pipelines/pipelines.map"/>
+        <param name="map" value="/srv/demo/src/3.x/gm3-demo-data/demo/pipelines/pipelines.map"/>
         <param name="typename" value="ms:pipelines"/>
         <layer name="pipelines" status="off">
             <style><![CDATA[
@@ -121,7 +121,7 @@
         <param name="map" value="C:/ms4w/apps/gm3-demo-data/demo/parcels/parcels.map"/>
 -->
         <url>https://demo.geomoose.org/cgi-bin/mapserv7</url>
-        <param name="map" value="/srv/demo/src/3.0/gm3-demo-data/demo/parcels/parcels.map"/>
+        <param name="map" value="/srv/demo/src/3.x/gm3-demo-data/demo/parcels/parcels.map"/>
         <param name="typename" value="ms:parcels"/>
         <config name="pixel-tolerance" value="0" />
         <layer name="default" title="wfs Polygons">
@@ -174,7 +174,7 @@
 -->
     <!-- - - - - - - -  TYPE = "mapserver-wfs"   - - - - - - - -->
     <map-source name="mapserver-wfs-points"       type="mapserver-wfs" title="Parcel Points">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels_points"/>
         <config name="pixel-tolerance" value="2" />
 
@@ -222,7 +222,7 @@
        </layer>
     </map-source>
     <map-source name="mapserver-wfs-lines"        type="mapserver-wfs" title="Pipelines">
-        <file>./demo/pipelines/pipelines.map</file>
+        <file>demo/pipelines/pipelines.map</file>
         <param name="typename" value="ms:pipelines"/>
         <layer name="pipelines" status="off">
             <style><![CDATA[
@@ -235,7 +235,7 @@
         </layer>
     </map-source>   
     <map-source name="mapserver-wfs-polygons"     type="mapserver-wfs" title="Parcel Polygons">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels"/>
         <config name="pixel-tolerance" value="0" />
 
@@ -691,7 +691,7 @@
     *********************************************************  -->
     <!-- - - - - - - -  TYPE = "mapserver"   - - - - - - - - - -->
     <map-source name="mapserver-points"           type="mapserver" title="Interesting Points">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <param name="FORMAT" value="image/png"/>
         <layer name="parcels_points">
             <template name="identify" auto="true" />
@@ -703,7 +703,7 @@
         </layer>
     </map-source>
     <map-source name="mapserver-lines"            type="mapserver">
-        <file>./demo/pipelines/pipelines.map</file>
+        <file>demo/pipelines/pipelines.map</file>
         <layer name="pipelines" status="off">
             <template name="identify"><![CDATA[
             <div>
@@ -722,7 +722,7 @@
         <param name="FORMAT" value="image/png"/>
     </map-source>
     <map-source name="mapserver-polygons"         type="mapserver">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <layer name="parcels" status="off" >
             <template name="identify" src="./templates/parcels.html" />
         </layer>
@@ -906,7 +906,7 @@
     *********************************************************  -->
     <!-- - - - - - - -  TYPE = "mapserver" (image only)  - - - - - - - - - -->
    <map-source name="mapserver-image"             type="mapserver">
-        <file>./demo/wms/wms_proxy.map</file>
+        <file>demo/wms/wms_proxy.map</file>
         <layer name="mncomp">
             <legend type="nolegend"/>
         </layer>
