@@ -4,6 +4,8 @@ How-to add a layer search
 Search operations are only supported on ``vector``, ``geojson``,
 ``ags-vector``, ``wfs``, and ``mapserver-wfs`` map-source types.
 
+You can also add search operations to ``ags``, ``wms``, and  ``mapserver`` mapsources using the query-as technique.
+
 Add a supported vector map-source
 ---------------------------------
 

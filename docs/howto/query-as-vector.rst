@@ -59,17 +59,20 @@ How this is processed internally
 
 The parcels layer is served as WMS. But if you look at the
 ``<layer name="parcels">`` it has a query-as attribute set to
-``vector-parcels/parcels``. So a few things happen: 1. When the Select
-service goes to execute a query, it looks for layers with a template
-which has the name attribute set to ``select``. ``parcels/parcels`` will
-not have one but because the query-as attribute is set to
-``vector-parcels/parcels`` it will look for a 'select' template there
-first. It will find the template there and then use
-``vector-parcels/parcels`` (WFS) instead of ``parcels/parcels`` (WMS) to
-execute the select query. 2. When the Identify service goes to execute a
-query, it will NOT find the identify template in
-``vector-parcels/parcels`` but WILL find it in parcels/parcels and use
-WMS to execute that query.
+``vector-parcels/parcels``. So a few things happen:
+
+  1. When the Select service goes to execute a query, it looks for layers with a template
+  which has the name attribute set to ``select``.  The ``parcels/parcels`` layer will
+  not have one but because its query-as attribute is set to
+  ``vector-parcels/parcels`` it will look for a 'select' template there
+  first. It will find the template there and then use
+  ``vector-parcels/parcels`` (WFS) instead of ``parcels/parcels`` (WMS) to
+  execute the select query.
+
+  2. When the Identify service goes to execute a
+  query, it will NOT find the identify template in
+  ``vector-parcels/parcels`` but WILL find it in parcels/parcels and use
+  WMS to execute that query.
 
 Only ``parcels/parcels`` needs to be turned on! GeoMoose will
 automatically pick the best source with which to perform the query.
@@ -80,3 +83,6 @@ Other notes
 The query-as also accepts a list of paths like in the catalog. It could
 be possible to refer to multiple vector sources for querying. Or even
 other raster sources for identify-queries.
+
+AGS mapsources can also use the above "query-as" technique to allow query
+operations.  In this case the target of the query-as could be a ags-vector mapsource.
