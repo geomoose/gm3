@@ -4,6 +4,8 @@ How-to add Select to a layer
 Select operations are only supported on ``vector``, ``geojson``,
 ``ags-vector``, ``wfs``, and ``mapserver-wfs`` map-source types.
 
+You can also add select operations to ``ags``, ``wms``, and  ``mapserver`` mapsources using the query-as technique.
+
 Add a supported vector map-source
 ---------------------------------
 
