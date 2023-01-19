@@ -80,6 +80,7 @@ function parseGroup(groupXml) {
     multiple: parseBoolean(groupXml.getAttribute("multiple"), true),
     // eslint-disable-next-line camelcase
     metadata_url: null,
+    tip: groupXml.getAttribute("tip"),
   };
 
   const p = groupXml.parentNode;

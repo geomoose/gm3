@@ -23,42 +23,29 @@
  */
 import React from "react";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 import MetadataTool from "./tools/metadata";
 
-export default class CatalogGroup extends React.Component {
-  render() {
-    const group = this.props.group;
+const CatalogGroup = ({ group, onExpand, children }) => {
+  const { t } = useTranslation();
+  const classes = "group " + (!!group.expand ? "gm-expand" : "gm-collapse");
+  const iconClasses = "folder icon " + (!!group.expand ? "open" : "");
 
-    let classes = "group";
-    let isOpen = "";
-    if (group.expand) {
-      classes += " gm-expand";
-      isOpen = "open";
-    } else {
-      classes += " gm-collapse";
-    }
-
-    return (
-      <div key={group.id} className={classes}>
-        <div
-          onClick={() => {
-            this.props.onExpand();
-          }}
-          className="group-label"
-        >
-          <i className={"folder icon " + isOpen}></i>
-          {group.label}{" "}
-          {!group.metadata_url ? (
-            false
-          ) : (
-            <MetadataTool href={group.metadata_url} />
-          )}
-        </div>
-        <div className="children">{this.props.children}</div>
+  return (
+    <div key={group.id} className={classes}>
+      <div onClick={onExpand} className="group-label" title={t(group.tip)}>
+        <i className={iconClasses}></i>
+        {t(group.label)}{" "}
+        {!group.metadata_url ? (
+          false
+        ) : (
+          <MetadataTool href={group.metadata_url} />
+        )}
       </div>
-    );
-  }
-}
+      <div className="children">{children}</div>
+    </div>
+  );
+};
 
 CatalogGroup.defaultProps = {
   onExpand: () => {},
@@ -68,3 +55,5 @@ CatalogGroup.propTypes = {
   onExpand: PropTypes.func,
   group: PropTypes.object.isRequired,
 };
+
+export default CatalogGroup;
