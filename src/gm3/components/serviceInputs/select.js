@@ -38,20 +38,6 @@ export default class SelectInput extends TextInput {
     return this.props.field.options;
   }
 
-  componentDidMount() {
-    const options = this.getOptions();
-    if (
-      this.props.field.default === undefined ||
-      options.filter((v) => v.value === this.props.field.default).length < 1
-    ) {
-      this.onChange({
-        target: {
-          value: options.length > 0 ? options[0].value : "",
-        },
-      });
-    }
-  }
-
   render() {
     const id = this.getId();
     const options = this.getOptions();
@@ -63,6 +49,7 @@ export default class SelectInput extends TextInput {
           id={"input-" + id}
           value={this.state.value}
           onChange={this.onChange}
+          ref={(r) => (this.inputRef = r)}
         >
           {options.map(this.renderOption)}
         </select>
