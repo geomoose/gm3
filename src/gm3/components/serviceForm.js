@@ -65,14 +65,21 @@ function getDefaultValues(serviceDef, mapSources, defaultValues = {}) {
   for (let i = 0, ii = serviceDef.fields.length; i < ii; i++) {
     const field = serviceDef.fields[i];
     values[field.name] = defaultValues[field.name] || field.default;
-    if (!values[field.name]) {
-      if (field.type === "select" && field.options.length > 0) {
-        values[field.name] = field.options[0].value;
-      } else if (field.type === "layer") {
-        const layerOptions = getLayerOptions(field.filter, mapSources);
-        if (layerOptions.length > 0) {
-          values[field.name] = layerOptions[0].value;
-        }
+    if (field.type === "select" || field.type === "layers-list") {
+      // normalize the options list for both select and layer input types
+      const options =
+        field.type === "select"
+          ? field.options
+          : getLayerOptions(field.filter, mapSources);
+      // ensure the default value is valid
+      const isDefaultValid =
+        !!values[field.name] &&
+        options.filter((option) => option.value === values[field.name]).length >
+          0;
+
+      // if the default is not valid, then choose the first option in the list
+      if (!isDefaultValid && options.length > 0) {
+        values[field.name] = options[0].value;
       }
     }
   }
