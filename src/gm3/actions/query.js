@@ -63,7 +63,24 @@ export const startService = createAsyncThunk(
   }
 );
 
-export const finishService = createAction("query/finish-service");
+/**
+ * Clearing the service will reset the internal bits of the query state
+ */
+export const clearService = createAction("query/clear-service");
+
+/**
+ * Finishing the service will close out and clear the service.
+ */
+export const finishService = createAsyncThunk(
+  "query/finish-service",
+  (arg, { dispatch }) => {
+    dispatch(clearService());
+    dispatch(removeQueryResults());
+    dispatch(changeTool(""));
+    dispatch(clearSelectionFeatures());
+    dispatch(clearFeatures("selection"));
+  }
+);
 
 export const createQuery = createAction(
   "query/create",

@@ -29,7 +29,7 @@
 import { createReducer } from "@reduxjs/toolkit";
 import {
   changeService,
-  finishService,
+  clearService,
   createQuery,
   runQuery,
   addFilter,
@@ -66,7 +66,7 @@ const reducer = createReducer(defaultState, {
     state.defaultValues = defaultValues;
     state.step = SERVICE_STEPS.START;
   },
-  [finishService]: (state) => {
+  [clearService]: (state) => {
     state.serviceName = "";
     state.defaultValues = {};
     state.step = SERVICE_STEPS.FINISHED;
