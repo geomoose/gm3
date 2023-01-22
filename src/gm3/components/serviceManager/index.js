@@ -8,7 +8,7 @@ import ServiceForm from "../serviceForm";
 import Results from "./results";
 import MeasureTool from "../measure";
 import { LoadingIndicator } from "./loading";
-import { EmptyPlaceholder } from "./empty";
+import EmptyPlaceholder from "./empty";
 
 import { SERVICE_STEPS } from "../../reducers/query";
 import { normalizeFieldValues, normalizeSelection } from "../../query/util";
