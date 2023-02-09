@@ -27,16 +27,17 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import { getArea } from "ol/sphere";
 
-import DrawTool from "./drawTool";
+import DrawTool from "../drawTool";
+import { changeTool } from "../../actions/map";
 
-import * as util from "../util";
+import * as util from "../../util";
+import { projectFeatures } from "../../util";
 
-import * as proj from "ol/proj";
+import { toLonLat } from "ol/proj";
 
-import olPoint from "ol/geom/Point";
-import olLineString from "ol/geom/LineString";
+import CoordinateDisplay from "../coordinate-display";
 
-import CoordinateDisplay from "./coordinate-display";
+import { getSegmentInfo, chompFloat } from "./calc";
 
 export class MeasureTool extends Component {
   constructor(props) {
@@ -44,114 +45,19 @@ export class MeasureTool extends Component {
     this.state = {
       units: this.props.initialUnits ? this.props.initialUnits : "ft",
     };
+
+    // localize all of the ordinals
+    this.ordinalDictionary = {};
+    ["north", "east", "south", "west"].forEach((ordinal) => {
+      const key = `measure-${ordinal}-abbr`;
+      this.ordinalDictionary[key] = this.props.t(key);
+    });
   }
 
-  /* Get the bearing of a drawing.
-   * This is directly ported from GeoMoose 2.X
-   *
-   * @param {Array} pointA Array of x,y
-   * @param {Array} pointB Array of x,y
-   *
-   * @return {string} Bearing description
-   */
-  getBearing(pointA, pointB) {
-    let bearing = "-";
-    if (pointA && pointB) {
-      bearing = "N0-0-0E";
-
-      let rise = pointB[1] - pointA[1];
-      let run = pointB[0] - pointA[0];
-      if (rise === 0) {
-        if (pointA[0] > pointB[0]) {
-          bearing = this.props.t("measure-due-west");
-        } else {
-          bearing = this.props.t("measure-due-east");
-        }
-      } else if (run === 0) {
-        if (pointA[1] > pointB[1]) {
-          bearing = this.props.t("measure-due-south");
-        } else {
-          bearing = this.props.t("measure-due-north");
-        }
-      } else {
-        let nsQuad = this.props.t("measure-north-abbr");
-        let ewQuad = this.props.t("measure-east-abbr");
-        if (rise < 0) {
-          nsQuad = this.props.t("measure-south-abbr");
-        }
-        if (run < 0) {
-          ewQuad = this.props.t("measure-west-abbr");
-        }
-        /* we've determined the quadrant, so we can make these absolute */
-        rise = Math.abs(rise);
-        run = Math.abs(run);
-        /* convert to degrees */
-        // var degrees = Math.atan(rise/run) / (2*Math.PI) * 360;
-        // Calculation suggested by Dean Anderson, refs: #153
-        const degrees = (Math.atan(run / rise) / (2 * Math.PI)) * 360;
-
-        /* and to DMS ... */
-        const d = parseInt(degrees, 10);
-        const t = (degrees - d) * 60;
-        const m = parseInt(t, 10);
-        const s = parseInt(60 * (t - m), 10);
-
-        bearing = nsQuad + d + "-" + m + "-" + s + ewQuad;
-      }
+  componentDidMount() {
+    if (!this.props.interactionType) {
+      this.props.changeTool(this.props.defaultTool);
     }
-    return bearing;
-  }
-
-  /* Calcualte the distance between two points,
-   *
-   * @param {Point-like} a with [x,y]
-   * @param {Point-like} b with [x,y]
-   * @param {String} utmZone UTM zone to use for distance calculation
-   *
-   * @returns Distance of the line between a and b
-   */
-  calculateLength(a, b, utmZone) {
-    // create the new line
-    let line = new olLineString([a, b]);
-    // transform into the new projection
-    line = line.transform(this.props.mapProjection, utmZone);
-    // return the measurement.
-    const meters = line.getLength();
-
-    return util.metersLengthToUnits(meters, this.state.units);
-  }
-
-  getSegmentInfo(geom) {
-    // convert the first point of the line to 4326
-    //  so a UTM zone can be determined.
-    let point0 = new olPoint(geom.coordinates[0]);
-    point0 = point0.transform(this.props.mapProjection, "EPSG:4326");
-
-    // determine an appropriate utm zone for measurement.
-    const utmZone = proj.get(util.getUtmZone(point0.getCoordinates()));
-
-    const coords = [].concat(geom.coordinates);
-
-    // ensure the last point is the current cursor.
-    //  only when there is an active sketch!
-    if (this.props.cursor.sketchGeometry !== null) {
-      coords[coords.length - 1] = this.props.cursor.coords;
-    }
-
-    const segments = [];
-
-    for (let i = 1, ii = coords.length; i < ii; i++) {
-      const segLen = this.calculateLength(coords[i - 1], coords[i], utmZone);
-      const bearing = this.getBearing(coords[i - 1], coords[i]);
-
-      segments.push({
-        id: i,
-        len: segLen,
-        bearing,
-      });
-    }
-
-    return segments.reverse();
   }
 
   /* Render a LineString Measurement.
@@ -161,20 +67,36 @@ export class MeasureTool extends Component {
    * @return the table showing the log
    */
   renderSegments(geom) {
-    const segments = this.getSegmentInfo(geom);
+    const cursorCoords = toLonLat(this.props.cursor.coords);
+    const isDrawing = this.props.cursor.sketchGeometry !== null;
+    const segments = getSegmentInfo(
+      geom,
+      cursorCoords,
+      isDrawing,
+      this.ordinalDictionary
+    );
 
     let totalLength = 0;
 
     const segmentHtml = [];
     for (let i = 0, ii = segments.length; i < ii; i++) {
       const seg = segments[i];
-      totalLength += seg.len;
+      const lineLength = chompFloat(
+        util.metersLengthToUnits(seg.len, this.state.units),
+        2
+      );
+      totalLength += lineLength;
 
       segmentHtml.push(
         <tr key={"segment" + i}>
           <td>{seg.id}</td>
-          <td>{seg.len.toFixed(2)}</td>
-          <td>{seg.bearing}</td>
+          <td className="segment-length">{lineLength.toFixed(2)}</td>
+          <td
+            className="segment-bearing"
+            style={{ width: "100px", overflow: "hidden" }}
+          >
+            {this.props.t(seg.bearing)}
+          </td>
         </tr>
       );
     }
@@ -182,25 +104,27 @@ export class MeasureTool extends Component {
     segmentHtml.unshift(
       <tr key="line_total">
         <td>&#931;</td>
-        <td>{totalLength.toFixed(2)}</td>
+        <td className="segment-length">{totalLength.toFixed(2)}</td>
         <td>&nbsp;</td>
       </tr>
     );
 
     return (
-      <table className="measured-segments">
-        <tbody>
-          <tr key="header">
-            <th></th>
-            <th>
-              {this.props.t("measure-segment-length")} (
-              {this.props.t(`units-${this.state.units}`)})
-            </th>
-            <th>Bearing</th>
-          </tr>
-          {segmentHtml}
-        </tbody>
-      </table>
+      <div className="gm-grid">
+        <table className="measured-segments">
+          <thead>
+            <tr key="header">
+              <th></th>
+              <th>
+                {this.props.t("measure-segment-length")} (
+                {this.props.t(`units-${this.state.units}`)})
+              </th>
+              <th>{this.props.t("measure-bearing", "Bearing")}</th>
+            </tr>
+          </thead>
+          <tbody>{segmentHtml}</tbody>
+        </table>
+      </div>
     );
   }
 
@@ -254,7 +178,9 @@ export class MeasureTool extends Component {
         />
       );
     } else if (g.type === "LineString") {
-      return this.renderSegments(g);
+      return this.renderSegments(
+        projectFeatures([g], "EPSG:3857", "EPSG:4326")[0].geometry
+      );
     } else if (g.type === "Polygon" || g.type === "MultiPolygon") {
       // assume polygon
       return this.renderArea(g);
@@ -327,6 +253,7 @@ export class MeasureTool extends Component {
     return (
       <div className="measure-tool">
         <div
+          className="info-box"
           dangerouslySetInnerHTML={{ __html: this.props.t("measure-help") }}
         />
         <div className="draw-tools">
@@ -344,10 +271,21 @@ export class MeasureTool extends Component {
   }
 }
 
+MeasureTool.defaultProps = {
+  defaultTool: "LineString",
+};
+
 const mapToProps = (state) => ({
   map: state.map,
   cursor: state.cursor,
   mapProjection: "EPSG:3857",
+  interactionType: state.map.interactionType,
 });
 
-export default connect(mapToProps)(withTranslation()(MeasureTool));
+const mapDispatchToProps = {
+  changeTool,
+};
+export default connect(
+  mapToProps,
+  mapDispatchToProps
+)(withTranslation()(MeasureTool));
