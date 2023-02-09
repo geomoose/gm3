@@ -183,3 +183,5 @@ export const bufferResults = createAsyncThunk(
 );
 
 export const removeQueryResults = createAction("query/remove-results");
+
+export const setServiceStep = createAction("query/set-service-step");

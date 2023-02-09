@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect, Provider } from "react-redux";
 
 import { changeTool } from "../../actions/map";
-import { finishService } from "../../actions/query";
+import { setServiceStep, finishService } from "../../actions/query";
 
 import ServiceForm from "../serviceForm";
 import Results from "./results";
@@ -23,6 +23,7 @@ const ServiceManager = function ({
   selectionFeatures,
   finishService,
   serviceInstance,
+  setServiceStep,
 }) {
   const serviceDef = services[serviceName];
 
@@ -45,6 +46,10 @@ const ServiceManager = function ({
       const selection = normalizeSelection(selectionFeatures);
       const fields = normalizeFieldValues(serviceDef, fieldValues);
       serviceDef.query(selection, fields);
+
+      if (serviceDef.autoGo !== true) {
+        setServiceReady(-1);
+      }
     }
   }, [
     serviceReady,
@@ -53,6 +58,25 @@ const ServiceManager = function ({
     fieldValues,
     selectionFeatures,
     serviceInstance,
+  ]);
+
+  // This will return the user to the ServiceForm
+  //  if keep alive has been set to true and autoGo
+  //  is set to false.
+  useEffect(() => {
+    if (
+      !serviceDef?.autoGo &&
+      serviceReady < 0 &&
+      selectionFeatures.length > 0
+    ) {
+      setServiceStep(SERVICE_STEPS.START);
+    }
+  }, [
+    serviceDef,
+    serviceReady,
+    selectionFeatures,
+    serviceInstance,
+    setServiceStep,
   ]);
 
   let contents = false;
@@ -103,6 +127,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   changeTool,
   finishService,
+  setServiceStep,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ServiceManager);
