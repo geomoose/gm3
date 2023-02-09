@@ -6,7 +6,7 @@ import { zoomToExtent } from "../../actions/map";
 import { bufferResults, finishService } from "../../actions/query";
 import { DEFAULT_RESULTS_CONFIG } from "../../defaults";
 import { getExtentForQuery } from "../../util";
-import { getHighlightResults } from "../../selectors/query";
+import { getQueryResults } from "../../selectors/query";
 
 import Modal from "../modal";
 
@@ -171,7 +171,7 @@ const mapStateToProps = (state) => ({
   },
   query: state.query.query,
   allResults: state.query.results,
-  results: getHighlightResults(state),
+  results: getQueryResults(state),
   resultsConfigFromConf: { ...DEFAULT_RESULTS_CONFIG, ...state.config.results },
 });
 
