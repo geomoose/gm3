@@ -36,6 +36,7 @@ import {
   removeFilter,
   setHotFilter,
   removeQueryResults,
+  setServiceStep,
 } from "../actions/query";
 import { filterFeatures, getFilterFieldNames } from "../util";
 
@@ -107,6 +108,9 @@ const reducer = createReducer(defaultState, {
     for (const path in state.results) {
       state.results[path] = filterFeatures(state.results[path], filter);
     }
+  },
+  [setServiceStep]: (state, { payload: step }) => {
+    state.step = step;
   },
 });
 

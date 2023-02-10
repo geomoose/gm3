@@ -68,7 +68,7 @@ function SelectService(Application, options) {
     /** autoGo = true instructs the service to query whenever
      *                the geometry has changed.
      */
-    this.autoGo = false;
+    this.autoGo = options.autoGo === true;
 
     /** keepAlive = true will keep the service in 'query mode'
      *                   in the background, until it is explictly turned off.
