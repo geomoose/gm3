@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 
 import { zoomToExtent } from "../../actions/map";
-import { bufferResults } from "../../actions/query";
+import { bufferResults, finishService } from "../../actions/query";
 import { DEFAULT_RESULTS_CONFIG } from "../../defaults";
 import { getExtentForQuery } from "../../util";
 import { getHighlightResults } from "../../selectors/query";
@@ -20,6 +20,7 @@ export const QueryResults = ({
   t,
   zoomToExtent,
   bufferResults,
+  finishService,
 }) => {
   const [showTooManyFeatures, setShowTooManyFeatures] = useState(false);
   // These shim the new query format to the old API
@@ -95,9 +96,7 @@ export const QueryResults = ({
           <i
             title={t("results-clear")}
             className="icon clear"
-            onClick={() => {
-              // this.props.removeQuery(queryId);
-            }}
+            onClick={() => finishService()}
           ></i>
         </div>
       </div>
@@ -179,6 +178,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   zoomToExtent,
   bufferResults,
+  finishService,
 };
 
 export default connect(

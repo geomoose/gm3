@@ -27,6 +27,7 @@ import { setConfig } from "../actions/config";
 
 const DEFAULT_CONFIG = {
   map: {},
+  serviceManager: {},
 };
 
 const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
