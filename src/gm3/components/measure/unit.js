@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2023 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-import { createReducer } from "@reduxjs/toolkit";
-import { setConfig } from "../actions/config";
-
-const DEFAULT_CONFIG = {
-  map: {},
-  serviceManager: {},
-  measure: {
-    areaUnits: ["m", "km", "ft", "mi", "a", "h"],
-    lengthUnits: ["m", "km", "ft", "mi", "ch"],
-  },
+export const UnitOption = ({ onClick, unit, selected, isSq }) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={"radio-option " + (selected ? "selected" : "")}
+      onClick={onClick}
+    >
+      <i className="radio-icon"></i> {isSq ? `${t("measure-sq")} ` : ""}
+      {t(`units-${unit}`)}
+    </div>
+  );
 };
-
-const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
-  builder.addCase(setConfig, (state, action) => {
-    const config = action.payload;
-    return { ...state, ...config };
-  });
-});
-
-export default reducer;

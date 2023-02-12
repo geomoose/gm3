@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2023 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,39 @@
  * SOFTWARE.
  */
 
-import { createReducer } from "@reduxjs/toolkit";
-import { setConfig } from "../actions/config";
+import React from "react";
 
-const DEFAULT_CONFIG = {
-  map: {},
-  serviceManager: {},
-  measure: {
-    areaUnits: ["m", "km", "ft", "mi", "a", "h"],
-    lengthUnits: ["m", "km", "ft", "mi", "ch"],
-  },
+export const PointIcon = ({ width, height, padding, fill, stroke }) => {
+  const cx = width / 2.0;
+  const cy = width / 2.0;
+  const r = width / 2.0 - padding / 2.0;
+
+  return (
+    <svg
+      viewBox={`${-1 * padding} ${-1 * padding} ${width + padding * 2} ${
+        height + padding * 2
+      }`}
+      height={height}
+      width={width}
+    >
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        style={{
+          fill,
+          stroke,
+          strokeWidth: 7,
+        }}
+      />
+    </svg>
+  );
 };
 
-const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
-  builder.addCase(setConfig, (state, action) => {
-    const config = action.payload;
-    return { ...state, ...config };
-  });
-});
-
-export default reducer;
+PointIcon.defaultProps = {
+  width: 32,
+  height: 32,
+  padding: 5,
+  fill: "#ffffff",
+  stroke: "#0099ff",
+};

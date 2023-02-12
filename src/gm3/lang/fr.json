@@ -95,6 +95,7 @@
   "units-m" : "Mètres",
   "units-mi" : "Milles",
   "units-yd" : "Yards",
+  "units-r" : "Rods",
   "upload-file-error" : "Une erreur est survenue durant l'importation du fichier. Vérifiez la validité du fichier au format GeoJSON ou KML.",
   "upload-help" : "Utilisez le bouton de recherche pour sélectionner un fichier au format KML ou GeoJSON puis cliquez sur 'Valider' pour importer les dessins sur la carte.",
   "upload-invalid-features" : "Il y a eu {{count}} dessin(s) invalide(s) trouvé(s) dans le fichier. Vérifiez la source puis réessayez.",

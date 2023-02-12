@@ -574,6 +574,7 @@ const EQUIVALENT_METERS = {
   ch: 20.11684,
   a: 63.63,
   h: 100,
+  r: 5.02921, // rods, 1 chain is 4 rods
 };
 
 /** Converts numeric lengths between given units

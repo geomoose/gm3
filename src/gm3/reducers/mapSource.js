@@ -68,6 +68,7 @@ const reducer = createReducer(
       state[payload.name] = {
         features: [],
         featuresVersion: 0,
+        idProperty: ID_PROP,
         ...payload,
       };
     },

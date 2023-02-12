@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2023 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,25 @@
  * SOFTWARE.
  */
 
-import { createReducer } from "@reduxjs/toolkit";
-import { setConfig } from "../actions/config";
+const CORE_COLORS = [
+  "#1b9e77",
+  "#d95f02",
+  "#7570b3",
+  "#e7298a",
+  "#66a61e",
+  "#e6ab02",
+  "#a6761d",
+];
+const OUTLINE_COLORS = ["#f0f0f0", "#ffffb3", "#e41a1c"];
 
-const DEFAULT_CONFIG = {
-  map: {},
-  serviceManager: {},
-  measure: {
-    areaUnits: ["m", "km", "ft", "mi", "a", "h"],
-    lengthUnits: ["m", "km", "ft", "mi", "ch"],
-  },
+export const colorizeFromIndex = (index) => {
+  const idx = index % (CORE_COLORS.length * OUTLINE_COLORS.length);
+
+  const coreColor = CORE_COLORS[idx % CORE_COLORS.length];
+  const outlineColor = OUTLINE_COLORS[Math.floor(idx / CORE_COLORS.length)];
+
+  return {
+    coreColor,
+    outlineColor,
+  };
 };
-
-const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
-  builder.addCase(setConfig, (state, action) => {
-    const config = action.payload;
-    return { ...state, ...config };
-  });
-});
-
-export default reducer;

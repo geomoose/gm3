@@ -60,8 +60,6 @@ export const getBearing = (pointA, pointB, ordinalDictionary) => {
       /* we've determined the quadrant, so we can make these absolute */
       rise = Math.abs(rise);
       run = Math.abs(run);
-      /* convert to degrees */
-      // var degrees = Math.atan(rise/run) / (2*Math.PI) * 360;
       // Calculation suggested by Dean Anderson, refs: #153
       const degrees = (Math.atan(run / rise) / (2 * Math.PI)) * 360;
 
@@ -90,17 +88,21 @@ export const getBearing = (pointA, pointB, ordinalDictionary) => {
  * @param {Point-like} a with [x,y]
  * @param {Point-like} b with [x,y]
  * @param {String} utmZone UTM zone to use for distance calculation
+ * @param {Object} ordinalDictionary
  *
- * @returns Distance of the line between a and b
+ * @returns {Object with len and bearing} Distance and bearing of the line between a and b
  */
-function calculateLength(a, b, utmZone) {
+function calculateLengthAndBearing(a, b, utmZone, ordinalDictionary) {
   // create the new line
   let line = new olLineString([a, b]);
   // transform into the new projection
   line = line.transform("EPSG:4326", utmZone);
-  // return the measurement.
-  // this is in meters!
-  return line.getLength();
+  const coords = line.getCoordinates();
+  return {
+    // this is in meters!
+    len: line.getLength(),
+    bearing: getBearing(coords[0], coords[1], ordinalDictionary),
+  };
 }
 
 export function getSegmentInfo(
@@ -123,13 +125,15 @@ export function getSegmentInfo(
   const segments = [];
 
   for (let i = 1, ii = coords.length; i < ii; i++) {
-    const segLen = calculateLength(coords[i - 1], coords[i], utmZone);
-    const bearing = getBearing(coords[i - 1], coords[i], ordinalDictionary);
-
+    const info = calculateLengthAndBearing(
+      coords[i - 1],
+      coords[i],
+      utmZone,
+      ordinalDictionary
+    );
     segments.push({
       id: i,
-      len: segLen,
-      bearing,
+      ...info,
     });
   }
 
@@ -171,4 +175,32 @@ export const normalizeGeometry = (selectedFeatures) => {
     };
   }
   return selectedFeatures[0].geometry;
+};
+
+/**
+ * Given a polygon, create a list of incremental polygons used
+ *  to construct it. This currently does not support polygons
+ *  with holes and will return weird values for weird shapes.
+ */
+export const deconstructPolygon = (geometry) => {
+  // Polygons with no holes only...
+  if (geometry.type !== "Polygon" || geometry.coordinates.length > 1) {
+    // do something false-y
+    return null;
+  }
+
+  const coordinates = geometry.coordinates[0];
+  const firstCoordinate = coordinates[0];
+
+  const interims = [];
+  for (let i = 3, ii = coordinates.length - 1; i < ii; i++) {
+    const coords = coordinates.slice(0, i);
+    // put the first coordinate back on the back.
+    coords.push(firstCoordinate);
+    interims.push({
+      type: "Polygon",
+      coordinates: [coords],
+    });
+  }
+  return interims.reverse();
 };

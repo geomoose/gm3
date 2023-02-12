@@ -765,7 +765,7 @@ export function removeFeature(path, feature) {
     if (mapSource) {
       const idProp = mapSource.idProperty;
       const id = feature.id || (feature.properties || {})[idProp];
-      if (mapSource.type === "vector") {
+      if (mapSource.type === "vector" || mapSource.type === "measure") {
         // just remove the feature from an in memory layer.
         dispatch(removeFeatureInternal({ mapSourceName, id }));
         // return a resolved promise.
@@ -956,7 +956,7 @@ export function saveFeature(path, feature) {
     if (mapSource) {
       const idProp = mapSource.idProperty;
       const id = feature.id || (feature.properties || {})[idProp];
-      if (mapSource.type === "vector") {
+      if (mapSource.type === "vector" || mapSource.type === "measure") {
         // if this is a client side layer then just return
         //  the standard change events
         if (!id) {
