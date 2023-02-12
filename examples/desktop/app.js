@@ -291,7 +291,11 @@ app.loadMapbook().then(function() {
             app.confirm('reload-okay', reload_msg, function(response) {
                 if(response === 'confirm') {
                     document.location.hash = '';
-                    document.location.reload();
+                    if (document.location.search.length > 0) {
+                      document.location.search = '';
+                    } else {
+                      document.location.reload();
+                    }
                 }
             });
         }
