@@ -148,3 +148,27 @@ const PRECISION_LOOKUP = {
 
 export const chompFloat = (value, precision = 2) =>
   Math.floor(value * PRECISION_LOOKUP[precision]) / PRECISION_LOOKUP[precision];
+
+export const normalizeGeometry = (selectedFeatures) => {
+  if (selectedFeatures.length > 1) {
+    const gType = selectedFeatures[0].geometry.type;
+    const isPoly = gType === "Polygon" || gType === "MultiPolygon";
+
+    const coordinates = [];
+    selectedFeatures.forEach((feature) => {
+      if (feature.geometry.type.startsWith("Multi")) {
+        feature.geometry.coordinates.forEach((polygon) => {
+          coordinates.push(polygon);
+        });
+      } else {
+        coordinates.push(feature.geometry.coordinates);
+      }
+    });
+
+    return {
+      type: isPoly ? "MultiPolygon" : "MultiLineString",
+      coordinates,
+    };
+  }
+  return selectedFeatures[0].geometry;
+};

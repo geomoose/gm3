@@ -37,7 +37,7 @@ import { toLonLat } from "ol/proj";
 
 import CoordinateDisplay from "../coordinate-display";
 
-import { getSegmentInfo, chompFloat } from "./calc";
+import { getSegmentInfo, chompFloat, normalizeGeometry } from "./calc";
 
 export class MeasureTool extends Component {
   constructor(props) {
@@ -159,7 +159,7 @@ export class MeasureTool extends Component {
     let g = this.props.cursor.sketchGeometry;
 
     if (g === null && this.props.map.selectionFeatures.length > 0) {
-      g = this.props.map.selectionFeatures[0].geometry;
+      g = normalizeGeometry(this.props.map.selectionFeatures); // [0].geometry;
     }
 
     if (
