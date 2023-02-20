@@ -37,7 +37,7 @@ import {
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
 import EsriJsonFormat from "ol/format/EsriJSON";
-import { tile, bbox } from "ol/loadingstrategy";
+import { tile, bbox, all } from "ol/loadingstrategy";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { createXYZ } from "ol/tilegrid";
@@ -78,6 +78,12 @@ function defineSource(mapSource) {
       format = GeoJSONFormat;
     }
 
+    const strategyName = mapSource.config?.strategy;
+    let strategy = bbox;
+    if (strategyName === "all") {
+      strategy = all;
+    }
+
     // TODO: Ensure this gets the real map projection when
     //       the code supports alternative projections.
     const mapProjection = "EPSG:3857";
@@ -94,12 +100,6 @@ function defineSource(mapSource) {
           );
         }
 
-        const queryExtent = transformExtent(
-          extent,
-          mapProjection,
-          queryProjection
-        );
-
         const urlParams = Object.assign(
           {},
           {
@@ -108,14 +108,21 @@ function defineSource(mapSource) {
             service: "WFS",
             version: "1.1.0",
             request: "GetFeature",
-            bbox: queryExtent,
           },
           mapSource.params
         );
 
+        if (strategy === bbox) {
+          const queryExtent = transformExtent(
+            extent,
+            mapProjection,
+            queryProjection
+          );
+          urlParams.bbox = queryExtent;
+        }
         return joinUrl(mapSource.urls[0], urlParams);
       },
-      strategy: bbox,
+      strategy,
     };
   } else if (mapSource.type === "geojson") {
     return {
