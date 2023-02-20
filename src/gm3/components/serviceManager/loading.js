@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2023 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 
 import React from "react";
+import { connect } from "react-redux";
 import { useTranslation } from "react-i18next";
 import GeoMooseLogo from "./logo";
 
@@ -34,7 +35,7 @@ const styleString = `
     }
 `;
 
-export const LoadingIndicator = () => {
+const DefaultLoadingIndicator = () => {
   const { t } = useTranslation();
   return (
     <React.Fragment>
@@ -46,3 +47,30 @@ export const LoadingIndicator = () => {
     </React.Fragment>
   );
 };
+
+const LoadingIndicator = ({ loadingHTML }) => {
+  if (loadingHTML) {
+    let displayHTML = loadingHTML;
+    // check to see if the configuration specifys an element ID
+    if (loadingHTML.startsWith("#")) {
+      // ensure the element exists...
+      const element = document.getElementById(loadingHTML.substring(1));
+      if (element) {
+        displayHTML = element.innerHTML;
+      }
+    }
+    return (
+      <div
+        className="loading-message"
+        dangerouslySetInnerHTML={{ __html: displayHTML }}
+      />
+    );
+  }
+  return <DefaultLoadingIndicator />;
+};
+
+const mapStateToProps = (state) => ({
+  loadingHTML: state.config.serviceManager?.loadingHTML,
+});
+
+export default connect(mapStateToProps)(LoadingIndicator);
