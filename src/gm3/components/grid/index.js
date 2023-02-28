@@ -35,10 +35,23 @@ import { FORMAT_OPTIONS, matchFeatures } from "../../util";
 
 import { getLayerFromPath } from "../../actions/mapSource";
 
-import { getFlatResults, getQueryResults } from "../../selectors/query";
+import { getFlatResults } from "../../selectors/query";
 import { SERVICE_STEPS } from "../../reducers/query";
 
 import FilterModal from "./filter-modal";
+
+const getElementEvents = (element) => {
+  const events = {};
+  const eventNames = ["onMouseLeave", "onMouseEnter", "onClick"];
+  eventNames.forEach((eventName) => {
+    const jsEventName = eventName.toLowerCase();
+    if (element[jsEventName]) {
+      events[eventName] = element[jsEventName];
+    }
+  });
+
+  return events;
+};
 
 /* Renders query results as a table that can be sorted, filtered,
  * and downloaded as a CSV file.
@@ -165,6 +178,10 @@ class Grid extends React.Component {
 
   getRow(result, rowTemplate) {
     const html = Mark.up(rowTemplate, result, FORMAT_OPTIONS);
+    const tbody = document.createElement("tbody");
+    tbody.innerHTML = html;
+    const parentRow = tbody.getElementsByTagName("tr")[0];
+
     // WARNING! If odd grid errors show up with row rendering,
     //          start here!
     // This code is potentially fragile but keeps the table
@@ -180,14 +197,19 @@ class Grid extends React.Component {
     const elements = [];
 
     for (let i = 0, ii = cells.length; i < ii; i++) {
+      const cellEvents = getElementEvents(cells[i]);
       elements.push(
         <td
           key={`cell-${i}`}
+          {...cellEvents}
           dangerouslySetInnerHTML={{ __html: cells[i].innerHTML }}
         />
       );
     }
-    return elements;
+    return {
+      rowEvents: getElementEvents(parentRow),
+      cells: elements,
+    };
   }
 
   resultsAsCSV(gridCols, features) {
@@ -230,11 +252,11 @@ class Grid extends React.Component {
     // The `showGrid` logic is used to prevent the grid
     //  from "flashing" in appearance and being immeidately
     //  minimized.
-    if (this.props.query.step !== prevProps.query.step) {
-      if (this.props.query.step === SERVICE_STEPS.RESULTS) {
+    if (this.props.queryStep !== prevProps.queryStep) {
+      if (this.props.queryStep === SERVICE_STEPS.RESULTS) {
         let minimized = false;
-        if (this.props.query.query.runOptions) {
-          if (this.props.query.query.runOptions.gridMinimized) {
+        if (this.props.runOptions) {
+          if (this.props.runOptions.gridMinimized) {
             minimized = true;
           }
         }
@@ -251,15 +273,17 @@ class Grid extends React.Component {
   }
 
   render() {
-    const query = this.props.query;
+    const query = {
+      results: this.props.results,
+    }; //this.props.query;
 
     let features = [];
     let displayTable = false;
 
     let gridColumns, gridRow;
 
-    if (query.step === SERVICE_STEPS.RESULTS && this.state.showGrid) {
-      const service = this.props.services[query.serviceName];
+    if (this.props.queryStep === SERVICE_STEPS.RESULTS && this.state.showGrid) {
+      const service = this.props.services[this.props.serviceName];
       const serviceName = service.alias || service.name;
       const paths = Object.keys(query.results);
       paths.forEach((layerPath) => {
@@ -361,9 +385,18 @@ class Grid extends React.Component {
           fixedHeaderContent={(index, feature) => {
             return <tr>{this.getHeaderRow(features, gridColumns)}</tr>;
           }}
-          itemContent={(index, feature) =>
-            this.getRow(feature, gridRow, gridColumns)
-          }
+          components={{
+            TableRow: (props) => {
+              const idx = props["data-index"];
+              const feature = features[idx];
+              const rowDef = this.getRow(feature, gridRow, gridColumns);
+              return (
+                <tr {...rowDef.rowEvents} {...props}>
+                  {rowDef.cells}
+                </tr>
+              );
+            },
+          }}
         />
       </div>
     );
@@ -371,11 +404,12 @@ class Grid extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  query: state.query,
-  results: getQueryResults(state),
+  queryStep: state.query.step,
+  serviceName: state.query.serviceName,
+  results: state.query.results,
   allResults: getFlatResults(state),
   mapSources: state.mapSources,
-  filters: state.query.filter,
+  runOptions: state.query.query?.runOptions,
 });
 
 export default connect(mapStateToProps)(withTranslation()(Grid));
