@@ -29,6 +29,7 @@ const ServiceManager = function ({
 
   const [fieldValues, setFieldValues] = useState({});
   const [serviceReady, setServiceReady] = useState(false);
+  const [firstSelection, setFirstSelection] = useState(true);
 
   // when the service name changes, reset the field values
   useEffect(() => {
@@ -64,19 +65,19 @@ const ServiceManager = function ({
   //  if keep alive has been set to true and autoGo
   //  is set to false.
   useEffect(() => {
-    if (
-      !serviceDef?.autoGo &&
-      serviceReady < 0 &&
-      selectionFeatures.length > 0
-    ) {
-      setServiceStep(SERVICE_STEPS.START);
+    if (!firstSelection) {
+      if (!serviceDef?.autoGo) {
+        setServiceStep(SERVICE_STEPS.START);
+      }
+    } else if (selectionFeatures.length > 0) {
+      setFirstSelection(false);
     }
   }, [
     serviceDef,
-    serviceReady,
     selectionFeatures,
-    serviceInstance,
     setServiceStep,
+    firstSelection,
+    setFirstSelection,
   ]);
 
   let contents = false;
