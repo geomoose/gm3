@@ -7,7 +7,7 @@ import { setServiceStep, finishService } from "../../actions/query";
 import ServiceForm from "../serviceForm";
 import Results from "./results";
 import MeasureTool from "../measure";
-import { LoadingIndicator } from "./loading";
+import LoadingIndicator from "./loading";
 import EmptyPlaceholder from "./empty";
 
 import { SERVICE_STEPS } from "../../reducers/query";
