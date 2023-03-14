@@ -94,14 +94,16 @@ const reducer = createReducer(
       state,
       { payload: { mapSourceName, layerName, favorite } }
     ) => {
-      state[mapSourceName].layers = modifyLayer(
-        state[mapSourceName].layers,
-        layerName,
-        (layer) => {
-          layer.favorite = favorite;
-          return layer;
-        }
-      );
+      if (state[mapSourceName]) {
+        state[mapSourceName].layers = modifyLayer(
+          state[mapSourceName].layers,
+          layerName,
+          (layer) => {
+            layer.favorite = favorite;
+            return layer;
+          }
+        );
+      }
     },
     [setLayerTemplate]: (
       state,
