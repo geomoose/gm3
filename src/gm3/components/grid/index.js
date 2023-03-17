@@ -320,7 +320,10 @@ class Grid extends React.Component {
 
           if (gridColumns && gridRow) {
             // render as a grid.
-            features = matchFeatures(query.results[layerPath], query.filter);
+            features = matchFeatures(
+              query.results[layerPath],
+              this.props.filters
+            );
             if (query.results[layerPath].length > 0) {
               displayTable = true;
             }
@@ -404,6 +407,7 @@ class Grid extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
+  filters: state.query.filter,
   queryStep: state.query.step,
   serviceName: state.query.serviceName,
   results: state.query.results,
