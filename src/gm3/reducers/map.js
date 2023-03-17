@@ -75,6 +75,7 @@ const reducer = createReducer(defaultState, {
     }
     if (Boolean(payload.resolution)) {
       state.resolution = payload.resolution;
+      state.zoom = null;
     }
   },
   [zoomToExtent]: (state, { payload }) => {
