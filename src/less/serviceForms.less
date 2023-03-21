@@ -35,6 +35,8 @@
 
 .radio-option,.draw-tool {
     cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding-left: 5px;
 
     .radio-icon {
@@ -45,9 +47,13 @@
         }
     }
 
+    select {
+      margin-left: 10px;
+    }
+
     .helper-text {
-        margin-left: 16px;
-        margin-right: 16px;
+        margin-left: 20px;
+        margin-right: 20px;
         animation-name: grow;
         animation-duration: 1s;
         overflow: hidden;
@@ -64,7 +70,26 @@
 
 
 .service-manager {
-    padding-left: 4px;
+    .service-form {
+      .settings-header {
+          background-color: #CFE7B3;
+          padding: 5px;
+          font-weight: bold;
+          font-size: 110%;
+          clear: both;
+      }
+
+      .service-inputs {
+        padding: 5px;
+      }
+
+      label {
+          display: block;
+          font-weight: bold;
+          margin-top: 10px;
+          margin-bottom: 10px;
+      }
+    }
 
     .tab-controls {
         padding-top: 1em;
@@ -101,22 +126,12 @@
         }
     }
 
-    label {
-        font-weight: bold;
-        margin-bottom: 1px;
-    }
-
     .service-input {
-        label {
-            display: block;
-            margin-top: 7px;
-        }
-
         select, input {
-            margin-left: 5px;
+            margin-left: 10px;
         }
 
-        margin-bottom: 3px;
+        margin-bottom: 5px;
 
         &.length {
             .measure {
@@ -132,7 +147,7 @@
             font-size: 0.8em;
             margin-bottom: 1.5em;
             /* put this 1px inside of the input */
-            margin-left: 6px;
+            margin-left: 5px;
         }
     }
 
@@ -154,7 +169,7 @@
         }
 
         .error-contents {
-            padding: 4px;
+            padding: 5px;
             border: solid 1px red;
         }
     }
@@ -165,7 +180,7 @@
 
     .measure-tool {
       .gm-grid {
-        padding-right: 4px;
+        padding-right: 5px;
 
         table {
           height: unset;
