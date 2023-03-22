@@ -258,7 +258,7 @@
     <!-- Or use the following for the Mapserver WMS server: -->
     <!--
     <map-source name="census-wms" type="mapserver">
-        <file>./demo/census/census.map</file>
+        <file>demo/census/census.map</file>
     -->
         <layer
             name="census_cities"
@@ -291,7 +291,7 @@
     </map-source>
 
     <map-source name="vector-parcels" type="mapserver-wfs">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels"/>
         <config name="pixel-tolerance" value="0"/>
         <transform attribute="EMV_TOTAL" function="number"/>
@@ -354,7 +354,7 @@
 
     <map-source name="vector-pipelines" title="Pipelines" type="mapserver-wfs">
         <param name="typename" value="ms:pipelines"/>
-        <file>./demo/pipelines/pipelines.map</file>
+        <file>demo/pipelines/pipelines.map</file>
         <layer name="pipelines" status="off">
             <style><![CDATA[
             {
@@ -382,14 +382,14 @@
     <!-- Demo of parcels as points. -->
     <!--
     <map-source name="parcel_points" type="mapserver" up="true" down="true" title="Parcel Points">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <layer name="parcel_points"/>
         <param name="FORMAT" value="image/png"/>
     </map-source>
     -->
 
     <map-source name="parcels" type="mapserver" up="true" down="true" title="Parcels">
-        <file>./demo/parcels/parcels.map</file>
+        <file>demo/parcels/parcels.map</file>
         <layer name="parcels" status="on" query-as="vector-parcels/parcels" />
         <layer name="parcels_points"/>
         <param name="FORMAT" value="image/png"/>
@@ -404,7 +404,7 @@
      * This map-source is used solely for testing geomose for scale issues
      -->
     <map-source name="grids" type="mapserver" up="true" down="true" title="Grids">
-        <file>./demo/grids/grids.map</file>
+        <file>demo/grids/grids.map</file>
         <param name="FORMAT" value="image/png"/>
         <layer name="grid_1km"/>
         <layer name="grid_1mile"/>
@@ -415,12 +415,12 @@
      * with international characters.
      -->
     <map-source name="international" type="mapserver">
-        <file>./demo/i18n/utf8_polys.map</file>
+        <file>demo/i18n/utf8_polys.map</file>
         <layer name="testing"/>
     </map-source>
 
     <map-source name="borders" type="mapserver" title="City and County Borders">
-        <file>./demo/statedata/basemap.map</file>
+        <file>demo/statedata/basemap.map</file>
         <layer name="city_poly" status="off"/>
         <layer name="county_borders" status="off"/>
     </map-source>
@@ -655,13 +655,13 @@
     </map-source>
 
     <map-source name="usgs" type="mapserver">
-        <file>./demo/wms/wms_proxy.map</file>
+        <file>demo/wms/wms_proxy.map</file>
         <layer name="usgs_imagery"/>
         <layer name="usgs_topo"/>
     </map-source>
 
     <map-source name="lmic" type="mapserver">
-        <file>./demo/wms/wms_proxy.map</file>
+        <file>demo/wms/wms_proxy.map</file>
         <layer name="mncomp">
             <legend type="nolegend"/>
         </layer>
