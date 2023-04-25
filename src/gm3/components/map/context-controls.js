@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from "react";
+import View from "ol/View";
 
 import { EDIT_LAYER_NAME } from "../../defaults";
 import { featureToJson } from "../../util";
@@ -190,6 +191,7 @@ const ContextControls = ({
   setEditPath,
   setEditTools,
   zoom,
+  resolution,
 }) => {
   let controls = false;
   // do not bother rendering anything if the interaction is null
@@ -223,20 +225,27 @@ const ContextControls = ({
     );
   }
 
+  const getZoom = () => {
+    if (zoom) {
+      return zoom;
+    }
+    return new View().getZoomForResolution(resolution);
+  };
+
   return (
     <React.Fragment>
       <MapButton
         label="zoom-in"
         icon="icon zoom-in"
         index={0}
-        onClick={() => setZoom(zoom + 1)}
+        onClick={() => setZoom(getZoom() + 1)}
       />
 
       <MapButton
         label="zoom-out"
         icon="icon zoom-out"
         index={0}
-        onClick={() => setZoom(zoom - 1)}
+        onClick={() => setZoom(getZoom() - 1)}
       />
 
       <span style={{ display: "inline-block", width: 16 }}></span>

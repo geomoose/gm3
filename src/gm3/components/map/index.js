@@ -944,6 +944,7 @@ class Map extends React.Component {
             interactionType={this.props.mapView.interactionType}
             activeSource={this.props.mapView.activeSource}
             setZoom={this.props.setZoom}
+            resolution={this.props.mapView.resolution}
             zoom={this.props.mapView.zoom}
             showZoom={config.showZoom === true}
             setEditPath={this.props.setEditPath}
