@@ -182,9 +182,16 @@ export class PrintModal extends Modal {
   addImage(doc, def) {
     // optionally scale the image to fit the space.
     if (def.width && def.height) {
-      doc.addImage(def.imageData, def.x, def.y, def.width, def.height);
+      // image_data is included here for backwards compatibility.
+      doc.addImage(
+        def.image_data || def.imageData,
+        def.x,
+        def.y,
+        def.width,
+        def.height
+      );
     } else {
-      doc.addImage(def.imageData, def.x, def.y);
+      doc.addImage(def.image_data || def.imageData, def.x, def.y);
     }
   }
 
