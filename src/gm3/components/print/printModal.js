@@ -87,6 +87,27 @@ function buildLegendsOnMap(catalog) {
   return legendMap;
 }
 
+function isLegendEmpty(img) {
+  // TODO: Future GeoMoose Devs, switch to offscreen canvas for
+  //       better performance. Was not universally supported at time of writing.
+  // new OffscreenCanvas(img.width, img.height);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, img.width, img.height);
+
+  const firstColor = [data.data[0], data.data[1], data.data[2], data.data[3]];
+
+  for (let i = 4, ii = data.data.length; i < ii; i += 4) {
+    for (let x = 0; x < 4; x++) {
+      if (data.data[i + x] !== firstColor[x]) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 export class PrintModal extends Modal {
   constructor(props) {
     super(props);
@@ -209,31 +230,36 @@ export class PrintModal extends Modal {
       }
     }
 
-    const promises = [];
-    legends.forEach((legendSrc) => {
-      const promise = new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          resolve(img);
-        };
-        img.onerror = () => {
-          reject();
-        };
-        img.src = legendSrc;
-      });
-      promises.push(promise);
-    });
+    const promises = legends.map(
+      (legendSrc) =>
+        new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            resolve(img);
+          };
+          img.onerror = () => {
+            reject();
+          };
+          img.src = legendSrc;
+        })
+    );
 
     return Promise.all(promises).then((images) => {
       let offsetY = 0;
-      images.forEach((img) => {
-        this.addImage(doc, {
-          x: def.x,
-          y: def.y + offsetY,
-          imageData: img,
+      images
+        .filter((img) => {
+          // if the image is less than 8 pixels tall, it's likely a placeholder
+          return img.height > 8 && !isLegendEmpty(img);
+        })
+        .forEach((img) => {
+          this.addImage(doc, {
+            x: def.x,
+            y: def.y + offsetY,
+            imageData: img,
+          });
+          offsetY += (img.height + 5) / 72;
         });
-        offsetY += (img.height + 5) / 72;
-      });
     });
   }
 
