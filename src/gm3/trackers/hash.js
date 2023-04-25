@@ -240,7 +240,7 @@ export default class HashTracker {
     //  not parseable.
     if (next) {
       if (next.bbox) {
-        this.store.dispatch(zoomToExtent(next.bbox, "EPSG:4326"));
+        this.store.dispatch(zoomToExtent(next.bbox, "EPSG:4326", false));
       } else {
         this.store.dispatch(setView(next));
       }
