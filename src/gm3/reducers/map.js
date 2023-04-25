@@ -82,6 +82,8 @@ const reducer = createReducer(defaultState, {
     state.extent = {
       bbox: payload.extent,
       projection: payload.projection,
+      // default to having padding if undefined.
+      padding: payload.padding !== undefined ? payload.padding : true,
     };
   },
   [changeTool]: (state, { payload }) => {

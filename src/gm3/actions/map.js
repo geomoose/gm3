@@ -30,10 +30,11 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const zoomToExtent = createAction(
   "map/zoom-to-extent",
-  (extent, projection) => ({
+  (extent, projection, padding = true) => ({
     payload: {
       extent,
       projection,
+      padding,
     },
   })
 );

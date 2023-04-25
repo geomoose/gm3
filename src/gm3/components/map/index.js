@@ -768,10 +768,15 @@ class Map extends React.Component {
       const mapProj = this.map.getView().getProjection();
       bbox = proj.transformExtent(bbox, proj.get(bboxCode), mapProj);
     }
+    const options = {
+      size: this.map.getSize(),
+    };
+    // if the bbox was an exact capture, then do not pad.
+    if (extent.padding !== false) {
+      options.padding = [15, 15, 15, 15];
+    }
     // move the map to the new extent.
-    this.map
-      .getView()
-      .fit(bbox, { size: this.map.getSize(), padding: [15, 15, 15, 15] });
+    this.map.getView().fit(bbox, options);
   }
 
   /** Intercept extent changes during a part of the render
