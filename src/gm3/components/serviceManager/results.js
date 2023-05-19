@@ -146,9 +146,14 @@ export const QueryResults = ({
 
         {resultsConfig.showFeatureCount && featureCount < allFeatureCount && (
           <div className="results-info-item filtered-features">
-            {t("Filtered {{missing}} features from the results.", {
-              missing: allFeatureCount - featureCount,
-            })}
+            {t(
+              "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
+              {
+                allFeatureCount: allFeatureCount,
+                missing: allFeatureCount - featureCount,
+                featureCount: featureCount,
+              }
+            )}
           </div>
         )}
       </div>
