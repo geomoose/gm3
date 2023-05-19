@@ -230,35 +230,37 @@ class ServiceForm extends React.Component {
 
     return (
       <div className="service-form">
-        <h3>{this.props.t(serviceDef.title)}</h3>
-        {inputs}
-        {!this.state.validateFieldValuesResultMessage ? (
-          false
-        ) : (
-          <div className="query-error">
-            <div className="error-header">Error</div>
-            <div className="error-contents">
-              {this.state.validateFieldValuesResultMessage}
+        <div className="settings-header">{this.props.t(serviceDef.title)}</div>
+        <div className="service-inputs">
+          {inputs}
+          {!this.state.validateFieldValuesResultMessage ? (
+            false
+          ) : (
+            <div className="query-error">
+              <div className="error-header">Error</div>
+              <div className="error-contents">
+                {this.state.validateFieldValuesResultMessage}
+              </div>
             </div>
+          )}
+          <div className="tab-controls">
+            <button
+              className="close-button"
+              onClick={() => {
+                this.props.onCancel();
+              }}
+            >
+              <i className="close-icon"></i> {this.props.t("Close")}
+            </button>
+            <button
+              className="go-button"
+              onClick={() => {
+                this.submit();
+              }}
+            >
+              <i className="go-icon"></i> {this.props.t("go")}
+            </button>
           </div>
-        )}
-        <div className="tab-controls">
-          <button
-            className="close-button"
-            onClick={() => {
-              this.props.onCancel();
-            }}
-          >
-            <i className="close-icon"></i> {this.props.t("Close")}
-          </button>
-          <button
-            className="go-button"
-            onClick={() => {
-              this.submit();
-            }}
-          >
-            <i className="go-icon"></i> {this.props.t("go")}
-          </button>
         </div>
       </div>
     );

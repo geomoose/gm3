@@ -53,8 +53,7 @@
 .service-manager {
     .results-header {
         background-color: #CFE7B3;
-        padding: 3px;
-        margin: 2px;
+        padding: 5px;
         font-weight: bold;
         font-size: 110%;
         clear: both;
@@ -68,14 +67,6 @@
         font-size: 10px;
         padding: 4px;
         padding-top: 2px; padding-bottom: 2px;
-    }
-
-    .results-header {
-        background-color: #CFE7B3;
-        padding: 3px;
-        margin: 2px;
-        font-weight: bold;
-        font-size: 110%;
     }
 
     .results-tools {
@@ -124,4 +115,41 @@
             }
         }
     }
+
+    .results-info-counts {
+      margin: 5px;
+
+      .results-info-item {
+        display: flex;
+        margin-bottom: 2px;
+
+        .label {
+          flex: 1;
+          font-weight: bold;
+        }
+
+        .value {
+          text-align: right;
+        }
+      }
+
+      .results-info-item.filtered-features {
+        font-style: italic;
+        font-size: 0.9em;
+        margin-top: 5px;
+      }
+    }
+
+    .results {
+      padding: 4px;
+
+      label {
+        font-weight: bold;
+      }
+
+      .item {
+        margin: 2px;
+      }
+    }
+
 }

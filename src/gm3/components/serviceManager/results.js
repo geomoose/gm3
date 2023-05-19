@@ -90,32 +90,16 @@ export const QueryResults = ({
         {t("too-many-features-description", { max: config.bufferMaxFeatures })}
       </Modal>
 
-      <div className="results-header">
-        {t(serviceTitle)}
-        <div className="results-tools">
-          <i
-            title={t("results-clear")}
-            className="icon clear"
-            onClick={() => finishService()}
-          ></i>
-        </div>
-      </div>
+      <div className="results-header">{t(serviceTitle)}</div>
       <div className="results-query-id">{queryId}</div>
       {showHeader && (
         <div className="results-info">
-          {resultsConfig.showFeatureCount && (
-            <div className="results-info-item features-count">
-              <div className="label">{t("features")}</div>
-              <div className="value">{featureCount}</div>
+          <div className="results-info-item buffer-all">
+            <div className="label">{t("results-clear")}</div>
+            <div className="value" onClick={() => finishService()}>
+              <span className="icon clear"></span>
             </div>
-          )}
-
-          {resultsConfig.showLayerCount && (
-            <div className="results-info-item layers-count">
-              <div className="label">{t("layers")}</div>
-              <div className="value">{layerCount}</div>
-            </div>
-          )}
+          </div>
 
           {resultsConfig.showBufferAll && (
             <div className="results-info-item buffer-all">
@@ -145,13 +129,35 @@ export const QueryResults = ({
           )}
         </div>
       )}
-      {featureCount < allFeatureCount && (
-        <div className="info-box">
-          {t("Filtered {{missing}} features from the results.", {
-            missing: allFeatureCount - featureCount,
-          })}
-        </div>
-      )}
+
+      <div className="results-info-counts">
+        {resultsConfig.showLayerCount && (
+          <div className="results-info-item layers-count">
+            <div className="label">{t("layers")}</div>
+            <div className="value">{layerCount}</div>
+          </div>
+        )}
+        {resultsConfig.showFeatureCount && (
+          <div className="results-info-item features-count">
+            <div className="label">{t("features")}</div>
+            <div className="value">{featureCount}</div>
+          </div>
+        )}
+
+        {resultsConfig.showFeatureCount && featureCount < allFeatureCount && (
+          <div className="results-info-item filtered-features">
+            {t(
+              "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
+              {
+                allFeatureCount: allFeatureCount,
+                missing: allFeatureCount - featureCount,
+                featureCount: featureCount,
+              }
+            )}
+          </div>
+        )}
+      </div>
+
       {allFeatureCount === 0 && (
         <div className="info-box">
           {t(
@@ -159,7 +165,10 @@ export const QueryResults = ({
           )}
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: htmlContents }} />
+      <div
+        className="results"
+        dangerouslySetInnerHTML={{ __html: htmlContents }}
+      />
     </div>
   );
 };
