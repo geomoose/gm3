@@ -1,5 +1,7 @@
 # GeoMoose3
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7976085.svg)](https://doi.org/10.5281/zenodo.7976085)
+
 This is the main repository for the new GeoMoose3 library/application. To learn more about GeoMoose [visit the homepage.](http://www.geomoose.org)
 
 [![Build Status](https://api.travis-ci.org/geomoose/gm3.svg?branch=main)](https://travis-ci.org/geomoose/gm3)
