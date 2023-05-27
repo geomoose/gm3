@@ -1,6 +1,6 @@
 # GeoMoose3
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7976085.svg)](https://doi.org/10.5281/zenodo.7976085)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7976084.svg)](https://doi.org/10.5281/zenodo.7976084)
 
 This is the main repository for the new GeoMoose3 library/application. To learn more about GeoMoose [visit the homepage.](http://www.geomoose.org)
 
