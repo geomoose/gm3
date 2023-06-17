@@ -53,11 +53,11 @@ class FilterModal extends ModalDialog {
       });
       newFilters.push(nextFilter);
     } else if (this.props.column.filter.type === "range") {
-      if (this.state.min !== "") {
-        newFilters.push([">=", ["get", property], this.state.min]);
+      if (this.state.value[0] !== "") {
+        newFilters.push([">=", ["get", property], value[0]]);
       }
-      if (this.state.max !== "") {
-        newFilters.push(["<=", ["get", property], this.state.max]);
+      if (this.state.value[1] !== "") {
+        newFilters.push(["<=", ["get", property], value[1]]);
       }
     } else {
       // straight equals...
@@ -245,8 +245,7 @@ class RangeFilterModal extends FilterModal {
 
     const prop = this.props.column.property;
     const initialState = {
-      min: "",
-      max: "",
+      value: ["", ""],
     };
 
     props.filters
@@ -255,9 +254,9 @@ class RangeFilterModal extends FilterModal {
       })
       .forEach((filterDef) => {
         if (filterDef[0] === ">=") {
-          initialState.min = filterDef[2];
+          initialState.value[0] = filterDef[2];
         } else if (filterDef[0] === "<=") {
-          initialState.max = filterDef[2];
+          initialState.value[1] = filterDef[2];
         }
       });
 
@@ -267,22 +266,23 @@ class RangeFilterModal extends FilterModal {
     this.state = initialState;
   }
 
-  setBound(side, value) {
-    const bounds = {};
-    if (value !== "") {
-      bounds[side] = parseFloat(value);
-    } else {
-      bounds[side] = "";
-    }
-    this.setState(bounds);
+  setBounds(nextBounds) {
+    const cleanedBounds = nextBounds.map((value) => {
+      if (value === "") {
+        return "";
+      } else {
+        return parseFloat(value);
+      }
+    });
+    this.setState({ value: cleanedBounds });
   }
 
   setMin(evt) {
-    this.setBound("min", evt.target.value);
+    this.setBounds([evt.target.value, this.state.value[1]]);
   }
 
   setMax(evt) {
-    this.setBound("max", evt.target.value);
+    this.setBounds([this.state.value[0], evt.target.value]);
   }
 
   renderBody() {
@@ -290,12 +290,12 @@ class RangeFilterModal extends FilterModal {
       <div>
         <div>
           <Label l="label-min" />
-          <input value={this.state.min} onChange={this.setMin} />
+          <input value={this.state.value[0]} onChange={this.setMin} />
         </div>
 
         <div>
           <Label l="label-max" />
-          <input value={this.state.max} onChange={this.setMax} />
+          <input value={this.state.value[1]} onChange={this.setMax} />
         </div>
       </div>
     );
