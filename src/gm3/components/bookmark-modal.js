@@ -33,7 +33,7 @@ class BookmarkModal extends Modal {
       <div>
         <label>This url can be copied and pasted to make a bookmark:</label>
         <a
-          href={"" + document.location}
+          href={"" + document.location.toString().replace(/\?.*#/, "#")}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -46,7 +46,7 @@ class BookmarkModal extends Modal {
             height: "200px",
             fontFamily: "mono",
           }}
-          defaultValue={"" + document.location}
+          defaultValue={"" + document.location.toString().replace(/\?.*#/, "#")}
         />
       </div>
     );
