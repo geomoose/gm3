@@ -88,8 +88,8 @@ Icon customization
 
 GeoMoose uses webfonts to define icons. Two are included by default:
 
--  `Font Awesome <http://fontawesome.io/icons/>`__
--  `MapSkin <http://mapsk.in/>`__
+-  `Font Awesome <https://fontawesome.io/icons/>`__
+-  `MapSkin <https://github.com/mapskin/mapskin>`__
 
 This means using the CSS ``before`` selector to change the icon.
 
