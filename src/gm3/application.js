@@ -207,6 +207,28 @@ class Application {
       })
     );
 
+    this.store.dispatch(
+      mapSourceActions.add({
+        name: "measure",
+        type: "measure",
+        params: {},
+        config: {
+          "edit-attributes-on-add": false,
+        },
+        options: {
+          "always-on": true,
+        },
+        zIndex: 200001,
+      })
+    );
+    this.store.dispatch(
+      mapSourceActions.addLayer("measure", {
+        name: "measure",
+        on: true,
+        style: {},
+      })
+    );
+
     // add a layer that listens for changes
     //  to the query results.  This hs
     this.store.dispatch(
@@ -224,7 +246,7 @@ class Application {
         params: {},
         // stupid high z-index to ensure results are
         //  on top of everything else.
-        zIndex: 200001,
+        zIndex: 200002,
       })
     );
 

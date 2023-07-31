@@ -109,7 +109,6 @@ export default class CoordinateDisplay extends React.Component {
     ];
     this.namedProjections = ["xy", "usng", "latlon"];
     this.getProjectionCoords = this.getProjectionCoords.bind(this);
-    this.getCoordinateDisplay = this.getCoordinateDisplay.bind(this);
 
     /**
      * Validate specified projections
@@ -191,53 +190,75 @@ export default class CoordinateDisplay extends React.Component {
     // TODO: The projection should be stored in the store,
     //       and defined by the user.
     const mapProj = "EPSG:3857";
-    // transform the point
-    const coords = proj4(mapProj, projection.ref, this.props.coords);
+    // transform the point, slice is used to ensure only 2D coordinates.
+    const coords = proj4(
+      mapProj,
+      projection.ref,
+      this.props.coords.slice(0, 2)
+    );
     return formatCoordinates(projection, coords);
   }
 
-  getCoordinateDisplay(projection) {
-    let display = "";
+  getData(projection) {
     switch (projection.ref) {
       case "usng":
-        display = (
-          <span className="coordinates map-usng" key="usng">
-            <label>{projection.label}</label> {this.usng()}
-          </span>
-        );
-        break;
+        return {
+          label: projection.label,
+          point: this.usng(),
+        };
       case "latlon":
-        display = (
-          <span className="coordinates map-latlon" key="latlon">
-            <label>{projection.label}</label> {this.latlon(projection)}
-          </span>
-        );
-        break;
+        return {
+          label: projection.label,
+          point: this.latlon(projection),
+        };
       case "xy":
-        display = (
-          <span className="coordinates map-xy" key="xy">
-            <label>{projection.label}</label>{" "}
-            {formatCoordinates(projection, this.props.coords, 1)}
-          </span>
-        );
-        break;
-      default: {
-        const className =
-          "coordinates map-" + projection.ref.replace(/:/g, "-");
-        display = (
-          <span className={className} key={projection.ref}>
-            <label>{projection.label}</label>
-            {this.getProjectionCoords(projection)}
-          </span>
-        );
-        break;
-      }
+        return {
+          label: projection.label,
+          point: formatCoordinates(projection, this.props.coords, 1),
+        };
+      default:
+        return {
+          label: projection.label,
+          point: this.getProjectionCoords(projection),
+        };
     }
-    return display;
   }
 
   render() {
-    const coordinateDisplays = this.projections.map(this.getCoordinateDisplay);
-    return <span className="coordinate-display">{coordinateDisplays}</span>;
+    if (this.props.asTable) {
+      return (
+        <div className="gm-grid">
+          <table>
+            {this.props.children}
+            <tbody>
+              {this.projections.map((projection) => {
+                const data = this.getData(projection);
+                return (
+                  <tr key={projection.ref}>
+                    <th>{data.label}</th>
+                    <td>{data.point}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    return (
+      <span className="coordinate-display">
+        {this.projections.map((projection) => {
+          const className =
+            "coordinates map-" + projection.ref.replace(/:/g, "-");
+          const data = this.getData(projection);
+          return (
+            <span className={className} key={projection.ref}>
+              <label>{data.label}</label>
+              {data.point}
+            </span>
+          );
+        })}
+      </span>
+    );
   }
 }

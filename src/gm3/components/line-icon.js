@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2023 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,44 @@
  * SOFTWARE.
  */
 
-import { createReducer } from "@reduxjs/toolkit";
-import { setConfig } from "../actions/config";
+import React from "react";
 
-const DEFAULT_CONFIG = {
-  map: {},
-  serviceManager: {},
-  measure: {
-    areaUnits: ["m", "km", "ft", "mi", "a", "h"],
-    lengthUnits: ["m", "km", "ft", "mi", "ch"],
-  },
+export const LineIcon = ({ width, height, padding, outline, stroke }) => {
+  const points = [0, 0, width, height].join(" ");
+
+  return (
+    <svg
+      viewBox={`${-1 * padding} ${-1 * padding} ${width + padding * 2} ${
+        height + padding * 2
+      }`}
+      height={height}
+      width={width}
+    >
+      <polyline
+        points={points}
+        className="line-icon"
+        style={{
+          stroke: outline,
+          strokeWidth: 7,
+          strokeLineCap: "round",
+        }}
+      />
+      <polyline
+        points={points}
+        className="line-icon"
+        style={{
+          stroke: stroke,
+          strokeWidth: 3,
+        }}
+      />
+    </svg>
+  );
 };
 
-const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
-  builder.addCase(setConfig, (state, action) => {
-    const config = action.payload;
-    return { ...state, ...config };
-  });
-});
-
-export default reducer;
+LineIcon.defaultProps = {
+  width: 32,
+  height: 32,
+  padding: 5,
+  outline: "#ffffff",
+  stroke: "#0099ff",
+};

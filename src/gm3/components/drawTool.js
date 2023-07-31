@@ -39,7 +39,7 @@ class DrawTool extends React.Component {
     this.changeSelectLayer = this.changeSelectLayer.bind(this);
 
     this.state = {
-      selectLayer: null,
+      selectLayer: props.layer || null,
     };
 
     if (this.props.geomType === "Select") {

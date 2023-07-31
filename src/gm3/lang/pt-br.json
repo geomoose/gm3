@@ -95,6 +95,7 @@
     "units-m" : "Metros",
     "units-mi" : "Milhas",
     "units-yd" : "Jardas",
+    "units-r" : "Rods",
     "upload-file-error" : "Ocorreu um erro na subida do arquivo. Favor verificar se ele é um arquivo válido no formato GeoJSON ou KML.",
     "upload-help" : "Use o botão de navegar para selecionar um arquivo KML ou GeoJSON, clique OK para carregar as feições para o mapa.",
     "upload-invalid-features" : "Existem {{count}} feições inválidas identificadas no arquivo. Favor verificar os dados e tentar novamente.",

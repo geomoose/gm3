@@ -92,6 +92,7 @@
   "units-m" : "Metri",
   "units-mi" : "Miglia",
   "units-yd" : "Yards",
+  "units-r" : "Rods",
   "upload-file-error" : "Si è verificato un errore durante il caricamento del file. Verifica che sia un file GeoJSON o KML valido.",
   "upload-help" : "Utilizza il pulsante di navigazione per selezionare un file KML o GeoJSON poi click su Okay per caricare gli oggetti sulla mappa.",
   "upload-invalid-features" : "Ci sono {{count}} oggetti non validi nel file. Controlla il file sorgente e riprova.",

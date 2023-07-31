@@ -76,6 +76,10 @@ import * as vectorLayer from "./layers/vector";
 import * as bingLayer from "./layers/bing";
 import * as usngLayer from "./layers/usng";
 import { createLayer as createBlankLayer } from "./layers/blank";
+import {
+  createLayer as createMeasureLayer,
+  updateLayer as updateMeasureLayer,
+} from "./layers/measure";
 
 import { wfsGetFeatures } from "./layers/wfs";
 import { EDIT_LAYER_NAME } from "../../defaults";
@@ -171,6 +175,9 @@ class Map extends React.Component {
       case "ags":
         agsLayer.updateLayer(this.map, olLayer, mapSource);
         break;
+      case "measure":
+        updateMeasureLayer(this.map, olLayer, mapSource);
+        break;
       case "vector":
       case "wfs":
       case "ags-vector":
@@ -210,6 +217,8 @@ class Map extends React.Component {
         return xyzLayer.createLayer(mapSource);
       case "ags":
         return agsLayer.createLayer(mapSource);
+      case "measure":
+        return createMeasureLayer(mapSource);
       case "vector":
       case "wfs":
       case "ags-vector":
@@ -343,7 +352,6 @@ class Map extends React.Component {
         this.removeRefreshInterval(mapSourceName);
       }
     }
-
     this.renderQueryLayer();
   }
 
@@ -734,6 +742,8 @@ class Map extends React.Component {
       this.map.removeInteraction(this.drawTool);
       // null out for logic.
       this.drawTool = null;
+      // null out the sketch geometry
+      this.sketchFeature = null;
 
       // and the current interaction
       this.currentInteraction = null;

@@ -24,6 +24,7 @@ const ServiceManager = function ({
   finishService,
   serviceInstance,
   setServiceStep,
+  measureToolOptions,
 }) {
   const serviceDef = services[serviceName];
 
@@ -83,7 +84,7 @@ const ServiceManager = function ({
   let contents = false;
 
   if (serviceName === "measure") {
-    contents = <MeasureTool store={store} />;
+    contents = <MeasureTool store={store} {...measureToolOptions} />;
   } else if (serviceDef && serviceStep === SERVICE_STEPS.START) {
     contents = (
       <ServiceForm

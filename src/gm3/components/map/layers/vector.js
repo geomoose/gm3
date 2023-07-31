@@ -317,7 +317,7 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
  *
  *  @returns OpenLayers Layer instance.
  */
-export function createLayer(mapSource) {
+export function createLayer(mapSource, styleLayer = applyStyle) {
   const source = new VectorSource(defineSource(mapSource));
 
   // get the transforms for the layer
@@ -337,15 +337,21 @@ export function createLayer(mapSource) {
     declutter: parseBoolean((mapSource.config || {}).declutter),
   };
   const vectorLayer = new VectorLayer(opts);
-  applyStyle(vectorLayer, mapSource);
+  styleLayer(vectorLayer, mapSource);
 
   return vectorLayer;
 }
 
 /** Ensure that the Vector parameters all match.
  */
-export function updateLayer(map, layer, mapSource, mapTool) {
-  if (mapSource.type === "vector") {
+export function updateLayer(
+  map,
+  layer,
+  mapSource,
+  mapTool,
+  styleLayer = applyStyle
+) {
+  if (mapSource.type === "vector" || mapSource.type === "measure") {
     // vector layer features are defined by what
     // is stored in mapSource.features
     const layerVersion = layer.get("featuresVersion");
@@ -381,5 +387,5 @@ export function updateLayer(map, layer, mapSource, mapTool) {
 
   // update the style effectively turns "layers"
   // on and off on vector layers.
-  applyStyle(layer, mapSource, mapTool);
+  styleLayer(layer, mapSource, mapTool);
 }
