@@ -434,7 +434,7 @@
 
     <!-- - - - - - - -  TYPE = "ags-vector"  (MapServer)- - - - - - - - - -->
     <map-source name="ags-vector-points"          type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/7</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/21</url>
         <param name="spatialRel" value="esriSpatialRelEnvelopeIntersects"/>
         <layer name="BusShelters"                 title="Bus Shelters">
             <style><![CDATA[
@@ -466,7 +466,7 @@
         </layer>
     </map-source>
     <map-source name="ags-vector-lines"           type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/16</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/37</url>
         <layer name="railroads" selectable="true" title="Railroads">
             <style><![CDATA[
             {
@@ -607,7 +607,7 @@
         </layer>
     </map-source-->
     <map-source name="ags-vector-polygons-labels" type="ags-vector"  maxresolution="50" >
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/21</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/42</url>
         <layer name="runways" >
             <style><![CDATA[
             {
@@ -618,7 +618,7 @@
         </layer>
     </map-source>
     <map-source name="ags-vector-polygons"        type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/21</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/42</url>
         <layer name="runways" selectable="true" title="Runways">
             <style><![CDATA[
             {
@@ -774,13 +774,13 @@
     <map-source name="ags-labels"                 type="ags">
         <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/export</url>
         <layer name="RailroadMilePosts"  title="Railroad Mile Posts" query-as="ags-labels-query/RailroadMilePosts">
-            <param name="layers" value="show:12" />
+            <param name="layers" value="show:28" />
             <param name="cross-origin" value="anonymous"/>
             <template name="identify" auto="true" />
             <param name="dynamicLayers" value='[{
 "source":{
 "type":"mapLayer",
-"mapLayerId":12
+"mapLayerId":28
 },
 "drawingInfo":{
 "renderer":{
@@ -819,7 +819,7 @@
         </layer>
     </map-source>
     <map-source name="ags-labels-query"           type="ags">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/12</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/28</url>
         <config name="pixel-tolerance" value="2" />
         <param name="cross-origin" value="anonymous"/>
         <layer name="RailroadMilePosts"  title="Rail Mile Posts">
@@ -830,11 +830,11 @@
         <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/export</url>
         <param name="cross-origin" value="anonymous"/>
         <layer name="trucklines" query-as="ags-lines-query/trucklines">
-            <param name="layers" value="show:13" />
+            <param name="layers" value="show:30" />
         </layer>
     </map-source>
     <map-source name="ags-lines-query"            type="ags">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/13</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/30</url>
         <config name="pixel-tolerance" value="2" />
         <param name="cross-origin" value="anonymous"/>
         <layer name="trucklines"   title="Truck Route Lines">
@@ -845,11 +845,11 @@
         <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/export</url>
         <param name="cross-origin" value="anonymous"/>
         <layer name="runways" query-as="ags-polygons-query/runways">
-            <param name="layers" value="show:21" />
+            <param name="layers" value="show:42" />
         </layer>
     </map-source>
     <map-source name="ags-polygons-query"         type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/21</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/42</url>
         <config name="pixel-tolerance" value="2" />
         <param name="cross-origin" value="anonymous"/>
         <layer name="runways"  title="Runways" >
