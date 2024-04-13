@@ -4,7 +4,7 @@ How-to Change the Loading Indicator in the Super Tab
 Help users by customizing the loading state of the Super tab.
 
 Set loadingHTML to HTML in the application config
------------------------------------------------
+-------------------------------------------------
 
 In `app.js`:
 
@@ -18,7 +18,7 @@ In `app.js`:
   });
 
 Set loadingHTML to an element's contents
---------------------------------------
+----------------------------------------
 
 In your HTML file you can add a hidden element such as:
 
