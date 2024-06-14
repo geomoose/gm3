@@ -201,6 +201,7 @@ app.loadMapbook().then(function() {
     // there is also a BingGeocoder service, but requires
     // signing up for Bing and getting an appropriate usage key.
     app.registerService('geocode', OSMGeocoder, {});
+    app.registerService('usngsearch', USNGSearch, {});
     app.registerAction('findme', FindMeAction);
 
     app.registerAction('fullextent', ZoomToAction, {
