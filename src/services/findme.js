@@ -50,7 +50,7 @@ function FindMeAction(Application, options) {
      */
     this.run = function(selection, fields) {
         if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.gotoPosition.bind(this));
+            navigator.geolocation.getCurrentPosition(this.gotoPosition.bind(this), (e) => { console.error(e); alert("Find Me: " + e.message); }, { enableHighAccuracy: true });
         } else {
             alert('Geolocation is not supported.');
         }
