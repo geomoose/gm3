@@ -28,7 +28,8 @@ export const QueryResults = ({
   const queryId = "query-id-0";
   const queryDef = {
     ...query,
-    results: allResults,
+    // this will filter down to just matching results
+    results,
   };
 
   const zoomToResults = useCallback(() => {
@@ -66,13 +67,16 @@ export const QueryResults = ({
   const serviceTitle = serviceDef.resultsTitle || `${serviceDef.title} Results`;
 
   let layerCount = 0,
-    allFeatureCount = 0,
-    featureCount = results.length;
+    allFeatureCount = 0;
   for (const path in allResults) {
     if (allResults[path].failed !== true) {
       layerCount += 1;
       allFeatureCount += allResults[path].length;
     }
+  }
+  let featureCount = 0;
+  for (const path in results) {
+    featureCount += results[path].length;
   }
 
   const bufferEnabled = featureCount <= config.bufferMaxFeatures;
