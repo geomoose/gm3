@@ -288,7 +288,7 @@
     </map-source>
 
     <map-source name="ags-polygons-query" type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/21</url>
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/42</url>
         <layer name="runways" selectable="true" title="Runways">
             <style><![CDATA[
             {
