@@ -986,6 +986,13 @@ class Application {
           autoGo: true,
           defaultValues: urlValues,
         });
+
+        // clear the query from the URL
+        window.history.pushState(
+          {},
+          document.title,
+          document.location.toString().replace(document.location.search, "")
+        );
       } else {
         console.error("Failed to load service specified in ?service=");
       }
