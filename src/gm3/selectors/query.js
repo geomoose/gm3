@@ -17,9 +17,9 @@ export const getQueryResults = createSelector(
   getAllResults,
   getFilter,
   (results, filter) => {
-    let features = [];
+    const features = {};
     for (const path in results) {
-      features = features.concat(matchFeatures(results[path], filter));
+      features[path] = matchFeatures(results[path], filter);
     }
     return features;
   }
