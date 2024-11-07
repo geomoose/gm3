@@ -348,6 +348,13 @@ class Application {
     let mapbookXml = contents;
     if (typeof contents === "string") {
       mapbookXml = new DOMParser().parseFromString(contents, "text/xml");
+      if (mapbookXml.documentElement.nodeName === "parsererror") {
+        console.error(
+          "Could not parse mapbook!",
+          mapbookXml.documentElement.innerHTML
+        );
+        return false;
+      }
     }
 
     this.configureSelectionLayer(
