@@ -5,6 +5,7 @@ import { vectorFeatureQuery } from "../query/vector";
 import { wfsGetFeatureQuery } from "../query/wfs";
 import { wmsGetFeatureInfoQuery } from "../query/wms";
 import { getMapSourceName } from "../util";
+import { getQueryResults } from "../selectors/query";
 
 import {
   changeTool,
@@ -152,13 +153,14 @@ export const bufferResults = createAsyncThunk(
   "query/buffer-results",
   (arg, { getState, dispatch }) => {
     const state = getState();
-    const query = state.query;
+    const results = getQueryResults(state);
+    console.log("RESULTS=", results);
 
     // flatten the query results down to just a
     //  list of features
     let features = [];
-    for (const path in query.results) {
-      features = features.concat(query.results[path]);
+    for (const path in results) {
+      features = features.concat(results[path]);
     }
 
     if (features.length > 0) {
