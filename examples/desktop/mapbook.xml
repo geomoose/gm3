@@ -230,8 +230,8 @@
         <param name="cross-origin" value="anonymous"/>
     </map-source>
 
-    <map-source name="ags-vector-dc16" type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/16</url>
+    <map-source name="ags-vector-dc37" type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/37</url>
         <layer name="railroads" selectable="true" title="Railroads">
             <style><![CDATA[
             {
@@ -347,8 +347,8 @@
     <!-- This layer is very large.  It will take awhile to load, will slow down the browser
          once it is loaded.  Thus, it is not "in" the demo, but it is left here because it
          a good complex example and is a great stress test for the ags-vector driver. -->
-    <!--map-source name="ags-vector-dc20" type="ags-vector">
-        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/20</url>
+    <!--map-source name="ags-vector-dc41" type="ags-vector">
+        <url>https://gis2.co.dakota.mn.us/arcgis/rest/services/DCGIS_OL_Transportation/MapServer/41</url>
         <layer name="roads" selectable="true" title="Streets">
             <style><![CDATA[
             {
@@ -497,8 +497,8 @@
                 <layer title="Parcel Points" src="parcels_points/parcels_points" status="off" />
                 <layer title="Expensive Parcels" src="vector-parcels/big-money"/>
                 <layer title="City and County Boundaries" src="borders/county_borders;borders/city_poly"/>
-                <layer title="AGS Dakota County Rail" src="ags-vector-dc16/railroads"/>
-                <!--layer title="AGS Dakota County Streets" src="ags-vector-dc20/roads"/-->
+                <layer title="AGS Dakota County Rail" src="ags-vector-dc37/railroads"/>
+                <!--layer title="AGS Dakota County Streets" src="ags-vector-dc41/roads"/-->
                 <layer title="AGS Dakota County Runways" src="ags-polygons-query/runways"></layer>
             </group>
             <layer src="vector-pipelines/pipelines"></layer>
