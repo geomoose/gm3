@@ -82,14 +82,18 @@ const reducer = createReducer(
       state,
       { payload: { mapSourceName, layerName, on } }
     ) => {
-      state[mapSourceName].layers = modifyLayer(
-        state[mapSourceName].layers,
-        layerName,
-        (layer) => {
-          layer.on = on;
-          return layer;
-        }
-      );
+      if (!state[mapSourceName]) {
+        console.error("Map source does not exist: ", mapSourceName);
+      } else {
+        state[mapSourceName].layers = modifyLayer(
+          state[mapSourceName].layers,
+          layerName,
+          (layer) => {
+            layer.on = on;
+            return layer;
+          }
+        );
+      }
     },
     [favoriteLayer]: (
       state,
@@ -104,6 +108,8 @@ const reducer = createReducer(
             return layer;
           }
         );
+      } else {
+        console.error("Map source does not exist: ", mapSourceName);
       }
     },
     [setLayerTemplate]: (

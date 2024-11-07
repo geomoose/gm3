@@ -447,9 +447,7 @@ export function getLayer(mapSources, layer) {
     }
   }
   console.error("Cannot find layer", layer.mapSourceName, layer.layerName);
-  throw new Error(
-    `Cannot find layer ${layer.mapSourceName}/${layer.layerName}`
-  );
+  return {};
 }
 
 /** Get a layer using the internal path format "source"/"layer"
@@ -615,8 +613,7 @@ export function getLayerFromSources(mapSources, msName, layerName) {
       }
     }
   }
-
-  return null;
+  return {};
 }
 
 /** Return the list of layers that can be queried.
