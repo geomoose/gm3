@@ -36,8 +36,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform: [ 'ubuntu-22.04' ]
-        node-version: [ '20.x' ]
+        platform: [ 'ubuntu-24.04' ]
+        node-version: [ '22.x' ]
 
     steps:
     - uses: actions/checkout@v2
