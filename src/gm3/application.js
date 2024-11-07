@@ -986,6 +986,26 @@ class Application {
           autoGo: true,
           defaultValues: urlValues,
         });
+
+        // parse the url
+        const url = new URL(document.location.href);
+
+        // check for mapbook parameter
+        const params = new URLSearchParams(document.location.search);
+        // preserve any of the parameters from the list
+        const safeParams = {};
+        const safeList = ["mapbook"];
+        safeList.forEach((paramName) => {
+          if (params[paramName]) {
+            safeParams[paramName] = params[paramName];
+          }
+        });
+
+        const nextParams = new URLSearchParams(safeParams);
+        url.search = nextParams.toString();
+
+        // clear the query from the URL
+        window.history.pushState({}, document.title, url.toString());
       } else {
         console.error("Failed to load service specified in ?service=");
       }
