@@ -8,6 +8,8 @@ import { getLayerFromPath } from "../actions/mapSource";
 export const getAllResults = (state) => state.query.results;
 export const getFilter = (state) => state.query.filter;
 export const getServiceName = (state) => state.query.serviceName;
+export const getQueryServiceName = (state) =>
+  state.query.query ? state.query.query.serviceName : "";
 export const getHotFilter = (state) => state.query.hotFilter;
 
 // TODO: Move this to a map sources selector
@@ -36,7 +38,7 @@ export const getFlatResults = createSelector(getAllResults, (results) => {
 export const getHighlightResults = createSelector(
   getAllResults,
   getFilter,
-  getServiceName,
+  getQueryServiceName,
   getMapSources,
   getHotFilter,
   (results, filter, serviceName, mapSources, hotFilter) => {
