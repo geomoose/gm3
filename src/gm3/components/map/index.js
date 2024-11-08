@@ -303,9 +303,11 @@ class Map extends React.Component {
   refreshMapSources() {
     // get the list of current active map-sources
     const printOnly = this.props.printOnly === true;
+    const includeSelection = this.props.includeSelection !== false;
     const activeMapSources = mapSourceActions.getActiveMapSources(
       this.props.mapSources,
-      printOnly
+      printOnly,
+      includeSelection
     );
 
     // annoying O(n^2) iteration to see if the mapsource needs

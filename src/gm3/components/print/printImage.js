@@ -95,6 +95,7 @@ const PrintImage = (props) => {
         center={center}
         resolution={rez}
         printOnly={true}
+        includeSelection={props.includeSelection}
         mapRenderedCallback={() => {
           if (parentRef.current) {
             setImage(getImage(parentRef.current, [props.width, props.height]));
@@ -108,6 +109,7 @@ const PrintImage = (props) => {
 PrintImage.defaultProps = {
   width: 600,
   height: 400,
+  includeSelection: true,
 };
 
 const mapToProps = (state) => ({

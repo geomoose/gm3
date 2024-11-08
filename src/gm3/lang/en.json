@@ -117,5 +117,8 @@
   "zoomto-results" : "Zoom to results",
   "zoomto-tip" : "Zoom to layer extents.",
   "zoom-in" : "Zoom In",
-  "zoom-out" : "Zoom Out"
+  "zoom-out" : "Zoom Out",
+  "include-selection": "Include selection",
+  "yes": "Yes",
+  "no": "No"
 }
