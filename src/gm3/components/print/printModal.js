@@ -561,7 +561,7 @@ export class PrintModal extends Modal {
             includeSelection: evt.target.value,
           });
         }}
-        value={this.state.resolution}
+        value={this.state.includeSelection}
       >
         <option value="true">{t("yes")}</option>
         <option value="false">{t("no")}</option>
