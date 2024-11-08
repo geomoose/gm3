@@ -32,7 +32,7 @@ BufferInput.propTypes = {
 };
 
 BufferInput.defaultProps = {
-  distsance: 0,
+  distance: 0,
   setBuffer: (distance, units) => {},
 };
 
