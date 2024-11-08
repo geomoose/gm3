@@ -255,34 +255,12 @@
         <param name="cross-origin" value="anonymous"/>
     </map-source>
 
-	<map-source name="wmflabs" type="xyz" printable="false">
-		<layer name="osm_black_n_white">
-			<legend type="html"><![CDATA[
-			Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.  Tiles by Wikimedia Foundation Labs.
-			<br><br>
-			]]></legend>
-		</layer>
-		<url>https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png</url>
-	</map-source>
-
-	<map-source name="usgs" type="mapserver">
-		<file>demo/wms/wms_proxy.map</file>
-		<layer name="usgs_imagery"/>
-		<layer name="usgs_topo"/>
-	</map-source>
-
 	<map-source name="lmic" type="mapserver">
 		<file>demo/wms/wms_proxy.map</file>
 		<layer name="mncomp">
             <legend type="nolegend"/>
         </layer>
 	</map-source>
-
-    <map-source name="bing" type="bing">
-        <layer name="roads"/>
-        <layer name="aerials"/>
-        <param name="key" value="'Your Key Here'"/>
-    </map-source>
 
 	<!--
 		The catalog defines how the layers will be displayed in the catalog tab.
@@ -310,8 +288,8 @@
 		<group title="Backgrounds" expand="true">
 			<layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true"/>
 
-			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true"/>
-			<layer title="OpenStreetMap - Black and White" src="wmflabs/osm_black_n_white" legend="false" fade="true" unfade="true"/>
+			<layer title="OpenStreetMap - Mapnik" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" status="on"/>
+			
 			<layer title="ArcGIS Rest Example" src="ags/NatGeo_World_Map" show-legend="false" legend="false" fade="true" unfade="true"/>
 		</group>
 	</catalog>
