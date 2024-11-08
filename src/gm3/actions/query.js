@@ -147,6 +147,7 @@ export const runQuery = createAsyncThunk(
       allResults.forEach((result) => {
         results[result.layer] = result.features;
       });
+      dispatch(setUiHint("new-results"));
       return results;
     });
   }
