@@ -51,10 +51,13 @@ export const startService = createAsyncThunk(
 
     // start a service "with [these] features"
     if (withFeatures.length > 0) {
+      dispatch(clearSelectionFeatures());
+      dispatch(setSelectionBuffer(0));
       withFeatures.forEach((feature) => {
         dispatch(addSelectionFeature(feature));
       });
       if (state.mapSources.selection) {
+        dispatch(clearFeatures("selection"));
         dispatch(addFeatures("selection", withFeatures));
       }
     }
@@ -154,7 +157,6 @@ export const bufferResults = createAsyncThunk(
   (arg, { getState, dispatch }) => {
     const state = getState();
     const results = getQueryResults(state);
-    console.log("RESULTS=", results);
 
     // flatten the query results down to just a
     //  list of features

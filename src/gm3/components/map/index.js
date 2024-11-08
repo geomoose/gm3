@@ -22,13 +22,6 @@
  * SOFTWARE.
  */
 
-/** The big bopper of all the GeoMoose Components, the Catalog.
- *
- *  This is the most exercised component of GeoMoose and serves
- *  as the 'dispatch' center to the map, presenting the layers
- *  of the mapbook in a nice tree format.
- */
-
 import React from "react";
 import { connect } from "react-redux";
 import ReactResizeDetector from "react-resize-detector";
