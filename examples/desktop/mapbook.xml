@@ -12,9 +12,12 @@
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
             {
-                "circle-radius": ["coalesce", ["get", "style:stroke-width"], 4],
+                "circle-radius": ["coalesce", ["get", "style:circle-radius"], 10],
                 "circle-color": ["coalesce", ["get", "style:fill-color"], "#fec44f"],
                 "circle-stroke-color": ["coalesce", ["get", "style:stroke-color"], "#d95f0e"],
+                "circle-stroke-width": ["coalesce", ["get", "style:stroke-width"], 4],
+                "circle-stroke-opacity": ["coalesce", ["get", "style:stroke-opacity"], 0.8],
+                "circle-opacity": ["coalesce", ["get", "style:fill-opacity"], 0.6],
                 "fill-color": ["coalesce", ["get", "style:fill-color"], "#fec44f"],
                 "fill-opacity": ["coalesce", ["get", "style:fill-opacity"], 0.6],
                 "line-color": ["coalesce", ["get", "style:stroke-color"], "#d95f0e"],
@@ -52,6 +55,9 @@
 
             <property name="style:stroke-width"
                 label="Stroke size" type="range" min="0" max="10" default="4" />
+
+            <property name="style:circle-radius"
+                label="Point size" type="range" min="2" max="25" default="4" />
 
             <property name="style:stroke-opacity"
                 label="Stroke opacity" type="range"
