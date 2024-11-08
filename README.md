@@ -1,10 +1,9 @@
 # GeoMoose3
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7976084.svg)](https://doi.org/10.5281/zenodo.7976084)
+![Build Status](https://github.com/geomoose/gm3/actions/workflows/tests.yml/badge.svg)
 
 This is the main repository for the new GeoMoose3 library/application. To learn more about GeoMoose [visit the homepage.](http://www.geomoose.org)
-
-![Build Status](https://github.com/geomoose/gm3/actions/workflows/tests.yml/badge.svg)
 
 
 ## Documentation
