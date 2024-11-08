@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2024 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
 function FindMeAction(Application, options) {
 
     // allow the targetting of a layer, but default to the highlight layer
-    this.targetLayer = options.targetLayer ? options.targetLayer : 'results/results';
+    this.targetLayer = options.targetLayer ? options.targetLayer : 'sketch/default';
 
     // default the map projection to web-mercator
     this.mapProjection = options.mapProjection ? options.mapProjection : 'EPSG:3857';
@@ -50,7 +50,11 @@ function FindMeAction(Application, options) {
      */
     this.run = function(selection, fields) {
         if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.gotoPosition.bind(this), (e) => { console.error(e); alert("Find Me: " + e.message); }, { enableHighAccuracy: true });
+            navigator.geolocation.getCurrentPosition(
+              this.gotoPosition.bind(this),
+              (e) => { console.error(e); alert("Find Me: " + e.message); },
+              { enableHighAccuracy: true }
+            );
         } else {
             alert('Geolocation is not supported.');
         }
@@ -75,8 +79,6 @@ function FindMeAction(Application, options) {
 
         // put the feature in map projection.
         var map_feature = gm3.util.projectFeatures([fake_feature], 'EPSG:4326', this.mapProjection)[0];
-
-        Application.clearFeatures(this.targetLayer);
 
         // mark the location in the highlight layer
         Application.addFeatures(this.targetLayer, map_feature);
