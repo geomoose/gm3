@@ -510,11 +510,18 @@ function isMapSourceActive(mapSource) {
 /** Get the list of all map-sources which have a
  *  layer that is on.
  */
-export function getActiveMapSources(mapSources, onlyPrintable = false) {
+export function getActiveMapSources(
+  mapSources,
+  onlyPrintable = false,
+  includeSelection = true
+) {
   const active = [];
   const allMaps = !onlyPrintable;
   for (const ms in mapSources) {
-    if (isMapSourceActive(mapSources[ms])) {
+    if (
+      isMapSourceActive(mapSources[ms]) &&
+      (includeSelection || ms !== "selection")
+    ) {
       if (allMaps || mapSources[ms].printable) {
         active.push(ms);
       }

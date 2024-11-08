@@ -121,6 +121,7 @@ export class PrintModal extends Modal {
       layout: 0,
       resolution: 1,
       layouts: props.layouts ? props.layouts : DefaultLayouts,
+      includeSelection: "true",
     };
   }
 
@@ -550,6 +551,24 @@ export class PrintModal extends Modal {
     );
   }
 
+  /** Choose whether to include the selected layers in the output.
+   */
+  renderIncludeSelection(t) {
+    return (
+      <select
+        onChange={(evt) => {
+          this.setState({
+            includeSelection: evt.target.value,
+          });
+        }}
+        value={this.state.resolution}
+      >
+        <option value="true">{t("yes")}</option>
+        <option value="false">{t("no")}</option>
+      </select>
+    );
+  }
+
   renderBody() {
     // small set of CSS hacks to keep the print map
     //  invisible but drawn.
@@ -605,6 +624,10 @@ export class PrintModal extends Modal {
                 <label>{`${t("resolution")}:`}</label>
                 {this.renderResolutionSelect(t)}
               </p>
+              <p>
+                <label>{`${t("include-selection")}:`}</label>
+                {this.renderIncludeSelection(t)}
+              </p>
             </div>
           )}
         </Translation>
@@ -620,6 +643,7 @@ export class PrintModal extends Modal {
             width={mapSize.width}
             height={mapSize.height}
             store={this.props.store}
+            includeSelection={this.state.includeSelection === "true"}
           />
         </div>
       </div>
