@@ -66,6 +66,9 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
         zoom: 12
     });
 
+    const hashTracker = new gm3.trackers.HashTracker(app.store);
+    hashTracker.restore();
+
     app.registerService('identify', IdentifyService);
     app.registerAction('findme', FindMeAction);
 
@@ -98,4 +101,6 @@ app.loadMapbook({url: 'mapbook.xml'}).then(function() {
     });
 
     changeTab('map');
+
+    hashTracker.startTracking();
 });
