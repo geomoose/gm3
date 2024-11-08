@@ -243,18 +243,17 @@
     </map-source-->
 
     <map-source name="openstreetmap" type="xyz">
-		<layer name="osm_mapnik">
-			<legend type="html"><![CDATA[
-			&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
-			<br><br>
-			]]></legend>
-		</layer>
-		<url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
-		<url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <layer name="osm_mapnik" status="on">
+            <attribution><![CDATA[
+                &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> Contributors.
+            ]]></attribution>
+        </layer>
+        <url>https://a.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <url>https://b.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
+        <url>https://c.tile.openstreetmap.org/{z}/{x}/{y}.png</url>
 
         <param name="cross-origin" value="anonymous"/>
-	</map-source>
+    </map-source>
 
 	<map-source name="wmflabs" type="xyz" printable="false">
 		<layer name="osm_black_n_white">
