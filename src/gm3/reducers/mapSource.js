@@ -147,18 +147,19 @@ const reducer = createReducer(
         state[mapSourceName].featuresVersion = 0;
       }
 
-      // copy assumes a raw dump where the ID does not matter.
-      for (let i = 0, ii = features.length; !copy && i < ii; i++) {
-        features[i] = {
-          ...features[i],
-          properties: {
-            ...features[i].properties,
-            [ID_PROP]: uuid(),
-          },
-        };
-      }
+      // ensure features are a list.
+      const inFeatures = Array.isArray(features) ? features : [features];
+      const nextFeatures = copy
+        ? inFeatures
+        : inFeatures.map((feature) => ({
+            ...feature,
+            properties: {
+              ...feature.properties,
+              [ID_PROP]: uuid(),
+            },
+          }));
       state[mapSourceName].features =
-        state[mapSourceName].features.concat(features);
+        state[mapSourceName].features.concat(nextFeatures);
       state[mapSourceName].featuresVersion += 1;
     },
     [clearFeatures]: (state, { payload: mapSourceName }) => {
