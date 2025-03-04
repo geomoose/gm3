@@ -3,7 +3,7 @@
 Vector Editing Introduction
 =====================================================================
 
-.. figure:: images/edit01_03.gif
+.. figure:: ../images/edit01_03.gif
    :alt: Vector Editing Animation
 
    Animation of Vector Editing

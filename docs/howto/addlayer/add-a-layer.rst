@@ -47,7 +47,7 @@ Add Firestations to the catalog
 
 -  The catalog should now have a 'Firestations' layer at the top!
 
-.. figure:: ../workshop/images/firestations-in-catalog.png
+.. figure:: ../../workshop/images/firestations-in-catalog.png
    :alt: Firestations in the catalog
 
    Firestations in the catalog
