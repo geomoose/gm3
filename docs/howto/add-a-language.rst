@@ -1,4 +1,4 @@
-How-to add a langauge
+How-to add a language
 =====================
 
 Languages are stored as JSON files in GeoMoose. Each language is given
