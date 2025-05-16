@@ -102,7 +102,7 @@ export function buildWfsQuery(
   // the internal storage mechanism requires features
   //  returned from the query be stored in 4326 and then
   //  reprojected on render.
-  let queryProjection = mapProjection;
+  let queryProjection = new proj.get(mapProjection);
   if (mapSource.wgs84Hack) {
     queryProjection = new proj.get("EPSG:4326");
   }
@@ -142,8 +142,10 @@ export function buildWfsQuery(
   // the OL formatter requires that the typename and the schema be
   //  broken apart in order to properly format the request.
   const typename = getTypeName(mapSource);
-
-  const typeParts = typename.split(":");
+  let typeParts = typename.split(":");
+  if (typeParts.length === 1) {
+    typeParts = ["", typeParts[0]];
+  }
   const formatOptions = {
     srsName: queryProjection.getCode(),
     featurePrefix: typeParts[0],

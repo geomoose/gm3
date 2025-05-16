@@ -228,6 +228,21 @@ function mapServerToWFS(msXml, conf) {
   return wfsConf;
 }
 
+/** Convert a type='qgis-wfs' layer into type='wfs'
+ *  style layer.
+ *
+ *  @param mxXml The MapSource XML
+ *  @param conf  Application configuration object.
+ *
+ * @returns Object defining the WFS service.
+ */
+function QGISToWFS(msXml, conf) {
+  return {
+    type: 'wfs',
+    wgs84Hack: true
+  };
+}
+
 /** Add a map-source from XML
  *
  */
@@ -275,6 +290,8 @@ export function addFromXml(xml, config) {
     Object.assign(mapSource, mapServerToWMS(xml, config));
   } else if (mapSource.type === "mapserver-wfs") {
     Object.assign(mapSource, mapServerToWFS(xml, config));
+  } else if (mapSource.type === "qgis-wfs") {
+    Object.assign(mapSource, QGISToWFS(xml, config));
   }
 
   // parse the optional float attributes
