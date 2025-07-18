@@ -266,7 +266,7 @@ export class PrintModal extends Modal {
             y: def.y + offsetY,
             imageData: img,
           });
-          offsetY += (img.height + 5) / 72;
+          offsetY += (img.height + 5) / 96;
         });
     });
   }
