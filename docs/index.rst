@@ -2,8 +2,9 @@ GeoMoose Documentation
 ======================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :glob:
+    :titlesonly:
 
     introduction
     quickstarts/index
