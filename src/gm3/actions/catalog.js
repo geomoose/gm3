@@ -26,7 +26,7 @@
  *
  */
 
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { createAction } from "@reduxjs/toolkit";
 
 import { parseBoolean, getTagContents } from "../util";
@@ -267,7 +267,7 @@ export function parseCatalog(store, catalogXml) {
   const elements = catalogXml.getElementsByTagName("*");
   for (let i = 0, ii = elements.length; i < ii; i++) {
     const e = elements[i];
-    e.setAttribute("uuid", uuid.v4());
+    e.setAttribute("uuid", uuid());
   }
 
   return subtreeActions(store, null, catalogXml);

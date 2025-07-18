@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 
 class AttributionDisplay extends React.Component {
   render() {

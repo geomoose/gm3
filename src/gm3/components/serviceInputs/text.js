@@ -24,9 +24,9 @@
 
 import React, { Component } from "react";
 
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 
-export const getId = () => uuid.v4();
+export const getId = () => uuid();
 
 export default class TextInput extends Component {
   constructor(props) {
