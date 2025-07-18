@@ -1,3 +1,6 @@
+# send build notifications to the #geomoose IRC channel
+# homepage: https://github.com/marketplace/actions/notify-irc
+
 name: "IRC Push Notification"
 on: 
   push:
@@ -13,7 +16,7 @@ jobs:
     if: github.repository == 'geomoose/gm3'
     steps:
       - name: irc push
-        uses: rectalogic/notify-irc@v1
+        uses: rectalogic/notify-irc@v2
         if: github.event_name == 'push'
         with:
           channel: "#geomoose"
@@ -23,7 +26,7 @@ jobs:
             ${{ github.actor }} pushed ${{ github.event.ref }} ${{ github.event.compare }}
             ${{ join(github.event.commits.*.message) }}
       - name: irc pull request
-        uses: rectalogic/notify-irc@v1
+        uses: rectalogic/notify-irc@v2
         if: github.event_name == 'pull_request'
         with:
           channel: "#geomoose"
@@ -31,8 +34,9 @@ jobs:
           nickname: geomoose-github-notifier
           message: |
             ${{ github.actor }} opened PR ${{ github.event.pull_request.html_url }}
+            ${{ github.event.pull_request.title }}
       - name: irc tag created
-        uses: rectalogic/notify-irc@v1
+        uses: rectalogic/notify-irc@v2
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         with:
           channel: "#geomoose"
