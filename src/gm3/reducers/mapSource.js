@@ -26,7 +26,7 @@
  *
  */
 
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import { createReducer } from "@reduxjs/toolkit";
 import { changeFeatures, filterFeatures } from "../util";
 
