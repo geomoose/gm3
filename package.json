@@ -52,7 +52,7 @@
     "i18next-browser-languagedetector": "^4.1.1",
     "jest": "^28.1.1",
     "json-loader": "^0.5.7",
-    "jspdf": "^2.5.1",
+    "jspdf": "^3.0.1",
     "jsts": "~1.4.0",
     "less": "^3.10.3",
     "mapskin": "^1.0.0",
@@ -74,8 +74,8 @@
     "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
     "uuid": "^3.2.1",
     "webpack": "^5.70.0",
-    "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.7.4",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.2.2",
     "xhr2": "^0.2.1"
   },
   "dependencies": {
