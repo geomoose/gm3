@@ -27,8 +27,6 @@ import { connect } from "react-redux";
 import ReactResizeDetector from "react-resize-detector";
 import { withTranslation } from "react-i18next";
 
-import uuid from "uuid";
-
 import * as mapSourceActions from "../../actions/mapSource";
 import * as mapActions from "../../actions/map";
 import { removeFeature, setEditFeature } from "../../actions/edit";
@@ -252,7 +250,7 @@ class Map extends React.Component {
         const wmsSrc = this.olLayers[mapSource.name].getSource();
         const params = wmsSrc.getParams();
         // ".ck" = "cache killer"
-        params[".ck"] = uuid.v4();
+        params[".ck"] = Math.random();
         wmsSrc.updateParams(params);
         break;
       default:

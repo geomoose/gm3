@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import uuid from "uuid";
 
 class AttributionDisplay extends React.Component {
   render() {
@@ -16,7 +15,7 @@ class AttributionDisplay extends React.Component {
           <div
             dangerouslySetInnerHTML={{ __html: attrHtml }}
             className="attribution"
-            key={uuid()}
+            key={attrHtml.substring(0, 100)}
           ></div>
         ))}
       </div>

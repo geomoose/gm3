@@ -27,7 +27,7 @@
  */
 
 import { createReducer } from "@reduxjs/toolkit";
-import uuid from "uuid";
+import { v4 as uuid } from "uuid";
 import {
   addLayer,
   addGroup,
@@ -38,7 +38,7 @@ import {
 
 const DEFAULT_CATALOG = {
   root: {
-    id: uuid.v4(),
+    id: uuid(),
     children: [],
   },
 };
