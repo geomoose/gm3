@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import crypto from "crypto";
 
 global.requestAnimationFrame = function (callback) {
   setTimeout(callback, 0);
@@ -32,3 +33,7 @@ i18n.use(initReactI18next).init({
     escapeValue: false,
   },
 });
+
+global.crypto = {
+  getRandomValues: (arr) => crypto.randomBytes(arr.length),
+};
