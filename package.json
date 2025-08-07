@@ -73,8 +73,8 @@
     "usng-map-collar": "^1.0.1",
     "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
     "uuid": "^3.2.1",
-    "webpack": "^5.70.0",
-    "webpack-cli": "^5.1.4",
+    "webpack": "^5.101.0",
+    "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2",
     "xhr2": "^0.2.1"
   },
