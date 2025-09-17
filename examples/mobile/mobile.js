@@ -42,6 +42,9 @@ function changeTab(tabName) {
     $('#tabs')
         .toggleClass('show', tabName !== 'map');
 
+    $('#map')
+        .toggleClass('hidden', tabName !== 'map');
+
     $('.navbar .nav-item')
         .removeClass('active');
 
