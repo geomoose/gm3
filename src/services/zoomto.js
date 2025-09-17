@@ -29,20 +29,19 @@
  *
  */
 function ZoomToAction(Application, options) {
+  // The extent to which the action should zoom to.
+  this.extent = options.extent ? options.extent : null;
 
-    // The extent to which the action should zoom to.
-    this.extent = options.extent ? options.extent : null;
-
-    // Called every time the action is started.
-    this.run = function() {
-        if(options.extent) {
-            Application.zoomToExtent(options.extent);
-        } else {
-            alert('An extent was not defined for this action');
-        }
-
+  // Called every time the action is started.
+  this.run = function () {
+    if (options.extent) {
+      Application.zoomToExtent(options.extent);
+    } else {
+      alert("An extent was not defined for this action");
     }
-
+  };
 }
 
-if(typeof(module) !== 'undefined') { module.exports = ZoomToAction; }
+if (typeof module !== "undefined") {
+  module.exports = ZoomToAction;
+}

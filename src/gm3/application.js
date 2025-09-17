@@ -481,7 +481,12 @@ class Application {
       this.store.dispatch(
         createQuery(service, selection, fields, layers, runOptions)
       );
-      this.store.dispatch(runQuery());
+      // when a custom runQuery function is present, pass it to the query engine
+      let serviceRunQuery = this.services[service]?.runQuery;
+      if (serviceRunQuery) {
+        serviceRunQuery = serviceRunQuery.bind(this.services[service]);
+      }
+      this.store.dispatch(runQuery(serviceRunQuery));
     });
   }
 
@@ -497,7 +502,7 @@ class Application {
       if (template.substring(0, 1) === "@") {
         const templateName = template.substring(1);
         const layer = getLayerFromPath(this.store.getState().mapSources, path);
-        const layerTemplate = layer.templates[templateName];
+        const layerTemplate = layer?.templates[templateName];
 
         if (layerTemplate) {
           if (layerTemplate.type === "alias") {

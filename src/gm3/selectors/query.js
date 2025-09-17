@@ -47,7 +47,7 @@ export const getHighlightResults = createSelector(
       const layer = getLayerFromPath(mapSources, path);
 
       let highlight = true;
-      if (layer.templates[serviceName]) {
+      if (layer && layer.templates && layer.templates[serviceName]) {
         highlight = layer.templates[serviceName].highlight !== false;
       }
       if (highlight) {
