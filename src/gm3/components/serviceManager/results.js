@@ -98,38 +98,44 @@ export const QueryResults = ({
       <div className="results-query-id">{queryId}</div>
       {showHeader && (
         <div className="results-info">
-          <div className="results-info-item buffer-all">
+          <button
+            className="results-info-item buffer-all"
+            onClick={() => finishService()}
+          >
             <div className="label">{t("results-clear")}</div>
-            <div className="value" onClick={() => finishService()}>
+            <div className="value">
               <span className="icon clear"></span>
             </div>
-          </div>
+          </button>
 
           {resultsConfig.showBufferAll && (
-            <div className="results-info-item buffer-all">
+            <button
+              className="results-info-item buffer-all"
+              onClick={() => {
+                if (bufferEnabled) {
+                  bufferResults();
+                } else {
+                  setShowTooManyFeatures(true);
+                }
+              }}
+            >
               <div className="label">{t("buffer-all")}</div>
-              <div
-                className="value"
-                onClick={() => {
-                  if (bufferEnabled) {
-                    bufferResults();
-                  } else {
-                    setShowTooManyFeatures(true);
-                  }
-                }}
-              >
+              <div className="value">
                 <span className="icon buffer"></span>
               </div>
-            </div>
+            </button>
           )}
 
           {resultsConfig.showZoomToAll && (
-            <div className="results-info-item zoomto">
+            <button
+              className="results-info-item zoomto"
+              onClick={zoomToResults}
+            >
               <div className="label">{t("zoomto-results")}</div>
-              <div className="value" onClick={zoomToResults}>
+              <div className="value">
                 <span className="icon zoomto"></span>
               </div>
-            </div>
+            </button>
           )}
         </div>
       )}
