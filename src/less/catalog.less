@@ -63,14 +63,16 @@
       .children {
         max-height: 0 !important;
         overflow: hidden;
-        transition: max-height 0.5s ease-in;
+        visibility: hidden !important;
+        transition: max-height 0.5s ease-in, visibility 0s linear 0.5s;
       }
     }
 
     &.gm-expand {
       .children {
         max-height: 2000px;
-        transition: max-height 0.5s ease-in;
+        visibility: visible;
+        transition: max-height 0.5s ease-in, visibility 0s linear 0;
       }
     }
 }
