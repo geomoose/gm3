@@ -163,11 +163,11 @@
     .drawer {
         position: relative;
         display: inline-block;
-    }
 
-    .drawer:hover {
-        .drawer-contents {
-            display: block;
+        &:hover,&.sticky {
+          .drawer-contents {
+              display: block;
+          }
         }
     }
 
@@ -193,4 +193,3 @@
         cursor: pointer;
     }
 }
-
