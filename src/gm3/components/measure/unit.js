@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Dan "Ducky" Little
+ * Copyright (c) 2023,2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,23 @@ import { useTranslation } from "react-i18next";
 export const UnitOption = ({ onClick, unit, selected, isSq }) => {
   const { t } = useTranslation();
   return (
-    <div
-      className={"radio-option " + (selected ? "selected" : "")}
-      onClick={onClick}
-    >
-      <i className="radio-icon"></i> {isSq ? `${t("measure-sq")} ` : ""}
-      {t(`units-${unit}`)}
+    <div className="unit-option">
+      <input
+        type="radio"
+        name="measure-unit"
+        checked={selected}
+        onChange={() => {
+          onClick();
+        }}
+      />
+      <span
+        onClick={() => {
+          onClick();
+        }}
+      >
+        {isSq ? `${t("measure-sq")} ` : ""}
+        {t(`units-${unit}`)}
+      </span>
     </div>
   );
 };
