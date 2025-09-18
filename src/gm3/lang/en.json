@@ -120,5 +120,7 @@
   "zoom-out" : "Zoom Out",
   "include-selection": "Include selection",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "show-layer": "Show layer {{label}}",
+  "hide-layer": "Hide layer {{label}}"
 }

@@ -105,5 +105,7 @@
   "with-buffer" : "Con buffer",
   "zoomto-extent" : "Zoom all'estensione...",
   "zoomto-results" : "Zoom sui risultati",
-  "zoomto-tip" : "Zoom all'estensione del layer."
+  "zoomto-tip" : "Zoom all'estensione del layer.",
+  "show-layer": "Mostra livello {{label}}",
+  "hide-layer": "Nascondi livello {{label}}"
 }

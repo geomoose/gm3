@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,18 +29,23 @@ import MetadataTool from "./tools/metadata";
 const CatalogGroup = ({ group, onExpand, children }) => {
   const { t } = useTranslation();
   const classes = "group " + (!!group.expand ? "gm-expand" : "gm-collapse");
-  const iconClasses = "folder icon " + (!!group.expand ? "open" : "");
-
   return (
     <div key={group.id} className={classes}>
-      <div onClick={onExpand} className="group-label" title={t(group.tip)}>
-        <i className={iconClasses}></i>
-        {t(group.label)}{" "}
-        {!group.metadata_url ? (
-          false
-        ) : (
-          <MetadataTool href={group.metadata_url} />
-        )}
+      <div className="group-label" title={t(group.tip)}>
+        <input
+          className="group-toggle icon"
+          type="checkbox"
+          checked={!!group.expand}
+          onChange={onExpand}
+        />
+        <span onClick={onExpand}>
+          {t(group.label)}{" "}
+          {!group.metadata_url ? (
+            false
+          ) : (
+            <MetadataTool href={group.metadata_url} />
+          )}
+        </span>
       </div>
       <div className="children">{children}</div>
     </div>

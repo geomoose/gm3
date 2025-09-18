@@ -125,9 +125,9 @@ describe("Catalog component tests", () => {
   });
 
   it("toggles the group state", function () {
-    fireEvent.click(catalog.querySelector(".group-label"));
+    fireEvent.click(catalog.querySelector(".group-toggle"));
     expect(catalog.querySelector(".gm-expand")).not.toBeNull();
-    fireEvent.click(catalog.querySelector(".group-label"));
+    fireEvent.click(catalog.querySelector(".group-toggle"));
     expect(catalog.querySelector(".gm-collapse")).not.toBeNull();
   });
 
@@ -136,7 +136,7 @@ describe("Catalog component tests", () => {
   });
 
   it("toggles layer visibility", function () {
-    fireEvent.click(catalog.querySelector(".checkbox"));
+    fireEvent.click(catalog.querySelector(".layer-toggle"));
     // the layer is on by default
     expect(store.getState().mapSources.test.layers[0].on).toBe(false);
   });
