@@ -111,5 +111,7 @@
   "zoomto-results" : "Zoom a la seleccion",
   "zoomto-tip" : "Zoom a la capa",
   "zoom-in" : "Acercar la imagen",
-  "zoom-out" : "Alejar la imagen"
+  "zoom-out" : "Alejar la imagen",
+  "show-layer": "Mostrar capa {{label}}",
+  "hide-layer": "Ocultar capa {{label}}"
 }

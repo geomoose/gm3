@@ -27,12 +27,28 @@
 .group {
     .group {
         padding-left: 20px;
-
     }
 
     .group-label {
-        font-weight: bold;
-        cursor: pointer;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+        input[type="checkbox"] {
+          border: none;
+
+          &::before {
+            content: "\25B8";
+            content: "\2b9e";
+            transition: 120ms transform ease-in-out;
+            transform: rotate(0deg);
+          }
+
+          &:checked::before {
+            transform: rotate(90deg);
+          }
+        }
 
         &:hover {
             background-color: #eee;
@@ -42,22 +58,20 @@
     .layer {
         padding-left: 20px;
     }
-}
 
-.group.gm-collapse {
-    .children {
+    &.gm-collapse {
+      .children {
         max-height: 0 !important;
         overflow: hidden;
-        /*display: none !important;*/
         transition: max-height 0.5s ease-in;
+      }
     }
-}
 
-
-.group.gm-expand {
-    .children {
+    &.gm-expand {
+      .children {
         max-height: 2000px;
         transition: max-height 0.5s ease-in;
+      }
     }
 }
 
@@ -65,6 +79,39 @@
 @checkbox-margin: 2px;
 
 .layer {
+    input[type="radio"],input[type="checkbox"] {
+      border-radius: 50%;
+      &::before {
+        content: "";
+        width: 0.65em;
+        height: 0.65em;
+        border-radius: 50%;
+        transform: scale(0);
+        transition: 120ms transform ease-in-out;
+        box-shadow: inset 1em 1em currentColor;
+      }
+
+      &:checked::before {
+        transform: scale(1);
+      }
+    }
+
+    input[type="checkbox"] {
+      border-radius: 10%;
+
+      &::before {
+        content: "\2714";
+        width: 0.5em;
+        height: 0.5em;
+        box-shadow: none;
+      }
+      &:checked::before {
+        transform: scale(1) translateY(-0.5em) translateX(-0.125em);
+      }
+    }
+
+    /* now use nicely scaled and color controllable css */
+
     .layer-label {
         cursor: pointer;
 
@@ -135,6 +182,22 @@
 }
 
 .catalog {
+    /* suppress browser rendering of checkboxes and radio buttons */
+    input[type="radio"],input[type="checkbox"] {
+      appearance: none;
+      display: inline-grid;
+      place-content: center;
+
+      font: inherit;
+      color: currentColor;
+
+      width: 1.0em;
+      height: 1.0em;
+      border: 0.15em solid currentColor;
+      margin: 0.5em;
+      margin-left: 0;
+    }
+
     .searchbox {
         position: absolute;
         width: 100%;

@@ -108,5 +108,7 @@
   "with-buffer" : "Avec tampon",
   "zoomto-extent" : "Zoomer sur l'étendue...",
   "zoomto-results" : "Zoomer sur le résultat",
-  "zoomto-tip" : "Zoomer sur la couche."
+  "zoomto-tip" : "Zoomer sur la couche.",
+  "show-layer": "Afficher le calque {{label}}",
+  "hide-layer": "Masquer le calque {{label}}"
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 import React from "react";
 import { connect } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { setLayerVisibility } from "../../actions/mapSource";
 import { isLayerOn } from "../../util";
@@ -76,24 +77,23 @@ const getNeighboringLayers = (catalog, layer) => {
   return allSrcs;
 };
 
-const LayerCheckbox = (props) => {
-  let classes = "checkbox icon";
-  if (props.layer.exclusive === true) {
-    classes = "radio icon";
-  }
-  if (props.on) {
-    classes += " on";
-  }
-
+const LayerCheckbox = ({ catalog, layer, on, onChange }) => {
+  const isExclusive = layer.exclusive === true;
+  const { t } = useTranslation();
+  const label = t(on ? "hide-layer" : "show-layer", { label: layer.label });
   return (
-    <i
-      className={classes}
-      onClick={() => {
-        if (props.layer.exclusive === true) {
-          const neighbors = getNeighboringLayers(props.catalog, props.layer);
-          props.onChange(!props.on, neighbors);
+    <input
+      className="layer-toggle icon"
+      type={isExclusive ? "radio" : "checkbox"}
+      checked={on}
+      aria-label={label}
+      title={label}
+      onChange={() => {
+        if (isExclusive) {
+          const neighbors = getNeighboringLayers(catalog, layer);
+          onChange(!on, neighbors);
         } else {
-          props.onChange(!props.on);
+          onChange(!on);
         }
       }}
     />

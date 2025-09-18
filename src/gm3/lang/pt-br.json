@@ -108,6 +108,8 @@
     "with-buffer" : "Com buffer",
     "zoomto-extent" : "Zoom para ...",
     "zoomto-results" : "Zoom para resultados",
-    "zoomto-tip" : "Zoom para toda a camada."
+    "zoomto-tip" : "Zoom para toda a camada.",
+    "show-layer": "Mostrar camada {{label}}",
+    "hide-layer": "Ocultar camada {{label}}"
   }
 
