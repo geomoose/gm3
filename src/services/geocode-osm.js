@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017, 2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,111 +23,109 @@
  */
 
 function OSMGeocoder(Application, options) {
-    /** Define the title of the service. */
-    this.title = options.title ? options.title : 'Search address';
+  /** Define the title of the service. */
+  this.title = options.title ? options.title : "Search address";
 
-    /** Title to show at the top of the results. */
-    this.resultsTitle = options.resultsTitle ? options.resultsTitle : 'Address search results';
+  /** Title to show at the top of the results. */
+  this.resultsTitle = options.resultsTitle
+    ? options.resultsTitle
+    : "Address search results";
 
-    /** There are no tools for the geocoder, just the search field. */
-    this.tools = {};
+  /** There are no tools for the geocoder, just the search field. */
+  this.tools = {};
 
-    /** Aaand the search field. */
-    this.fields = [{
-        name: 'address', type: 'text', label: 'Address'
-    }];
+  /** Aaand the search field. */
+  this.fields = [
+    {
+      name: "address",
+      type: "text",
+      label: "Address",
+    },
+  ];
 
-    /** Define the highlight layer */
-    this.targetLayer = options.targetLayer ? options.targetLayer : 'results/results';
+  /** Define the highlight layer */
+  this.targetLayer = options.targetLayer
+    ? options.targetLayer
+    : "results/results";
 
-    // default the map projection to web-mercator
-    this.mapProjection = options.mapProjection ? options.mapProjection : 'EPSG:3857';
+  /** This template is specified in HTML instead of referring to a
+   *  layer's set of named templates.  This also makes an assumption about the name
+   *  of the application (app), and therefore would need overridden in something
+   *  other than the demo application.
+   */
+  this.template = `
+    <div class="serach-results">
+      <div style="display: flex">
+        <div style="padding-right: 8px">
+          <i class="fa fa-search"></i>
+        </div>
+        <div style="flex: 1">
+          <a onClick="app.zoomTo({{ properties.lon }}, {{ properties.lat }}, 18)" class="zoomto-link">
+            {{ properties.display_name }}
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
 
-    /** This template is specified in HTML instead of referring to a
-     *  layer's set of named templates.  This also makes an assumption about the name
-     *  of the application (app), and therefore would need overridden in something
-     *  other than the demo application.
-     */
-    this.template = '<div class="search-result">' +
-                    '<a onClick="app.zoomTo({{ properties.lon }}, {{ properties.lat }}, 18)" class="zoomto-link">' +
-                        '<i class="fa fa-search"></i>' +
-                        '{{ properties.display_name }}' +
-                    '</a>' +
-                    '</div>';
+  this.resultsAsHtml = function (queryid, query) {
+    var html = "";
 
-    this.resultsAsHtml = function(queryid, query) {
-        var html = '';
+    // TODO: Handle errors from the GeoCoder service better.
+    if (true) {
+      // get the addresses from the results set.
+      html += Application.renderFeaturesWithTemplate(
+        query,
+        this.targetLayer,
+        this.template
+      );
+    }
 
-        // TODO: Handle errors from the GeoCoder service better.
-        if(true) {
-            // get the addresses from the results set.
-            html += Application.renderFeaturesWithTemplate(query, 'geocoder', this.template);
+    return html;
+  };
+
+  this.runQuery = function (queryId, query) {
+    const layer = this.targetLayer;
+    const params = new URLSearchParams({
+      format: "geojson",
+      q: query.fields[0].value,
+      limit: 20,
+    });
+
+    const url = `https://nominatim.openstreetmap.org/search?${params.toString()}`;
+    return fetch(url, {
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Geocoder request failed: ${response.status}`);
         }
-
-        return html;
-    };
-
-    this.runQuery = function(queryId, query) {
-        var osm_url = 'https://nominatim.openstreetmap.org/search/';
-        // boom kick this off.
-        var target_layer = this.targetLayer;
-        var map_proj = this.mapProjection;
-        gm3.util.xhr({
-            url: osm_url,
-            type: 'json',
-            data: {
-                format: 'json',
-                q: query.fields[0].value
+        return response.json();
+      })
+      .then((geojson) => ({
+        layer,
+        features: geojson.features.map((feature) => {
+          return {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              lon: feature.geometry.coordinates[0],
+              lat: feature.geometry.coordinates[1],
             },
-            success: function(results) {
-                // convert the results into GeoJSON features
-                var features = [];
-                for(var i = 0, ii = results.length; i < ii; i++) {
-                    var r = results[i];
-                    features.push({
-                        type: 'Feature',
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [parseFloat(r.lon), parseFloat(r.lat)]
-                        },
-                        properties: r
-                    });
-                }
+          };
+        }),
+      }));
+  };
 
-                // put the feature in map projection.
-                features = gm3.util.projectFeatures(features, 'EPSG:4326', map_proj);
-
-                // populate the results
-                Application.dispatch({
-                    id: queryId,
-                    type: 'MAP_QUERY_RESULTS',
-                    failed: false,
-                    // this is a bit of a cheat as there is no real 'geocoder' layer.
-                    // However, 'geocoder' is the path used to render the results.
-                    layer: 'geocoder', features: features
-                });
-
-                // mark the query as finished.
-                Application.dispatch({
-                    id: queryId,
-                    type: 'MAP_QUERY_FINISHED'
-                });
-
-                // remove features from the target_layer
-                Application.clearFeatures(target_layer);
-
-                if(features.length > 0) {
-                    Application.addFeatures(target_layer, features);
-                }
-            }
-        });
-    };
-
-    /** Query the OSM Geocoder Service/.
-     */
-    this.query = function(selection, fields) {
-        Application.dispatchQuery(this.name, selection, fields, ['geocoder']);
-    };
+  /** Query the OSM Geocoder Service
+   */
+  this.query = function (selection, fields) {
+    Application.dispatchQuery(this.name, selection, fields, []);
+  };
 }
 
-if(typeof(module) !== 'undefined') { module.exports = OSMGeocoder; }
+if (typeof module !== "undefined") {
+  module.exports = OSMGeocoder;
+}

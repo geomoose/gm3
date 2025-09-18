@@ -29,4 +29,7 @@ module.exports = {
     "prettier/prettier": "error",
     "camelcase": "warn",
   },
+  globals: {
+    "gm3": "readonly",
+  },
 };

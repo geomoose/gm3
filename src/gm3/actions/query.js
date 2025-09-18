@@ -112,12 +112,12 @@ export const setHotFilter = createAction("query/set-hot-filter");
 
 export const runQuery = createAsyncThunk(
   "query/run",
-  (arg, { getState, dispatch }) => {
+  (queryFunc, { getState, dispatch }) => {
     const state = getState();
     const queryDef = state.query.query;
     const mapSources = state.mapSources;
 
-    if (!queryDef.layers || queryDef.layers.length === 0) {
+    if ((!queryDef.layers || queryDef.layers.length === 0) && !queryFunc) {
       // if there are no layers defined, return
       //  a resolved query with a completely empty set.
       return new Promise((resolve) => resolve([]));
@@ -125,7 +125,7 @@ export const runQuery = createAsyncThunk(
 
     const layerQueries = queryDef.layers.map((layer) => {
       const mapSource = mapSources[getMapSourceName(layer)];
-      switch (mapSource.type) {
+      switch (mapSource?.type) {
         case "wms":
           return wmsGetFeatureInfoQuery(layer, state.map, mapSource, queryDef);
         case "wfs":
@@ -142,10 +142,17 @@ export const runQuery = createAsyncThunk(
       }
     });
 
+    // check for a query function
+    if (queryFunc) {
+      layerQueries.push(queryFunc("", queryDef));
+    }
+
     return Promise.all(layerQueries).then((allResults) => {
       const results = {};
       allResults.forEach((result) => {
-        results[result.layer] = result.features;
+        if (result) {
+          results[result.layer] = result.features;
+        }
       });
       dispatch(setUiHint("new-results"));
       return results;

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2024 Dan "Ducky" Little
+ * Copyright (c) 2016-2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,66 +29,77 @@
  *
  */
 function FindMeAction(Application, options) {
+  // allow the targetting of a layer, but default to the highlight layer
+  this.targetLayer = options.targetLayer
+    ? options.targetLayer
+    : "sketch/default";
 
-    // allow the targetting of a layer, but default to the highlight layer
-    this.targetLayer = options.targetLayer ? options.targetLayer : 'sketch/default';
+  // default the map projection to web-mercator
+  this.mapProjection = options.mapProjection
+    ? options.mapProjection
+    : "EPSG:3857";
 
-    // default the map projection to web-mercator
-    this.mapProjection = options.mapProjection ? options.mapProjection : 'EPSG:3857';
+  // Buffer is the distance in map coordinates to buffer around
+  //  the points when zooming to it's extent, defaults to 100m
+  this.buffer = options.buffer ? options.buffer : 100;
 
-    // Buffer is the distance in map coordinates to buffer around
-    //  the points when zooming to it's extent, defaults to 100m
-    this.buffer = options.buffer ? options.buffer : 100;
-
-    /** This function is called everytime there is an identify query.
-     *
-     *  @param selection contains a GeoJSON feature describing the
-     *                   geography to be used for the query.
-     *
-     *  @param fields    is an array containing any user-input
-     *                   given to the service.
-     */
-    this.run = function(selection, fields) {
-        if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              this.gotoPosition.bind(this),
-              (e) => { console.error(e); alert("Find Me: " + e.message); },
-              { enableHighAccuracy: true }
-            );
-        } else {
-            alert('Geolocation is not supported.');
-        }
+  /** This function is called everytime there is an identify query.
+   *
+   *  @param selection contains a GeoJSON feature describing the
+   *                   geography to be used for the query.
+   *
+   *  @param fields    is an array containing any user-input
+   *                   given to the service.
+   */
+  this.run = function (selection, fields) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        this.gotoPosition.bind(this),
+        (e) => {
+          console.error(e);
+          alert("Find Me: " + e.message);
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      alert("Geolocation is not supported.");
     }
+  };
 
-    this.gotoPosition = function(loc) {
-        var lat = loc.coords.latitude;
-        var lon = loc.coords.longitude;
-        var coord = [lon, lat];
+  this.gotoPosition = function (loc) {
+    const lat = loc.coords.latitude;
+    const lon = loc.coords.longitude;
 
-        // turn the coordinate into a fake feature
-        var fake_feature = {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: [lon, lat]
-            },
-            properties: {
-                label: 'Location'
-            }
-        };
+    // turn the coordinate into a fake feature
+    const fakeFeature = {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [lon, lat],
+      },
+      properties: {
+        label: "Location",
+      },
+    };
 
-        // put the feature in map projection.
-        var map_feature = gm3.util.projectFeatures([fake_feature], 'EPSG:4326', this.mapProjection)[0];
+    // put the feature in map projection.
+    const mapFeature = gm3.util.projectFeatures(
+      [fakeFeature],
+      "EPSG:4326",
+      this.mapProjection
+    )[0];
 
-        // mark the location in the highlight layer
-        Application.addFeatures(this.targetLayer, map_feature);
+    // mark the location in the highlight layer
+    Application.addFeatures(this.targetLayer, mapFeature);
 
-        var b = this.buffer;
-        var x = map_feature.geometry.coordinates[0],
-            y = map_feature.geometry.coordinates[1];
+    const b = this.buffer;
+    const x = mapFeature.geometry.coordinates[0],
+      y = mapFeature.geometry.coordinates[1];
 
-        Application.zoomToExtent([x - b, y - b, x + b, y + b], this.mapProjection);
-    }
+    Application.zoomToExtent([x - b, y - b, x + b, y + b], this.mapProjection);
+  };
 }
 
-if(typeof(module) !== 'undefined') { module.exports = FindMeAction; }
+if (typeof module !== "undefined") {
+  module.exports = FindMeAction;
+}

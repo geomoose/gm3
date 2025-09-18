@@ -54,16 +54,6 @@ const defaultState = {
   projection: "EPSG:3857",
 };
 
-/*
-function setConfigOptions(state, config) {
-    const mixin = {};
-    if (config.map && config.map.defaultUnits) {
-        mixin.selectionBufferUnits = config.map.defaultUnits;
-    }
-    return Object.assign({}, state, mixin);
-}
-*/
-
 const reducer = createReducer(defaultState, {
   [setView]: (state, { payload }) => {
     state.extent = null;
@@ -107,13 +97,5 @@ const reducer = createReducer(defaultState, {
     state.editTools = tools;
   },
 });
-
-/*
-export default function mapReducer(state = defaultState, action) {
-    switch(action.type) {
-        case 'CONFIG.SET':
-            return setConfigOptions(state, action.payload);
-};
-*/
 
 export default reducer;

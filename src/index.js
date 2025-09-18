@@ -28,81 +28,76 @@
  *
  */
 
-import Application from './gm3/application';
-import Catalog from './gm3/components/catalog';
-import Map from './gm3/components/map';
-import Toolbar from './gm3/components/toolbar';
-import ServiceManager from './gm3/components/serviceManager';
-import Favorites from './gm3/components/favorites';
-import VisibleLayers from './gm3/components/visibleLayers';
-import Grid from './gm3/components/grid';
-import Version from './gm3/components/version';
-import CoordinateDisplay from './gm3/components/coordinates';
-import MeasureTool from './gm3/components/measure';
-import PrintModal from './gm3/components/print/printModal';
-import JumpToExtent from './gm3/components/jumpToExtent';
-import BookmarkModal from './gm3/components/bookmark-modal';
+import Application from "./gm3/application";
+import Catalog from "./gm3/components/catalog";
+import Map from "./gm3/components/map";
+import Toolbar from "./gm3/components/toolbar";
+import ServiceManager from "./gm3/components/serviceManager";
+import Favorites from "./gm3/components/favorites";
+import VisibleLayers from "./gm3/components/visibleLayers";
+import Grid from "./gm3/components/grid";
+import Version from "./gm3/components/version";
+import CoordinateDisplay from "./gm3/components/coordinates";
+import MeasureTool from "./gm3/components/measure";
+import PrintModal from "./gm3/components/print/printModal";
+import JumpToExtent from "./gm3/components/jumpToExtent";
+import BookmarkModal from "./gm3/components/bookmark-modal";
 
-import LocalStorageTracker from './gm3/trackers/localStorage';
-import HashTracker from './gm3/trackers/hash';
+import LocalStorageTracker from "./gm3/trackers/localStorage";
+import HashTracker from "./gm3/trackers/hash";
 
-import * as util from './gm3/util';
-import * as jsts from './gm3/jsts';
+import * as util from "./gm3/util";
+import * as jsts from "./gm3/jsts";
 
-import proj4 from 'proj4';
-
-import proj from 'ol/proj';
+import proj4 from "proj4";
 
 util.configureProjections(proj4);
 
 var components = {
-    Catalog: Catalog,
-    Map: Map,
-    Toolbar: Toolbar,
-    ServiceManager: ServiceManager,
-    Favorites: Favorites,
-    VisibleLayers: VisibleLayers,
-    Grid: Grid,
-    Version: Version,
-    CoordinateDisplay: CoordinateDisplay,
-    MeasureTool: MeasureTool,
-    PrintModal: PrintModal,
-    JumpToExtent: JumpToExtent,
-    BookmarkModal,
+  Catalog: Catalog,
+  Map: Map,
+  Toolbar: Toolbar,
+  ServiceManager: ServiceManager,
+  Favorites: Favorites,
+  VisibleLayers: VisibleLayers,
+  Grid: Grid,
+  Version: Version,
+  CoordinateDisplay: CoordinateDisplay,
+  MeasureTool: MeasureTool,
+  PrintModal: PrintModal,
+  JumpToExtent: JumpToExtent,
+  BookmarkModal,
 };
 
 var trackers = {
-    LocalStorageTracker,
-    HashTracker,
+  LocalStorageTracker,
+  HashTracker,
 };
 
-export {
-    Application,
-    components,
-    trackers,
-    util,
-    jsts,
-};
-
+export { Application, components, trackers, util, jsts };
 
 // fix for dynamic import() path resolution
 function setPublicPath() {
-    var scriptTags = document.getElementsByTagName('script');
-    var distPath = '/';
-    for (var i = 0; i < scriptTags.length; i++) {
-        var src = scriptTags[i].getAttribute('src');
-        if (src) {
-            if (src.indexOf('geomoose.js') >= 0 || src.indexOf('geomoose.min.js') >= 0) {
-                distPath = src.split('/').slice(0, -1).join('/');
-            }
-        }
+  var scriptTags = document.getElementsByTagName("script");
+  var distPath = "/";
+  for (var i = 0; i < scriptTags.length; i++) {
+    var src = scriptTags[i].getAttribute("src");
+    if (src) {
+      if (
+        src.indexOf("geomoose.js") >= 0 ||
+        src.indexOf("geomoose.min.js") >= 0
+      ) {
+        distPath = src.split("/").slice(0, -1).join("/");
+      }
     }
+  }
 
-    // ensure dist path ends in a slash.
-    if (distPath.slice(-1) !== '/') {
-        distPath += '/';
-    }
-    __webpack_public_path__ = distPath;
+  // ensure dist path ends in a slash.
+  if (distPath.slice(-1) !== "/") {
+    distPath += "/";
+  }
+  // eslint-disable-next-line
+  __webpack_public_path__ = distPath;
 }
 
 setPublicPath();
