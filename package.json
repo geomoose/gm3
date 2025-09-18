@@ -88,7 +88,7 @@
     "@testing-library/react": "^13.3.0",
     "@turf/boolean-intersects": "^6.5.0",
     "babel-jest": "^27.3.1",
-    "jest-environment-jsdom": "^28.1.1",
+    "jest-environment-jsdom": "^30.1.1",
     "prop-types": "^15.8.1",
     "react-virtuoso": "^2.16.6",
     "url": "^0.11.0"
