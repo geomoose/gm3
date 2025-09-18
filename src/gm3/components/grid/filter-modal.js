@@ -208,23 +208,48 @@ class ListFilterModal extends FilterModal {
       >
         <div
           className="checkbox"
-          onClick={() => toggleAll()}
-          style={{ marginBottom: "4px" }}
+          style={{
+            marginBottom: "4px",
+            display: "flex",
+            alignItems: "center",
+            padding: "2px",
+          }}
         >
-          <i className={`icon checkbox ${isAllSelected ? "on" : ""}`} />
-          {isAllSelected ? "Select none" : "Select all"}
+          <input
+            type="checkbox"
+            checked={isAllSelected}
+            onChange={() => {
+              toggleAll();
+            }}
+          />
+          <span
+            onClick={() => {
+              toggleAll();
+            }}
+          >
+            {isAllSelected ? "Select none" : "Select all"}
+          </span>
         </div>
         <div style={{ flex: 1, overflow: "auto" }}>
           {this.state.orderedValues.map((value) => (
             <div
+              style={{ display: "flex", alignItems: "center", padding: "2px" }}
               key={isEmpty(value) ? "(empty)" : value}
-              className="checkbox"
-              onClick={() => {
-                toggleSelected(value);
-              }}
             >
-              <i className={`icon checkbox ${isChecked(value) ? "on" : ""}`} />
-              {isEmpty(value) ? "(empty)" : value}
+              <input
+                type="checkbox"
+                checked={isChecked(value)}
+                onChange={() => {
+                  toggleSelected(value);
+                }}
+              />
+              <span
+                onClick={() => {
+                  toggleSelected(value);
+                }}
+              >
+                {isEmpty(value) ? "(empty)" : value}
+              </span>
             </div>
           ))}
         </div>
