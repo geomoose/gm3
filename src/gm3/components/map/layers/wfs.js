@@ -31,6 +31,10 @@ import * as proj from "ol/proj";
 
 import { featureToJson, transformFeatures } from "../../../util";
 
+export function getQueryProjection(mapSource, mapProjection) {
+  return mapSource.config?.srs || mapSource.srcProj || mapProjection;
+}
+
 function chainFilters(operator, filters) {
   let chainedFilters = null;
   if (filters.length > 1) {
@@ -99,13 +103,10 @@ export function buildWfsQuery(
 ) {
   const geomField = getGeometryName(mapSource);
 
-  // the internal storage mechanism requires features
-  //  returned from the query be stored in 4326 and then
-  //  reprojected on render.
-  let queryProjection = mapProjection;
-  if (mapSource.wgs84Hack) {
-    queryProjection = new proj.get("EPSG:4326");
-  }
+  // The WFS source may be in a different projection than the map
+  const queryProjection = new proj.get(
+    getQueryProjection(mapSource, mapProjection)
+  );
 
   const filters = [];
   if (query.selection && query.selection.length > 0) {
@@ -169,6 +170,7 @@ export function wfsGetFeatures(
     mapProjection,
     outputFormat
   );
+  const queryProjection = getQueryProjection(mapSource, mapProjection);
 
   // TODO: check for params and properly join to URL!
 
@@ -181,6 +183,8 @@ export function wfsGetFeatures(
       const gmlFormat = new GML2Format();
 
       let features = gmlFormat.readFeatures(response).map((feature) => {
+        feature.getGeometry().transform(queryProjection, "EPSG:4326");
+
         const jsonFeature = featureToJson(feature);
         jsonFeature.properties = {
           ...jsonFeature.properties,
@@ -202,7 +206,7 @@ function wfsTransact(mapSource, mapProjection, inFeatures) {
   const options = {
     featurePrefix: typeParts[0],
     featureType: typeParts[1],
-    srsName: config.srs || "EPSG:3857",
+    srsName: getQueryProjection(mapSource, mapProjection),
   };
 
   if (config["namespace-uri"]) {
