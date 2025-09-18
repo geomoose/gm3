@@ -61,7 +61,7 @@ const ToolbarDrawer = ({ label, tip, tools, services }) => {
         className="drawer tool"
         title={drawerTip}
         onClick={() => {
-          setSticky(true);
+          setSticky(!sticky);
         }}
       >
         <span className="drawer icon"></span>
