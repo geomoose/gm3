@@ -186,12 +186,19 @@ class Map extends React.Component {
       case "usng":
         usngLayer.updateLayer(this.map, olLayer, mapSource);
         break;
+      case "geoparquet":
       case "blank":
         // this is a non-op, blank will be blank for all time.
         break;
       default:
         console.info("Unhandled map-source type: " + mapSource.type);
     }
+  }
+
+  backloadFeatures(mapSource) {
+    return (features) => {
+      this.props.setFeatures(mapSource.name, features);
+    };
   }
 
   /** Create an OL Layers based on a GM MapSource definition
@@ -215,6 +222,12 @@ class Map extends React.Component {
       case "ags-vector":
       case "geojson":
         return vectorLayer.createLayer(mapSource);
+      case "geoparquet":
+        return vectorLayer.createLayer(
+          mapSource,
+          undefined,
+          this.backloadFeatures(mapSource)
+        );
       case "bing":
         return bingLayer.createLayer(mapSource);
       case "usng":
@@ -591,7 +604,8 @@ class Map extends React.Component {
 
         if (
           isSelection ||
-          ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0
+          ["wfs", "vector", "geojson", "geoparquet"].indexOf(mapSource.type) >=
+            0
         ) {
           const layers = isSelection
             ? [this.selectionLayer]

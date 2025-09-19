@@ -87,6 +87,20 @@
         </layer>
     </map-source>
 
+    <map-source name="parquet-parcels" type="geoparquet">
+      <url>./parcels.geoparquet</url>
+      <layer name="default" title="Parquet Parcels">
+        <style><![CDATA[
+          {
+            "line-color": "#ff0000",
+            "line-width": 3
+          }
+        ]]></style>
+
+        <template name="identify" auto="true" />
+      </layer>
+    </map-source>
+
     <map-source name="vector-parcels" type="mapserver-wfs">
         <file>demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels"/>
@@ -492,6 +506,9 @@
 
                 <layer title="Vector Parcels" src="vector-parcels/parcels">
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
+                </layer>
+
+                <layer title="GeoParquet Parcels" src="parquet-parcels/default">
                 </layer>
 
                 <layer src="parcels/parcels" metadata="true" legend-toggle="true" tip="Sample land records" refresh="10">
