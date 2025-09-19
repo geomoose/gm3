@@ -1,4 +1,3 @@
-// import { intersects as bboxIntersects } from 'ol/extent';
 import intersects from "@turf/boolean-intersects";
 
 export const vectorFeatureQuery = (layer, mapState, mapSource, query) => {
