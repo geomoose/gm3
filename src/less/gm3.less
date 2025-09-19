@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -106,4 +106,49 @@ button {
     border-radius: 8px;
     padding: 12px;
     background-color: #d5d0d0;
+}
+
+input[type="radio"],input[type="checkbox"] {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+
+  font: inherit;
+  color: currentColor;
+
+  width: 1.0em;
+  height: 1.0em;
+  border: 0.15em solid currentColor;
+  margin: 0.5em;
+  margin-left: 0;
+}
+
+input[type="radio"],input[type="checkbox"] {
+  border-radius: 50%;
+  &::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em currentColor;
+  }
+
+  &:checked::before {
+    transform: scale(1);
+  }
+}
+
+input[type="checkbox"] {
+  border-radius: 10%;
+  &::before {
+    content: "\2714";
+    width: 0.5em;
+    height: 0.5em;
+    box-shadow: none;
+  }
+  &:checked::before {
+    transform: scale(1) translateY(-0.5em) translateX(-0.125em);
+  }
 }

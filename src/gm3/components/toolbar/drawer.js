@@ -26,7 +26,7 @@
  *
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import ToolbarButton from "./button";
@@ -36,24 +36,47 @@ const ToolbarDrawer = ({ label, tip, tools, services }) => {
   const { t } = useTranslation();
   const drawerLabel = t(label);
   const drawerTip = !!tip ? t(tip) : drawerLabel;
+
+  const [sticky, setSticky] = useState(false);
+  const className = sticky ? "drawer sticky" : "drawer";
+
+  useEffect(() => {
+    const unstick = function () {
+      setSticky(false);
+    };
+    if (sticky) {
+      document.addEventListener("mouseup", unstick);
+    }
+    return () => {
+      if (sticky) {
+        unstick();
+        document.removeEventListener("mouseup", unstick);
+      }
+    };
+  }, [sticky]);
+
   return (
-    <div className="drawer">
-      <button className="drawer tool" title={drawerTip}>
+    <div className={className}>
+      <button
+        className="drawer tool"
+        title={drawerTip}
+        onClick={() => {
+          setSticky(!sticky);
+        }}
+      >
         <span className="drawer icon"></span>
         <span className="label">{drawerLabel}</span>
       </button>
       <div className="drawer-contents">
-        {tools.map((tool, i) => {
-          return (
-            <ToolbarButton
-              key={`btn${i}`}
-              tool={tool}
-              serviceDef={
-                tool.actionType === "service" ? services[tool.name] : undefined
-              }
-            />
-          );
-        })}
+        {tools.map((tool, i) => (
+          <ToolbarButton
+            key={`btn${i}`}
+            tool={tool}
+            serviceDef={
+              tool.actionType === "service" ? services[tool.name] : undefined
+            }
+          />
+        ))}
       </div>
     </div>
   );

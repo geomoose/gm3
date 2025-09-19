@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,12 +31,13 @@ export const Tool = ({ tip, iconClass, onClick, children, active }) => {
   const { t } = useTranslation();
   return (
     <React.Fragment>
-      <i
-        role="button"
-        className={(active ? "active icon " : "icon ") + iconClass}
+      <button
         onClick={onClick}
         title={t(tip)}
-      ></i>
+        className={active ? "active" : ""}
+      >
+        <i className={"icon " + iconClass}></i>
+      </button>
       {children}
     </React.Fragment>
   );

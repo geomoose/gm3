@@ -45,17 +45,16 @@ export function isFavorite(mapSources, layer) {
 
 class LayerFavorite extends React.Component {
   render() {
-    const isFavoriteLayer = isFavorite(this.props.mapSources, this.props.layer);
-
-    let classes = "favorite icon";
-    if (!isFavoriteLayer) {
-      classes += " not";
-    }
-
+    const isFavoriteLayer = !!isFavorite(
+      this.props.mapSources,
+      this.props.layer
+    );
     return (
-      <i
-        className={classes}
-        onClick={() => {
+      <input
+        type="checkbox"
+        checked={isFavoriteLayer}
+        className="favorite icon"
+        onChange={() => {
           this.props.onToggleFavorite(this.props.layer, !isFavoriteLayer);
         }}
       />

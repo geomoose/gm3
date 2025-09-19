@@ -28,6 +28,30 @@
 
 .gm-grid .toolbar {
     background-color: #eee;
+
+    padding: 2px;
+
+    button {
+      background: none;
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
+}
+
+.gm-grid {
+  th {
+    button {
+      background: none;
+      padding: 0;
+      margin: 0;
+      border: none;
+
+      .icon {
+        display: inline-block;
+      }
+    }
+  }
 }
 
 .grid-display {

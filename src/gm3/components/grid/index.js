@@ -108,28 +108,32 @@ class Grid extends React.Component {
           sortClasses += this.state.sortAsc ? " asc" : " desc";
         }
         sortTool = (
-          <i
+          <button
+            className="tool"
             title={sortTitle}
             onClick={() => {
               this.nextSort(columnDef);
             }}
-            className={sortClasses}
-          ></i>
+          >
+            <i className={sortClasses}></i>
+          </button>
         );
       }
 
       if (columnDef.filter) {
         // TODO: Get a translation friendly title attribute
         filterControl = (
-          <i
+          <button
+            className="tool"
             title="Filter"
             onClick={() => {
               this.setState({
                 filterModal: columnDef,
               });
             }}
-            className="filter icon"
-          />
+          >
+            <i className="filter icon" />
+          </button>
         );
       }
 
@@ -361,22 +365,21 @@ class Grid extends React.Component {
           />
         )}
         <div className="toolbar">
-          <span
+          <button
             onClick={() => {
               this.resultsAsCSV(gridColumns, features);
             }}
-            className={"tool download"}
             title={this.props.t("grid-download-csv")}
           >
             <i className="icon download"></i>
-          </span>
-          <span
+          </button>
+          <button
             onClick={toggleGrid}
             className={"tool " + minBtnClass}
             title={this.props.t("grid-min-max")}
           >
             <i className={"icon " + minBtnClass}></i>
-          </span>
+          </button>
         </div>
 
         <TableVirtuoso

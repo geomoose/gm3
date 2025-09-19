@@ -35,24 +35,23 @@
       display: flex;
       align-items: center;
 
-        input[type="checkbox"] {
-          border: none;
+      input[type="checkbox"] {
+        border: none;
 
-          &::before {
-            content: "\25B8";
-            content: "\2b9e";
-            transition: 120ms transform ease-in-out;
-            transform: rotate(0deg);
-          }
-
-          &:checked::before {
-            transform: rotate(90deg);
-          }
+        &::before {
+          content: "\2b9e";
+          transition: 120ms transform ease-in-out;
+          transform: rotate(0deg) translateY(-0.5em) translateX(-0.125em);
         }
 
-        &:hover {
-            background-color: #eee;
+        &:checked::before {
+          transform: rotate(90deg) translateY(-0.5em) translateX(-0.125em);
         }
+      }
+
+      &:hover {
+          background-color: #eee;
+      }
     }
 
     .layer {
@@ -63,14 +62,16 @@
       .children {
         max-height: 0 !important;
         overflow: hidden;
-        transition: max-height 0.5s ease-in;
+        visibility: hidden !important;
+        transition: max-height 0.5s ease-in, visibility 0s linear 0.5s;
       }
     }
 
     &.gm-expand {
       .children {
         max-height: 2000px;
-        transition: max-height 0.5s ease-in;
+        visibility: visible;
+        transition: max-height 0.5s ease-in, visibility 0s linear 0;
       }
     }
 }
@@ -79,38 +80,13 @@
 @checkbox-margin: 2px;
 
 .layer {
-    input[type="radio"],input[type="checkbox"] {
-      border-radius: 50%;
-      &::before {
-        content: "";
-        width: 0.65em;
-        height: 0.65em;
-        border-radius: 50%;
-        transform: scale(0);
-        transition: 120ms transform ease-in-out;
-        box-shadow: inset 1em 1em currentColor;
-      }
-
-      &:checked::before {
-        transform: scale(1);
-      }
+    /* unstyle the tool buttons */
+    button {
+      margin: 0;
+      padding: 0;
+      background: none;
+      border: none;
     }
-
-    input[type="checkbox"] {
-      border-radius: 10%;
-
-      &::before {
-        content: "\2714";
-        width: 0.5em;
-        height: 0.5em;
-        box-shadow: none;
-      }
-      &:checked::before {
-        transform: scale(1) translateY(-0.5em) translateX(-0.125em);
-      }
-    }
-
-    /* now use nicely scaled and color controllable css */
 
     .layer-label {
         cursor: pointer;
@@ -168,6 +144,11 @@
             }
         }
     }
+
+    input[type="checkbox"].favorite {
+      color: @favorite-star-color;
+      border: none;
+    }
 }
 
 .layer.inline-tools {
@@ -182,22 +163,6 @@
 }
 
 .catalog {
-    /* suppress browser rendering of checkboxes and radio buttons */
-    input[type="radio"],input[type="checkbox"] {
-      appearance: none;
-      display: inline-grid;
-      place-content: center;
-
-      font: inherit;
-      color: currentColor;
-
-      width: 1.0em;
-      height: 1.0em;
-      border: 0.15em solid currentColor;
-      margin: 0.5em;
-      margin-left: 0;
-    }
-
     .searchbox {
         position: absolute;
         width: 100%;

@@ -39,14 +39,6 @@
     margin-bottom: 5px;
     padding-left: 5px;
 
-    .radio-icon {
-        margin-right: 5px;
-        .fa;
-        &:before {
-            content: @fa-var-circle-o;
-        }
-    }
-
     select {
       margin-left: 10px;
     }
@@ -60,17 +52,9 @@
     }
 }
 
-.radio-option.selected,.draw-tool.selected {
-    .radio-icon {
-        &:before {
-            content: @fa-var-check-circle-o;
-        }
-    }
-}
-
-
 .service-manager {
     .service-form {
+
       .settings-header {
           background-color: #CFE7B3;
           padding: 5px;
@@ -179,6 +163,14 @@
     }
 
     .measure-tool {
+      .measure-units {
+        padding: 4px;
+
+        .unit-option {
+          cursor: pointer;
+        }
+      }
+
       .gm-grid {
         padding-right: 4px;
 

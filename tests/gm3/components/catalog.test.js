@@ -116,7 +116,7 @@ describe("Catalog component tests", () => {
   });
 
   it("toggles a favorite", function () {
-    fireEvent.click(catalog.querySelector("i.favorite.icon"));
+    fireEvent.click(catalog.querySelector(".favorite"));
     expect(store.getState().mapSources.test.layers[0].favorite).toBe(true);
   });
 

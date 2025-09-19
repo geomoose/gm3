@@ -113,20 +113,29 @@ class DrawTool extends React.Component {
     }
 
     return (
-      <div
-        key={"draw-tool-" + gtype}
-        className={toolClass}
-        onClick={() => {
-          this.props.onChange(gtype, this.state.selectLayer);
-        }}
-      >
-        <i className="radio-icon"></i>
-        {this.props.t(toolLabel)}
-        {selectOptions}
+      <div key={"draw-tool-" + gtype} className={toolClass}>
+        <input
+          type="radio"
+          name="draw-tool"
+          checked={selected}
+          onChange={() => {
+            this.props.onChange(gtype, this.state.selectLayer);
+          }}
+        />
+        <span
+          onClick={() => {
+            this.props.onChange(gtype, this.state.selectLayer);
+          }}
+        >
+          {this.props.t(toolLabel)}
+          {selectOptions}
 
-        {selected && this.props.i18n.exists(helperText) && (
-          <div className="helper-text info-box">{this.props.t(helperText)}</div>
-        )}
+          {selected && this.props.i18n.exists(helperText) && (
+            <div className="helper-text info-box">
+              {this.props.t(helperText)}
+            </div>
+          )}
+        </span>
       </div>
     );
   }

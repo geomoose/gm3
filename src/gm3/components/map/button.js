@@ -1,16 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { withTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
-const MapButton = ({ label, icon, onClick, t, index, disabled }) => {
+const MapButton = ({ label, icon, onClick, index, disabled }) => {
+  const { t } = useTranslation();
   return (
-    <div
-      className={`map-button fade-in ${index} ${disabled ? "disabled" : ""}`}
+    <button
+      disabled={disabled}
+      className={`map-button fade-in ${index}`}
       title={t(label)}
       onClick={onClick}
     >
       <i className={icon} />
-    </div>
+    </button>
   );
 };
 
@@ -27,9 +29,8 @@ MapButton.propTypes = {
   label: PropTypes.string,
   icon: PropTypes.string,
   onClick: PropTypes.func,
-  t: PropTypes.func,
   index: PropTypes.number,
   disabled: PropTypes.bool,
 };
 
-export default withTranslation()(MapButton);
+export default MapButton;
