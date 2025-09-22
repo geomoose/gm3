@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017, 2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,18 @@
  * SOFTWARE.
  */
 
-@favorite-star-color: #29B2FF;
+@favorite-star-color: #29b2ff;
 
 .group {
-    .group {
-        padding-left: 20px;
-    }
+  .group {
+    padding-left: 20px;
+  }
 
-    .group-label {
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
+  .group-label {
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 
       input[type="checkbox"] {
         /* force fontawesome for the checkbox */
@@ -57,145 +57,159 @@
         }
       }
 
-      &:hover {
-          background-color: #eee;
+      &:checked::before {
+        transform: rotate(90deg) translateY(-0.5em) translateX(-0.125em);
       }
     }
 
-    .layer {
-        padding-left: 20px;
+    &:hover {
+      background-color: #eee;
     }
+  }
 
-    &.gm-collapse {
-      .children {
-        max-height: 0 !important;
-        overflow: hidden;
-        visibility: hidden !important;
-        transition: max-height 0.5s ease-in, visibility 0s linear 0.5s;
-      }
-    }
+  .layer {
+    padding-left: 20px;
+  }
 
-    &.gm-expand {
-      .children {
-        max-height: 2000px;
-        visibility: visible;
-        transition: max-height 0.5s ease-in, visibility 0s linear 0;
-      }
+  &.gm-collapse {
+    .children {
+      max-height: 0 !important;
+      overflow: hidden;
+      visibility: hidden !important;
+      transition:
+        max-height 0.5s ease-in,
+        visibility 0s linear 0.5s;
     }
+  }
+
+  &.gm-expand {
+    .children {
+      max-height: 2000px;
+      visibility: visible;
+      transition:
+        max-height 0.5s ease-in,
+        visibility 0s linear 0;
+    }
+  }
 }
 
 @checkbox-width: 20px;
 @checkbox-margin: 2px;
 
 .layer {
-    /* unstyle the tool buttons */
-    button {
-      margin: 0;
-      padding: 0;
-      background: none;
-      border: none;
+  /* unstyle the tool buttons */
+  button {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+  }
+
+  .layer-label {
+    cursor: pointer;
+
+    .checkbox {
+      margin: @checkbox-margin;
+      width: @checkbox-width;
     }
+  }
 
-    .layer-label {
-        cursor: pointer;
+  .layer-tools,
+  .catalog-legend {
+    padding-left: (@checkbox-width + @checkbox-margin * 2);
+  }
 
-        .checkbox {
-            margin: @checkbox-margin;
-            width: @checkbox-width;
-        }
+  .metadata.icon,
+  .favorite.icon,
+  .refresh.icon,
+  .checkbox.icon {
+    font-size: 110%;
+  }
+
+  .favorite.icon {
+    margin-right: 0.25em;
+  }
+
+  .metadata.icon,
+  .refresh.icon {
+    margin-right: 0.25em;
+    margin-left: 0.25em;
+  }
+
+  &.out-of-resolution {
+    color: #aaa;
+    font-style: italic;
+  }
+
+  .layer-tools {
+    .icon {
+      color: #333;
+      font-size: 20px;
+      width: 28px;
+      height: 28px;
+      border-radius: 14px;
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      margin-right: 4px;
+      margin-bottom: 4px;
+
+      &:hover {
+        box-shadow: 0 0 1px 1px #a09999;
+      }
+
+      &.active {
+        box-shadow: 0 0 1px 1px #a09999;
+        background-color: rgba(160, 153, 153, 0.2);
+      }
     }
+  }
 
-    .layer-tools, .catalog-legend {
-        padding-left: (@checkbox-width + @checkbox-margin * 2);
-    }
-
-    .metadata.icon,.favorite.icon,.refresh.icon,.checkbox.icon {
-        font-size: 110%;
-    }
-
-    .favorite.icon {
-        margin-right: .25em;
-    }
-
-    .metadata.icon, .refresh.icon {
-        margin-right: .25em;
-        margin-left: .25em;
-    }
-
-    &.out-of-resolution {
-        color: #aaa;
-        font-style: italic;
-    }
-
-    .layer-tools {
-        .icon {
-            color: #333;
-            font-size: 20px;
-            width: 28px;
-            height: 28px;
-            border-radius: 14px;
-
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-
-            margin-right: 4px;
-            margin-bottom: 4px;
-
-            &:hover {
-                box-shadow: 0 0 1px 1px #a09999;
-            }
-
-            &.active {
-                box-shadow: 0 0 1px 1px #a09999;
-                background-color: rgba(160, 153, 153, 0.2);
-            }
-        }
-    }
-
-    input[type="checkbox"].favorite {
-      color: @favorite-star-color;
-      border: none;
-    }
+  input[type="checkbox"].favorite {
+    color: @favorite-star-color;
+    border: none;
+  }
 }
 
 .layer.inline-tools {
-    .layer-label {
-        display: inline-block;
-    }
+  .layer-label {
+    display: inline-block;
+  }
 
-    .layer-tools {
-        padding-left: 6px;
-        display: inline-block;
-    }
+  .layer-tools {
+    padding-left: 6px;
+    display: inline-block;
+  }
 }
 
 .catalog {
-    .searchbox {
-        position: absolute;
-        width: 100%;
-        top: 0;
-        left: 0;
+  .searchbox {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
 
-        text-align: center;
+    text-align: center;
 
-        input {
-            padding: 4px;
-            margin: 4px;
-            text-align: left;
-            width: 85%;
-            height: 20px;
-        }
+    input {
+      padding: 4px;
+      margin: 4px;
+      text-align: left;
+      width: 85%;
+      height: 20px;
     }
+  }
 
-    a.metadata {
-        color: black;
-    }
+  a.metadata {
+    color: black;
+  }
 }
 
 .catalog.searchable {
-    padding-top: 40px;
-    padding-left: 4px;
+  padding-top: 40px;
+  padding-left: 4px;
 }
 
 .catalog.favorites.flat {
@@ -211,21 +225,19 @@
  ***/
 
 .catalog.flat {
-    .group {
-        padding-left: 0px;
+  .group {
+    padding-left: 0px;
 
-        .group-label {
-            display: none;
-        }
-
-        .children {
-            max-height: 2000px !important;
-        }
-
-        .layer {
-            padding-left: 0px;
-        }
+    .group-label {
+      display: none;
     }
 
-}
+    .children {
+      max-height: 2000px !important;
+    }
 
+    .layer {
+      padding-left: 0px;
+    }
+  }
+}
