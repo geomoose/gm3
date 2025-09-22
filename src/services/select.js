@@ -32,14 +32,10 @@ function SelectService(Application, options) {
   this.title = options.title ? options.title : "Select";
 
   /** Title to show at the top of the results. */
-  this.resultsTitle = options.resultsTitle
-    ? options.resultsTitle
-    : "Select Results";
+  this.resultsTitle = options.resultsTitle ? options.resultsTitle : "Select Results";
 
   /** Header template for rendering before features. */
-  this.headerTemplate = options.headerTemplate
-    ? options.headerTemplate
-    : "@select-header";
+  this.headerTemplate = options.headerTemplate ? options.headerTemplate : "@select-header";
 
   /** Template to use for rendering returned features. */
   this.template = options.template ? options.template : "@select";
@@ -48,17 +44,13 @@ function SelectService(Application, options) {
   this.showGrid = options.showGrid !== undefined ? options.showGrid : true;
 
   /** Footer template for rendering before features. */
-  this.footerTemplate = options.footerTemplate
-    ? options.footerTemplate
-    : "@select-footer";
+  this.footerTemplate = options.footerTemplate ? options.footerTemplate : "@select-footer";
 
   /** Name will be set by the application when the service is registered. */
   this.name = "";
 
   /** Define the highlight layer */
-  this.highlightPath = options.highlightPath
-    ? options.highlightPath
-    : "highlight/highlight";
+  this.highlightPath = options.highlightPath ? options.highlightPath : "highlight/highlight";
 
   /** Limit the number of selection tools available */
   this.tools = options.tools
@@ -102,12 +94,7 @@ function SelectService(Application, options) {
         // ensure that the layer is visible to prevent confusion.
         requireVisible: true,
         // but require it have a select template.
-        withTemplate: [
-          "select",
-          "select-header",
-          "select-grid-columns",
-          "gridColumns",
-        ],
+        withTemplate: ["select", "select-header", "select-grid-columns", "gridColumns"],
       },
     },
   ];
@@ -116,8 +103,7 @@ function SelectService(Application, options) {
   this.fieldsFirst = true;
 
   /** When defined, label the draw tools */
-  this.drawToolsLabel =
-    options.drawToolsLabel !== undefined ? options.drawToolsLabel : "Using";
+  this.drawToolsLabel = options.drawToolsLabel !== undefined ? options.drawToolsLabel : "Using";
 
   /** Alow shapes to be buffered. */
   this.bufferAvailable = true;
@@ -137,7 +123,7 @@ function SelectService(Application, options) {
       // check which templates should try and load
       var templates = [this.template];
       if (this.showGrid) {
-        const templateName = !!this.alias ? this.alias : this.name;
+        const templateName = this.alias ? this.alias : this.name;
         templates.push("@" + templateName + "-grid-columns");
         templates.push("@" + templateName + "-grid-row");
         templates.push("@gridColumns");
@@ -145,13 +131,7 @@ function SelectService(Application, options) {
       }
 
       // dispatch the query against on the query layer!
-      Application.dispatchQuery(
-        this.name,
-        selection,
-        [],
-        [queryLayer],
-        templates
-      );
+      Application.dispatchQuery(this.name, selection, [], [queryLayer], templates);
     } else {
       // throw up this handy dialog.
       var msg = "A selection geometry is required for this query.";
@@ -184,11 +164,7 @@ function SelectService(Application, options) {
 
       // check to see that the layer has results and features were returned.
       if (query.results[path]) {
-        html += Application.renderFeaturesWithTemplate(
-          query,
-          path,
-          this.template
-        );
+        html += Application.renderFeaturesWithTemplate(query, path, this.template);
       }
 
       // and footer contents.

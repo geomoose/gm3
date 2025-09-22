@@ -37,9 +37,7 @@ const getAllChildLayers = (catalog, id, found = []) => {
       for (let i = 0, ii = node.children.length; i < ii; i++) {
         const child = catalog[node.children[i]];
         if (child.children) {
-          found = found.concat(
-            getAllChildLayers(catalog, node.children[i], found)
-          );
+          found = found.concat(getAllChildLayers(catalog, node.children[i], found));
         } else {
           found = found.concat([child]);
         }

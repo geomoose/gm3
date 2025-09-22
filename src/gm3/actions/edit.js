@@ -24,24 +24,18 @@
 
 import { createAction } from "@reduxjs/toolkit";
 
-export const setEditFeature = createAction(
-  "editor/set-feature",
-  (feature, isNew = false) => ({
-    payload: {
-      feature,
-      isNew,
-    },
-  })
-);
+export const setEditFeature = createAction("editor/set-feature", (feature, isNew = false) => ({
+  payload: {
+    feature,
+    isNew,
+  },
+}));
 
 export const finishEditing = createAction("editor/finish-editing");
 
-export const removeFeature = createAction(
-  "editor/remove-feature",
-  (source, feature) => ({
-    payload: {
-      feature,
-      source,
-    },
-  })
-);
+export const removeFeature = createAction("editor/remove-feature", (source, feature) => ({
+  payload: {
+    feature,
+    source,
+  },
+}));

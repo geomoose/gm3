@@ -34,9 +34,7 @@ function IdentifyService(Application, options) {
   this.title = options.title ? options.title : "Identify";
 
   /** Title to show at the top of the results. */
-  this.resultsTitle = options.resultsTitle
-    ? options.resultsTitle
-    : "Identify Results";
+  this.resultsTitle = options.resultsTitle ? options.resultsTitle : "Identify Results";
 
   /** Template to use for rendering returned features. */
   this.template = options.template ? options.template : "@identify";
@@ -92,18 +90,9 @@ function IdentifyService(Application, options) {
     //  would be called by the service tab.
 
     if (!selection || selection.length === 0) {
-      Application.alert(
-        "identify-point-required",
-        "A point is required for this query!"
-      );
+      Application.alert("identify-point-required", "A point is required for this query!");
     } else if (visibleLayers.length > 0) {
-      Application.dispatchQuery(
-        this.name,
-        selection,
-        fields,
-        visibleLayers,
-        templates
-      );
+      Application.dispatchQuery(this.name, selection, fields, visibleLayers, templates);
     } else {
       Application.alert("no-identify-layers", "No layers to identify!");
     }
@@ -127,11 +116,7 @@ function IdentifyService(Application, options) {
         //  template from the mapbook.
         // The layer in the mapbook should have a <template name='identify'>
         //  child which will be rendered here..
-        html += Application.renderFeaturesWithTemplate(
-          query,
-          path,
-          this.template
-        );
+        html += Application.renderFeaturesWithTemplate(query, path, this.template);
       }
     }
 

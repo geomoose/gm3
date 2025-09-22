@@ -78,10 +78,7 @@ const reducer = createReducer(
     [addLayer]: (state, { payload }) => {
       state[payload.mapSourceName].layers.push(payload.layer);
     },
-    [setLayerVisibilityInternal]: (
-      state,
-      { payload: { mapSourceName, layerName, on } }
-    ) => {
+    [setLayerVisibilityInternal]: (state, { payload: { mapSourceName, layerName, on } }) => {
       if (!state[mapSourceName]) {
         console.error("Map source does not exist: ", mapSourceName);
       } else {
@@ -95,10 +92,7 @@ const reducer = createReducer(
         );
       }
     },
-    [favoriteLayer]: (
-      state,
-      { payload: { mapSourceName, layerName, favorite } }
-    ) => {
+    [favoriteLayer]: (state, { payload: { mapSourceName, layerName, favorite } }) => {
       if (state[mapSourceName]) {
         state[mapSourceName].layers = modifyLayer(
           state[mapSourceName].layers,
@@ -112,21 +106,14 @@ const reducer = createReducer(
         console.error("Map source does not exist: ", mapSourceName);
       }
     },
-    [setLayerTemplate]: (
-      state,
-      { payload: { mapSourceName, layerName, name, template } }
-    ) => {
-      state[mapSourceName].layers = modifyLayer(
-        state[mapSourceName].layers,
-        layerName,
-        (layer) => {
-          layer.templates = {
-            ...layer.templates,
-            [name]: template,
-          };
-          return layer;
-        }
-      );
+    [setLayerTemplate]: (state, { payload: { mapSourceName, layerName, name, template } }) => {
+      state[mapSourceName].layers = modifyLayer(state[mapSourceName].layers, layerName, (layer) => {
+        layer.templates = {
+          ...layer.templates,
+          [name]: template,
+        };
+        return layer;
+      });
     },
     [setMapSourceZIndex]: (state, { payload: { mapSourceName, zIndex } }) => {
       state[mapSourceName].zIndex = zIndex;
@@ -158,8 +145,7 @@ const reducer = createReducer(
               [ID_PROP]: uuid(),
             },
           }));
-      state[mapSourceName].features =
-        state[mapSourceName].features.concat(nextFeatures);
+      state[mapSourceName].features = state[mapSourceName].features.concat(nextFeatures);
       state[mapSourceName].featuresVersion += 1;
     },
     [clearFeatures]: (state, { payload: mapSourceName }) => {
@@ -167,24 +153,16 @@ const reducer = createReducer(
       state[mapSourceName].featuresVersion += 1;
     },
     [removeFeatureInternal]: (state, { payload: { mapSourceName, id } }) => {
-      state[mapSourceName].features = state[mapSourceName].features.filter(
-        (feature) => {
-          return feature.properties[ID_PROP] !== id;
-        }
-      );
+      state[mapSourceName].features = state[mapSourceName].features.filter((feature) => {
+        return feature.properties[ID_PROP] !== id;
+      });
       state[mapSourceName].featuresVersion += 1;
     },
     [removeFeatures]: (state, { payload: { mapSourceName, filter } }) => {
-      state[mapSourceName].features = filterFeatures(
-        state[mapSourceName].features,
-        filter
-      );
+      state[mapSourceName].features = filterFeatures(state[mapSourceName].features, filter);
       state[mapSourceName].featuresVersion += 1;
     },
-    [changeFeaturesAction]: (
-      state,
-      { payload: { mapSourceName, filter, properties } }
-    ) => {
+    [changeFeaturesAction]: (state, { payload: { mapSourceName, filter, properties } }) => {
       state[mapSourceName].features = changeFeatures(
         state[mapSourceName].features,
         filter,
@@ -192,10 +170,7 @@ const reducer = createReducer(
       );
       state[mapSourceName].featuresVersion += 1;
     },
-    [modifyFeatureGeometry]: (
-      state,
-      { payload: { mapSourceName, id, geometry } }
-    ) => {
+    [modifyFeatureGeometry]: (state, { payload: { mapSourceName, id, geometry } }) => {
       state[mapSourceName].features = changeFeatures(
         state[mapSourceName].features,
         { [ID_PROP]: id },

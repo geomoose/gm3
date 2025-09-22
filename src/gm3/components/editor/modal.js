@@ -35,8 +35,7 @@ export class EditorModal extends Modal {
   componentDidUpdate(prevProps) {
     if (prevProps.feature !== this.props.feature) {
       const defaultProperties = getDefaultProperties(this.props.properties);
-      const featureProperties =
-        this.props.feature && this.props.feature.properties;
+      const featureProperties = this.props.feature && this.props.feature.properties;
       this.setState({
         properties: {
           ...defaultProperties,
@@ -70,16 +69,13 @@ export class EditorModal extends Modal {
   renderInput(attr) {
     const type = attr.type;
     const propValue = this.state.properties[attr.name];
-    const currentValue =
-      propValue === undefined ? getDefaultValue(attr) : propValue;
+    const currentValue = propValue === undefined ? getDefaultValue(attr) : propValue;
 
     const props = {
       type,
       value: currentValue,
       onChange: (evt) => {
-        const newValue = isNumberType(type)
-          ? parseFloat(evt.target.value)
-          : evt.target.value;
+        const newValue = isNumberType(type) ? parseFloat(evt.target.value) : evt.target.value;
 
         const properties = Object.assign({}, this.state.properties, {
           [attr.name]: newValue,

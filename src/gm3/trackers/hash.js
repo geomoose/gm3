@@ -27,12 +27,7 @@ import { zoomToExtent, setView } from "../actions/map";
 import { toLonLat, fromLonLat, transformExtent } from "ol/proj";
 import olView from "ol/View";
 
-import {
-  getMapSourceName,
-  getLayerName,
-  parseBoolean,
-  parseHash,
-} from "../util";
+import { getMapSourceName, getLayerName, parseBoolean, parseHash } from "../util";
 
 export const JOIN_SYMBOL = ";";
 
@@ -52,11 +47,7 @@ export const formatLocation = (mapState, mapSize, format) => {
     return transformExtent(extent, "EPSG:3857", "EPSG:4326")
       .map((v) => v.toFixed(5))
       .join(JOIN_SYMBOL);
-  } else if (
-    format === "lonlat" &&
-    (mapState.zoom || mapState.resolution) &&
-    mapState.center
-  ) {
+  } else if (format === "lonlat" && (mapState.zoom || mapState.resolution) && mapState.center) {
     const ll = toLonLat(mapState.center);
     // handle the case where the zoom value has not been hydrated
     //  in the state.
@@ -77,7 +68,7 @@ export const parseLocation = (loc) => {
     let parsed = [];
     try {
       parsed = locParts.map(parseFloat);
-    } catch (err) {
+    } catch (_err) {
       return null;
     }
 
@@ -100,7 +91,7 @@ export const parseLocation = (loc) => {
     let parsed = [];
     try {
       parsed = locParts.map(parseFloat);
-    } catch (err) {
+    } catch (_err) {
       return null;
     }
     if (parsed.length === 3) {
@@ -210,24 +201,15 @@ export default class HashTracker {
     for (let i = 0, ii = visibleLayers.length; i < ii; i++) {
       const layer = visibleLayers[i];
       const mapSourceName = getMapSourceName(layer);
-      if (
-        !isAlwaysOn(mapSources[mapSourceName]) &&
-        layers.indexOf(visibleLayers[i]) < 0
-      ) {
+      if (!isAlwaysOn(mapSources[mapSourceName]) && layers.indexOf(visibleLayers[i]) < 0) {
         this.store.dispatch(
-          setLayerVisibility(
-            getMapSourceName(layer),
-            getLayerName(layer),
-            false
-          )
+          setLayerVisibility(getMapSourceName(layer), getLayerName(layer), false)
         );
       }
     }
 
     turnOn.forEach((layer) =>
-      this.store.dispatch(
-        setLayerVisibility(getMapSourceName(layer), getLayerName(layer), true)
-      )
+      this.store.dispatch(setLayerVisibility(getMapSourceName(layer), getLayerName(layer), true))
     );
   }
 
@@ -280,10 +262,7 @@ export default class HashTracker {
       const mapState = state.map;
       const mapSources = state.mapSources;
 
-      if (
-        mapState !== this.lastState.map ||
-        mapSources !== this.lastState.mapSources
-      ) {
+      if (mapState !== this.lastState.map || mapSources !== this.lastState.mapSources) {
         this.lastState = {
           map: mapState,
           mapSources,
@@ -294,12 +273,7 @@ export default class HashTracker {
 
         // get the locaiton in htere.
         newHash +=
-          "&loc=" +
-          formatLocation(
-            mapState,
-            state.cursor.size,
-            this.config.locationFormat
-          );
+          "&loc=" + formatLocation(mapState, state.cursor.size, this.config.locationFormat);
 
         if (this.lastHash !== newHash) {
           // update the hash first so we don't trigger

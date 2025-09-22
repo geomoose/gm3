@@ -15,17 +15,13 @@ export const getHotFilter = (state) => state.query.hotFilter;
 // TODO: Move this to a map sources selector
 export const getMapSources = (state) => state.mapSources;
 
-export const getQueryResults = createSelector(
-  getAllResults,
-  getFilter,
-  (results, filter) => {
-    const features = {};
-    for (const path in results) {
-      features[path] = matchFeatures(results[path], filter);
-    }
-    return features;
+export const getQueryResults = createSelector(getAllResults, getFilter, (results, filter) => {
+  const features = {};
+  for (const path in results) {
+    features[path] = matchFeatures(results[path], filter);
   }
-);
+  return features;
+});
 
 export const getFlatResults = createSelector(getAllResults, (results) => {
   let features = [];

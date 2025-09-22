@@ -35,27 +35,16 @@ import { startService } from "../../actions/query";
 import { runAction } from "../../actions/ui";
 
 export const BaseToolbarButton = ({ onClick, className, label, tip }) => (
-  <button
-    className={`toolbar-button ${className}`}
-    onClick={onClick}
-    title={tip || label}
-  >
+  <button className={`toolbar-button ${className}`} onClick={onClick} title={tip || label}>
     <span className="icon"></span>
     <span className="label">{label}</span>
   </button>
 );
 
-export const ToolbarButton = ({
-  tool,
-  runAction,
-  startService,
-  currentService,
-  currentDrawTool,
-  serviceDef,
-}) => {
+export const ToolbarButton = ({ tool, runAction, startService, currentService, serviceDef }) => {
   const { t } = useTranslation();
   const label = t(tool.label);
-  const tip = !!tool.tip ? t(tool.tip) : label;
+  const tip = tool.tip ? t(tool.tip) : label;
   const active = tool.name === currentService;
 
   const onClick = useCallback(() => {
@@ -76,9 +65,7 @@ export const ToolbarButton = ({
       onClick={onClick}
       label={label}
       tip={tip}
-      className={`${active ? "active " : ""}${
-        tool.cssClass || "tool " + tool.name
-      }`}
+      className={`${active ? "active " : ""}${tool.cssClass || "tool " + tool.name}`}
     />
   );
 };
@@ -88,13 +75,11 @@ ToolbarButton.propTypes = {
   runAction: PropTypes.func,
   startService: PropTypes.func,
   currentService: PropTypes.string,
-  currentDrawTool: PropTypes.string,
   serviceDef: PropTypes.object,
 };
 
 const mapState = (state) => ({
   currentService: state.query.serviceName,
-  currentDrawTool: state.map.interactionType,
 });
 
 const mapDispatch = {

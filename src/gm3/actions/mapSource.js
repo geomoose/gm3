@@ -30,10 +30,7 @@ import { createAction } from "@reduxjs/toolkit";
 import { get as getProj } from "ol/proj";
 import { changeTool } from "./map";
 
-import {
-  wfsDeleteFeatures,
-  wfsSaveFeatures,
-} from "../components/map/layers/wfs";
+import { wfsDeleteFeatures, wfsSaveFeatures } from "../components/map/layers/wfs";
 import { EDIT_LAYER_NAME } from "../defaults";
 
 import * as util from "../util";
@@ -66,15 +63,12 @@ export const add = createAction("mapsource/add", (newMapSource) => {
 /** Add a layer to a mapsource.
  *
  */
-export const addLayer = createAction(
-  "mapsource/add-layer",
-  (mapSourceName, layer) => ({
-    payload: {
-      mapSourceName,
-      layer,
-    },
-  })
-);
+export const addLayer = createAction("mapsource/add-layer", (mapSourceName, layer) => ({
+  payload: {
+    mapSourceName,
+    layer,
+  },
+}));
 
 /** Convert all the <params> of a <map-source> into an object.
  *
@@ -106,15 +100,7 @@ function parseProperties(msXml) {
   if (propsParent) {
     const propXmls = propsParent.getElementsByTagName("property");
 
-    const propNames = [
-      "name",
-      "label",
-      "type",
-      "default",
-      "min",
-      "max",
-      "step",
-    ];
+    const propNames = ["name", "label", "type", "default", "min", "max", "step"];
 
     for (let i = 0, ii = propXmls.length; i < ii; i++) {
       const prop = propXmls[i];
@@ -289,8 +275,7 @@ export function addFromXml(xml, config) {
   const transforms = xml.getElementsByTagName("transform");
   for (let x = 0, xx = transforms.length; x < xx; x++) {
     const transform = transforms[x];
-    mapSource.transforms[transform.getAttribute("attribute")] =
-      transform.getAttribute("function");
+    mapSource.transforms[transform.getAttribute("attribute")] = transform.getAttribute("function");
   }
 
   // mix in the params
@@ -373,8 +358,7 @@ export function addFromXml(xml, config) {
         };
       }
       templateDef.highlight =
-        util.parseBoolean(templateXml.getAttribute("highlight"), true) !==
-        false;
+        util.parseBoolean(templateXml.getAttribute("highlight"), true) !== false;
       layer.templates[templateName] = templateDef;
     }
 
@@ -385,10 +369,7 @@ export function addFromXml(xml, config) {
       try {
         layer.style = JSON.parse(style);
       } catch (err) {
-        console.error(
-          "There was an error parsing the style for: ",
-          mapSource.name
-        );
+        console.error("There was an error parsing the style for: ", mapSource.name);
         console.error("Error details", err);
       }
     }
@@ -400,10 +381,7 @@ export function addFromXml(xml, config) {
       try {
         layer.filter = JSON.parse(filter);
       } catch (err) {
-        console.error(
-          "There was an error parsing the filter for: ",
-          mapSource.name
-        );
+        console.error("There was an error parsing the filter for: ", mapSource.name);
         console.error("Error details", err);
       }
     }
@@ -510,18 +488,11 @@ function isMapSourceActive(mapSource) {
 /** Get the list of all map-sources which have a
  *  layer that is on.
  */
-export function getActiveMapSources(
-  mapSources,
-  onlyPrintable = false,
-  includeSelection = true
-) {
+export function getActiveMapSources(mapSources, onlyPrintable = false, includeSelection = true) {
   const active = [];
   const allMaps = !onlyPrintable;
   for (const ms in mapSources) {
-    if (
-      isMapSourceActive(mapSources[ms]) &&
-      (includeSelection || ms !== "selection")
-    ) {
+    if (isMapSourceActive(mapSources[ms]) && (includeSelection || ms !== "selection")) {
       if (allMaps || mapSources[ms].printable) {
         active.push(ms);
       }
@@ -628,11 +599,10 @@ export function getLayerFromSources(mapSources, msName, layerName) {
  *  These layers are a subset of visible layers.
  *
  */
-export function getQueryableLayers(mapSources, filter = {}, options = {}) {
+export function getQueryableLayers(mapSources, filter = {}) {
   // when visible is set to true, then any visibility will
   //  be false and the isVisible call will be evaluated.
-  const reqVisible =
-    typeof filter.requireVisible === "undefined" ? true : filter.requireVisible;
+  const reqVisible = typeof filter.requireVisible === "undefined" ? true : filter.requireVisible;
   const matchFn = function (ms, layer, queryLayer) {
     let templateFilterPass = true;
     if (filter && filter.withTemplate) {
@@ -663,17 +633,12 @@ export function getQueryableLayers(mapSources, filter = {}, options = {}) {
       if (templates) {
         for (let x = 0, xx = templateNames.length; x < xx; x++) {
           const templateName = templateNames[x];
-          templateFilterPass = testOp(
-            templateFilterPass,
-            templates[templateName] !== undefined
-          );
+          templateFilterPass = testOp(templateFilterPass, templates[templateName] !== undefined);
         }
       }
     }
     return (
-      templateFilterPass &&
-      isQueryable(ms, queryLayer) &&
-      (!reqVisible || isVisible(ms, layer))
+      templateFilterPass && isQueryable(ms, queryLayer) && (!reqVisible || isVisible(ms, layer))
     );
   };
 
@@ -717,15 +682,12 @@ export function getSelectableLayers(mapSources) {
  *  null is the default state and will prevent the layer
  *  from refreshing.  Time is specified in seconds.
  */
-export const setRefresh = createAction(
-  "mapsource/refresh",
-  (mapSourceName, refreshSeconds) => ({
-    payload: {
-      mapSourceName,
-      refreshSeconds,
-    },
-  })
-);
+export const setRefresh = createAction("mapsource/refresh", (mapSourceName, refreshSeconds) => ({
+  payload: {
+    mapSourceName,
+    refreshSeconds,
+  },
+}));
 
 export const addFeatures = createAction(
   "mapsource/add-features",
@@ -779,18 +741,14 @@ export function removeFeature(path, feature) {
         const projection = getProj("EPSG:3857");
         const features = [cleanFeature(feature)];
 
-        const changeRequest = wfsDeleteFeatures(
-          mapSource,
-          projection,
-          features
-        );
+        const changeRequest = wfsDeleteFeatures(mapSource, projection, features);
 
         return fetch(mapSource.urls[0] + "", {
           method: "POST",
           body: changeRequest,
         })
           .then((r) => r.text())
-          .then((text) => {
+          .then(() => {
             // TODO: The response should be parsed for exceptions
             //       and reported to the user.
             dispatch(reloadSource(layerSrcName));
@@ -851,15 +809,12 @@ export function getOrderedMapSources(mapSources) {
  *
  * @return action.
  */
-export const setMapSourceZIndex = createAction(
-  "mapsource/set-z",
-  (mapSourceName, zIndex) => ({
-    payload: {
-      mapSourceName,
-      zIndex,
-    },
-  })
-);
+export const setMapSourceZIndex = createAction("mapsource/set-z", (mapSourceName, zIndex) => ({
+  payload: {
+    mapSourceName,
+    zIndex,
+  },
+}));
 
 /* Get an action for setting the opacity of a Map Source
  *
@@ -868,15 +823,12 @@ export const setMapSourceZIndex = createAction(
  *
  * @return action.
  */
-export const setOpacity = createAction(
-  "mapsource/set-opacity",
-  (mapSourceName, opacity) => ({
-    payload: {
-      mapSourceName,
-      opacity,
-    },
-  })
-);
+export const setOpacity = createAction("mapsource/set-opacity", (mapSourceName, opacity) => ({
+  payload: {
+    mapSourceName,
+    opacity,
+  },
+}));
 
 /** Definition for a change of template action.
  *
@@ -897,9 +849,7 @@ export const setLayerTemplate = createAction(
   })
 );
 
-export const setLayerVisibilityInternal = createAction(
-  "mapsource/set-layer-vis-internal"
-);
+export const setLayerVisibilityInternal = createAction("mapsource/set-layer-vis-internal");
 
 /** Change the visibility of a layer.
  *
@@ -966,9 +916,7 @@ export function saveFeature(path, feature) {
         if (!id) {
           dispatch(addFeatures(mapSourceName, [feature]));
         } else {
-          dispatch(
-            modifyFeatureGeometry(mapSourceName, id, feature.geometry, idProp)
-          );
+          dispatch(modifyFeatureGeometry(mapSourceName, id, feature.geometry, idProp));
 
           // update the properties of the feature
           const filter = {};
@@ -979,19 +927,14 @@ export function saveFeature(path, feature) {
         const projection = getProj("EPSG:3857");
         const features = [cleanFeature(feature)];
 
-        const changeRequest = wfsSaveFeatures(
-          mapSource,
-          projection,
-          features,
-          !id
-        );
+        const changeRequest = wfsSaveFeatures(mapSource, projection, features, !id);
 
         fetch(mapSource.urls[0] + "", {
           method: "POST",
           body: changeRequest,
         })
           .then((r) => r.text())
-          .then((text) => {
+          .then(() => {
             // TODO: The response should be parsed for exceptions
             //       and reported to the user.
             dispatch(reloadSource(layerSrcName));

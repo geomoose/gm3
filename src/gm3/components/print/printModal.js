@@ -184,13 +184,7 @@ export class PrintModal extends Modal {
     // optionally scale the image to fit the space.
     if (def.width && def.height) {
       // image_data is included here for backwards compatibility.
-      doc.addImage(
-        def.image_data || def.imageData,
-        def.x,
-        def.y,
-        def.width,
-        def.height
-      );
+      doc.addImage(def.image_data || def.imageData, def.x, def.y, def.width, def.height);
     } else {
       doc.addImage(def.image_data || def.imageData, def.x, def.y);
     }
@@ -222,9 +216,7 @@ export class PrintModal extends Modal {
           .filter((layer) => layer.on)
           // Is the legend on
           .filter(
-            (layer) =>
-              !!legendsOnMap[mapSourceName] &&
-              !!legendsOnMap[mapSourceName][layer.name]
+            (layer) => !!legendsOnMap[mapSourceName] && !!legendsOnMap[mapSourceName][layer.name]
           )
           // convert the layer to a legend def
           .map((layer) => getLegend(mapSource, this.props.mapView, layer.name))
@@ -278,10 +270,7 @@ export class PrintModal extends Modal {
 
     // this is not a smart component and it doesn't need to be,
     //  so sniffing the state for the current image is just fine.
-    this.addImage(
-      doc,
-      Object.assign({}, def, { imageData: state.print.printData })
-    );
+    this.addImage(doc, Object.assign({}, def, { imageData: state.print.printData }));
 
     // construct the extents from the map
     const mapView = state.map;
@@ -361,8 +350,7 @@ export class PrintModal extends Modal {
     }
 
     // set the stroke width
-    const strokeWidth =
-      def.strokeWidth !== undefined ? def.strokeWidth : this.toPoints(1, "px");
+    const strokeWidth = def.strokeWidth !== undefined ? def.strokeWidth : this.toPoints(1, "px");
     if (strokeWidth > 0) {
       const stroke = def.stroke ? def.stroke : [0, 0, 0];
       doc.setLineWidth(strokeWidth);
@@ -592,8 +580,8 @@ export class PrintModal extends Modal {
     if (printableMs < allMs) {
       printWarning = (
         <div className="info-box">
-          Some of the map layers cannot be printed. The map image in the
-          resulting PDF may differ from what is seen in the map viewer.
+          Some of the map layers cannot be printed. The map image in the resulting PDF may differ
+          from what is seen in the map viewer.
         </div>
       );
     }

@@ -7,12 +7,7 @@ import { wmsGetFeatureInfoQuery } from "../query/wms";
 import { getMapSourceName } from "../util";
 import { getQueryResults } from "../selectors/query";
 
-import {
-  changeTool,
-  setSelectionBuffer,
-  clearSelectionFeatures,
-  addSelectionFeature,
-} from "./map";
+import { changeTool, setSelectionBuffer, clearSelectionFeatures, addSelectionFeature } from "./map";
 import { clearFeatures, addFeatures } from "./mapSource";
 import { setUiHint } from "./ui";
 
@@ -75,16 +70,13 @@ export const clearService = createAction("query/clear-service");
 /**
  * Finishing the service will close out and clear the service.
  */
-export const finishService = createAsyncThunk(
-  "query/finish-service",
-  (arg, { dispatch }) => {
-    dispatch(clearService());
-    dispatch(removeQueryResults());
-    dispatch(changeTool(""));
-    dispatch(clearSelectionFeatures());
-    dispatch(clearFeatures("selection"));
-  }
-);
+export const finishService = createAsyncThunk("query/finish-service", (arg, { dispatch }) => {
+  dispatch(clearService());
+  dispatch(removeQueryResults());
+  dispatch(changeTool(""));
+  dispatch(clearSelectionFeatures());
+  dispatch(clearFeatures("selection"));
+});
 
 export const createQuery = createAction(
   "query/create",
@@ -110,55 +102,52 @@ export const removeFilter = createAction("query/remove-filter");
  */
 export const setHotFilter = createAction("query/set-hot-filter");
 
-export const runQuery = createAsyncThunk(
-  "query/run",
-  (queryFunc, { getState, dispatch }) => {
-    const state = getState();
-    const queryDef = state.query.query;
-    const mapSources = state.mapSources;
+export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, dispatch }) => {
+  const state = getState();
+  const queryDef = state.query.query;
+  const mapSources = state.mapSources;
 
-    if ((!queryDef.layers || queryDef.layers.length === 0) && !queryFunc) {
-      // if there are no layers defined, return
-      //  a resolved query with a completely empty set.
-      return new Promise((resolve) => resolve([]));
+  if ((!queryDef.layers || queryDef.layers.length === 0) && !queryFunc) {
+    // if there are no layers defined, return
+    //  a resolved query with a completely empty set.
+    return new Promise((resolve) => resolve([]));
+  }
+
+  const layerQueries = queryDef.layers.map((layer) => {
+    const mapSource = mapSources[getMapSourceName(layer)];
+    switch (mapSource?.type) {
+      case "wms":
+        return wmsGetFeatureInfoQuery(layer, state.map, mapSource, queryDef);
+      case "wfs":
+        return wfsGetFeatureQuery(layer, state.map, mapSource, queryDef);
+      case "ags":
+      case "ags-vector":
+        return agsFeatureQuery(layer, state.map, mapSource, queryDef);
+      case "geojson":
+      case "vector":
+        return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
+      default:
+        // this is an un-supproted type so just bail
+        return new Promise((resolve) => resolve({ layer, features: [] }));
     }
+  });
 
-    const layerQueries = queryDef.layers.map((layer) => {
-      const mapSource = mapSources[getMapSourceName(layer)];
-      switch (mapSource?.type) {
-        case "wms":
-          return wmsGetFeatureInfoQuery(layer, state.map, mapSource, queryDef);
-        case "wfs":
-          return wfsGetFeatureQuery(layer, state.map, mapSource, queryDef);
-        case "ags":
-        case "ags-vector":
-          return agsFeatureQuery(layer, state.map, mapSource, queryDef);
-        case "geojson":
-        case "vector":
-          return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
-        default:
-          // this is an un-supproted type so just bail
-          return new Promise((resolve) => resolve({ layer, features: [] }));
+  // check for a query function
+  if (queryFunc) {
+    layerQueries.push(queryFunc("", queryDef));
+  }
+
+  return Promise.all(layerQueries).then((allResults) => {
+    const results = {};
+    allResults.forEach((result) => {
+      if (result) {
+        results[result.layer] = result.features;
       }
     });
-
-    // check for a query function
-    if (queryFunc) {
-      layerQueries.push(queryFunc("", queryDef));
-    }
-
-    return Promise.all(layerQueries).then((allResults) => {
-      const results = {};
-      allResults.forEach((result) => {
-        if (result) {
-          results[result.layer] = result.features;
-        }
-      });
-      dispatch(setUiHint("new-results"));
-      return results;
-    });
-  }
-);
+    dispatch(setUiHint("new-results"));
+    return results;
+  });
+});
 
 export const bufferResults = createAsyncThunk(
   "query/buffer-results",

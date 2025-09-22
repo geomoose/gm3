@@ -30,28 +30,20 @@
  */
 function FindMeAction(Application, options) {
   // allow the targetting of a layer, but default to the highlight layer
-  this.targetLayer = options.targetLayer
-    ? options.targetLayer
-    : "sketch/default";
+  this.targetLayer = options.targetLayer ? options.targetLayer : "sketch/default";
 
   // default the map projection to web-mercator
-  this.mapProjection = options.mapProjection
-    ? options.mapProjection
-    : "EPSG:3857";
+  this.mapProjection = options.mapProjection ? options.mapProjection : "EPSG:3857";
 
   // Buffer is the distance in map coordinates to buffer around
   //  the points when zooming to it's extent, defaults to 100m
   this.buffer = options.buffer ? options.buffer : 100;
 
-  /** This function is called everytime there is an identify query.
+  /** This function is called everytime there is an query.
+   *  For FindMe, this calls the browsers locator function
    *
-   *  @param selection contains a GeoJSON feature describing the
-   *                   geography to be used for the query.
-   *
-   *  @param fields    is an array containing any user-input
-   *                   given to the service.
    */
-  this.run = function (selection, fields) {
+  this.run = function () {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         this.gotoPosition.bind(this),
@@ -83,11 +75,7 @@ function FindMeAction(Application, options) {
     };
 
     // put the feature in map projection.
-    const mapFeature = gm3.util.projectFeatures(
-      [fakeFeature],
-      "EPSG:4326",
-      this.mapProjection
-    )[0];
+    const mapFeature = gm3.util.projectFeatures([fakeFeature], "EPSG:4326", this.mapProjection)[0];
 
     // mark the location in the highlight layer
     Application.addFeatures(this.targetLayer, mapFeature);

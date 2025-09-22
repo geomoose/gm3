@@ -31,11 +31,7 @@ export const Tool = ({ tip, iconClass, onClick, children, active }) => {
   const { t } = useTranslation();
   return (
     <React.Fragment>
-      <button
-        onClick={onClick}
-        title={t(tip)}
-        className={active ? "active" : ""}
-      >
+      <button onClick={onClick} title={t(tip)} className={active ? "active" : ""}>
         <i className={"icon " + iconClass}></i>
       </button>
       {children}

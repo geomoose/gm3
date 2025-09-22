@@ -99,7 +99,7 @@ export default class LengthInput extends TextInput {
     };
   }
 
-  onChange(value, units) {
+  onChange(_value, _units) {
     if (!isNaN(this.state.value)) {
       this.setValue(this.getName(), {
         distance: this.state.value,

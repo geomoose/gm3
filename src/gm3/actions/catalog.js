@@ -40,27 +40,21 @@ export const addChild = createAction("catalog/add-child");
 
 /* Change the visibility of a legend.
  */
-export const setLegendVisibility = createAction(
-  "catalog/set-legend-vis",
-  (id, on) => ({
-    payload: {
-      id,
-      on,
-    },
-  })
-);
+export const setLegendVisibility = createAction("catalog/set-legend-vis", (id, on) => ({
+  payload: {
+    id,
+    on,
+  },
+}));
 
 /** Toggle the state of a group
  */
-export const setGroupExpand = createAction(
-  "catalog/set-group-expand",
-  (groupId, expand) => ({
-    payload: {
-      id: groupId,
-      expand,
-    },
-  })
-);
+export const setGroupExpand = createAction("catalog/set-group-expand", (groupId, expand) => ({
+  payload: {
+    id: groupId,
+    expand,
+  },
+}));
 
 /** Convert a group to a Javascript object.
  *
@@ -241,11 +235,7 @@ function subtreeActions(store, parent, subtreeXml) {
       // build the tree by recursion.
       actions = actions.concat(subtreeActions(store, group, childNode));
     } else if (childNode.tagName === "layer") {
-      const layer = parseLayer(
-        store,
-        childNode,
-        parent && parent.multiple === false
-      );
+      const layer = parseLayer(store, childNode, parent && parent.multiple === false);
       actions.push(addLayer({ child: layer }));
       child = layer;
     }

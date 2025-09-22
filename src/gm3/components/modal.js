@@ -119,10 +119,7 @@ class ModalDialog extends React.Component {
           <div className="modal-title">
             <ModalTitle title={this.getTitle()} />
           </div>
-          <div
-            className="modal-body"
-            style={this.BodyProps && this.BodyProps.style}
-          >
+          <div className="modal-body" style={this.BodyProps && this.BodyProps.style}>
             {this.renderBody()}
           </div>
 

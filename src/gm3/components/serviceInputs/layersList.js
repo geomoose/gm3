@@ -60,7 +60,7 @@ export class LayersListInput extends SelectInput {
   }
 }
 
-function mapState(state, ownProps) {
+function mapState(state) {
   return {
     mapSources: state.mapSources,
   };
