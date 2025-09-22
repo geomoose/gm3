@@ -23,136 +23,136 @@
  */
 
 .search-result {
+  margin: 0;
+  clear: both;
+  position: relative;
+  padding: 5px;
+
+  .search-label,
+  .search-action {
+    width: 50%;
     margin: 0;
-    clear: both;
-    position: relative;
-    padding: 5px;
+    float: left;
+    overflow: hidden;
+  }
+  .search-action {
+    text-align: right;
+  }
 
-    .search-label, .search-action {
-        width: 50%;
-        margin: 0;
-        float: left;
-        overflow: hidden;
-    }
-    .search-action {
-        text-align: right;
-    }
+  .zoomto-link {
+    left-padding: 16px;
+    cursor: pointer;
+    font-weight: bold;
+  }
 
-    .zoomto-link {
-        left-padding: 16px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    .zoomto-link:hover {
-        color: #0FDC56;
-    }
+  .zoomto-link:hover {
+    color: #0fdc56;
+  }
 }
 
-
 .service-manager {
-    .results-header {
-        background-color: #CFE7B3;
-        padding: 5px;
-        font-weight: bold;
-        font-size: 110%;
-        clear: both;
-    }
+  .results-header {
+    background-color: #cfe7b3;
+    padding: 5px;
+    font-weight: bold;
+    font-size: 110%;
+    clear: both;
+  }
 
-    .results-query-id {
-        /* hiding this now that querying is more stable. */
-        display: none;
+  .results-query-id {
+    /* hiding this now that querying is more stable. */
+    display: none;
 
-        font-style: italic;
-        font-size: 10px;
-        padding: 4px;
-        padding-top: 2px; padding-bottom: 2px;
-    }
+    font-style: italic;
+    font-size: 10px;
+    padding: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
 
-    .results-tools {
-        float: right;
-    }
+  .results-tools {
+    float: right;
+  }
 
-    .results-info {
-        display: flex;
+  .results-info {
+    display: flex;
 
-        .results-info-item {
-            background: none;
-            border-radius: 0;
+    .results-info-item {
+      background: none;
+      border-radius: 0;
 
-            width: 30%;
+      width: 30%;
 
-            padding: .25em;
-            margin: 5px;
-            text-align: center;
-
-            border: solid 1px #ccc;
-
-            .label {
-                width: 100%;
-                font-size: .75em;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            .value {
-                height: 2em;
-                font-size: 2em;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-
-                .icon {
-                    font-size: 1em;
-                    margin-right: 0;
-                }
-            }
-
-            &.disabled {
-                border-color: #eee;
-                color: #eee;
-                cursor: not-allowed;
-                .icon {
-                    cursor: not-allowed;
-                }
-            }
-        }
-    }
-
-    .results-info-counts {
+      padding: 0.25em;
       margin: 5px;
+      text-align: center;
 
-      .results-info-item {
+      border: solid 1px #ccc;
+
+      .label {
+        width: 100%;
+        font-size: 0.75em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .value {
+        height: 2em;
+        font-size: 2em;
         display: flex;
-        margin-bottom: 2px;
+        justify-content: center;
+        align-items: center;
 
-        .label {
-          flex: 1;
-          font-weight: bold;
-        }
-
-        .value {
-          text-align: right;
+        .icon {
+          font-size: 1em;
+          margin-right: 0;
         }
       }
 
-      .results-info-item.filtered-features {
-        font-style: italic;
-        font-size: 0.9em;
-        margin-top: 5px;
+      &.disabled {
+        border-color: #eee;
+        color: #eee;
+        cursor: not-allowed;
+        .icon {
+          cursor: not-allowed;
+        }
       }
     }
+  }
 
-    .results {
-      padding: 4px;
+  .results-info-counts {
+    margin: 5px;
 
-      label {
+    .results-info-item {
+      display: flex;
+      margin-bottom: 2px;
+
+      .label {
+        flex: 1;
         font-weight: bold;
       }
 
-      .item {
-        margin: 2px;
+      .value {
+        text-align: right;
       }
     }
 
+    .results-info-item.filtered-features {
+      font-style: italic;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+  }
+
+  .results {
+    padding: 4px;
+
+    label {
+      font-weight: bold;
+    }
+
+    .item {
+      margin: 2px;
+    }
+  }
 }

@@ -1,65 +1,64 @@
 .map-tools {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 100;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
 
-    .map-button {
-        display: inline-flex;
-        background-color: #f0eeee;
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        align-items: center;
-        justify-content: center;
-        margin-right: 6px;
-        box-shadow: 0 0 1px 1px #a09999;
+  .map-button {
+    display: inline-flex;
+    background-color: #f0eeee;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    box-shadow: 0 0 1px 1px #a09999;
 
-        &:hover {
-            opacity: 0.9 !important;
-            box-shadow: 0 0 3px 3px white;
-            cursor: pointer;
-        }
-
-        i {
-            margin: 0;
-        }
-
-        &:disabled {
-            background-color: #ccc;
-            cursor: disabled;
-            pointer-events: none;
-        }
+    &:hover {
+      opacity: 0.9 !important;
+      box-shadow: 0 0 3px 3px white;
+      cursor: pointer;
     }
 
-    .fade-in {
-        animation: fadeIn ease 1s;
-        animation-fill-mode: forwards;
-
-        &.1 {
-            animation-delay: 400ms;
-        }
-        &.2 {
-            animation-delay: 550ms;
-        }
-        &.3 {
-            animation-delay: 700ms;
-        }
-        &.4 {
-            animation-delay: 850ms;
-        }
-        &.5 {
-            animation-delay: 1000ms;
-        }
+    i {
+      margin: 0;
     }
 
+    &:disabled {
+      background-color: #ccc;
+      cursor: disabled;
+      pointer-events: none;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn ease 1s;
+    animation-fill-mode: forwards;
+
+    &.1 {
+      animation-delay: 400ms;
+    }
+    &.2 {
+      animation-delay: 550ms;
+    }
+    &.3 {
+      animation-delay: 700ms;
+    }
+    &.4 {
+      animation-delay: 850ms;
+    }
+    &.5 {
+      animation-delay: 1000ms;
+    }
+  }
 }
 
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 0.82;
-    }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.82;
+  }
 }
