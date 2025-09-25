@@ -37,12 +37,14 @@ import {
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
 import EsriJsonFormat from "ol/format/EsriJSON";
-import { tile, bbox } from "ol/loadingstrategy";
+import { tile, bbox, all } from "ol/loadingstrategy";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { createXYZ } from "ol/tilegrid";
+import { transformExtent } from "ol/proj";
 import { getEditStyle } from "./edit";
 import { EDIT_LAYER_NAME } from "../../../defaults";
+import { getQueryProjection } from "./wfs";
 
 // WARNING! This is a monkey patch in order to
 // allow rendering labels outside of a polygon's
@@ -76,9 +78,21 @@ function defineSource(mapSource) {
       format = GeoJSONFormat;
     }
 
+    const strategyName = mapSource.config?.strategy;
+    let strategy = bbox;
+    if (strategyName === "all") {
+      strategy = all;
+    }
+
+    // TODO: Ensure this gets the real map projection when
+    //       the code supports alternative projections.
+    const mapProjection = "EPSG:3857";
+    const queryProjection = getQueryProjection(mapSource, mapProjection);
+
     return {
-      format: new format({}),
-      projection: "EPSG:4326",
+      format: new format({
+        srsName: queryProjection,
+      }),
       url: function (extent) {
         if (typeof mapSource.params.typename === "undefined") {
           console.error(
@@ -89,19 +103,26 @@ function defineSource(mapSource) {
         const urlParams = Object.assign(
           {},
           {
-            srsname: "EPSG:3857",
+            srs: queryProjection,
             outputFormat: outputFormat,
             service: "WFS",
             version: "1.1.0",
             request: "GetFeature",
-            bbox: extent.concat("EPSG:3857").join(","),
           },
           mapSource.params
         );
 
+        if (strategy === bbox) {
+          const queryExtent = transformExtent(
+            extent,
+            mapProjection,
+            queryProjection
+          );
+          urlParams.bbox = queryExtent;
+        }
         return joinUrl(mapSource.urls[0], urlParams);
       },
-      strategy: bbox,
+      strategy,
     };
   } else if (mapSource.type === "geojson") {
     return {
