@@ -1,195 +1,194 @@
 .toolbar {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    .tool {
-        height: 22px;
-        padding: 2px 7px;
-        font-size: 14px;
-        border: none;
-        background: none;
-        border-radius: 11px;
-        margin-bottom: 4px;
-        margin-right: 4px;
+  .tool {
+    height: 22px;
+    padding: 2px 7px;
+    font-size: 14px;
+    border: none;
+    background: none;
+    border-radius: 11px;
+    margin-bottom: 4px;
+    margin-right: 4px;
 
-        &:hover {
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        &.active {
-            box-shadow: 0 0 1px 1px #a09999;
-            background-color: rgba(160, 153, 153, 0.2);
-        }
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
     }
+
+    &.active {
+      box-shadow: 0 0 1px 1px #a09999;
+      background-color: rgba(160, 153, 153, 0.2);
+    }
+  }
 }
 
 .tool .icon {
-    margin-right: 5px;
-    display: none;
+  margin-right: 5px;
+  display: none;
 }
 
 .tool.fullextent {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-arrows-alt;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-arrows-alt;
     }
+  }
 }
 
 .tool.measure {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-arrows-h;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-arrows-h;
     }
+  }
 }
 
 .tool.print {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-print;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-print;
     }
+  }
 }
 
 .tool.identify {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-info-circle;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-info-circle;
     }
+  }
 }
 
 .tool.geocode {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-globe;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-globe;
     }
+  }
 }
 
 .tool.select {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-mouse-pointer;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-mouse-pointer;
     }
+  }
 }
 
 .tool.search {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-search;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-search;
     }
+  }
 }
 
 .tool.findme {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-location-arrow;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-location-arrow;
     }
+  }
 }
 
 .tool.drawer {
-    .icon.drawer {
-        .fa;
-        &:before {
-            content: @fa-var-chevron-circle-down;
-        }
+  .icon.drawer {
+    .fa;
+    &:before {
+      content: @fa-var-chevron-circle-down;
     }
+  }
 }
 
 .tool.download {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-download;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-download;
     }
+  }
 }
 
 .tool.minimize {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-window-minimize;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-window-minimize;
     }
+  }
 }
 
 .tool.maximize {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-window-maximize;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-window-maximize;
     }
+  }
 }
 
 .tool.reload {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-refresh;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-refresh;
     }
+  }
 }
 
 .tool.bookmark {
-    .icon {
-        .fa;
-        &:before {
-            content: @fa-var-bookmark-o;
-        }
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-bookmark-o;
     }
+  }
 }
-
 
 /* CSS needed to supprot the "drawer" functionality
  * of the toolbar.
  */
 .toolbar {
-    .drawer {
-        position: relative;
-        display: inline-block;
+  .drawer {
+    position: relative;
+    display: inline-block;
 
-        &:hover,&.sticky {
-          .drawer-contents {
-              display: block;
-          }
-        }
+    &:hover,
+    &.sticky {
+      .drawer-contents {
+        display: block;
+      }
     }
+  }
 
-    .drawer-contents {
-        display: none;
-        position: absolute;
-        top: calc(100% - 2px);
-        left: -1px;
-        padding: 3px;
-        padding-top: 0;
-        border: solid 1px black;
-        z-index: 1000;
-        background-color: #eee;
+  .drawer-contents {
+    display: none;
+    position: absolute;
+    top: calc(100% - 2px);
+    left: -1px;
+    padding: 3px;
+    padding-top: 0;
+    border: solid 1px black;
+    z-index: 1000;
+    background-color: #eee;
 
-        .tool {
-            display: block;
-            white-space: nowrap;
-        }
-
+    .tool {
+      display: block;
+      white-space: nowrap;
     }
+  }
 
-    .drawer-item {
-        cursor: pointer;
-    }
+  .drawer-item {
+    cursor: pointer;
+  }
 }

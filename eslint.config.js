@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2022 GeoMoose
+ * Copyright (c) 2016-2022,2025 Dan "Ducky" Little for the GeoMoose project
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,15 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-module.exports = {
-  parser: "@babel/eslint-parser",
-  extends: ["react-app", "prettier"],
-  plugins: ["prettier"],
-  rules: {
-    "prettier/prettier": "error",
-    "camelcase": "warn",
+
+// eslint.config.js
+import jest from "eslint-plugin-jest";
+import js from "@eslint/js";
+import react from "eslint-plugin-react";
+import pluginPrettier from "eslint-plugin-prettier";
+import prettier from "eslint-config-prettier";
+import globals from "globals";
+
+export default [
+  js.configs.recommended,
+  {
+    files: ["**/*.{js,jsx}"],
+    ignores: ["fonts.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: {
+        ...globals.browser,
+        ...globals.jest,
+        ...globals.node,
+        gm3: "readonly",
+      },
+    },
+    plugins: {
+      jest,
+      react,
+      prettier: pluginPrettier,
+    },
+    settings: {
+      react: { version: "detect" },
+    },
+    rules: {
+      ...react.configs.recommended.rules,
+      ...jest.configs.recommended.rules,
+      "prettier/prettier": "error",
+      camelcase: "warn",
+    },
   },
-  globals: {
-    "gm3": "readonly",
-  },
-};
+  prettier,
+];

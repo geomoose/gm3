@@ -23,258 +23,274 @@
  */
 
 @folder-color: #333333;
-@refresh-icon-disabled-color: #82A984;
-@refresh-icon-enabled-color: #5DF265;
+@refresh-icon-disabled-color: #82a984;
+@refresh-icon-enabled-color: #5df265;
 @icon-size: 20px;
 
 .icon {
-    font: normal normal normal @icon-size/1 mapskin;
-    cursor: pointer;
-    margin-right: 0.5em;
-    vertical-align: middle;
+  font: normal normal normal @icon-size / 1 mapskin;
+  cursor: pointer;
+  margin-right: 0.5em;
+  vertical-align: middle;
 
-    &:before {
-        content: "\e031";
-    }
+  &:before {
+    content: "\e031";
+  }
 }
 
-.icon.upload, .icon.clear, .icon.download, .icon.remove, .icon.refresh,
-.icon.legend, .icon.up, .icon.down, .icon.edit,
-.icon.fade, .icon.unfade, .icon.metadata,
-.icon.sort, .icon.remove, .icon.filter,
-.icon.favorite, .icon.refresh, .icon.folder, .icon.checkbox,
+.icon.upload,
+.icon.clear,
+.icon.download,
+.icon.remove,
+.icon.refresh,
+.icon.legend,
+.icon.up,
+.icon.down,
+.icon.edit,
+.icon.fade,
+.icon.unfade,
+.icon.metadata,
+.icon.sort,
+.icon.remove,
+.icon.filter,
+.icon.favorite,
+.icon.refresh,
+.icon.folder,
+.icon.checkbox,
 .icon.radio,
-.icon.save, .icon.cancel, .icon.undo, .icon.stop, .icon.close
-{
-    .fa;
-    font-size: @icon-size/1;
+.icon.save,
+.icon.cancel,
+.icon.undo,
+.icon.stop,
+.icon.close {
+  .fa;
+  font-size: @icon-size / 1;
 }
 
 .icon.close {
-    &:before {
-        content: @fa-var-times;
-    }
+  &:before {
+    content: @fa-var-times;
+  }
 }
 
 .icon.upload {
-    &:before {
-        content: @fa-var-upload;
-    }
+  &:before {
+    content: @fa-var-upload;
+  }
 }
 
 .icon.download {
-    &:before {
-        content: @fa-var-download;
-    }
+  &:before {
+    content: @fa-var-download;
+  }
 }
 
 .icon.clear {
-    &:before {
-        content: @fa-var-trash;
-    }
+  &:before {
+    content: @fa-var-trash;
+  }
 }
 
 .icon.remove {
-    &:before {
-        content: @fa-var-minus-circle;
-    }
+  &:before {
+    content: @fa-var-minus-circle;
+  }
 }
 
 .icon.point {
-    &:before {
-        content: "\e01b";
-    }
+  &:before {
+    content: "\e01b";
+  }
 }
 
 .icon.polygon {
-    &:before {
-        content: "\e01d";
-    }
+  &:before {
+    content: "\e01d";
+  }
 }
 
-
 .icon.line {
-    &:before {
-        content: "\e01c";
-    }
+  &:before {
+    content: "\e01c";
+  }
 }
 
 .icon.modify {
-    &:before {
-        content: "\e09e";
-    }
+  &:before {
+    content: "\e09e";
+  }
 }
 
 .icon.zoomto {
-    &:before {
-        content: "\e008";
-    }
+  &:before {
+    content: "\e008";
+  }
 }
 
 .icon.legend {
-    &:before {
-        content: @fa-var-list-alt;
-    }
+  &:before {
+    content: @fa-var-list-alt;
+  }
 }
 
 .icon.up {
-    &:before {
-        content: @fa-var-arrow-up;
-    }
+  &:before {
+    content: @fa-var-arrow-up;
+  }
 }
 
 .icon.down {
-    &:before {
-        content: @fa-var-arrow-down;
-    }
+  &:before {
+    content: @fa-var-arrow-down;
+  }
 }
 
 .icon.fade {
-    opacity: .50;
+  opacity: 0.5;
 }
 
-.icon.fade, .icon.unfade {
-    &:before {
-        content: @fa-var-adjust;
-    }
+.icon.fade,
+.icon.unfade {
+  &:before {
+    content: @fa-var-adjust;
+  }
 }
 
 .icon.metadata {
-    &:before {
-        content: @fa-var-address-card-o;
-    }
+  &:before {
+    content: @fa-var-address-card-o;
+  }
 }
 
 .icon.sort {
-    &:before {
-        content: @fa-var-sort;
-    }
+  &:before {
+    content: @fa-var-sort;
+  }
 }
 
 .icon.sort.asc {
-    &:before {
-        content: @fa-var-sort-amount-asc;
-    }
+  &:before {
+    content: @fa-var-sort-amount-asc;
+  }
 }
 
-
 .icon.sort.desc {
-    &:before {
-        content: @fa-var-sort-amount-desc;
-    }
+  &:before {
+    content: @fa-var-sort-amount-desc;
+  }
 }
 
 .icon.filter {
-    &:before {
-        content: @fa-var-filter;
-    }
+  &:before {
+    content: @fa-var-filter;
+  }
 }
 
 .icon.favorite:checked {
-    color: @favorite-star-color;
+  color: @favorite-star-color;
 
-    &:before {
-        content: @fa-var-star;
-    }
+  &:before {
+    content: @fa-var-star;
+  }
 }
 
 .icon.favorite {
-    &:before {
-        content: @fa-var-star-o;
-    }
+  &:before {
+    content: @fa-var-star-o;
+  }
 }
 
 .icon.folder {
-    color: @folder-color;
-    transition: transform linear 300ms;
-    &:before {
-        content: @fa-var-caret-right;
-    }
+  color: @folder-color;
+  transition: transform linear 300ms;
+  &:before {
+    content: @fa-var-caret-right;
+  }
 }
 
 .icon.folder.open {
-    transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .icon.refresh {
-    color: @refresh-icon-disabled-color;
-    &:before {
-        content: @fa-var-refresh;
-    }
+  color: @refresh-icon-disabled-color;
+  &:before {
+    content: @fa-var-refresh;
+  }
 }
 
 .icon.refresh.on {
-    color: @refresh-icon-enabled-color;
+  color: @refresh-icon-enabled-color;
 }
 
 .icon.checkbox {
-    &:before {
-        content: @fa-var-square-o;
-    }
+  &:before {
+    content: @fa-var-square-o;
+  }
 
-    &.on {
-        &:before {
-            content: @fa-var-check-square-o;
-        }
+  &.on {
+    &:before {
+      content: @fa-var-check-square-o;
     }
+  }
 }
 
 .icon.edit {
-    &:before {
-        content: @fa-var-list;
-    }
+  &:before {
+    content: @fa-var-list;
+  }
 }
 
 .icon.buffer {
-    &:before {
-        content: "\e0bb";
-    }
+  &:before {
+    content: "\e0bb";
+  }
 }
 
 .icon.save {
-    &:before {
-        content: @fa-var-check;
-    }
+  &:before {
+    content: @fa-var-check;
+  }
 }
 
 .icon.cancel {
-    &:before {
-        content: @fa-var-ban;
-    }
+  &:before {
+    content: @fa-var-ban;
+  }
 }
 
 .icon.undo {
-    &:before {
-        content: @fa-var-undo;
-    }
+  &:before {
+    content: @fa-var-undo;
+  }
 }
 
 .icon.stop {
-    &:before {
-        content: @fa-var-stop;
-    }
+  &:before {
+    content: @fa-var-stop;
+  }
 }
 
 .icon.zoom-in {
-    &:before {
-        content: "\e001";
-    }
+  &:before {
+    content: "\e001";
+  }
 }
 
 .icon.zoom-out {
-    &:before {
-        content: "\e002";
-    }
+  &:before {
+    content: "\e002";
+  }
 }
 
 .icon.radio {
-    &:before {
-        content: @fa-var-circle-o;
-    }
+  &:before {
+    content: @fa-var-circle-o;
+  }
 
-    &.on {
-        &:before {
-            content: @fa-var-check-circle-o;
-        }
+  &.on {
+    &:before {
+      content: @fa-var-check-circle-o;
     }
+  }
 }
