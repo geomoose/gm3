@@ -36,16 +36,24 @@
       align-items: center;
 
       input[type="checkbox"] {
+        /* force fontawesome for the checkbox */
+        .fa;
         border: none;
 
         &::before {
-          content: "\2b9e";
-          transition: 120ms transform ease-in-out;
-          transform: rotate(0deg) translateY(-0.5em) translateX(-0.125em);
+          display: inline-block;
+          content: @fa-var-chevron-right;
+          transform: translateX(50%) translateY(0%);
         }
 
-        &:checked::before {
-          transform: rotate(90deg) translateY(-0.5em) translateX(-0.125em);
+        transition: 120ms transform ease-in-out;
+        transform: rotate(0deg);
+
+        &:checked {
+          transform: rotate(90deg);
+          &::before {
+            transform: translateX(50%) translateY(-50%);
+          }
         }
       }
 
