@@ -31,14 +31,14 @@ const CatalogGroup = ({ group, onExpand, children }) => {
   const classes = "group " + (!!group.expand ? "gm-expand" : "gm-collapse");
   return (
     <div key={group.id} className={classes}>
-      <div className="group-label" title={t(group.tip)}>
+      <div className="group-label" title={t(group.tip)} onClick={onExpand}>
         <input
           className="group-toggle icon"
           type="checkbox"
           checked={!!group.expand}
           onChange={onExpand}
         />
-        <span onClick={onExpand}>
+        <span>
           {t(group.label)}{" "}
           {!group.metadata_url ? (
             false
