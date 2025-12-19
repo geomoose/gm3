@@ -29,9 +29,7 @@ import { Provider } from "react-redux";
 import { createStore } from "gm3/store";
 
 import SmartToolbar, { Toolbar } from "gm3/components/toolbar";
-import SmartToolbarButton, {
-  ToolbarButton,
-} from "gm3/components/toolbar/button";
+import SmartToolbarButton, { ToolbarButton } from "gm3/components/toolbar/button";
 import ToolbarDrawer from "gm3/components/toolbar/drawer";
 
 import * as actions from "gm3/actions/toolbar";
@@ -122,9 +120,7 @@ describe("Toolbar component tests", () => {
 
     const parser = new DOMParser();
     const xml = parser.parseFromString(toolbarXml, "text/xml");
-    const results = actions.parseToolbar(
-      xml.getElementsByTagName("toolbar")[0]
-    );
+    const results = actions.parseToolbar(xml.getElementsByTagName("toolbar")[0]);
 
     results.forEach((action) => {
       store.dispatch(action);
@@ -158,9 +154,7 @@ describe("Toolbar component tests", () => {
       actionType: "action",
     };
 
-    const { container } = render(
-      <SmartToolbarButton tool={tool} store={store} />
-    );
+    const { container } = render(<SmartToolbarButton tool={tool} store={store} />);
     fireEvent.click(container.getElementsByClassName("tool")[0]);
 
     expect(store.getState().ui.action).toBe("sample0");

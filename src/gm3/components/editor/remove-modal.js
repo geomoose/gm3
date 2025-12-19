@@ -45,6 +45,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 });
 
-export default withTranslation()(
-  connect(mapStateToProps, mapDispatchToProps)(RemoveModal)
-);
+export default withTranslation()(connect(mapStateToProps, mapDispatchToProps)(RemoveModal));

@@ -30,11 +30,7 @@ import { withTranslation } from "react-i18next";
 import * as mapSourceActions from "../../actions/mapSource";
 import * as mapActions from "../../actions/map";
 import { removeFeature, setEditFeature } from "../../actions/edit";
-import {
-  setCursor,
-  updateSketchGeometry,
-  resizeMap,
-} from "../../actions/cursor";
+import { setCursor, updateSketchGeometry, resizeMap } from "../../actions/cursor";
 
 import { getHighlightResults } from "../../selectors/query";
 
@@ -87,10 +83,7 @@ function getControls(mapConfig) {
   if (mapConfig.allowRotate !== false) {
     controls.push(new olRotateControl());
   }
-  const scaleLineConf = Object.assign(
-    { enabled: false, units: "metric" },
-    mapConfig.scaleLine
-  );
+  const scaleLineConf = Object.assign({ enabled: false, units: "metric" }, mapConfig.scaleLine);
   if (scaleLineConf.enabled !== false) {
     controls.push(new olScaleLine({ units: scaleLineConf.units }));
   }
@@ -112,12 +105,7 @@ const getPixelTolerance = (querySource, defaultPx = 10) => {
   return pxTolerance;
 };
 
-const applyPixelTolerance = (
-  queryFeature,
-  querySource,
-  resolution,
-  defaultPxTolerance
-) => {
+const applyPixelTolerance = (queryFeature, querySource, resolution, defaultPxTolerance) => {
   const pxTolerance = getPixelTolerance(querySource, defaultPxTolerance);
   if (pxTolerance > 0 && queryFeature.geometry.type === "Point") {
     // buffer point is in pixels,
@@ -173,12 +161,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
-        vectorLayer.updateLayer(
-          this.map,
-          olLayer,
-          mapSource,
-          this.props.mapView.interactionType
-        );
+        vectorLayer.updateLayer(this.map, olLayer, mapSource, this.props.mapView.interactionType);
         break;
       case "bing":
         bingLayer.updateLayer(this.map, olLayer, mapSource);
@@ -222,9 +205,7 @@ class Map extends React.Component {
       case "blank":
         return createBlankLayer();
       default:
-        throw new Error(
-          "Unhandled creation of map-source type: " + mapSource.type
-        );
+        throw new Error("Unhandled creation of map-source type: " + mapSource.type);
     }
   }
 
@@ -285,13 +266,8 @@ class Map extends React.Component {
           features: this.props.highlightResults,
         })
       );
-    } else if (
-      this.props.highlightResults &&
-      this.props.highlightResults.length > 0
-    ) {
-      console.error(
-        'No "results" layer has been defined, cannot do smart query rendering.'
-      );
+    } else if (this.props.highlightResults && this.props.highlightResults.length > 0) {
+      console.error('No "results" layer has been defined, cannot do smart query rendering.');
     }
   }
 
@@ -355,20 +331,14 @@ class Map extends React.Component {
    *
    */
   addSelectionFeatures(inFeatures, inBuffer) {
-    const features = inFeatures.map((feature) =>
-      GEOJSON_FORMAT.writeFeatureObject(feature)
-    );
+    const features = inFeatures.map((feature) => GEOJSON_FORMAT.writeFeatureObject(feature));
     const buffer = inBuffer !== 0 && !isNaN(inBuffer) ? inBuffer : 0;
 
     let bufferedFeature = features;
 
     if (buffer !== 0) {
       // buffer + union the features
-      const wgs84Features = util.projectFeatures(
-        features,
-        "EPSG:3857",
-        "EPSG:4326"
-      );
+      const wgs84Features = util.projectFeatures(features, "EPSG:3857", "EPSG:4326");
 
       // buffer those features.
       bufferedFeature = [
@@ -547,19 +517,13 @@ class Map extends React.Component {
 
         this.drawTool.on("select", (evt) => {
           const selectedFeatures = evt.target.getFeatures();
-          this.addSelectionFeatures(
-            selectedFeatures.getArray(),
-            this.props.selectionBuffer
-          );
+          this.addSelectionFeatures(selectedFeatures.getArray(), this.props.selectionBuffer);
         });
       } else if (type === "Modify" || type === "Edit" || type === "Remove") {
         let layer = null;
         if (path !== null) {
           try {
-            layer = mapSourceActions.getLayerFromPath(
-              this.props.mapSources,
-              path
-            );
+            layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
           } catch (err) {
             // swallow the error if the layer can't be found.
           }
@@ -581,21 +545,13 @@ class Map extends React.Component {
               this.props.onEditProperties(editFeatures[0]);
             } else if (type === "Modify") {
               // unset the edit-selection tool
-              this.props.changeTool(
-                "_Modify",
-                `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`
-              );
+              this.props.changeTool("_Modify", `${EDIT_LAYER_NAME}/${EDIT_LAYER_NAME}`);
             }
           }
         };
 
-        if (
-          isSelection ||
-          ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0
-        ) {
-          const layers = isSelection
-            ? [this.selectionLayer]
-            : [this.olLayers[mapSourceName]];
+        if (isSelection || ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0) {
+          const layers = isSelection ? [this.selectionLayer] : [this.olLayers[mapSourceName]];
 
           this.drawTool = new olSelectInteraction({
             layers,
@@ -675,10 +631,7 @@ class Map extends React.Component {
             const newFeature = GEOJSON_FORMAT.writeFeatureObject(evt.feature);
             editSrc.clear();
 
-            const layer = mapSourceActions.getLayerFromPath(
-              this.props.mapSources,
-              path
-            );
+            const layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
 
             let querySource = mapSource;
             if (layer.queryAs && layer.queryAs.length > 0) {
@@ -686,12 +639,7 @@ class Map extends React.Component {
               querySource = this.props.mapSources[querySourceName];
             }
 
-            if (
-              util.parseBoolean(
-                querySource.config["edit-attributes-on-add"],
-                true
-              )
-            ) {
+            if (util.parseBoolean(querySource.config["edit-attributes-on-add"], true)) {
               this.props.setEditPath(path);
               this.props.onEditProperties(newFeature, true);
             } else {
@@ -912,11 +860,7 @@ class Map extends React.Component {
           this.mapDiv = self;
         }}
       >
-        <ReactResizeDetector
-          handleWidth
-          handleHeight
-          onResize={this.updateMapSize}
-        />
+        <ReactResizeDetector handleWidth handleHeight onResize={this.updateMapSize} />
         <AttributionDisplay store={this.props.store} />
 
         <EditorModal store={this.props.store} />
@@ -931,10 +875,7 @@ class Map extends React.Component {
               if (path === null) {
                 // convert the feature back to OL
                 const olFeature = GEOJSON_FORMAT.readFeature(feature);
-                this.addSelectionFeatures(
-                  [olFeature],
-                  this.props.selectionBuffer
-                );
+                this.addSelectionFeatures([olFeature], this.props.selectionBuffer);
               } else {
                 this.props.saveFeature(path, feature);
               }
@@ -1017,11 +958,7 @@ export default connect(mapState, mapDispatch)(withTranslation()(Map));
 export function getLegend(mapSource, mapView, layerName) {
   // see if the layer has a fixed legend.
   for (const layer of mapSource.layers) {
-    if (
-      layer.name === layerName &&
-      layer.legend !== undefined &&
-      layer.legend !== null
-    ) {
+    if (layer.name === layerName && layer.legend !== undefined && layer.legend !== null) {
       // translate from the store represenation to
       // what's used to render the legend.
       if (layer.legend.type === "html") {

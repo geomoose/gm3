@@ -1,10 +1,6 @@
 import { connect } from "react-redux";
 import { finishEditing } from "../../actions/edit";
-import {
-  clearFeatures,
-  saveFeature,
-  getLayerFromPath,
-} from "../../actions/mapSource";
+import { clearFeatures, saveFeature, getLayerFromPath } from "../../actions/mapSource";
 import { getMapSourceName } from "../../util";
 import { EDIT_LAYER_NAME } from "../../defaults";
 import Modal from "./modal";

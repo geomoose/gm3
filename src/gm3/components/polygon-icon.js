@@ -24,14 +24,7 @@
 
 import React from "react";
 
-export const PolygonIcon = ({
-  geometry,
-  width,
-  height,
-  padding,
-  outline,
-  stroke,
-}) => {
+export const PolygonIcon = ({ geometry, width, height, padding, outline, stroke }) => {
   if (geometry.type !== "Polygon" || geometry.coordinates.length > 1) {
     // do something to return the null case.
     return false;
@@ -77,9 +70,7 @@ export const PolygonIcon = ({
 
   return (
     <svg
-      viewBox={`${-1 * padding} ${-1 * padding} ${width + padding * 2} ${
-        height + padding * 2
-      }`}
+      viewBox={`${-1 * padding} ${-1 * padding} ${width + padding * 2} ${height + padding * 2}`}
       height={height}
       width={width}
     >

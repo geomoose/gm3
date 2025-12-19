@@ -8,7 +8,7 @@ global.requestAnimationFrame = function (callback) {
 
 try {
   require("canvas");
-} catch (err) {
+} catch () {
   global.HAS_CANVAS = false;
   global.HTMLCanvasElement = function () {};
   global.HTMLCanvasElement.prototype.getContext = () => {

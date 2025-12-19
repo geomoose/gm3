@@ -59,6 +59,8 @@ export default [
       ...jest.configs.recommended.rules,
       "prettier/prettier": "error",
       camelcase: "warn",
+      // prop-types are deprecated as of react 18
+      "react/prop-types": 0
     },
   },
   prettier,

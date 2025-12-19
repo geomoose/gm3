@@ -35,7 +35,7 @@ import { useTranslation } from "react-i18next";
 const ToolbarDrawer = ({ label, tip, tools, services }) => {
   const { t } = useTranslation();
   const drawerLabel = t(label);
-  const drawerTip = !!tip ? t(tip) : drawerLabel;
+  const drawerTip = tip ? t(tip) : drawerLabel;
 
   const [sticky, setSticky] = useState(false);
   const className = sticky ? "drawer sticky" : "drawer";
@@ -72,9 +72,7 @@ const ToolbarDrawer = ({ label, tip, tools, services }) => {
           <ToolbarButton
             key={`btn${i}`}
             tool={tool}
-            serviceDef={
-              tool.actionType === "service" ? services[tool.name] : undefined
-            }
+            serviceDef={tool.actionType === "service" ? services[tool.name] : undefined}
           />
         ))}
       </div>

@@ -30,14 +30,10 @@
  */
 function FindMeAction(Application, options) {
   // allow the targetting of a layer, but default to the highlight layer
-  this.targetLayer = options.targetLayer
-    ? options.targetLayer
-    : "sketch/default";
+  this.targetLayer = options.targetLayer ? options.targetLayer : "sketch/default";
 
   // default the map projection to web-mercator
-  this.mapProjection = options.mapProjection
-    ? options.mapProjection
-    : "EPSG:3857";
+  this.mapProjection = options.mapProjection ? options.mapProjection : "EPSG:3857";
 
   // Buffer is the distance in map coordinates to buffer around
   //  the points when zooming to it's extent, defaults to 100m
@@ -83,11 +79,7 @@ function FindMeAction(Application, options) {
     };
 
     // put the feature in map projection.
-    const mapFeature = gm3.util.projectFeatures(
-      [fakeFeature],
-      "EPSG:4326",
-      this.mapProjection
-    )[0];
+    const mapFeature = gm3.util.projectFeatures([fakeFeature], "EPSG:4326", this.mapProjection)[0];
 
     // mark the location in the highlight layer
     Application.addFeatures(this.targetLayer, mapFeature);

@@ -57,13 +57,13 @@ const defaultState = {
 const reducer = createReducer(defaultState, {
   [setView]: (state, { payload }) => {
     state.extent = null;
-    if (Boolean(payload.center)) {
+    if (payload.center) {
       state.center = payload.center;
     }
-    if (Boolean(payload.zoom)) {
+    if (payload.zoom) {
       state.zoom = payload.zoom;
     }
-    if (Boolean(payload.resolution)) {
+    if (payload.resolution) {
       state.resolution = payload.resolution;
       state.zoom = null;
     }

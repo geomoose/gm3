@@ -33,11 +33,7 @@ export function isFavorite(mapSources, layer) {
   for (let i = 0, ii = layer.src.length; i < ii; i++) {
     const src = layer.src[i];
 
-    const mapSourceLayer = getLayerFromSources(
-      mapSources,
-      src.mapSourceName,
-      src.layerName
-    );
+    const mapSourceLayer = getLayerFromSources(mapSources, src.mapSourceName, src.layerName);
     fav = fav && mapSourceLayer.favorite;
   }
   return fav;
@@ -45,10 +41,7 @@ export function isFavorite(mapSources, layer) {
 
 class LayerFavorite extends React.Component {
   render() {
-    const isFavoriteLayer = !!isFavorite(
-      this.props.mapSources,
-      this.props.layer
-    );
+    const isFavoriteLayer = !!isFavorite(this.props.mapSources, this.props.layer);
     return (
       <input
         type="checkbox"

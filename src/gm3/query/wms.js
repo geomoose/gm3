@@ -32,12 +32,7 @@ export const wmsGetFeatureInfoQuery = (layer, mapState, mapSource, query) => {
     INFO_FORMAT: "application/vnd.ogc.gml",
   };
 
-  const infoUrl = src.getFeatureInfoUrl(
-    coords,
-    mapState.resolution,
-    mapState.projection,
-    params
-  );
+  const infoUrl = src.getFeatureInfoUrl(coords, mapState.resolution, mapState.projection, params);
 
   return fetch(infoUrl, {
     headers: {
@@ -51,9 +46,7 @@ export const wmsGetFeatureInfoQuery = (layer, mapState, mapSource, query) => {
       if (responseText) {
         const gmlFormat = new WMSGetFeatureInfoFormat();
         const features = gmlFormat.readFeatures(responseText);
-        const jsFeatures = new GeoJSONFormat().writeFeaturesObject(
-          features
-        ).features;
+        const jsFeatures = new GeoJSONFormat().writeFeaturesObject(features).features;
 
         return {
           layer,

@@ -55,9 +55,7 @@ export function renderTree(dispatch, tree, id, resolution, filter = allLayers) {
           dispatch(setGroupExpand(id, node.expand !== true));
         }}
       >
-        {node.children.map((childId) =>
-          renderTree(dispatch, tree, childId, resolution, filter)
-        )}
+        {node.children.map((childId) => renderTree(dispatch, tree, childId, resolution, filter))}
       </CatalogGroup>
     );
   } else {
@@ -69,35 +67,21 @@ export function renderTree(dispatch, tree, id, resolution, filter = allLayers) {
   }
 }
 
-export function renderFlatTree(
-  dispatch,
-  tree,
-  id,
-  resolution,
-  filter = allLayers
-) {
+export function renderFlatTree(dispatch, tree, id, resolution, filter = allLayers) {
   const node = tree[id];
 
   let elements = [];
 
   if (node.children) {
     for (let i = 0, ii = node.children.length; i < ii; i++) {
-      const sublayers = renderFlatTree(
-        dispatch,
-        tree,
-        node.children[i],
-        resolution,
-        filter
-      );
+      const sublayers = renderFlatTree(dispatch, tree, node.children[i], resolution, filter);
       if (sublayers.length > 0) {
         elements = elements.concat(sublayers);
       }
     }
   } else {
     if (filter(node)) {
-      elements.push(
-        <CatalogLayer key={id} layer={node} resolution={resolution} />
-      );
+      elements.push(<CatalogLayer key={id} layer={node} resolution={resolution} />);
     }
   }
 
@@ -114,9 +98,7 @@ export class Catalog extends React.Component {
   }
 
   render() {
-    const catalogClasses = this.props.showSearch
-      ? "catalog searchable"
-      : "catalog";
+    const catalogClasses = this.props.showSearch ? "catalog searchable" : "catalog";
 
     const filter = (layer) => {
       if (this.state.searchFilter !== "") {
@@ -148,12 +130,7 @@ export class Catalog extends React.Component {
           )}
           {this.state.searchFilter === ""
             ? this.props.catalog.root.children.map((childId) =>
-                renderTree(
-                  this.props.dispatch,
-                  this.props.catalog,
-                  childId,
-                  this.props.resolution
-                )
+                renderTree(this.props.dispatch, this.props.catalog, childId, this.props.resolution)
               )
             : this.props.catalog.root.children.map((childId) =>
                 renderFlatTree(

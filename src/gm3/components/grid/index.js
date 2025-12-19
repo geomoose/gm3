@@ -190,10 +190,7 @@ class Grid extends React.Component {
     //          start here!
     // This code is potentially fragile but keeps the table
     //  templates backwards compatible.
-    const strippedHTML = html.substring(
-      html.indexOf("<td"),
-      html.lastIndexOf("</td>") + 5
-    );
+    const strippedHTML = html.substring(html.indexOf("<td"), html.lastIndexOf("</td>") + 5);
     // get the contents of the "<td>" cells
     const tmpElement = document.createElement("tr");
     tmpElement.innerHTML = strippedHTML;
@@ -300,8 +297,7 @@ class Grid extends React.Component {
 
         if (layer !== null && !!layer.templates) {
           const columnTemplate =
-            layer.templates[serviceName + "-grid-columns"] ||
-            layer.templates.gridColumns;
+            layer.templates[serviceName + "-grid-columns"] || layer.templates.gridColumns;
 
           // try to parse the grid columns
           if (columnTemplate && typeof columnTemplate.contents === "object") {
@@ -314,9 +310,7 @@ class Grid extends React.Component {
             }
           }
 
-          const rowTemplate =
-            layer.templates[serviceName + "-grid-row"] ||
-            layer.templates.gridRow;
+          const rowTemplate = layer.templates[serviceName + "-grid-row"] || layer.templates.gridRow;
 
           if (rowTemplate) {
             gridRow = rowTemplate.contents;
@@ -324,10 +318,7 @@ class Grid extends React.Component {
 
           if (gridColumns && gridRow) {
             // render as a grid.
-            features = matchFeatures(
-              query.results[layerPath],
-              this.props.filters
-            );
+            features = matchFeatures(query.results[layerPath], this.props.filters);
             if (query.results[layerPath].length > 0) {
               displayTable = true;
             }

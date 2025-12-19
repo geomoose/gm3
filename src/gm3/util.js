@@ -401,11 +401,7 @@ export function changeFeatures(features, filter, properties, geometry) {
     if (featureMatch(feature, filter)) {
       const newFeature = Object.assign({}, feature);
       if (properties) {
-        newFeature.properties = Object.assign(
-          {},
-          feature.properties,
-          properties
-        );
+        newFeature.properties = Object.assign({}, feature.properties, properties);
       }
       if (geometry) {
         newFeature.geometry = Object.assign({}, geometry);
@@ -500,11 +496,7 @@ export function configureProjections(p4) {
       const projAlias = "UTM" + utmZone + (north === "north" ? "N" : "S");
       // it's nice to have a formulary.
       const projString =
-        "+proj=utm +zone=" +
-        utmZone +
-        " +" +
-        north +
-        "+datum=WGS84 +units=m +no_defs";
+        "+proj=utm +zone=" + utmZone + " +" + north + "+datum=WGS84 +units=m +no_defs";
 
       // set up the standard way of calling the projection
       //  (using the EPSG Code)
@@ -599,8 +591,7 @@ export function convertLength(length, srcUnits, destUnits) {
 export function convertArea(area, srcUnits, destUnits) {
   // US survey feet, miles
   return (
-    (area * Math.pow(EQUIVALENT_METERS[srcUnits], 2)) /
-    Math.pow(EQUIVALENT_METERS[destUnits], 2)
+    (area * Math.pow(EQUIVALENT_METERS[srcUnits], 2)) / Math.pow(EQUIVALENT_METERS[destUnits], 2)
   );
 }
 

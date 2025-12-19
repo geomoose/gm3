@@ -35,11 +35,7 @@ import { startService } from "../../actions/query";
 import { runAction } from "../../actions/ui";
 
 export const BaseToolbarButton = ({ onClick, className, label, tip }) => (
-  <button
-    className={`toolbar-button ${className}`}
-    onClick={onClick}
-    title={tip || label}
-  >
+  <button className={`toolbar-button ${className}`} onClick={onClick} title={tip || label}>
     <span className="icon"></span>
     <span className="label">{label}</span>
   </button>
@@ -55,7 +51,7 @@ export const ToolbarButton = ({
 }) => {
   const { t } = useTranslation();
   const label = t(tool.label);
-  const tip = !!tool.tip ? t(tool.tip) : label;
+  const tip = tool.tip ? t(tool.tip) : label;
   const active = tool.name === currentService;
 
   const onClick = useCallback(() => {
@@ -76,9 +72,7 @@ export const ToolbarButton = ({
       onClick={onClick}
       label={label}
       tip={tip}
-      className={`${active ? "active " : ""}${
-        tool.cssClass || "tool " + tool.name
-      }`}
+      className={`${active ? "active " : ""}${tool.cssClass || "tool " + tool.name}`}
     />
   );
 };

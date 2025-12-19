@@ -83,8 +83,7 @@ class UploadModal extends Modal {
       return (
         <div>
           <p>
-            <span className="upload spinner"></span>{" "}
-            {this.props.t("upload-uploading")}
+            <span className="upload spinner"></span> {this.props.t("upload-uploading")}
           </p>
         </div>
       );
@@ -104,9 +103,7 @@ class UploadModal extends Modal {
       }
       return (
         <div>
-          <p>
-            {this.props.t("upload-uploaded", { count: this.state.features })}
-          </p>
+          <p>{this.props.t("upload-uploaded", { count: this.state.features })}</p>
           {error}
         </div>
       );
@@ -184,9 +181,7 @@ class UploadModal extends Modal {
             //       from the map-view!!!
             let invalidCount = 0;
             for (const f of olFeatures) {
-              f.setGeometry(
-                f.getGeometry().transform("EPSG:4326", "EPSG:3857")
-              );
+              f.setGeometry(f.getGeometry().transform("EPSG:4326", "EPSG:3857"));
 
               if (isValidFeature(f)) {
                 validFeatures.push(f);

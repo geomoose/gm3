@@ -27,12 +27,7 @@
  *
  */
 
-import {
-  parseBoolean,
-  transformProperties,
-  joinUrl,
-  requEstimator,
-} from "../../../util";
+import { parseBoolean, transformProperties, joinUrl, requEstimator } from "../../../util";
 
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
@@ -81,9 +76,7 @@ function defineSource(mapSource) {
       projection: "EPSG:4326",
       url: function (extent) {
         if (typeof mapSource.params.typename === "undefined") {
-          console.error(
-            'No "typename" param defined for a WFS layer. This will fail.'
-          );
+          console.error('No "typename" param defined for a WFS layer. This will fail.');
         }
 
         const urlParams = Object.assign(
@@ -204,9 +197,7 @@ function defineSource(mapSource) {
                     type: "jsonp",
                     success: (response) => {
                       if (response.error) {
-                        console.error(
-                          "Error loading feature batch for " + mapSource.label
-                        );
+                        console.error("Error loading feature batch for " + mapSource.label);
                       } else {
                         this.addFeatures(
                           esriFormat.readFeatures(response, {
@@ -258,8 +249,7 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
         const glLayerType = order[o];
         let filterFn = (n) => n.indexOf(glLayerType) === 0;
         if (glLayerType === "symbol") {
-          filterFn = (n) =>
-            n.indexOf("symbol") === 0 || n.indexOf("text") === 0;
+          filterFn = (n) => n.indexOf("symbol") === 0 || n.indexOf("text") === 0;
         }
         const validKeys = Object.keys(layer.style).filter(filterFn);
         if (validKeys.length > 0) {
@@ -324,9 +314,7 @@ export function createLayer(mapSource, styleLayer = applyStyle) {
   if (mapSource.transforms) {
     source.on("addfeature", function (evt) {
       const f = evt.feature;
-      f.setProperties(
-        transformProperties(mapSource.transforms, f.getProperties())
-      );
+      f.setProperties(transformProperties(mapSource.transforms, f.getProperties()));
     });
   }
 
@@ -344,13 +332,7 @@ export function createLayer(mapSource, styleLayer = applyStyle) {
 
 /** Ensure that the Vector parameters all match.
  */
-export function updateLayer(
-  map,
-  layer,
-  mapSource,
-  mapTool,
-  styleLayer = applyStyle
-) {
+export function updateLayer(map, layer, mapSource, mapTool, styleLayer = applyStyle) {
   if (mapSource.type === "vector" || mapSource.type === "measure") {
     // vector layer features are defined by what
     // is stored in mapSource.features

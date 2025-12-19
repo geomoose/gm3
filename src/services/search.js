@@ -34,14 +34,10 @@ function SearchService(Application, options) {
   this.title = options.title ? options.title : "Search";
 
   /** Title to show at the top of the results. */
-  this.resultsTitle = options.resultsTitle
-    ? options.resultsTitle
-    : "Search Results";
+  this.resultsTitle = options.resultsTitle ? options.resultsTitle : "Search Results";
 
   /** Header template for rendering before features. */
-  this.headerTemplate = options.headerTemplate
-    ? options.headerTemplate
-    : "@search-header";
+  this.headerTemplate = options.headerTemplate ? options.headerTemplate : "@search-header";
 
   /** Template to use for rendering returned features. */
   this.template = options.template ? options.template : "@search";
@@ -50,9 +46,7 @@ function SearchService(Application, options) {
   this.showGrid = options.showGrid !== undefined ? options.showGrid : true;
 
   /** Footer template for rendering before features. */
-  this.footerTemplate = options.footerTemplate
-    ? options.footerTemplate
-    : "@search-footer";
+  this.footerTemplate = options.footerTemplate ? options.footerTemplate : "@search-footer";
 
   /** Name will be set by the application when the service is registered. */
   this.name = "";
@@ -113,9 +107,7 @@ function SearchService(Application, options) {
       };
 
   /** Define the results layer */
-  this.resultsPath = options.resultsPath
-    ? options.resultsPath
-    : "results/results";
+  this.resultsPath = options.resultsPath ? options.resultsPath : "results/results";
 
   /** This function is called everytime a search is executed.
    *
@@ -130,7 +122,7 @@ function SearchService(Application, options) {
     // check which templates should try and load
     var templates = [this.template];
     if (this.showGrid) {
-      const templateName = !!this.alias ? this.alias : this.name;
+      const templateName = this.alias ? this.alias : this.name;
       templates.push("@" + templateName + "-grid-columns");
       templates.push("@" + templateName + "-grid-row");
     }
@@ -170,11 +162,7 @@ function SearchService(Application, options) {
         //  template from the mapbook.
         // The layer in the mapbook should have a <template name='identify'>
         //  child which will be rendered here..
-        html += Application.renderFeaturesWithTemplate(
-          query,
-          path,
-          this.template
-        );
+        html += Application.renderFeaturesWithTemplate(query, path, this.template);
       }
 
       // and footer contents.

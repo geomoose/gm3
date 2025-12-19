@@ -59,11 +59,7 @@ class DrawTool extends React.Component {
       const sourceName = getMapSourceName(path);
       const layerName = getLayerName(path);
 
-      const label = getLayerFromSources(
-        this.props.mapSources,
-        sourceName,
-        layerName
-      ).label;
+      const label = getLayerFromSources(this.props.mapSources, sourceName, layerName).label;
       options.push(
         <option key={path} value={path}>
           {label}
@@ -77,10 +73,7 @@ class DrawTool extends React.Component {
   componentDidMount() {
     // if starting up with the select tool,
     //  ensure there is a valid active layer.
-    if (
-      this.props.interactionType === "Select" &&
-      this.props.geomType === "Select"
-    ) {
+    if (this.props.interactionType === "Select" && this.props.geomType === "Select") {
       const firstLayer = this.props.selectableLayers[0];
       this.setState({ selectLayer: firstLayer });
       this.props.onChange("Select", firstLayer);
@@ -103,10 +96,7 @@ class DrawTool extends React.Component {
 
     if (gtype === "Select") {
       selectOptions = (
-        <select
-          value={this.state.selectLayer}
-          onChange={this.changeSelectLayer}
-        >
+        <select value={this.state.selectLayer} onChange={this.changeSelectLayer}>
           {this.getSelectOptions()}
         </select>
       );
@@ -131,9 +121,7 @@ class DrawTool extends React.Component {
           {selectOptions}
 
           {selected && this.props.i18n.exists(helperText) && (
-            <div className="helper-text info-box">
-              {this.props.t(helperText)}
-            </div>
+            <div className="helper-text info-box">{this.props.t(helperText)}</div>
           )}
         </span>
       </div>

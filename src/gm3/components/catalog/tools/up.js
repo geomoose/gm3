@@ -36,10 +36,7 @@ export class UpTool extends React.Component {
   onClick() {
     // this is the map-source to go "up"
     const upSrc = this.props.layer.src[0];
-    const layerOrder = getLayersByZOrder(
-      this.props.catalog,
-      this.props.mapSources
-    );
+    const layerOrder = getLayersByZOrder(this.props.catalog, this.props.mapSources);
 
     const actions = [];
     for (let i = 0, ii = layerOrder.length; i < ii; i++) {

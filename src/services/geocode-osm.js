@@ -27,9 +27,7 @@ function OSMGeocoder(Application, options) {
   this.title = options.title ? options.title : "Search address";
 
   /** Title to show at the top of the results. */
-  this.resultsTitle = options.resultsTitle
-    ? options.resultsTitle
-    : "Address search results";
+  this.resultsTitle = options.resultsTitle ? options.resultsTitle : "Address search results";
 
   /** There are no tools for the geocoder, just the search field. */
   this.tools = {};
@@ -44,9 +42,7 @@ function OSMGeocoder(Application, options) {
   ];
 
   /** Define the highlight layer */
-  this.targetLayer = options.targetLayer
-    ? options.targetLayer
-    : "results/results";
+  this.targetLayer = options.targetLayer ? options.targetLayer : "results/results";
 
   /** This template is specified in HTML instead of referring to a
    *  layer's set of named templates.  This also makes an assumption about the name
@@ -74,11 +70,7 @@ function OSMGeocoder(Application, options) {
     // TODO: Handle errors from the GeoCoder service better.
     if (true) {
       // get the addresses from the results set.
-      html += Application.renderFeaturesWithTemplate(
-        query,
-        this.targetLayer,
-        this.template
-      );
+      html += Application.renderFeaturesWithTemplate(query, this.targetLayer, this.template);
     }
 
     return html;

@@ -29,9 +29,7 @@ export const LineIcon = ({ width, height, padding, outline, stroke }) => {
 
   return (
     <svg
-      viewBox={`${-1 * padding} ${-1 * padding} ${width + padding * 2} ${
-        height + padding * 2
-      }`}
+      viewBox={`${-1 * padding} ${-1 * padding} ${width + padding * 2} ${height + padding * 2}`}
       height={height}
       width={width}
     >

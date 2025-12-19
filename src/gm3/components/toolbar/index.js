@@ -54,9 +54,7 @@ export class Toolbar extends React.Component {
                   tool={tool}
                   key={tool.name}
                   serviceDef={
-                    tool.actionType === "service"
-                      ? this.props.services[tool.name]
-                      : undefined
+                    tool.actionType === "service" ? this.props.services[tool.name] : undefined
                   }
                 />
               );

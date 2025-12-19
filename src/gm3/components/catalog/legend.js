@@ -65,12 +65,7 @@ class CatalogLegend extends Component {
         legendIdx = 0;
         for (const imgSrc of legend.images) {
           imgTags.push(
-            <img
-              alt="layer legend"
-              key={key + legendIdx}
-              className="legend-image"
-              src={imgSrc}
-            />
+            <img alt="layer legend" key={key + legendIdx} className="legend-image" src={imgSrc} />
           );
           legendIdx += 1;
         }
@@ -99,9 +94,7 @@ class CatalogLegend extends Component {
     }
 
     // put a legend on it.
-    return (
-      <div className="catalog-legend">{layer.src.map(this.renderLegend)}</div>
-    );
+    return <div className="catalog-legend">{layer.src.map(this.renderLegend)}</div>;
   }
 }
 

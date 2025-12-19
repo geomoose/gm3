@@ -11,9 +11,7 @@ export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
   // the internal storage mechanism requires features
   //  returned from the query be stored in 4326 and then
   //  reprojected on render.
-  const queryProjection = mapSource.wgs84Hack
-    ? "EPSG:4326"
-    : mapState.projection;
+  const queryProjection = mapSource.wgs84Hack ? "EPSG:4326" : mapState.projection;
 
   // check for the outputFormat based on the params
   let outputFormat = "text/xml; subtype=gml/2.1.2";
@@ -21,14 +19,9 @@ export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
     outputFormat = mapSource.params.outputFormat;
   }
 
-  const selection = Boolean(query.selection) ? [...query.selection] : null;
+  const selection = query.selection ? [...query.selection] : null;
   if (selection && selection.length === 1) {
-    selection[0] = applyPixelTolerance(
-      selection[0],
-      mapSource,
-      mapState.resolution,
-      10
-    );
+    selection[0] = applyPixelTolerance(selection[0], mapSource, mapState.resolution, 10);
   }
 
   const wfsQueryXml = buildWfsQuery(
@@ -40,8 +33,7 @@ export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
 
   // Ensure all the extra URL params are attached to the
   //  layer.
-  const wfsUrl =
-    mapSource.urls[0] + "?" + formatUrlParameters(mapSource.params);
+  const wfsUrl = mapSource.urls[0] + "?" + formatUrlParameters(mapSource.params);
 
   const isJsonLike = outputFormat.toLowerCase().indexOf("json") > 0;
 
@@ -94,9 +86,7 @@ export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
               // feature to JSON.
               const jsFeature = jsonFormat.writeFeatureObject(feature);
               // ensure that every feature has a "boundedBy" attribute.
-              jsFeature.properties.boundedBy = feature
-                .getGeometry()
-                .getExtent();
+              jsFeature.properties.boundedBy = feature.getGeometry().getExtent();
               // add it to the stack.
               jsFeatures.push(jsFeature);
             }

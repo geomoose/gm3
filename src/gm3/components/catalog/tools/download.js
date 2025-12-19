@@ -145,11 +145,7 @@ function mapDispatch(dispatch) {
 
       // check to see if there is a filter on the specified layer
       let filter = null;
-      for (
-        let i = 0, ii = mapSource.layers.length;
-        filter === null && i < ii;
-        i++
-      ) {
+      for (let i = 0, ii = mapSource.layers.length; filter === null && i < ii; i++) {
         const layer = mapSource.layers[i];
         if (layer.name === src.layerName && layer.filter !== undefined) {
           filter = layer.filter;

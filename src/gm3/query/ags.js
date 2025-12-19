@@ -58,12 +58,7 @@ export const agsFeatureQuery = (layer, mapState, mapSource, query) => {
   };
 
   if (query.selection && query.selection.length > 0) {
-    const queryFeature = applyPixelTolerance(
-      query.selection[0],
-      mapSource,
-      mapState.resolution,
-      2
-    );
+    const queryFeature = applyPixelTolerance(query.selection[0], mapSource, mapState.resolution, 2);
     const queryGeometry = queryFeature.geometry;
 
     // make this an E**I geometry.
@@ -124,9 +119,7 @@ export const agsFeatureQuery = (layer, mapState, mapSource, query) => {
               // feature to JSON.
               const jsFeature = jsonFormat.writeFeatureObject(feature);
               // ensure that every feature has a "boundedBy" attribute.
-              jsFeature.properties.boundedBy = feature
-                .getGeometry()
-                .getExtent();
+              jsFeature.properties.boundedBy = feature.getGeometry().getExtent();
               // add it to the stack.
               jsFeatures.push(jsFeature);
             }

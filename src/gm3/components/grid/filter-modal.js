@@ -106,8 +106,7 @@ class FilterModal extends ModalDialog {
   }
 }
 
-const isEmpty = (value) =>
-  value === "" || value === null || value === undefined;
+const isEmpty = (value) => value === "" || value === null || value === undefined;
 
 /* Creates a settings Modal for lists of values.
  *
@@ -152,8 +151,7 @@ class ListFilterModal extends FilterModal {
     const selectedValues = {};
     orderedValues.forEach((value) => {
       // an empty or a full list are the same thing
-      selectedValues[value] =
-        filterValues.length === 0 || filterValues.indexOf(value) >= 0;
+      selectedValues[value] = filterValues.length === 0 || filterValues.indexOf(value) >= 0;
     });
 
     // value is an array for list types.

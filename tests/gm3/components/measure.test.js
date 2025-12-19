@@ -38,27 +38,27 @@ describe("getBearing tests", () => {
     "measure-west-abbr": "W",
   };
 
-  test("Test Due North", () => {
+  test("Due North", () => {
     const pointB = [0, 1];
     expect(getBearing(pointA, pointB, ordinalDict)).toBe("measure-due-north");
   });
-  test("Test Due East", () => {
+  test("Due East", () => {
     const pointB = [1, 0];
     expect(getBearing(pointA, pointB, ordinalDict)).toBe("measure-due-east");
   });
-  test("Test Due South", () => {
+  test("Due South", () => {
     const pointB = [0, -1];
     expect(getBearing(pointA, pointB, ordinalDict)).toBe("measure-due-south");
   });
-  test("Test Due West", () => {
+  test("Due West", () => {
     const pointB = [-1, 0];
     expect(getBearing(pointA, pointB, ordinalDict)).toBe("measure-due-west");
   });
-  test("Test NE Quad", () => {
+  test("NE Quad", () => {
     const pointB = [1, 1];
     expect(getBearing(pointA, pointB, ordinalDict)).toBe("N45-0-0E");
   });
-  test("Test SW Quad", () => {
+  test("SW Quad", () => {
     const pointB = [-1, -1];
     expect(getBearing(pointA, pointB, ordinalDict)).toBe("S45-0-0W");
   });

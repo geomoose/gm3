@@ -85,12 +85,7 @@ describe("WFS Testing", () => {
 
     const outputFormat = "application/json";
 
-    let wfsQueryXml = buildWfsQuery(
-      andQuery,
-      PARCELS_SRC,
-      new proj.get("EPSG:3857"),
-      outputFormat
-    );
+    let wfsQueryXml = buildWfsQuery(andQuery, PARCELS_SRC, new proj.get("EPSG:3857"), outputFormat);
 
     const andXml =
       '<GetFeature xmlns="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="application/json" xmlns:ns1="http://www.w3.org/2001/XMLSchema-instance" ns1:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"><Query typeName="ms:parcels" srsName="EPSG:3857"><Filter xmlns="http://www.opengis.net/ogc"><And><PropertyIsEqualTo><PropertyName>OWNER_NAME</PropertyName><Literal>peterson</Literal></PropertyIsEqualTo><PropertyIsGreaterThan><PropertyName>ACRES</PropertyName><Literal>5000</Literal></PropertyIsGreaterThan></And></Filter></Query></GetFeature>';
@@ -196,8 +191,6 @@ describe("WFS Testing", () => {
       outputFormat
     );
 
-    expect(customNameResults).toContain(
-      "<PropertyName>" + geomColumn + "</PropertyName>"
-    );
+    expect(customNameResults).toContain("<PropertyName>" + geomColumn + "</PropertyName>");
   });
 });

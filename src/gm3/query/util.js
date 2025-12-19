@@ -13,12 +13,7 @@ const getPixelTolerance = (querySource, defaultPx = 10) => {
   return pxTolerance;
 };
 
-export const applyPixelTolerance = (
-  queryFeature,
-  querySource,
-  resolution,
-  defaultPxTolerance
-) => {
+export const applyPixelTolerance = (queryFeature, querySource, resolution, defaultPxTolerance) => {
   const pxTolerance = getPixelTolerance(querySource, defaultPxTolerance);
   if (pxTolerance > 0 && queryFeature.geometry.type === "Point") {
     // buffer point is in pixels,

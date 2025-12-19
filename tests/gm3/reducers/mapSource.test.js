@@ -127,13 +127,11 @@ describe("test the `mapSources` reducer", () => {
     addTestFeature(store);
     // eslint-disable-next-line
         const fid = store.getState().mapSources.results.features[0].properties._uuid;
-    store
-      .dispatch(msActions.removeFeature("results/results", { id: fid }))
-      .then(() => {
-        const st = store.getState();
-        expect(st.mapSources.results.features.length).toBe(0);
-        done();
-      });
+    store.dispatch(msActions.removeFeature("results/results", { id: fid })).then(() => {
+      const st = store.getState();
+      expect(st.mapSources.results.features.length).toBe(0);
+      done();
+    });
   });
 
   describe("Tests with data", () => {
@@ -146,9 +144,7 @@ describe("test the `mapSources` reducer", () => {
     });
 
     it("remove features by filter", () => {
-      store.dispatch(
-        msActions.removeFeatures("results", [["<", "emv_total", 300000]])
-      );
+      store.dispatch(msActions.removeFeatures("results", [["<", "emv_total", 300000]]));
       const st = store.getState();
       expect(st.mapSources.results.features.length).toBe(3);
     });
