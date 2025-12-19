@@ -112,6 +112,8 @@ describe("test the `mapSources` reducer", () => {
 
   it("adds a vector layer", () => {
     setupMapSource(store);
+    const st = store.getState();
+    expect(st.mapSources.results).toBeDefined();
   });
 
   it("adds features to the vector layer", () => {
