@@ -36,8 +36,8 @@ const PrintPreviewImage = ({ printData, previewSize }) => {
           <li>The server supports cross-origin requests.</li>
           <li>That the cross-origin param is set in the mapbook.</li>
           <li>
-            If the server does not support cross-origin requests, set the map-source's printable
-            attribute to false.
+            If the server does not support cross-origin requests, set the map-source&apos;s
+            printable attribute to false.
           </li>
         </ol>
       </div>

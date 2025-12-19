@@ -41,14 +41,7 @@ export const BaseToolbarButton = ({ onClick, className, label, tip }) => (
   </button>
 );
 
-export const ToolbarButton = ({
-  tool,
-  runAction,
-  startService,
-  currentService,
-  currentDrawTool,
-  serviceDef,
-}) => {
+export const ToolbarButton = ({ tool, runAction, startService, currentService, serviceDef }) => {
   const { t } = useTranslation();
   const label = t(tool.label);
   const tip = tool.tip ? t(tool.tip) : label;
@@ -82,13 +75,11 @@ ToolbarButton.propTypes = {
   runAction: PropTypes.func,
   startService: PropTypes.func,
   currentService: PropTypes.string,
-  currentDrawTool: PropTypes.string,
   serviceDef: PropTypes.object,
 };
 
 const mapState = (state) => ({
   currentService: state.query.serviceName,
-  currentDrawTool: state.map.interactionType,
 });
 
 const mapDispatch = {

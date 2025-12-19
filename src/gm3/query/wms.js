@@ -60,10 +60,11 @@ export const wmsGetFeatureInfoQuery = (layer, mapState, mapSource, query) => {
         };
       }
     })
-    .catch((err, msg) => {
+    .catch((err) => {
       return {
         layer,
         error: true,
+        errorDetail: err,
         features: [],
       };
     });

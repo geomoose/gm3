@@ -124,15 +124,15 @@ describe("test the `mapSources` reducer", () => {
     expect(st.mapSources.results.features.length).toBe(1);
   });
 
-  it("removes a feature from the vector layer (by id)", (done) => {
+  it("removes a feature from the vector layer (by id)", () => {
     setupMapSource(store);
     addTestFeature(store);
     // eslint-disable-next-line
         const fid = store.getState().mapSources.results.features[0].properties._uuid;
-    store.dispatch(msActions.removeFeature("results/results", { id: fid })).then(() => {
+
+    return store.dispatch(msActions.removeFeature("results/results", { id: fid })).then(() => {
       const st = store.getState();
       expect(st.mapSources.results.features.length).toBe(0);
-      done();
     });
   });
 

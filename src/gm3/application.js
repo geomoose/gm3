@@ -377,7 +377,7 @@ class Application {
           return this.populateMapbook(content);
         });
     } else if (options.content) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         resolve(this.populateMapbook(options.content));
       });
     } else {
@@ -465,7 +465,7 @@ class Application {
    * @returns A promise for when the contents of the template is resolved.
    */
   getTemplate(path, template) {
-    const templatePromise = new Promise((resolve, reject) => {
+    const templatePromise = new Promise((resolve) => {
       if (template.substring(0, 1) === "@") {
         const templateName = template.substring(1);
         const layer = getLayerFromPath(this.store.getState().mapSources, path);
@@ -910,7 +910,7 @@ class Application {
 
   /* Short hand for toggling the highlight of features.
    */
-  highlightFeatures(filter, on) {
+  highlightFeatures(filter) {
     this.dispatch(setHotFilter(filter));
   }
 

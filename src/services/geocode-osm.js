@@ -67,10 +67,14 @@ function OSMGeocoder(Application, options) {
   this.resultsAsHtml = function (queryid, query) {
     var html = "";
 
-    // TODO: Handle errors from the GeoCoder service better.
-    if (true) {
+    try {
       // get the addresses from the results set.
       html += Application.renderFeaturesWithTemplate(query, this.targetLayer, this.template);
+    } catch (err) {
+      // let the user know something went wrong
+      html = "There was an error from the geocoding service. Try searching again later.";
+      // and output some debugging
+      console.error(err);
     }
 
     return html;

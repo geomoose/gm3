@@ -68,7 +68,7 @@ export const parseLocation = (loc) => {
     let parsed = [];
     try {
       parsed = locParts.map(parseFloat);
-    } catch (err) {
+    } catch (_err) {
       return null;
     }
 
@@ -91,7 +91,7 @@ export const parseLocation = (loc) => {
     let parsed = [];
     try {
       parsed = locParts.map(parseFloat);
-    } catch (err) {
+    } catch (_err) {
       return null;
     }
     if (parsed.length === 3) {

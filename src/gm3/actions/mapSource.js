@@ -599,7 +599,7 @@ export function getLayerFromSources(mapSources, msName, layerName) {
  *  These layers are a subset of visible layers.
  *
  */
-export function getQueryableLayers(mapSources, filter = {}, options = {}) {
+export function getQueryableLayers(mapSources, filter = {}) {
   // when visible is set to true, then any visibility will
   //  be false and the isVisible call will be evaluated.
   const reqVisible = typeof filter.requireVisible === "undefined" ? true : filter.requireVisible;

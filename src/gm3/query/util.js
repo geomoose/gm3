@@ -7,7 +7,7 @@ const getPixelTolerance = (querySource, defaultPx = 10) => {
     if (querySource.config["pixel-tolerance"]) {
       pxTolerance = parseFloat(querySource.config["pixel-tolerance"]);
     }
-  } catch (err) {
+  } catch (_err) {
     // swallow the error
   }
   return pxTolerance;

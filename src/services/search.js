@@ -67,14 +67,14 @@ function SearchService(Application, options) {
    */
   this.getSearchLayers = options.getSearchLayers
     ? options.getSearchLayers
-    : function (searchLayers, fields) {
+    : function (searchLayers, _fields) {
         return searchLayers;
       };
 
   /** Allow the user to programmatically validate form field values. */
   this.validateFieldValues = options.validateFieldValues
     ? options.validateFieldValues
-    : function (fields) {
+    : function (_fields) {
         return {
           valid: true,
           message: null,

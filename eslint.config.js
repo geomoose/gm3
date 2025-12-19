@@ -60,7 +60,16 @@ export default [
       "prettier/prettier": "error",
       camelcase: "warn",
       // prop-types are deprecated as of react 18
-      "react/prop-types": 0
+      "react/prop-types": 0,
+      // gracefully handle placeholder variables
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ],
     },
   },
   prettier,
