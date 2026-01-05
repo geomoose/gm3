@@ -52,7 +52,7 @@
     "i18next-browser-languagedetector": "^4.1.1",
     "jest": "^28.1.1",
     "json-loader": "^0.5.7",
-    "jspdf": "^3.0.1",
+    "jspdf": "^4.0.0",
     "jsts": "~1.4.0",
     "less": "^3.10.3",
     "mapskin": "^1.0.0",
