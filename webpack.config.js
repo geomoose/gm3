@@ -54,6 +54,9 @@ module.exports = env => {
             './src/index.js'
         ],
         resolve: {
+            alias: {
+              "@gm3": path.resolve(__dirname, "./src/gm3"),
+            },
             extensions: [
                 '.js', '.jsx',
             ],
@@ -99,7 +102,7 @@ module.exports = env => {
         },
         output: {
             path: __dirname + '/dist',
-            publicPath: '/',
+            publicPath: 'auto',
             filename,
             library: ['gm3'],
             libraryTarget: 'umd'

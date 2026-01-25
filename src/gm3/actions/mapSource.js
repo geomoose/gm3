@@ -527,6 +527,7 @@ function isQueryable(mapSource) {
     case "ags-vector":
     case "geojson":
     case "vector":
+    case "geoparquet":
       return true;
     default:
       return false;
@@ -691,16 +692,25 @@ export const setRefresh = createAction("mapsource/refresh", (mapSourceName, refr
 
 export const addFeatures = createAction(
   "mapsource/add-features",
-  (mapSourceName, features, copy = false) => ({
+  (mapSourceName, features, copy = false, silent = false) => ({
     payload: {
       mapSourceName,
       features,
       copy,
+      silent,
     },
   })
 );
 
-export const clearFeatures = createAction("mapsource/clear-features");
+export const clearFeatures = createAction(
+  "mapsource/clear-features",
+  (mapSourceName, silent = false) => ({
+    payload: {
+      mapSourceName,
+      silent,
+    },
+  })
+);
 
 export const removeFeatures = createAction(
   "mapsource/remove-features",

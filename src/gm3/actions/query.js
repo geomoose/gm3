@@ -125,6 +125,7 @@ export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, di
         return agsFeatureQuery(layer, state.map, mapSource, queryDef);
       case "geojson":
       case "vector":
+      case "geoparquet":
         return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
       default:
         // this is an un-supported type so just bail
