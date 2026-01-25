@@ -1,6 +1,11 @@
+import { TextDecoder, TextEncoder } from "util";
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import crypto from "crypto";
+
+global.TextDecoder = TextDecoder;
+global.TextEncoder = TextEncoder;
 
 const fetchMock = require("jest-fetch-mock");
 fetchMock.enableMocks();
@@ -27,6 +32,10 @@ window.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
+}));
+
+window.Worker = jest.fn().mockImplementation(() => ({
+  postMessage: jest.fn(),
 }));
 
 // add an i18n setup
