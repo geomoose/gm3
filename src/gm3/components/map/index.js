@@ -161,7 +161,13 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
-        vectorLayer.updateLayer(this.map, olLayer, mapSource, this.props.mapView.interactionType);
+      case "geoparquet":
+        vectorLayer.updateLayer(
+          this.map,
+          olLayer,
+          mapSource,
+          this.props.mapView.interactionType
+        );
         break;
       case "bing":
         bingLayer.updateLayer(this.map, olLayer, mapSource);
@@ -197,6 +203,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
+      case "geoparquet":
         return vectorLayer.createLayer(mapSource);
       case "bing":
         return bingLayer.createLayer(mapSource);
@@ -554,8 +561,19 @@ class Map extends React.Component {
           }
         };
 
+<<<<<<< HEAD
         if (isSelection || ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0) {
           const layers = isSelection ? [this.selectionLayer] : [this.olLayers[mapSourceName]];
+=======
+        if (
+          isSelection ||
+          ["wfs", "vector", "geojson", "geoparquet"].indexOf(mapSource.type) >=
+            0
+        ) {
+          const layers = isSelection
+            ? [this.selectionLayer]
+            : [this.olLayers[mapSourceName]];
+>>>>>>> fb8bab7 (Working rendering of GeoParquet!)
 
           this.drawTool = new olSelectInteraction({
             layers,

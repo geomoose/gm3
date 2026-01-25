@@ -87,6 +87,56 @@
         </layer>
     </map-source>
 
+    <map-source name="geoparquet-parcels" type="geoparquet" selectable="true" title="GeoParquet Parcels">
+      <!--
+      <url>https://storage.googleapis.com/gm4-demo-data/county/parcels.geoparquet</url>
+      -->
+      <url>./parcels.geoparquet</url>
+      <layer selectable="true" name="default">
+          <style><![CDATA[
+          {
+              "line-color" : "#A10038",
+              "line-width" : 2
+          }
+          ]]></style>
+
+            <template name="search"><![CDATA[
+                <div
+                    class="search-result"
+                    onmouseenter="app.highlightFeatures({'PIN' : '{{ properties.PIN }}'}, true)"
+                    onmouseleave="app.clearHighlight()"
+                >
+                    <div class="search-label">
+                        {{ properties.OWNER_NAME }}
+                    </div>
+                    <div class="search-action">
+                        <div style="padding: 2px">
+                            <a onClick="app.zoomToExtent([{{ properties.boundedBy | join }}])" class="zoomto-link">
+                                <i class="fa fa-search"></i>
+                                {{ properties.PIN }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="search-address">
+                        {{ properties.OWN_ADD_L1 }}<br/>
+                        {{ properties.OWN_ADD_L3 }}<br/>
+                    </div>
+                </div>
+            ]]></template>
+
+            <template name="select-header"><![CDATA[
+            <div class="info">
+            Parcel selection results are shown in the results grid.
+            </div>
+            ]]></template>
+
+            <template name="select-grid-columns" src="./templates/parcel-columns.json" />
+            <template name="select-grid-row" src="./templates/parcel-row.html" />
+
+            <template name="identify" src="./templates/parcels.html" />
+      </layer>
+    </map-source>
+
     <map-source name="vector-parcels" type="mapserver-wfs">
         <file>demo/parcels/parcels.map</file>
         <param name="typename" value="ms:parcels"/>
@@ -483,6 +533,8 @@
                zoomto="true" upload="true" download="true" clear="true"
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" draw-edit="true" />
+
+        <layer src="geoparquet-parcels/default" />
 
         <group title="Overlays" expand="true" tip="Layers that sit above the basemaps">
             <group title="County Layers">
