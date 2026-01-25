@@ -27,6 +27,7 @@
  */
 
 import * as util from "../../../util";
+import { objectsDiffer } from "@gm3/json";
 import Image from "ol/layer/Image";
 import ImageWMS from "ol/source/ImageWMS";
 import * as proj from "ol/proj";
@@ -90,7 +91,7 @@ export function updateLayer(map, layer, mapSource) {
   const defn = defineSource(mapSource);
 
   // if the params objects differ update them
-  if (util.objectsDiffer(defn.params, src.getParams())) {
+  if (objectsDiffer(defn.params, src.getParams())) {
     src.updateParams(defn.params);
   }
 

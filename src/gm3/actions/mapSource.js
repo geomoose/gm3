@@ -527,6 +527,7 @@ function isQueryable(mapSource) {
     case "ags-vector":
     case "geojson":
     case "vector":
+    case "geoparquet":
       return true;
     default:
       return false;
