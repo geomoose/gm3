@@ -36,6 +36,7 @@ import { getHighlightResults } from "../../selectors/query";
 
 import * as util from "../../util";
 import * as jsts from "../../jsts";
+import { clearSources } from "../../featureStore";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
 import VectorSource from "ol/source/Vector";
@@ -180,6 +181,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
+      case "geoparquet":
         vectorLayer.updateLayer(this.map, olLayer, mapSource, this.props.mapView.interactionType);
         break;
       case "bing":
@@ -219,6 +221,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
+      case "geoparquet":
         return vectorLayer.createLayer(mapSource);
       case "bing":
         return bingLayer.createLayer(mapSource);
@@ -533,6 +536,13 @@ class Map extends React.Component {
       this.map = null;
     }
 
+    // the feature store outlives individual layers. the print map is
+    //  transient and shares the main map's sources, so only the main
+    //  map releases them.
+    if (this.props.printOnly !== true) {
+      clearSources();
+    }
+
     this.olLayers = {};
     this.selectionLayer = null;
     this.sketchFeature = null;
@@ -614,7 +624,10 @@ class Map extends React.Component {
           }
         };
 
-        if (isSelection || ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0) {
+        if (
+          isSelection ||
+          ["wfs", "vector", "geojson", "geoparquet"].indexOf(mapSource.type) >= 0
+        ) {
           const layers = isSelection ? [this.selectionLayer] : [this.olLayers[mapSourceName]];
 
           this.drawTool = new olSelectInteraction({
