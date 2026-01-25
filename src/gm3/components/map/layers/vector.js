@@ -37,7 +37,7 @@ import {
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
 import EsriJsonFormat from "ol/format/EsriJSON";
-import { tile, bbox } from "ol/loadingstrategy";
+import { all, tile, bbox } from "ol/loadingstrategy";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import { createXYZ } from "ol/tilegrid";
@@ -51,6 +51,8 @@ import { EDIT_LAYER_NAME } from "../../../defaults";
 import Text from "ol/style/Text";
 import { applyStyle as applyStyleFunction } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
+
+import { createGeoParquetLoader } from "./geoparquet";
 
 // for JSONP support
 import request from "reqwest";
@@ -108,6 +110,13 @@ function defineSource(mapSource) {
       format: new GeoJSONFormat(),
       projection: mapSource.params.crs ? mapSource.params.crs : "EPSG:4326",
       url: mapSource.urls[0],
+    };
+  } else if (mapSource.type === "geoparquet") {
+    return {
+      format: new GeoJSONFormat(),
+      projection: "EPSG:4326",
+      loader: createGeoParquetLoader(mapSource.urls[0]),
+      strategy: all,
     };
   } else if (mapSource.type === "ags-vector") {
     // Add an A**GIS FeatureService layer.

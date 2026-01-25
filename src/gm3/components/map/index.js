@@ -173,6 +173,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
+      case "geoparquet":
         vectorLayer.updateLayer(
           this.map,
           olLayer,
@@ -214,6 +215,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
+      case "geoparquet":
         return vectorLayer.createLayer(mapSource);
       case "bing":
         return bingLayer.createLayer(mapSource);
@@ -591,7 +593,8 @@ class Map extends React.Component {
 
         if (
           isSelection ||
-          ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0
+          ["wfs", "vector", "geojson", "geoparquet"].indexOf(mapSource.type) >=
+            0
         ) {
           const layers = isSelection
             ? [this.selectionLayer]

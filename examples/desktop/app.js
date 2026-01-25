@@ -105,7 +105,7 @@ app.loadMapbook().then(function() {
             {type: 'text', label: 'Street/Address', name: 'OWN_ADD_L1'},
             {type: 'text', label: 'City/State/ZIP', name: 'OWN_ADD_L3', placeHolder: 'Farmington'}
         ],
-        searchLayers: ['vector-parcels/parcels'],
+        searchLayers: ['geoparquet-parcels/default'],
         validateFieldValues: function (fields) {
             let nonEmpty = 0;
             const validateFieldValuesResult = {
@@ -181,7 +181,7 @@ app.loadMapbook().then(function() {
     });
     app.registerService('select', SelectService, {
         // set the default layer
-        defaultLayer: 'vector-parcels/parcels',
+        defaultLayer: 'geoparquet-parcels/default',
         keepAlive: true,
         results: {
             showBufferAll: true,
