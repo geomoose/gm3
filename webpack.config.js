@@ -54,6 +54,9 @@ module.exports = env => {
             './src/index.js'
         ],
         resolve: {
+            alias: {
+              "@gm3": path.resolve(__dirname, "./src/gm3"),
+            },
             extensions: [
                 '.js', '.jsx',
             ],
