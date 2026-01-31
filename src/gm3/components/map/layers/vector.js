@@ -323,11 +323,26 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
 /** Return an OpenLayers Layer for the Vector source.
  *
  *  @param mapSource The MapSource definition from the store.
+ *  @param setFeatures Set features action for callback. When set, features will be added to the store when loaded.
  *
  *  @returns OpenLayers Layer instance.
  */
-export function createLayer(mapSource, styleLayer = applyStyle) {
-  const source = new VectorSource(defineSource(mapSource));
+export function createLayer(mapSource, setFeatures, styleLayer = applyStyle) {
+  const source = new VectorSource(defineSource(mapSource, setFeatures));
+
+  if (setFeatures) {
+    const handleFeatureUpdate = function () {
+      const features = this.getFeatures();
+      // use the silent option to prevent a false reload-loop
+      setFeatures(
+        mapSource.name,
+        new GeoJSONFormat().writeFeaturesObject(features).features,
+        false,
+        true
+      );
+    };
+    source.on("featuresloadend", handleFeatureUpdate);
+  }
 
   // get the transforms for the layer
   if (mapSource.transforms) {
@@ -345,6 +360,13 @@ export function createLayer(mapSource, styleLayer = applyStyle) {
     maxResolution: mapSource.maxresolution,
     declutter: parseBoolean((mapSource.config || {}).declutter),
   };
+
+  // the featuresVersion is undefined by default
+  // with the geoparquet loader, setting to 0 prevents an infinite loop
+  // on loading when undefined is compared to zero and never increments
+  if (mapSource.type === "geoparquet") {
+    opts.featuresVersion = 0;
+  }
   const vectorLayer = new VectorLayer(opts);
   styleLayer(vectorLayer, mapSource);
 
@@ -390,6 +412,12 @@ export function updateLayer(
       // refresh is available to all vector layers,
       //  this should force a reload of the features from the server
       //  upon update.
+      console.log(
+        "refresh called for",
+        mapSource.type,
+        layerVersion,
+        mapSource.featuresVersion
+      );
       layer.getSource().refresh();
     }
   }

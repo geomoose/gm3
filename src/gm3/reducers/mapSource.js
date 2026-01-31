@@ -141,7 +141,11 @@ const reducer = createReducer(
         _ck: "." + new Date().getTime(),
       };
     },
-    [addFeatures]: (state, { payload: { mapSourceName, features, copy } }) => {
+    [addFeatures]: (
+      state,
+      { payload: { mapSourceName, features, copy, silent } }
+    ) => {
+      console.log("mapSource add", mapSourceName, copy, silent);
       if (!state[mapSourceName].features) {
         state[mapSourceName].features = [];
         state[mapSourceName].featuresVersion = 0;
@@ -160,11 +164,16 @@ const reducer = createReducer(
           }));
       state[mapSourceName].features =
         state[mapSourceName].features.concat(nextFeatures);
-      state[mapSourceName].featuresVersion += 1;
+      // Warning! Silent can be risky business because a redraw may not be triggered
+      if (silent !== true) {
+        state[mapSourceName].featuresVersion += 1;
+      }
     },
-    [clearFeatures]: (state, { payload: mapSourceName }) => {
+    [clearFeatures]: (state, { payload: { mapSourceName, silent } }) => {
       state[mapSourceName].features = [];
-      state[mapSourceName].featuresVersion += 1;
+      if (silent !== true) {
+        state[mapSourceName].featuresVersion += 1;
+      }
     },
     [removeFeatureInternal]: (state, { payload: { mapSourceName, id } }) => {
       state[mapSourceName].features = state[mapSourceName].features.filter(

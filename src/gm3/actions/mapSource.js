@@ -730,16 +730,25 @@ export const setRefresh = createAction(
 
 export const addFeatures = createAction(
   "mapsource/add-features",
-  (mapSourceName, features, copy = false) => ({
+  (mapSourceName, features, copy = false, silent = false) => ({
     payload: {
       mapSourceName,
       features,
       copy,
+      silent,
     },
   })
 );
 
-export const clearFeatures = createAction("mapsource/clear-features");
+export const clearFeatures = createAction(
+  "mapsource/clear-features",
+  (mapSourceName, silent = false) => ({
+    payload: {
+      mapSourceName,
+      silent,
+    },
+  })
+);
 
 export const removeFeatures = createAction(
   "mapsource/remove-features",

@@ -24,6 +24,9 @@
 
 import intersects from "@turf/boolean-intersects";
 
+// Build a filter function based on the fields filter
+export const buildFilterFunction = (queryField) => {};
+
 export const vectorFeatureQuery = (layer, mapState, mapSource, query) => {
   const selection = query.selection[0];
   console.log("MS features=", mapSource.features);

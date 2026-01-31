@@ -25,11 +25,10 @@
 import { asyncBufferFromUrl, parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import GeoJSON from "ol/format/GeoJSON";
+import { scrubProperties } from "@gm3/util";
 
 export const createGeoParquetLoader = (url) => {
-  return async function () {
-    console.log("GEO PARQUET LOADER", url);
-
+  return async function (extent, resolution, projection, success, failure) {
     const file = await asyncBufferFromUrl({ url });
     const data = await parquetReadObjects({ file, compressors });
     // TODO: Test for zero data
@@ -59,12 +58,15 @@ export const createGeoParquetLoader = (url) => {
 
       return {
         type: "Feature",
-        properties,
+        properties: scrubProperties(properties),
         geometry,
       };
     };
 
     const features = data.map(rowToFeature);
+
+    // silently remove features
+    this.clear(true);
     this.addFeatures(
       new GeoJSON({
         featureProjection: "EPSG:3857",
@@ -74,5 +76,7 @@ export const createGeoParquetLoader = (url) => {
         features,
       })
     );
+
+    success();
   };
 };
