@@ -141,34 +141,36 @@ export const QueryResults = ({
       )}
 
       <div className="results-info-counts">
-        {resultsConfig.showLayerCount && (
+        {showHeader && resultsConfig.showLayerCount && (
           <div className="results-info-item layers-count">
             <div className="label">{t("layers")}</div>
             <div className="value">{layerCount}</div>
           </div>
         )}
-        {resultsConfig.showFeatureCount && (
+        {showHeader && resultsConfig.showFeatureCount && (
           <div className="results-info-item features-count">
             <div className="label">{t("features")}</div>
             <div className="value">{featureCount}</div>
           </div>
         )}
 
-        {resultsConfig.showFeatureCount && featureCount < allFeatureCount && (
-          <div className="results-info-item filtered-features">
-            {t(
-              "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
-              {
-                allFeatureCount: allFeatureCount,
-                missing: allFeatureCount - featureCount,
-                featureCount: featureCount,
-              }
-            )}
-          </div>
-        )}
+        {showHeader &&
+          resultsConfig.showFeatureCount &&
+          featureCount < allFeatureCount && (
+            <div className="results-info-item filtered-features">
+              {t(
+                "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
+                {
+                  allFeatureCount: allFeatureCount,
+                  missing: allFeatureCount - featureCount,
+                  featureCount: featureCount,
+                }
+              )}
+            </div>
+          )}
       </div>
 
-      {allFeatureCount === 0 && (
+      {showHeader && allFeatureCount === 0 && (
         <div className="info-box">
           {t(
             "Your query did not return any results. Adjust your selection area or filters and try again."

@@ -971,6 +971,13 @@ class Application {
   }
 
   /**
+   * Project a point from web mercator to lon/lat decimal degrees
+   */
+  toLonLat(x, y) {
+    return Proj.transform([x, y], "EPSG:3857", "EPSG:4326");
+  }
+
+  /**
    * Project a bounding box to web mercator.
    */
   bboxToMeters(west, south, east, north) {

@@ -73,6 +73,10 @@ app.loadMapbook().then(function() {
         def: '+proj=utm +zone=15 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
     });
 
+    app.registerService('open-streetview', OpenNewService, {
+      url: 'https://www.bing.com/maps?cp=${lat}%7E${lon}&lvl=18.5&style=3d',
+    });
+
     app.registerService('identify', IdentifyService);
 
     app.registerService('search-runways', SearchService, {
