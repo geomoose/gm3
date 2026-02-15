@@ -128,8 +128,10 @@ const reducer = createReducer(
         _ck: "." + new Date().getTime(),
       };
     },
-    [addFeatures]: (state, { payload: { mapSourceName, features, copy, silent } }) => {
-      console.log("mapSource add", mapSourceName, copy, silent);
+    [addFeatures]: (
+      state,
+      { payload: { mapSourceName, features, copy, silent } }
+    ) => {
       if (!state[mapSourceName].features) {
         state[mapSourceName].features = [];
         state[mapSourceName].featuresVersion = 0;
