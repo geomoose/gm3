@@ -50,7 +50,7 @@
     "fs-extra": "^8.1.0",
     "i18next": "^19.4.4",
     "i18next-browser-languagedetector": "^4.1.1",
-    "jest": "^28.1.1",
+    "jest": "^30.2.0",
     "json-loader": "^0.5.7",
     "jspdf": "^3.0.1",
     "jsts": "~1.4.0",

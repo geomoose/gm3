@@ -47,5 +47,5 @@ it("renders a one button Modal Dialog", () => {
   fireEvent.click(container.getElementsByTagName("button")[0]);
 
   // ensure the call back was called with the closing value.
-  expect(callback).toBeCalledWith("okay");
+  expect(callback).toHaveBeenCalledWith("okay");
 });

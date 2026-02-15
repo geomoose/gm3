@@ -145,7 +145,6 @@ const reducer = createReducer(
       state,
       { payload: { mapSourceName, features, copy, silent } }
     ) => {
-      console.log("mapSource add", mapSourceName, copy, silent);
       if (!state[mapSourceName].features) {
         state[mapSourceName].features = [];
         state[mapSourceName].featuresVersion = 0;

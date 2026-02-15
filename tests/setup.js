@@ -1,3 +1,8 @@
+import { TextDecoder, TextEncoder } from "util";
+
+global.TextDecoder = TextDecoder;
+global.TextEncoder = TextEncoder;
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import crypto from "crypto";
