@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017 Dan "Ducky" Little
+ * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,9 @@ import VectorLayer from "ol/layer/Vector";
 import { createXYZ } from "ol/tilegrid";
 import { getEditStyle } from "./edit";
 import { EDIT_LAYER_NAME } from "../../../defaults";
+import { asyncBufferFromUrl, toGeoJson } from "geoparquet";
+import { compressors } from "hyparquet-compressors";
+import { cachedAsyncBuffer } from "hyparquet";
 
 // WARNING! This is a monkey patch in order to
 // allow rendering labels outside of a polygon's
@@ -62,7 +65,7 @@ Text.prototype.getOverflow = () => {
 /** Create the parameters for a Vector layer.
  *
  */
-function defineSource(mapSource) {
+function defineSource(mapSource, onLoadFeatures = null) {
   if (mapSource.type === "wfs") {
     // add a wfs type source
     let format = GML2Format;
@@ -108,6 +111,31 @@ function defineSource(mapSource) {
       format: new GeoJSONFormat(),
       projection: mapSource.params.crs ? mapSource.params.crs : "EPSG:4326",
       url: mapSource.urls[0],
+    };
+  } else if (mapSource.type === "geoparquet") {
+    return {
+      loader: function () {
+        asyncBufferFromUrl({ url: mapSource.urls[0] })
+          .then((r) => cachedAsyncBuffer(r))
+          .then((f) => toGeoJson({ file: f, compressors }))
+          .then((geojson) => {
+            const format = new GeoJSONFormat({
+              featureProjection: "EPSG:3857",
+              dataProjection: "EPSG:4326",
+            });
+
+            const projectedFeatures = format.readFeatures(geojson);
+            if (onLoadFeatures) {
+              // use a blank format so no reprojection happens,
+              //  this needs to store the web-mercator version of the features
+              onLoadFeatures(
+                new GeoJSONFormat().writeFeaturesObject(projectedFeatures)
+                  .features
+              );
+            }
+            this.addFeatures(projectedFeatures);
+          });
+      },
     };
   } else if (mapSource.type === "ags-vector") {
     // Add an A**GIS FeatureService layer.
@@ -317,8 +345,12 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
  *
  *  @returns OpenLayers Layer instance.
  */
-export function createLayer(mapSource, styleLayer = applyStyle) {
-  const source = new VectorSource(defineSource(mapSource));
+export function createLayer(
+  mapSource,
+  styleLayer = applyStyle,
+  onLoadFeatures = null
+) {
+  const source = new VectorSource(defineSource(mapSource, onLoadFeatures));
 
   // get the transforms for the layer
   if (mapSource.transforms) {
