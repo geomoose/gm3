@@ -74,7 +74,7 @@ app.loadMapbook().then(function() {
     });
 
     app.registerService('open-streetview', OpenNewService, {
-      url: 'https://www.bing.com/maps?cp=${lat}%7E${lon}&lvl=18.5&style=3d',
+      url: 'https://www.bing.com/maps?cp={{lat}}%7E{{lon}}&lvl=18.5&style=3d',
     });
 
     app.registerService('identify', IdentifyService);

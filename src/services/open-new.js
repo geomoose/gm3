@@ -62,8 +62,7 @@ function OpenNewService(Application, options) {
   this.getUrl = function (selection) {
     const [x, y] = selection[0].geometry.coordinates;
     const [lon, lat] = Application.toLonLat(x, y);
-    // eslint-disable-next-line no-template-curly-in-string
-    return options.url.replace("${lat}", lat).replace("${lon}", lon);
+    return options.url.replace("{{lat}}", lat).replace("{{lon}}", lon);
   };
 
   /** This function is called everytime there is an identify query.
