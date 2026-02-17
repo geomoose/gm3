@@ -29,7 +29,7 @@ var webpack = require('webpack');
 var package = require('./package.json');
 
 var fs = require('fs');
-var license_text = fs.readFileSync('LICENSE', {encoding: 'utf8'});
+var license_text = fs.readFileSync('LICENSE.md', {encoding: 'utf8'});
 
 module.exports = env => {
     const isDevelopment = !env || env.production !== true;
