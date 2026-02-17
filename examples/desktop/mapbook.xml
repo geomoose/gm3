@@ -562,5 +562,6 @@
         <tool name="findme" title="Find Me" type="action"/>
         <tool name="reload" title="Start Over" type="action"/>
         <tool name="bookmark" title="Bookmark" type="action"/>
+        <tool name="open-streetview" title="3D View" type="service" />
     </toolbar>
 </mapbook>
