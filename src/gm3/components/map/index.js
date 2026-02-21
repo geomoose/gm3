@@ -248,7 +248,7 @@ class Map extends React.Component {
    */
   createRefreshInterval(mapSource) {
     // prevent the creation of a pile of intervals
-    if (this.intervals[mapSource.name] !== undefined) {
+    if (this.intervals[mapSource.name] === undefined) {
       // refresh is stored in seconds, multiplying by 1000
       //  converts ito the milliseconds expected by setInterval.
       this.intervals[mapSource.name] = setInterval(() => {
