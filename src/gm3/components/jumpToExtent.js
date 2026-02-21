@@ -66,8 +66,8 @@ export const JumpToExtent = ({ locations, onZoomTo }) => {
 
 JumpToExtent.defaultProps = {
   locations: [],
-  onZoomTo: (extent) => {
-    // do nothing.
+  onZoomTo: () => {
+    console.warn("onZoomTo was not configured for JumpToExtent");
   },
 };
 

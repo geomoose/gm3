@@ -22,192 +22,194 @@
  * SOFTWARE.
  */
 
-
 @keyframes grow {
-    from {
-        max-height: 0px;
-    }
+  from {
+    max-height: 0px;
+  }
 
-    to {
-        max-height: 100px;
-    }
+  to {
+    max-height: 100px;
+  }
 }
 
-.radio-option,.draw-tool {
-    cursor: pointer;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding-left: 5px;
+.radio-option,
+.draw-tool {
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-left: 5px;
 
-    select {
-      margin-left: 10px;
-    }
+  select {
+    margin-left: 10px;
+  }
 
-    .helper-text {
-        margin-left: 20px;
-        margin-right: 20px;
-        animation-name: grow;
-        animation-duration: 1s;
-        overflow: hidden;
-    }
+  .helper-text {
+    margin-left: 20px;
+    margin-right: 20px;
+    animation-name: grow;
+    animation-duration: 1s;
+    overflow: hidden;
+  }
 }
 
 .service-manager {
-    .service-form {
-
-      .settings-header {
-          background-color: #CFE7B3;
-          padding: 5px;
-          font-weight: bold;
-          font-size: 110%;
-          clear: both;
-      }
-
-      .service-inputs {
-        padding: 5px;
-      }
-
-      label {
-          display: block;
-          font-weight: bold;
-          margin-top: 10px;
-          margin-bottom: 10px;
-      }
+  .service-form {
+    .settings-header {
+      background-color: #cfe7b3;
+      padding: 5px;
+      font-weight: bold;
+      font-size: 110%;
+      clear: both;
     }
 
-    .tab-controls {
-        padding-top: 1em;
-
-        .go-button, .close-button {
-            font-size: 1.25em;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
-
-        .go-button {
-            float: right;
-        }
-
-        .close-button {
-            float: left;
-        }
-
-        .go-icon, .close-icon {
-            .fa;
-        }
-
-        .go-icon {
-            &:before {
-                content: @fa-var-play-circle-o;
-            }
-        }
-
-        .close-icon {
-            &:before {
-                content: @fa-var-times-circle-o;
-            }
-        }
+    .service-inputs {
+      padding: 5px;
     }
 
-    .service-input {
-        select, input {
-            margin-left: 10px;
-        }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  }
 
-        margin-bottom: 5px;
+  .tab-controls {
+    padding-top: 1em;
 
-        &.length {
-            .measure {
-                width: 10em;
-            }
-        }
-
-        input.has-help-text {
-            margin-bottom: 0;
-        }
-
-        div.helper-text {
-            font-size: 0.8em;
-            margin-bottom: 1.5em;
-            /* put this 1px inside of the input */
-            margin-left: 5px;
-        }
+    .go-button,
+    .close-button {
+      font-size: 1.25em;
+      border: none;
+      background: none;
+      cursor: pointer;
     }
 
-    input[type='text'] {
-        width: 90%;
+    .go-button {
+      float: right;
     }
 
-    .service-input.select {
-        select {
-            width: 90%;
-        }
+    .close-button {
+      float: left;
     }
 
-    .query-error {
-        .error-header {
-            font-weight: bold;
-            padding: 2px;
-            background-color: red;
-        }
-
-        .error-contents {
-            padding: 5px;
-            border: solid 1px red;
-        }
+    .go-icon,
+    .close-icon {
+      .fa;
     }
 
-    .clear-controls {
-        text-align: center;
-    }
-
-    .measure-tool {
-      .measure-units {
-        padding: 4px;
-
-        .unit-option {
-          cursor: pointer;
-        }
-      }
-
-      .gm-grid {
-        padding-right: 4px;
-
-        table {
-          height: unset;
-        }
-
-        .segment-bearing {
-          width: 100px;
-          text-align: right;
-        }
-
-        .segment-length {
-          text-align: right;
-        }
-      }
-
-      .polygon-icon {
-        fill: none;
-        stroke: #333;
-        stroke-width: 3px;
-      }
-
-      .measure-feature {
-        margin-bottom: 10px;
-      }
-
-      .clear-parent {
-        text-align: center;
-        padding: 5px;
-
-        button {
-          background-color: #7fbf7b;
-          display: inline-flex;
-          justify-content: center;
-          align-items: center;
-        }
+    .go-icon {
+      &:before {
+        content: @fa-var-play-circle-o;
       }
     }
+
+    .close-icon {
+      &:before {
+        content: @fa-var-times-circle-o;
+      }
+    }
+  }
+
+  .service-input {
+    select,
+    input {
+      margin-left: 10px;
+    }
+
+    margin-bottom: 5px;
+
+    &.length {
+      .measure {
+        width: 10em;
+      }
+    }
+
+    input.has-help-text {
+      margin-bottom: 0;
+    }
+
+    div.helper-text {
+      font-size: 0.8em;
+      margin-bottom: 1.5em;
+      /* put this 1px inside of the input */
+      margin-left: 5px;
+    }
+  }
+
+  input[type="text"] {
+    width: 90%;
+  }
+
+  .service-input.select {
+    select {
+      width: 90%;
+    }
+  }
+
+  .query-error {
+    .error-header {
+      font-weight: bold;
+      padding: 2px;
+      background-color: red;
+    }
+
+    .error-contents {
+      padding: 5px;
+      border: solid 1px red;
+    }
+  }
+
+  .clear-controls {
+    text-align: center;
+  }
+
+  .measure-tool {
+    .measure-units {
+      padding: 4px;
+
+      .unit-option {
+        cursor: pointer;
+      }
+    }
+
+    .gm-grid {
+      padding-right: 4px;
+
+      table {
+        height: unset;
+      }
+
+      .segment-bearing {
+        width: 100px;
+        text-align: right;
+      }
+
+      .segment-length {
+        text-align: right;
+      }
+    }
+
+    .polygon-icon {
+      fill: none;
+      stroke: #333;
+      stroke-width: 3px;
+    }
+
+    .measure-feature {
+      margin-bottom: 10px;
+    }
+
+    .clear-parent {
+      text-align: center;
+      padding: 5px;
+
+      button {
+        background-color: #7fbf7b;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
 }

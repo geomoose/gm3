@@ -43,10 +43,7 @@ if (!window.requestAnimationFrame) {
     const timeoutCb = function () {
       callbackFun(+new Date());
     };
-    return window.setTimeout(
-      timeoutCb,
-      Math.max(targetTime + 16, currentTime) - currentTime
-    );
+    return window.setTimeout(timeoutCb, Math.max(targetTime + 16, currentTime) - currentTime);
   };
 }
 
@@ -64,12 +61,14 @@ describe("real lyfe test", () => {
     mapfile_root: "/test/path/",
   });
 
-  it("loads examples/desktop/mapbook.xml", (done) => {
-    fs.readFile("examples/desktop/mapbook.xml", (err, contents) => {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(contents, "text/xml");
-      app.loadMapbook({ content: xml }).then(() => {
-        done();
+  it("loads examples/desktop/mapbook.xml", () => {
+    return new Promise((resolve) => {
+      fs.readFile("examples/desktop/mapbook.xml", (err, contents) => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(contents, "text/xml");
+        app.loadMapbook({ content: xml }).then(() => {
+          resolve();
+        });
       });
     });
   });

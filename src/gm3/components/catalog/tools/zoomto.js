@@ -41,9 +41,7 @@ export class ZoomToTool extends React.Component {
         iconClass="zoomto"
         onClick={() => {
           const src = this.props.layer.src[0];
-          const extent = getFeaturesExtent(
-            this.props.mapSources[src.mapSourceName]
-          );
+          const extent = getFeaturesExtent(this.props.mapSources[src.mapSourceName]);
           // ensure the extent is not null,
           // which happens when there are no features on the layer.
           if (extent[0] !== null) {

@@ -18,12 +18,7 @@ const EmptyPlaceholder = ({ emptyHTML }) => {
         displayHTML = element.innerHTML;
       }
     }
-    return (
-      <div
-        className="empty-message"
-        dangerouslySetInnerHTML={{ __html: displayHTML }}
-      />
-    );
+    return <div className="empty-message" dangerouslySetInnerHTML={{ __html: displayHTML }} />;
   }
   return <DefaultPlaceholder />;
 };

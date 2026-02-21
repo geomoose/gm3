@@ -30,14 +30,7 @@ import { Tool } from "../tools";
 
 /** Tool to "fade" a layer. Aka, take away opacity.
  */
-export const FadeTool = ({
-  tip,
-  iconClass,
-  layer,
-  mapSources,
-  direction,
-  onFade,
-}) => {
+export const FadeTool = ({ tip, iconClass, layer, mapSources, direction, onFade }) => {
   return (
     <Tool
       tip={tip}

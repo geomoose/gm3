@@ -28,33 +28,27 @@
 
 import { createAction } from "@reduxjs/toolkit";
 
-export const addTool = createAction(
-  "toolbar/add",
-  (root, tool, order = "last") => ({
-    payload: {
-      order,
-      root: root || "root",
-      tool,
-    },
-  })
-);
+export const addTool = createAction("toolbar/add", (root, tool, order = "last") => ({
+  payload: {
+    order,
+    root: root || "root",
+    tool,
+  },
+}));
 
-export const addDrawer = createAction(
-  "toolbar/add-drawer",
-  (root, drawer, order = "last") => ({
-    payload: {
-      root: root || "root",
-      order,
-      tool: {
-        name: drawer.name,
-        label: drawer.label,
-        actionType: "drawer",
-        actionDetail: "",
-        tip: drawer.tip,
-      },
+export const addDrawer = createAction("toolbar/add-drawer", (root, drawer, order = "last") => ({
+  payload: {
+    root: root || "root",
+    order,
+    tool: {
+      name: drawer.name,
+      label: drawer.label,
+      actionType: "drawer",
+      actionDetail: "",
+      tip: drawer.tip,
     },
-  })
-);
+  },
+}));
 
 export const remove = createAction("toolbar/remove");
 

@@ -72,11 +72,7 @@ describe("Test repojection", () => {
     };
 
     // project the feature from 3857 to 4326
-    const wgsFeatures = util.projectFeatures(
-      [featureDef],
-      "EPSG:3857",
-      "EPSG:4326"
-    );
+    const wgsFeatures = util.projectFeatures([featureDef], "EPSG:3857", "EPSG:4326");
 
     // floating point conversion isn't perfect so this test
     // ensures that the conversion is "good enough"
@@ -131,7 +127,7 @@ test("convertLength", () => {
 });
 
 describe("getExtentForQuery", () => {
-  test("test extent for a result with a single feature", () => {
+  test("extent for a result with a single feature", () => {
     const fakeResults = {
       dummy: [
         {
@@ -145,7 +141,7 @@ describe("getExtentForQuery", () => {
     expect(util.getExtentForQuery(fakeResults)).toEqual([0, 0, 300, 300]);
   });
 
-  test("test extent for an empty result", () => {
+  test("extent for an empty result", () => {
     expect(util.getExtentForQuery({})).toEqual(null);
   });
 });

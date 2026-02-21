@@ -66,10 +66,7 @@ const FILTER_OPERATORS = {
 const mapFilters = (fields) => {
   return fields.map((field) => {
     if (Array.isArray(field)) {
-      return chainFilters(
-        FILTER_OPERATORS[field[0]],
-        mapFilters(field.slice(1))
-      );
+      return chainFilters(FILTER_OPERATORS[field[0]], mapFilters(field.slice(1)));
     } else {
       return FILTER_MAPPING[field.comparitor](field.name, field.value);
     }
@@ -111,9 +108,7 @@ export function buildWfsQuery(
   if (query.selection && query.selection.length > 0) {
     const geoFilters = query.selection.map((selectionFeature) => {
       // convert the geojson geometry into a ol geometry.
-      const olGeom = new GeoJSONFormat().readGeometry(
-        selectionFeature.geometry
-      );
+      const olGeom = new GeoJSONFormat().readGeometry(selectionFeature.geometry);
       // convert the geometry to the query projection
       olGeom.transform(mapProjection, queryProjection);
 
@@ -163,12 +158,7 @@ export function wfsGetFeatures(
   mapProjection,
   outputFormat = DEFAULT_OUTPUT_FORMAT
 ) {
-  const queryBody = buildWfsQuery(
-    query,
-    mapSource,
-    mapProjection,
-    outputFormat
-  );
+  const queryBody = buildWfsQuery(query, mapSource, mapProjection, outputFormat);
 
   // TODO: check for params and properly join to URL!
 
@@ -225,9 +215,7 @@ function wfsTransact(mapSource, mapProjection, inFeatures) {
       );
       // reproject the features to the layers native SRS
       if (options.srsName !== "EPSG:3857") {
-        features[operation].forEach((f) =>
-          f.getGeometry().transform("EPSG:3857", options.srsName)
-        );
+        features[operation].forEach((f) => f.getGeometry().transform("EPSG:3857", options.srsName));
       }
     }
   });
@@ -241,12 +229,7 @@ function wfsTransact(mapSource, mapProjection, inFeatures) {
   return new XMLSerializer().serializeToString(transaction);
 }
 
-export function wfsSaveFeatures(
-  mapSource,
-  mapProjection,
-  inFeatures,
-  insert = false
-) {
+export function wfsSaveFeatures(mapSource, mapProjection, inFeatures, insert = false) {
   return wfsTransact(mapSource, mapProjection, {
     [insert ? "inserts" : "updates"]: inFeatures,
   });

@@ -58,19 +58,23 @@ describe("application api calls", () => {
     expect(app.store.getState().ui.hint).toBe(null);
   });
 
-  it("loads a mapbook (from an XML doc)", (done) => {
-    fs.readFile(MAPBOOK_PATH, "utf-8", (err, contents) => {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(contents, "text/xml");
-      app.loadMapbook({ content: xml }).catch((err) => done(err));
-      done();
+  it("loads a mapbook (from an XML doc)", () => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(MAPBOOK_PATH, "utf-8", (err, contents) => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(contents, "text/xml");
+        app.loadMapbook({ content: xml }).catch((err) => reject(err));
+        resolve();
+      });
     });
   });
 
-  it("loads a mapbook from a string", (done) => {
-    fs.readFile(MAPBOOK_PATH, "utf-8", (err, contents) => {
-      app.loadMapbook({ content: contents }).catch((err) => done(err));
-      done();
+  it("loads a mapbook from a string", () => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(MAPBOOK_PATH, "utf-8", (err, contents) => {
+        app.loadMapbook({ content: contents }).catch((err) => reject(err));
+        resolve();
+      });
     });
   });
 

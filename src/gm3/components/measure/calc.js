@@ -30,9 +30,7 @@ export const getBearing = (pointA, pointB, ordinalDictionary) => {
   let bearing = "-";
   if (pointA && pointB) {
     bearing =
-      ordinalDictionary["measure-north-abbr"] +
-      "0-0-0" +
-      ordinalDictionary["measure-east-abbr"];
+      ordinalDictionary["measure-north-abbr"] + "0-0-0" + ordinalDictionary["measure-east-abbr"];
 
     let rise = pointB[1] - pointA[1];
     let run = pointB[0] - pointA[0];
@@ -69,14 +67,7 @@ export const getBearing = (pointA, pointB, ordinalDictionary) => {
       const m = parseInt(t, 10);
       const s = parseInt(60 * (t - m), 10);
 
-      bearing =
-        ordinalDictionary[nsQuad] +
-        d +
-        "-" +
-        m +
-        "-" +
-        s +
-        ordinalDictionary[ewQuad];
+      bearing = ordinalDictionary[nsQuad] + d + "-" + m + "-" + s + ordinalDictionary[ewQuad];
     }
   }
   // attempt to translate the bearing.
@@ -105,12 +96,7 @@ function calculateLengthAndBearing(a, b, utmZone, ordinalDictionary) {
   };
 }
 
-export function getSegmentInfo(
-  geom,
-  cursorCoords,
-  isDrawing,
-  ordinalDictionary
-) {
+export function getSegmentInfo(geom, cursorCoords, isDrawing, ordinalDictionary) {
   // determine an appropriate utm zone for measurement.
   const utmZone = getProjection(getUtmZone(geom.coordinates[0]));
 
@@ -125,12 +111,7 @@ export function getSegmentInfo(
   const segments = [];
 
   for (let i = 1, ii = coords.length; i < ii; i++) {
-    const info = calculateLengthAndBearing(
-      coords[i - 1],
-      coords[i],
-      utmZone,
-      ordinalDictionary
-    );
+    const info = calculateLengthAndBearing(coords[i - 1], coords[i], utmZone, ordinalDictionary);
     segments.push({
       id: i,
       ...info,

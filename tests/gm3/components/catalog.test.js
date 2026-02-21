@@ -97,10 +97,7 @@ describe("Catalog component tests", () => {
 
     const parser = new DOMParser();
     const catalogXml = parser.parseFromString(xml, "text/xml");
-    const results = actions.parseCatalog(
-      store,
-      catalogXml.getElementsByTagName("catalog")[0]
-    );
+    const results = actions.parseCatalog(store, catalogXml.getElementsByTagName("catalog")[0]);
 
     results.forEach((action) => {
       store.dispatch(action);

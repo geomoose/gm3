@@ -48,11 +48,7 @@ const VisibleLayers = ({ store, catalog, mapSources }) => {
     for (let i = 0, ii = layers.length; i < ii; i++) {
       const layer = layers[i];
       catalogLayers.push(
-        <CatalogLayer
-          key={"layer-" + i}
-          layer={layer.layer}
-          forceTools={["up", "down"]}
-        />
+        <CatalogLayer key={"layer-" + i} layer={layer.layer} forceTools={["up", "down"]} />
       );
     }
     contents = catalogLayers;

@@ -39,21 +39,16 @@ export const zoomToExtent = createAction(
   })
 );
 
-export const changeTool = createAction(
-  "map/change-tool",
-  (tool, src = null) => ({
-    payload: {
-      tool,
-      src,
-    },
-  })
-);
+export const changeTool = createAction("map/change-tool", (tool, src = null) => ({
+  payload: {
+    tool,
+    src,
+  },
+}));
 
 export const addSelectionFeature = createAction("map/add-selection-feature");
 
-export const clearSelectionFeatures = createAction(
-  "map/clear-selection-features"
-);
+export const clearSelectionFeatures = createAction("map/clear-selection-features");
 
 /* Set the view of the map.
  *
@@ -70,15 +65,12 @@ export const setView = createAction("map/set-view");
  *
  * @return action definition
  */
-export const setSelectionBuffer = createAction(
-  "map/set-selection-buffer",
-  (distance, units) => ({
-    payload: {
-      distance,
-      units,
-    },
-  })
-);
+export const setSelectionBuffer = createAction("map/set-selection-buffer", (distance, units) => ({
+  payload: {
+    distance,
+    units,
+  },
+}));
 
 /* Set the edit source, which is a hint as to where
  * the current editing features originated from.

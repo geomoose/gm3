@@ -83,8 +83,7 @@ class UploadModal extends Modal {
       return (
         <div>
           <p>
-            <span className="upload spinner"></span>{" "}
-            {this.props.t("upload-uploading")}
+            <span className="upload spinner"></span> {this.props.t("upload-uploading")}
           </p>
         </div>
       );
@@ -104,9 +103,7 @@ class UploadModal extends Modal {
       }
       return (
         <div>
-          <p>
-            {this.props.t("upload-uploaded", { count: this.state.features })}
-          </p>
+          <p>{this.props.t("upload-uploaded", { count: this.state.features })}</p>
           {error}
         </div>
       );
@@ -116,7 +113,13 @@ class UploadModal extends Modal {
       <div>
         <p>{this.props.t("upload-help")}</p>
         <p>
-          <input ref="fileInput" type="file" accept=".geojson,.json,.kml" />
+          <input
+            ref={(uploadInput) => {
+              this.uploadInput = uploadInput;
+            }}
+            type="file"
+            accept=".geojson,.json,.kml"
+          />
         </p>
       </div>
     );
@@ -124,7 +127,7 @@ class UploadModal extends Modal {
 
   parseFiles() {
     // grab the list of files.
-    const files = this.refs.fileInput.files;
+    const files = this.uploadInput.files;
 
     // just skip to the end of there are no files.
     if (files.length === 0) {
@@ -169,7 +172,7 @@ class UploadModal extends Modal {
             try {
               JSON.parse(e.target.result);
               inputFormat = new GeoJSONFormat();
-            } catch (err) {
+            } catch {
               // swallow the exception.
             }
           }
@@ -184,9 +187,7 @@ class UploadModal extends Modal {
             //       from the map-view!!!
             let invalidCount = 0;
             for (const f of olFeatures) {
-              f.setGeometry(
-                f.getGeometry().transform("EPSG:4326", "EPSG:3857")
-              );
+              f.setGeometry(f.getGeometry().transform("EPSG:4326", "EPSG:3857"));
 
               if (isValidFeature(f)) {
                 validFeatures.push(f);

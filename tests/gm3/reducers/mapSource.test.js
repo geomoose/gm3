@@ -112,6 +112,8 @@ describe("test the `mapSources` reducer", () => {
 
   it("adds a vector layer", () => {
     setupMapSource(store);
+    const st = store.getState();
+    expect(st.mapSources.results).toBeDefined();
   });
 
   it("adds features to the vector layer", () => {
@@ -122,18 +124,16 @@ describe("test the `mapSources` reducer", () => {
     expect(st.mapSources.results.features.length).toBe(1);
   });
 
-  it("removes a feature from the vector layer (by id)", (done) => {
+  it("removes a feature from the vector layer (by id)", () => {
     setupMapSource(store);
     addTestFeature(store);
     // eslint-disable-next-line
         const fid = store.getState().mapSources.results.features[0].properties._uuid;
-    store
-      .dispatch(msActions.removeFeature("results/results", { id: fid }))
-      .then(() => {
-        const st = store.getState();
-        expect(st.mapSources.results.features.length).toBe(0);
-        done();
-      });
+
+    return store.dispatch(msActions.removeFeature("results/results", { id: fid })).then(() => {
+      const st = store.getState();
+      expect(st.mapSources.results.features.length).toBe(0);
+    });
   });
 
   describe("Tests with data", () => {
@@ -146,9 +146,7 @@ describe("test the `mapSources` reducer", () => {
     });
 
     it("remove features by filter", () => {
-      store.dispatch(
-        msActions.removeFeatures("results", [["<", "emv_total", 300000]])
-      );
+      store.dispatch(msActions.removeFeatures("results", [["<", "emv_total", 300000]]));
       const st = store.getState();
       expect(st.mapSources.results.features.length).toBe(3);
     });

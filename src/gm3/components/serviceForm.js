@@ -68,14 +68,11 @@ function getDefaultValues(serviceDef, mapSources, defaultValues = {}) {
     if (field.type === "select" || field.type === "layers-list") {
       // normalize the options list for both select and layer input types
       const options =
-        field.type === "select"
-          ? field.options
-          : getLayerOptions(field.filter, mapSources);
+        field.type === "select" ? field.options : getLayerOptions(field.filter, mapSources);
       // ensure the default value is valid
       const isDefaultValid =
         !!values[field.name] &&
-        options.filter((option) => option.value === values[field.name]).length >
-          0;
+        options.filter((option) => option.value === values[field.name]).length > 0;
 
       // if the default is not valid, then choose the first option in the list
       if (!isDefaultValid && options.length > 0) {
@@ -110,9 +107,7 @@ class ServiceForm extends React.Component {
     let validateFieldValuesResultValid = true;
     let validateFieldValuesResultMessage = null;
     if (serviceDef.validateFieldValues) {
-      const validateFieldValuesResult = serviceDef.validateFieldValues(
-        this.state.values
-      );
+      const validateFieldValuesResult = serviceDef.validateFieldValues(this.state.values);
       validateFieldValuesResultValid = validateFieldValuesResult.valid;
       validateFieldValuesResultMessage = validateFieldValuesResult.message;
     }
@@ -166,10 +161,7 @@ class ServiceForm extends React.Component {
     } else {
       // if there was a service change, don't accidentally submit
       //  the old geometry on the new service.
-      if (
-        this.props.serviceDef.autoGo &&
-        this.props.selectionFeatures.length > 0
-      ) {
+      if (this.props.serviceDef.autoGo && this.props.selectionFeatures.length > 0) {
         this.props.onSubmit(this.state.values);
       }
     }
@@ -206,19 +198,10 @@ class ServiceForm extends React.Component {
       }
     }
 
-    const bufferInput = !showBuffer ? (
-      false
-    ) : (
-      <BufferInput key="buffer-input" />
-    );
+    const bufferInput = !showBuffer ? false : <BufferInput key="buffer-input" />;
 
     const fields = this.props.serviceDef.fields.map((field, idx) => {
-      return renderServiceField(
-        field,
-        this.state.values[field.name],
-        this.setValue,
-        idx === 0
-      );
+      return renderServiceField(field, this.state.values[field.name], this.setValue, idx === 0);
     });
 
     let inputs = [];
@@ -238,9 +221,7 @@ class ServiceForm extends React.Component {
           ) : (
             <div className="query-error">
               <div className="error-header">Error</div>
-              <div className="error-contents">
-                {this.state.validateFieldValuesResultMessage}
-              </div>
+              <div className="error-contents">{this.state.validateFieldValuesResultMessage}</div>
             </div>
           )}
           <div className="tab-controls">
@@ -273,9 +254,7 @@ ServiceForm.defaultProps = {
 
 const mapStateToProps = (state) => ({
   mapSources: state.mapSources,
-  selectionFeatures: state.mapSources.selection
-    ? state.mapSources.selection.features
-    : [],
+  selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
 });
 
 export default connect(mapStateToProps)(withTranslation()(ServiceForm));

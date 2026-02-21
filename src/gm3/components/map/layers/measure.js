@@ -23,12 +23,9 @@
  */
 
 import { Circle, Fill, Style, Stroke } from "ol/style";
-import {
-  createLayer as createVectorLayer,
-  updateLayer as updateVectorLayer,
-} from "./vector";
+import { createLayer as createVectorLayer, updateLayer as updateVectorLayer } from "./vector";
 
-const applyMeasureStyle = (layer, mapSource, mapTool) => {
+const applyMeasureStyle = (layer) => {
   layer.setStyle((feature) => {
     const { outlineColor, coreColor } = feature.getProperties();
 
