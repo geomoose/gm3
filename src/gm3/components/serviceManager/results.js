@@ -148,20 +148,18 @@ export const QueryResults = ({
           </div>
         )}
 
-        {showHeader &&
-          resultsConfig.showFeatureCount &&
-          featureCount < allFeatureCount && (
-            <div className="results-info-item filtered-features">
-              {t(
-                "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
-                {
-                  allFeatureCount: allFeatureCount,
-                  missing: allFeatureCount - featureCount,
-                  featureCount: featureCount,
-                }
-              )}
-            </div>
-          )}
+        {showHeader && resultsConfig.showFeatureCount && featureCount < allFeatureCount && (
+          <div className="results-info-item filtered-features">
+            {t(
+              "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
+              {
+                allFeatureCount: allFeatureCount,
+                missing: allFeatureCount - featureCount,
+                featureCount: featureCount,
+              }
+            )}
+          </div>
+        )}
       </div>
 
       {showHeader && allFeatureCount === 0 && (
