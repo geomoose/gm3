@@ -49,7 +49,8 @@ describe("Toolbar component tests", () => {
       actionDetail: "sample",
     };
 
-    render(<ToolbarButton tool={tool} />);
+    const { getByText } = render(<ToolbarButton tool={tool} />);
+    expect(getByText("Sample Zero")).toBeTruthy();
   });
 
   it("renders a drawer", () => {
@@ -60,11 +61,12 @@ describe("Toolbar component tests", () => {
       actionDetail: "sample",
     };
 
-    render(
+    const { getByText } = render(
       <Provider store={store}>
         <ToolbarDrawer label="Drawer Zero" tools={[tool]} services={{}} />
       </Provider>
     );
+    expect(getByText("Drawer Zero")).toBeTruthy();
   });
 
   it("renders a toolbar", () => {
@@ -85,7 +87,8 @@ describe("Toolbar component tests", () => {
       drawer0: [tool],
     };
 
-    render(<Toolbar store={store} toolbar={toolbar} services={{}} />);
+    const { getByText } = render(<Toolbar store={store} toolbar={toolbar} services={{}} />);
+    expect(getByText("Drawer Zero")).toBeTruthy();
   });
 
   it("renders a toolbar from the store", function () {
@@ -104,7 +107,8 @@ describe("Toolbar component tests", () => {
       })
     );
 
-    render(<SmartToolbar store={store} services={{}} />);
+    const { getByText } = render(<SmartToolbar store={store} services={{}} />);
+    expect(getByText("Drawer 0")).toBeTruthy();
   });
 
   it("renders a toolbar from a mapbook fragment", function () {
@@ -126,7 +130,8 @@ describe("Toolbar component tests", () => {
       store.dispatch(action);
     });
 
-    render(<SmartToolbar store={store} services={{}} />);
+    const { getByText } = render(<SmartToolbar store={store} services={{}} />);
+    expect(getByText("Dummy Drawer")).toBeTruthy();
   });
 
   it("changes the active service when clicked.", function () {
