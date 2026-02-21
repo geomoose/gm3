@@ -71,7 +71,7 @@ function OpenNewService(Application, options) {
    *  @param fields    is an array containing any user-input
    *                   given to the service.
    */
-  this.query = function (selection, fields) {
+  this.query = function (selection) {
     window.open(this.getUrl(selection));
     Application.dispatchQuery(this.name, selection, [], [], []);
   };

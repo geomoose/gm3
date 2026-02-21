@@ -291,7 +291,7 @@ class Grid extends React.Component {
         let layer = null;
         try {
           layer = getLayerFromPath(this.props.mapSources, layerPath);
-        } catch (err) {
+        } catch {
           // no layer, no problem.
         }
 
@@ -305,7 +305,7 @@ class Grid extends React.Component {
           } else {
             try {
               gridColumns = JSON.parse(columnTemplate.contents);
-            } catch (err) {
+            } catch {
               // swallow the error
             }
           }
@@ -379,7 +379,7 @@ class Grid extends React.Component {
             height: this.state.minimized ? 0 : 400,
           }}
           data={features}
-          fixedHeaderContent={(index, feature) => {
+          fixedHeaderContent={() => {
             return <tr>{this.getHeaderRow(features, gridColumns)}</tr>;
           }}
           components={{

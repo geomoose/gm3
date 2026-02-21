@@ -166,7 +166,7 @@ class UploadModal extends Modal {
             try {
               JSON.parse(e.target.result);
               inputFormat = new GeoJSONFormat();
-            } catch (err) {
+            } catch {
               // swallow the exception.
             }
           }

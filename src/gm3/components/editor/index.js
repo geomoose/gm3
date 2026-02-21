@@ -18,7 +18,7 @@ const mapState = (state) => {
     let layer = null;
     try {
       layer = getLayerFromPath(state.mapSources, state.map.editPath);
-    } catch (err) {
+    } catch {
       // swallow the error if the layer can't be found.
     }
 

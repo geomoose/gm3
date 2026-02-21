@@ -34,7 +34,7 @@ const mapStateToProps = (state) => ({
   feature: state.editor.feature,
 });
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = (dispatch) => ({
   onClose: (value, source, feature) => {
     if (value === "remove") {
       dispatch(removeFeature(source, feature));

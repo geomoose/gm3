@@ -39,15 +39,11 @@ function FindMeAction(Application, options) {
   //  the points when zooming to it's extent, defaults to 100m
   this.buffer = options.buffer ? options.buffer : 100;
 
-  /** This function is called everytime there is an identify query.
+  /** This function is called everytime there is an query.
+   *  For FindMe, this calls the browsers locator function
    *
-   *  @param selection contains a GeoJSON feature describing the
-   *                   geography to be used for the query.
-   *
-   *  @param fields    is an array containing any user-input
-   *                   given to the service.
    */
-  this.run = function (selection, fields) {
+  this.run = function () {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         this.gotoPosition.bind(this),

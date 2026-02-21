@@ -106,7 +106,7 @@ function defineSource(mapSource) {
     // Add an A**GIS FeatureService layer.
     // This performs a basic query based on the bounding box.
     return {
-      loader: function (extent, resolution, proj) {
+      loader: function (extent) {
         const url = mapSource.urls[0] + "/query/";
 
         // the E**I language can get a bit complicated but

@@ -136,7 +136,7 @@ function mapState(state) {
   };
 }
 
-function mapDispatch(dispatch) {
+function mapDispatch() {
   return {
     onDownload: (src, mapSource, downloadFormat) => {
       // find the layer and check to see if it has features,

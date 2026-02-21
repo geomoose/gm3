@@ -20,22 +20,19 @@ const EditLayerControls = ({ editPath, saveFeature, olLayers, changeTool, setFea
     changeTool(null);
   }, [setFeatures, changeTool]);
 
-  const saveChanges = useCallback(
-    (evt) => {
-      // the edit layer should only ever have one feature!
-      const features = olLayers[EDIT_LAYER_NAME].getSource()
-        .getFeatures()
-        .slice(0, 1)
-        .map((f) => featureToJson(f));
+  const saveChanges = useCallback(() => {
+    // the edit layer should only ever have one feature!
+    const features = olLayers[EDIT_LAYER_NAME].getSource()
+      .getFeatures()
+      .slice(0, 1)
+      .map((f) => featureToJson(f));
 
-      if (features.length > 0) {
-        const feature = features[0];
-        saveFeature(editPath, feature);
-        clearChanges();
-      }
-    },
-    [olLayers, saveFeature, clearChanges, editPath]
-  );
+    if (features.length > 0) {
+      const feature = features[0];
+      saveFeature(editPath, feature);
+      clearChanges();
+    }
+  }, [olLayers, saveFeature, clearChanges, editPath]);
 
   useEffect(() => {
     const keyFn = (evt) => {

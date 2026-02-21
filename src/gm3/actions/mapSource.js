@@ -748,7 +748,7 @@ export function removeFeature(path, feature) {
           body: changeRequest,
         })
           .then((r) => r.text())
-          .then((text) => {
+          .then(() => {
             // TODO: The response should be parsed for exceptions
             //       and reported to the user.
             dispatch(reloadSource(layerSrcName));
@@ -934,7 +934,7 @@ export function saveFeature(path, feature) {
           body: changeRequest,
         })
           .then((r) => r.text())
-          .then((text) => {
+          .then(() => {
             // TODO: The response should be parsed for exceptions
             //       and reported to the user.
             dispatch(reloadSource(layerSrcName));

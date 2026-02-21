@@ -49,7 +49,6 @@ class CatalogLegend extends Component {
     );
 
     const key = "legend_" + src.mapSourceName + "_" + src.layerName;
-    let legendIdx = 0;
 
     switch (legend.type) {
       case "html":
@@ -61,18 +60,17 @@ class CatalogLegend extends Component {
           />
         );
       case "img":
-        const imgTags = [];
-        legendIdx = 0;
-        for (const imgSrc of legend.images) {
-          imgTags.push(
-            <img alt="layer legend" key={key + legendIdx} className="legend-image" src={imgSrc} />
-          );
-          legendIdx += 1;
-        }
         return (
           <div key={key} className="legend-images">
-            {" "}
-            {imgTags}{" "}
+            {legend.images.map((imgSrc) => (
+              <img
+                alt="layer legend"
+                className="legend-image"
+                // use the URL as the unique key
+                key={imgSrc}
+                src={imgSrc}
+              />
+            ))}
           </div>
         );
       case "nolegend":

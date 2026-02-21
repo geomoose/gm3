@@ -95,12 +95,12 @@ const GEOJSON_FORMAT = new GeoJSONFormat();
 const getPixelTolerance = (querySource, defaultPx = 10) => {
   // the default pixel tolerance is 10 pixels.
   let pxTolerance = defaultPx;
-  try {
-    if (querySource.config["pixel-tolerance"]) {
+  if (querySource.config["pixel-tolerance"]) {
+    try {
       pxTolerance = parseFloat(querySource.config["pixel-tolerance"]);
+    } catch {
+      console.error(`${querySource.config["pixel-tolerance"]} is not float-like, ignoring`);
     }
-  } catch (err) {
-    // swallow the error
   }
   return pxTolerance;
 };
@@ -226,13 +226,17 @@ class Map extends React.Component {
    *
    */
   refreshLayer(mapSource) {
+    function refreshWMS() {
+      const wmsSrc = this.olLayers[mapSource.name].getSource();
+      const params = wmsSrc.getParams();
+      // ".ck" = "cache killer"
+      params[".ck"] = Math.random();
+      wmsSrc.updateParams(params);
+    }
+
     switch (mapSource.type) {
       case "wms":
-        const wmsSrc = this.olLayers[mapSource.name].getSource();
-        const params = wmsSrc.getParams();
-        // ".ck" = "cache killer"
-        params[".ck"] = Math.random();
-        wmsSrc.updateParams(params);
+        refreshWMS();
         break;
       default:
       // do nothing
@@ -244,7 +248,7 @@ class Map extends React.Component {
    */
   createRefreshInterval(mapSource) {
     // prevent the creation of a pile of intervals
-    if (!this.intervals.hasOwnProperty(mapSource.name)) {
+    if (this.intervals[mapSource.name] !== undefined) {
       // refresh is stored in seconds, multiplying by 1000
       //  converts ito the milliseconds expected by setInterval.
       this.intervals[mapSource.name] = setInterval(() => {
@@ -524,8 +528,8 @@ class Map extends React.Component {
         if (path !== null) {
           try {
             layer = mapSourceActions.getLayerFromPath(this.props.mapSources, path);
-          } catch (err) {
-            // swallow the error if the layer can't be found.
+          } catch (_err) {
+            console.error(`Failed to find layer: ${path} for editing tool ${type}`);
           }
         }
 
@@ -696,13 +700,9 @@ class Map extends React.Component {
    *
    * @returns Boolean. True when the map sucessfully sized, false otherwise.
    */
-  updateMapSize(width, height) {
+  updateMapSize() {
     if (this.map && this.mapDiv) {
       this.map.updateSize();
-
-      // this is a hint for other components to calculate
-      //  things based on the map size.
-      // this.props.onMapResize({width, height});
 
       const canvas = this.mapDiv.getElementsByTagName("canvas");
       if (canvas && canvas[0] && canvas[0].style.display !== "none") {

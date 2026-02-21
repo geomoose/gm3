@@ -26,7 +26,7 @@ export function addConnectedPlugin(plugin, domId, inProps = {}) {
   });
 
   // this.store comes from Application.
-  return ReactDOM.render(
+  ReactDOM.createRoot(
     <Provider store={this.store}>
       <WrappedComponent {...props} />
     </Provider>,
