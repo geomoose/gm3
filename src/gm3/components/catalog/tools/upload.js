@@ -113,7 +113,13 @@ class UploadModal extends Modal {
       <div>
         <p>{this.props.t("upload-help")}</p>
         <p>
-          <input ref="fileInput" type="file" accept=".geojson,.json,.kml" />
+          <input
+            ref={(uploadInput) => {
+              this.uploadInput = uploadInput;
+            }}
+            type="file"
+            accept=".geojson,.json,.kml"
+          />
         </p>
       </div>
     );
@@ -121,7 +127,7 @@ class UploadModal extends Modal {
 
   parseFiles() {
     // grab the list of files.
-    const files = this.refs.fileInput.files;
+    const files = this.uploadInput.files;
 
     // just skip to the end of there are no files.
     if (files.length === 0) {
