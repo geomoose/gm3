@@ -99,8 +99,7 @@ class FilterModal extends ModalDialog {
   renderBody() {
     return (
       <div>
-        <Label l="label-value" />{" "}
-        <input onChange={this.onChange} value={this.state.value} ref="input" />
+        <Label l="label-value" /> <input onChange={this.onChange} value={this.state.value} />
       </div>
     );
   }
