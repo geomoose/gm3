@@ -913,3 +913,28 @@ export const getFilterFieldNames = (filterDef, fieldNames = []) => {
   });
   return fieldNames;
 };
+
+/**
+ * Clean feature properties to be better stored in state
+ *
+ * @param properties - Feature properties
+ *
+ * @returns Object. The same properties but scrubbed for redux storage
+ */
+export const scrubProperties = (properties) => {
+  const cleanProps = {};
+  Object.keys(properties).forEach((key) => {
+    const val = properties[key];
+    // convert all dates to their ISO string equivalent for storage
+    if (val instanceof Date) {
+      cleanProps[key] = val.toISOString();
+      // Yikes, an object, give up and try JSON
+    } else if (val instanceof Object) {
+      cleanProps[key] = JSON.stringify(val);
+      // Oh good, this seems fine...
+    } else {
+      cleanProps[key] = val;
+    }
+  });
+  return cleanProps;
+};

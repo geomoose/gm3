@@ -1,6 +1,11 @@
+import { TextDecoder, TextEncoder } from "util";
+
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import crypto from "crypto";
+
+global.TextDecoder = TextDecoder;
+global.TextEncoder = TextEncoder;
 
 global.requestAnimationFrame = function (callback) {
   setTimeout(callback, 0);
