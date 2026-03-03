@@ -32,7 +32,7 @@ In ``mapbook.xml`` after line 5 add:
                 "circle-color": "blue",
                 "text-font": ["Arial", "Open Sans Regular"],
                 "text-field": "{city}",
-                "text-jusitfy": "right",
+                "text-justify": "right",
                 "text-anchor": "right"
             }
             ]]></style>

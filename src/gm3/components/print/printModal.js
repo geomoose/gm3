@@ -146,7 +146,7 @@ export class PrintModal extends Modal {
   }
 
   addText(doc, def, options = {}) {
-    // these are the subsitution strings for the map text elements
+    // these are the substitution strings for the map text elements
     const date = new Date();
     const substDict = {
       title: this.state.mapTitle,
@@ -493,7 +493,7 @@ export class PrintModal extends Modal {
       }
     }
 
-    // caculate the width and height and kick it back.
+    // calculate the width and height and kick it back.
     return {
       width: this.toPoints(mapElement.width, layout.units) * resolution,
       height: this.toPoints(mapElement.height, layout.units) * resolution,

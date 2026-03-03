@@ -193,7 +193,7 @@
              workspace name and the layer name joined with a colon
         -->
         <param name="typename" value="Geomoose:census_cities" />
-        <!-- This will match the geometry colum name in the server -->
+        <!-- This will match the geometry column name in the server -->
         <config name="geometry-name" value="wkb_geometry" />
         <config name="srs" value="EPSG:4269" />
         <!-- specify the ID column -->
@@ -770,7 +770,7 @@
     </catalog>
 
     <!--
-        The toolbar defines which services are referneces in the toolbar
+        The toolbar defines which services are references in the toolbar
     -->
     <toolbar>
         <tool name="fullextent" title="Full Extent" type="action"/>

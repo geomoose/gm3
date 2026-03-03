@@ -1,6 +1,6 @@
 "use strict";
 
-/** WARNING! This plug-in requries the experimental
+/** WARNING! This plug-in requires the experimental
  *  `addConnectedPlugin` API. This is the first test
  *  of this new style plug-in.
  *  Bonus: This plug-in does not require compiling!

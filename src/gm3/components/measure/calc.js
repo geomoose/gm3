@@ -74,7 +74,7 @@ export const getBearing = (pointA, pointB, ordinalDictionary) => {
   return bearing;
 };
 
-/* Calcualte the distance between two points,
+/* Calculate the distance between two points,
  *
  * @param {Point-like} a with [x,y]
  * @param {Point-like} b with [x,y]

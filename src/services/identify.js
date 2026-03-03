@@ -54,7 +54,7 @@ function IdentifyService(Application, options) {
   this.autoGo = true;
 
   /** keepAlive = true will keep the service in 'query mode'
-   *                   in the background, until it is explictly turned off.
+   *                   in the background, until it is explicitly turned off.
    */
   this.keepAlive = true;
 

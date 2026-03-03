@@ -51,7 +51,7 @@ export const getHighlightResults = createSelector(
         if (hotFilter) {
           layerFeatures = layerFeatures.map((feature) => {
             // featureMatch uses a different query syntax than
-            //  the rest of the filters, so requries the featureMatch
+            //  the rest of the filters, so requires the featureMatch
             //  function.
             if (featureMatch(feature, hotFilter)) {
               // this is necessary because the feature from

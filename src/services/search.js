@@ -87,7 +87,7 @@ function SearchService(Application, options) {
   /** Ensure that if a grid is configured, it's minimized */
   this.gridMinimized = options.gridMinimized === true;
 
-  /** Field transfomation function. */
+  /** Field transformation function. */
   this.prepareFields = options.prepareFields
     ? options.prepareFields
     : function (fields) {

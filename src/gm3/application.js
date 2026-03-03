@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-/** In GeoMoose, the 'Applicaiton' class is the main 'component'
+/** In GeoMoose, the 'Application' class is the main 'component'
  *
- *  It provides a ES5 API to normalize all the underlaying libraries.
+ *  It provides a ES5 API to normalize all the underlying libraries.
  *
  */
 
@@ -149,7 +149,7 @@ class Application {
     const service = new serviceClass(this, options);
     // set the service name to whatever it was registered as.
     service.name = serviceName;
-    // see if there is an alais for the service.
+    // see if there is an alias for the service.
     service.alias = options.alias || "";
     // check for results config
     service.resultsConfig = {
@@ -173,7 +173,7 @@ class Application {
   /** Configure the default results layer.
    *
    *  This layer needs to exist so the map will properly render
-   *  query reuslts.
+   *  query results.
    *
    */
   configureResultsLayer(resultsStyle = {}) {
@@ -294,7 +294,7 @@ class Application {
       })
     );
 
-    // temproary layer for editing.
+    // temporary layer for editing.
     this.store.dispatch(
       mapSourceActions.add({
         name: EDIT_LAYER_NAME,
@@ -576,7 +576,7 @@ class Application {
         //  the template does not exist.
         if (templateContents) {
           for (const feature of query.results[path]) {
-            // TODO: Make this plugable, check by template "type"?!?
+            // TODO: Make this pluggable, check by template "type"?!?
             htmlContents += Mark.up(templateContents, feature, FORMAT_OPTIONS);
           }
         } else if (layerTemplate && layerTemplate.type === "auto") {
@@ -737,7 +737,7 @@ class Application {
         //  this might be more dangerous than before but the 3.x
         //  behaviour is current being preserved.
         // TODO: Should this just apply as a filter in 4.x instead
-        //       of removing the result from teh queryset?
+        //       of removing the result from the queryset?
         this.dispatch(removeQueryResults(filter));
       }
     };

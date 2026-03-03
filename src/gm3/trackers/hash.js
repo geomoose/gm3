@@ -271,7 +271,7 @@ export default class HashTracker {
         // put the layers in the hash
         newHash += "on=" + trackLayers(mapSources).join(JOIN_SYMBOL);
 
-        // get the locaiton in htere.
+        // get the location in here
         newHash +=
           "&loc=" + formatLocation(mapState, state.cursor.size, this.config.locationFormat);
 

@@ -69,7 +69,7 @@ In ``app.js``, a new search service needs configured for that layer:
                 values[field.name] = field.value;
             });
             // the fields names in the form are generic,
-            //  this is the list of field names in the datset
+            //  this is the list of field names in the dataset
             const fieldLookup = {
                 pin: 'PIN',
                 street: 'STREETNAME',

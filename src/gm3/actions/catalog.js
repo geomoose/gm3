@@ -115,8 +115,8 @@ function parseLayer(store, layerXml, exclusive = false) {
   };
 
   // This is the first attempt at a new model
-  //  for parsing the tool availabiltiy from the XML,
-  //  somehwere this should be more configurable but
+  //  for parsing the tool availability from the XML,
+  //  somewhere this should be more configurable but
   //  for now it'll "work."
   const tools = [
     "down",
@@ -157,7 +157,7 @@ function parseLayer(store, layerXml, exclusive = false) {
   // collect the src states
   let srcFavorite = false;
 
-  // parse out the souces
+  // parse out the sources
   const srcStr = layerXml.getAttribute("src");
   if (srcStr) {
     const mapSources = store.getState().mapSources;
@@ -179,7 +179,7 @@ function parseLayer(store, layerXml, exclusive = false) {
 
       newLayer.src.push(s);
 
-      // if any of the underlaying paths in the src
+      // if any of the underlying paths in the src
       //  are false, then turn all of them off.
       srcFavorite = srcFavorite || isFavoriteLayer(mapSources, s);
 

@@ -51,7 +51,7 @@ const getAllChildLayers = (catalog, id, found = []) => {
 };
 
 const getNeighboringLayers = (catalog, layer) => {
-  // find the root of the exclusivitiy.
+  // find the root of the exclusivity.
   let root = layer.parent;
   while (
     catalog[root] &&

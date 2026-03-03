@@ -698,7 +698,7 @@ class Map extends React.Component {
   /** This is a hack for OpenLayers. It makes sure the map is
    *   properly sized under various conditions.
    *
-   * @returns Boolean. True when the map sucessfully sized, false otherwise.
+   * @returns Boolean. True when the map successfully sized, false otherwise.
    */
   updateMapSize() {
     if (this.map && this.mapDiv) {
@@ -734,7 +734,7 @@ class Map extends React.Component {
    *  cycle where the state can get modified.
    */
   componentDidUpdate(prevProps) {
-    // extent takes precendent over the regular map-view,
+    // extent takes precedent over the regular map-view,
     if (this.props.mapView.extent) {
       this.zoomToExtent(this.props.mapView.extent);
       // check to see if the view has been altered.
@@ -781,7 +781,7 @@ class Map extends React.Component {
 
     // ensure the map is defined and ready.
     if (this.map) {
-      // refresh all the map sources, as approriate.
+      // refresh all the map sources, as appropriate.
       this.refreshMapSources();
       const interactionType = this.props.mapView.interactionType;
 
@@ -959,7 +959,7 @@ export function getLegend(mapSource, mapView, layerName) {
   // see if the layer has a fixed legend.
   for (const layer of mapSource.layers) {
     if (layer.name === layerName && layer.legend !== undefined && layer.legend !== null) {
-      // translate from the store represenation to
+      // translate from the store representation to
       // what's used to render the legend.
       if (layer.legend.type === "html") {
         return {

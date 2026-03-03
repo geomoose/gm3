@@ -29,7 +29,7 @@
  *
  */
 function FindMeAction(Application, options) {
-  // allow the targetting of a layer, but default to the highlight layer
+  // allow the targeting of a layer, but default to the highlight layer
   this.targetLayer = options.targetLayer ? options.targetLayer : "sketch/default";
 
   // default the map projection to web-mercator

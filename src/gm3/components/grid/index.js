@@ -251,7 +251,7 @@ class Grid extends React.Component {
 
   componentDidUpdate(prevProps) {
     // The `showGrid` logic is used to prevent the grid
-    //  from "flashing" in appearance and being immeidately
+    //  from "flashing" in appearance and being immediately
     //  minimized.
     if (this.props.queryStep !== prevProps.queryStep) {
       if (this.props.queryStep === SERVICE_STEPS.RESULTS) {

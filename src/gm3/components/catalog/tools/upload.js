@@ -200,7 +200,7 @@ class UploadModal extends Modal {
             olFeatures = null;
 
             // internal feature representation is as GeoJSON, so the parsed
-            //  ol feautures need converted here...
+            //  ol features need converted here...
             const collection = geojsonFormat.writeFeaturesObject(validFeatures);
 
             self.props.onAddFeatures(collection.features);

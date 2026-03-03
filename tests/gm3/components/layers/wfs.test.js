@@ -145,7 +145,7 @@ describe("WFS Testing", () => {
     expect(wfsQueryXml).toBe(goneFancy);
   });
 
-  it("handles an alternative geometry colum (geometry-name param)", () => {
+  it("handles an alternative geometry column (geometry-name param)", () => {
     const geomQuery = {
       selection: [
         {

@@ -50,7 +50,7 @@ function OSMGeocoder(Application, options) {
    *  other than the demo application.
    */
   this.template = `
-    <div class="serach-results">
+    <div class="search-results">
       <div style="display: flex">
         <div style="padding-right: 8px">
           <i class="fa fa-search"></i>

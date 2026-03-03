@@ -127,7 +127,7 @@ export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, di
       case "vector":
         return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
       default:
-        // this is an un-supproted type so just bail
+        // this is an un-supported type so just bail
         return new Promise((resolve) => resolve({ layer, features: [] }));
     }
   });

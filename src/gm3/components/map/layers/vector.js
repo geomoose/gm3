@@ -42,7 +42,7 @@ import { EDIT_LAYER_NAME } from "../../../defaults";
 // WARNING! This is a monkey patch in order to
 // allow rendering labels outside of a polygon's
 // area. The default behaviour for this is to limit the
-// label to insde the polygon.
+// label to inside the polygon.
 import Text from "ol/style/Text";
 import { applyStyle as applyStyleFunction } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
@@ -256,7 +256,7 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
           const layerDef = {
             id: `${layer.name}-${glLayerType}`,
             type: glLayerType,
-            // source is a contant that is used to dummy up
+            // source is a constant that is used to dummy up
             //  the Mapbox styles
             source: "dummy-source",
             paint: {},

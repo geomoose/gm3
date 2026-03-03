@@ -86,12 +86,12 @@ function parseParams(msXml, tagName = "param") {
   return paramsObj;
 }
 
-/** Convert app the <property> tages of <properties> in <map-source>
+/** Convert app the <property> tags of <properties> in <map-source>
  *  into an object.
  *
  *  @param msXml The MapSource XML
  *
- *  @returns Object containing the propeties
+ *  @returns Object containing the properties
  */
 function parseProperties(msXml) {
   const props = [];
@@ -760,7 +760,7 @@ export function removeFeature(path, feature) {
   };
 }
 
-/* Modify a feature's geomtery
+/* Modify a feature's geometry
  */
 export const modifyFeatureGeometry = createAction(
   "mapsource/modify-feature-geometry",

@@ -73,7 +73,7 @@ function SelectService(Application, options) {
   this.autoGo = options.autoGo === true;
 
   /** keepAlive = true will keep the service in 'query mode'
-   *                   in the background, until it is explictly turned off.
+   *                   in the background, until it is explicitly turned off.
    */
   this.keepAlive = options.keepAlive === true;
 
@@ -105,7 +105,7 @@ function SelectService(Application, options) {
   /** When defined, label the draw tools */
   this.drawToolsLabel = options.drawToolsLabel !== undefined ? options.drawToolsLabel : "Using";
 
-  /** Alow shapes to be buffered. */
+  /** Allow shapes to be buffered. */
   this.bufferAvailable = true;
 
   /** This function is called everytime there is an select query.
