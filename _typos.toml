@@ -1,0 +1,15 @@
+[default.extend-words]
+# US National Grid
+usng="usng"
+# A**GIS Services
+ags="ags"
+
+# This is a historical misspelling in the code
+comparitor="comparitor"
+
+[files]
+extend-exclude = [
+  "src/gm3/lang/*",
+  # prevent place names from triggering spelling issues
+  "*.geojson",
+]
