@@ -134,6 +134,7 @@ export const runQuery = createAsyncThunk(
         case "ags-vector":
           return agsFeatureQuery(layer, state.map, mapSource, queryDef);
         case "geojson":
+        case "geoparquet":
         case "vector":
           return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
         default:

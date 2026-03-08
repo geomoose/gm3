@@ -556,6 +556,7 @@ function isQueryable(mapSource) {
     case "ags-vector":
     case "geojson":
     case "vector":
+    case "geoparquet":
       return true;
     default:
       return false;
@@ -575,6 +576,7 @@ function isSelectable(mapSource, layer) {
     case "wfs":
     case "vector":
     case "ags-vector":
+    case "geoparquet":
       return layer.selectable === true;
     default:
       return false;
