@@ -34,7 +34,7 @@ export default [
   js.configs.recommended,
   {
     files: ["**/*.{js,jsx}"],
-    ignores: ["fonts.js"],
+    ignores: ["./src/gm3/components/print/fonts.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
