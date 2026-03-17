@@ -43,7 +43,7 @@ HTML. As seen here:
    <!-- {% endraw %} -->
 
 The template above is named "search" and will be used by the search tool
-in order to render any features it recieves from the server.
+in order to render any features it receives from the server.
 
 Aliasing templates
 ------------------

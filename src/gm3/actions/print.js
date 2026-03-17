@@ -26,16 +26,13 @@ import { createAction } from "@reduxjs/toolkit";
 
 /* Action issued to start a print request.
  */
-export const printRequest = createAction(
-  "print/request",
-  (width, height, center, resolution) => ({
-    payload: {
-      size: [width, height],
-      center,
-      resolution,
-    },
-  })
-);
+export const printRequest = createAction("print/request", (width, height, center, resolution) => ({
+  payload: {
+    size: [width, height],
+    center,
+    resolution,
+  },
+}));
 
 /* Action issued when the print image data should be updated.
  */

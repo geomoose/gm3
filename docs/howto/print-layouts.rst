@@ -66,7 +66,7 @@ The following elements are available:
 
     -  ``text`` - The content to put on the map. Supports :doc:`GeoMoose
        Templates <../templates>` including a special ``{{title}}``
-       mustache which is the user's inputed title.
+       mustache which is the user's inputted title.
     -  ``size`` - The font size in points.
     -  ``fontStyle`` - ``normal``, ``italic`` or ``bold``
     -  ``font`` - Defaults to Arial but could be any common font available

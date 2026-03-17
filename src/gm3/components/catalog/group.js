@@ -28,7 +28,7 @@ import MetadataTool from "./tools/metadata";
 
 const CatalogGroup = ({ group, onExpand, children }) => {
   const { t } = useTranslation();
-  const classes = "group " + (!!group.expand ? "gm-expand" : "gm-collapse");
+  const classes = "group " + (group.expand ? "gm-expand" : "gm-collapse");
   return (
     <div key={group.id} className={classes}>
       <div className="group-label" title={t(group.tip)} onClick={onExpand}>
@@ -40,11 +40,7 @@ const CatalogGroup = ({ group, onExpand, children }) => {
         />
         <span>
           {t(group.label)}{" "}
-          {!group.metadata_url ? (
-            false
-          ) : (
-            <MetadataTool href={group.metadata_url} />
-          )}
+          {!group.metadata_url ? false : <MetadataTool href={group.metadata_url} />}
         </span>
       </div>
       <div className="children">{children}</div>

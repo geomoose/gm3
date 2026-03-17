@@ -53,14 +53,7 @@ const ServiceManager = function ({
         setServiceReady(-1);
       }
     }
-  }, [
-    serviceReady,
-    serviceDef,
-    changeTool,
-    fieldValues,
-    selectionFeatures,
-    serviceInstance,
-  ]);
+  }, [serviceReady, serviceDef, changeTool, fieldValues, selectionFeatures, serviceInstance]);
 
   // This will return the user to the ServiceForm
   //  if keep alive has been set to true and autoGo
@@ -73,13 +66,7 @@ const ServiceManager = function ({
     } else if (selectionFeatures.length > 0) {
       setFirstSelection(false);
     }
-  }, [
-    serviceDef,
-    selectionFeatures,
-    setServiceStep,
-    firstSelection,
-    setFirstSelection,
-  ]);
+  }, [serviceDef, selectionFeatures, setServiceStep, firstSelection, setFirstSelection]);
 
   let contents = false;
 
@@ -120,9 +107,7 @@ const mapStateToProps = (state) => ({
   serviceName: state.query.serviceName,
   serviceStep: state.query.step,
   serviceInstance: state.query.instance,
-  selectionFeatures: state.mapSources.selection
-    ? state.mapSources.selection.features
-    : [],
+  selectionFeatures: state.mapSources.selection ? state.mapSources.selection.features : [],
   defaultValues: state.query.defaultValues,
 });
 

@@ -35,7 +35,7 @@ import { featureFilter as createFilter } from "@mapbox/mapbox-gl-style-spec";
 export function parseHash() {
   // take the hash and parse it like a query string.
   // The "substring(1)" removes the "#" from the leading edge,
-  //  replacing it with the '?' then cuases the hash to be parsed like
+  //  replacing it with the '?' then causes the hash to be parsed like
   //  a normal query string.
   return urlParse("?" + window.location.hash.substring(1), true);
 }
@@ -401,11 +401,7 @@ export function changeFeatures(features, filter, properties, geometry) {
     if (featureMatch(feature, filter)) {
       const newFeature = Object.assign({}, feature);
       if (properties) {
-        newFeature.properties = Object.assign(
-          {},
-          feature.properties,
-          properties
-        );
+        newFeature.properties = Object.assign({}, feature.properties, properties);
       }
       if (geometry) {
         newFeature.geometry = Object.assign({}, geometry);
@@ -419,7 +415,7 @@ export function changeFeatures(features, filter, properties, geometry) {
   return newFeatures;
 }
 
-/** Easy to stomach 'return me the version' fuction, the version
+/** Easy to stomach 'return me the version' function, the version
  *  is set using webpack and parses the package.json file to get it.
  *
  */
@@ -500,11 +496,7 @@ export function configureProjections(p4) {
       const projAlias = "UTM" + utmZone + (north === "north" ? "N" : "S");
       // it's nice to have a formulary.
       const projString =
-        "+proj=utm +zone=" +
-        utmZone +
-        " +" +
-        north +
-        "+datum=WGS84 +units=m +no_defs";
+        "+proj=utm +zone=" + utmZone + " +" + north + "+datum=WGS84 +units=m +no_defs";
 
       // set up the standard way of calling the projection
       //  (using the EPSG Code)
@@ -534,7 +526,7 @@ export function addProjDef(p4, code, def) {
  * @return UTM string (e.g. UTM15N)
  */
 export function getUtmZone(pt) {
-  // No citation provideded for this calculation,
+  // No citation provided for this calculation,
   // it was working in the GM2.X series without a lot
   // of complaints.
   const zone = Math.floor(pt[0] / 6.0 + 30) + 1;
@@ -542,7 +534,7 @@ export function getUtmZone(pt) {
   // north zones are north of 0.
   const north = pt[1] > 0 ? "N" : "S";
 
-  // boom, string ot the user.
+  // boom, string to the user.
   return "UTM" + zone + north;
 }
 
@@ -599,8 +591,7 @@ export function convertLength(length, srcUnits, destUnits) {
 export function convertArea(area, srcUnits, destUnits) {
   // US survey feet, miles
   return (
-    (area * Math.pow(EQUIVALENT_METERS[srcUnits], 2)) /
-    Math.pow(EQUIVALENT_METERS[destUnits], 2)
+    (area * Math.pow(EQUIVALENT_METERS[srcUnits], 2)) / Math.pow(EQUIVALENT_METERS[destUnits], 2)
   );
 }
 
@@ -859,7 +850,7 @@ export function getScale(resolution, projection) {
  * @param url - The URL
  * @param params - GET parameters for the URL
  *
- * @returns String. The join URL and paramaters.
+ * @returns String. The join URL and parameters.
  */
 export function joinUrl(url, params) {
   let r = url;

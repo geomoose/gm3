@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-/** In GeoMoose, the 'Applicaiton' class is the main 'component'
+/** In GeoMoose, the 'Application' class is the main 'component'
  *
- *  It provides a ES5 API to normalize all the underlaying libraries.
+ *  It provides a ES5 API to normalize all the underlying libraries.
  *
  */
 
@@ -65,13 +65,7 @@ import {
 
 import Mark from "markup-js";
 
-import {
-  addProjDef,
-  getMapSourceName,
-  getLayerName,
-  FORMAT_OPTIONS,
-  parseQuery,
-} from "./util";
+import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from "./util";
 import { normalizeFieldValues, normalizeSelection } from "./query/util";
 
 import i18nConfigure from "./i18n";
@@ -90,11 +84,7 @@ function hydrateConfig(userConfig = {}) {
   //  set the defaults, so it's handled individually.
   if (userConfig.resultsStyle) {
     config.resultsStyle = {
-      highlight: Object.assign(
-        {},
-        HIGHLIGHT_STYLE,
-        userConfig.resultsStyle.highlight
-      ),
+      highlight: Object.assign({}, HIGHLIGHT_STYLE, userConfig.resultsStyle.highlight),
       hot: Object.assign({}, HIGHLIGHT_HOT_STYLE, userConfig.resultsStyle.hot),
     };
   } else {
@@ -104,11 +94,7 @@ function hydrateConfig(userConfig = {}) {
     };
   }
 
-  config.selectionStyle = Object.assign(
-    {},
-    SELECTION_STYLE,
-    userConfig.selectionStyle
-  );
+  config.selectionStyle = Object.assign({}, SELECTION_STYLE, userConfig.selectionStyle);
 
   return config;
 }
@@ -163,7 +149,7 @@ class Application {
     const service = new serviceClass(this, options);
     // set the service name to whatever it was registered as.
     service.name = serviceName;
-    // see if there is an alais for the service.
+    // see if there is an alias for the service.
     service.alias = options.alias || "";
     // check for results config
     service.resultsConfig = {
@@ -187,7 +173,7 @@ class Application {
   /** Configure the default results layer.
    *
    *  This layer needs to exist so the map will properly render
-   *  query reuslts.
+   *  query results.
    *
    */
   configureResultsLayer(resultsStyle = {}) {
@@ -250,11 +236,7 @@ class Application {
       })
     );
 
-    const resultsStyleAll = Object.assign(
-      {},
-      HIGHLIGHT_STYLE,
-      resultsStyle.highlight
-    );
+    const resultsStyleAll = Object.assign({}, HIGHLIGHT_STYLE, resultsStyle.highlight);
     this.store.dispatch(
       mapSourceActions.addLayer("results", {
         name: "results",
@@ -302,11 +284,7 @@ class Application {
       })
     );
 
-    const selectionStyleAll = Object.assign(
-      {},
-      SELECTION_STYLE,
-      selectionStyle
-    );
+    const selectionStyleAll = Object.assign({}, SELECTION_STYLE, selectionStyle);
     this.store.dispatch(
       mapSourceActions.addLayer("selection", {
         name: "selection",
@@ -316,7 +294,7 @@ class Application {
       })
     );
 
-    // temproary layer for editing.
+    // temporary layer for editing.
     this.store.dispatch(
       mapSourceActions.add({
         name: EDIT_LAYER_NAME,
@@ -349,36 +327,27 @@ class Application {
     if (typeof contents === "string") {
       mapbookXml = new DOMParser().parseFromString(contents, "text/xml");
       if (mapbookXml.documentElement.nodeName === "parsererror") {
-        console.error(
-          "Could not parse mapbook!",
-          mapbookXml.documentElement.innerHTML
-        );
+        console.error("Could not parse mapbook!", mapbookXml.documentElement.innerHTML);
         return false;
       }
     }
 
-    this.configureSelectionLayer(
-      this.config.selectionStyle,
-      this.config.editStyle
-    );
+    this.configureSelectionLayer(this.config.selectionStyle, this.config.editStyle);
     this.configureResultsLayer(this.config.resultsStyle);
 
     // load the map-sources
     const sources = mapbookXml.getElementsByTagName("map-source");
     for (let i = 0, ii = sources.length; i < ii; i++) {
       const ms = sources[i];
-      mapSourceActions
-        .addFromXml(ms, this.config)
-        .forEach((action) => this.store.dispatch(action));
+      mapSourceActions.addFromXml(ms, this.config).forEach((action) => this.store.dispatch(action));
     }
 
-    parseCatalog(
-      this.store,
-      mapbookXml.getElementsByTagName("catalog")[0]
-    ).forEach((action) => this.store.dispatch(action));
+    parseCatalog(this.store, mapbookXml.getElementsByTagName("catalog")[0]).forEach((action) =>
+      this.store.dispatch(action)
+    );
 
-    parseToolbar(mapbookXml.getElementsByTagName("toolbar")[0]).forEach(
-      (action) => this.store.dispatch(action)
+    parseToolbar(mapbookXml.getElementsByTagName("toolbar")[0]).forEach((action) =>
+      this.store.dispatch(action)
     );
 
     // return the parsed version of the document.
@@ -408,7 +377,7 @@ class Application {
           return this.populateMapbook(content);
         });
     } else if (options.content) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         resolve(this.populateMapbook(options.content));
       });
     } else {
@@ -478,9 +447,7 @@ class Application {
     // require all the promises complete,
     //  then dispatch the store.
     Promise.all(templatePromises).then(() => {
-      this.store.dispatch(
-        createQuery(service, selection, fields, layers, runOptions)
-      );
+      this.store.dispatch(createQuery(service, selection, fields, layers, runOptions));
       // when a custom runQuery function is present, pass it to the query engine
       let serviceRunQuery = this.services[service]?.runQuery;
       if (serviceRunQuery) {
@@ -498,7 +465,7 @@ class Application {
    * @returns A promise for when the contents of the template is resolved.
    */
   getTemplate(path, template) {
-    const templatePromise = new Promise((resolve, reject) => {
+    const templatePromise = new Promise((resolve) => {
       if (template.substring(0, 1) === "@") {
         const templateName = template.substring(1);
         const layer = getLayerFromPath(this.store.getState().mapSources, path);
@@ -520,16 +487,11 @@ class Application {
               .then((content) => {
                 // convert the "remote" template to a local one
                 this.store.dispatch(
-                  mapSourceActions.setLayerTemplate(
-                    mapSourceName,
-                    layerName,
-                    templateName,
-                    {
-                      ...layerTemplate,
-                      type: "local",
-                      contents: content,
-                    }
-                  )
+                  mapSourceActions.setLayerTemplate(mapSourceName, layerName, templateName, {
+                    ...layerTemplate,
+                    type: "local",
+                    contents: content,
+                  })
                 );
                 // resolve this promise with the content
                 resolve(content);
@@ -614,7 +576,7 @@ class Application {
         //  the template does not exist.
         if (templateContents) {
           for (const feature of query.results[path]) {
-            // TODO: Make this plugable, check by template "type"?!?
+            // TODO: Make this pluggable, check by template "type"?!?
             htmlContents += Mark.up(templateContents, feature, FORMAT_OPTIONS);
           }
         } else if (layerTemplate && layerTemplate.type === "auto") {
@@ -775,7 +737,7 @@ class Application {
         //  this might be more dangerous than before but the 3.x
         //  behaviour is current being preserved.
         // TODO: Should this just apply as a filter in 4.x instead
-        //       of removing the result from teh queryset?
+        //       of removing the result from the queryset?
         this.dispatch(removeQueryResults(filter));
       }
     };
@@ -798,9 +760,7 @@ class Application {
    */
   changeFeatures(path, filter, properties) {
     const mapSourceName = getMapSourceName(path);
-    this.store.dispatch(
-      mapSourceActions.changeFeatures(mapSourceName, filter, properties)
-    );
+    this.store.dispatch(mapSourceActions.changeFeatures(mapSourceName, filter, properties));
   }
 
   /* Shorthand for manipulating result features.
@@ -851,10 +811,7 @@ class Application {
    */
   startService(serviceName, options) {
     const serviceDef = this.services[serviceName];
-    const nextTool =
-      options && options.changeTool
-        ? options.changeTool
-        : serviceDef.tools.default;
+    const nextTool = options && options.changeTool ? options.changeTool : serviceDef.tools.default;
 
     this.store.dispatch(
       startService({
@@ -953,7 +910,7 @@ class Application {
 
   /* Short hand for toggling the highlight of features.
    */
-  highlightFeatures(filter, on) {
+  highlightFeatures(filter) {
     this.dispatch(setHotFilter(filter));
   }
 

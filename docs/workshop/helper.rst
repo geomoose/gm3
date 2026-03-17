@@ -114,7 +114,7 @@ Adding a GeoJSON Layer
             "circle-color": "blue",
             "text-font": ["Arial", "Open Sans Regular"],
             "text-field": "{city}",
-            "text-jusitfy": "right",
+            "text-justify": "right",
             "text-anchor": "right"
         }
         ]]></style>

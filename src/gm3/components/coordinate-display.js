@@ -40,10 +40,7 @@ import * as proj from "ol/proj";
  * @return {string} Formatted coordinates.
  */
 export function formatCoordinates(projection, coords, defaultPrecision = 4) {
-  const precision =
-    projection.precision !== undefined
-      ? projection.precision
-      : defaultPrecision;
+  const precision = projection.precision !== undefined ? projection.precision : defaultPrecision;
   return coords.map((x) => x.toFixed(precision)).join(", ");
 }
 
@@ -123,8 +120,7 @@ export default class CoordinateDisplay extends React.Component {
         if (typeof projection.projDef !== "undefined") {
           addProjDef(proj4, projection.ref, projection.projDef);
         }
-        const isNamedProjection =
-          this.namedProjections.indexOf(projection.ref) !== -1;
+        const isNamedProjection = this.namedProjections.indexOf(projection.ref) !== -1;
         let isDefinedProjection = false;
         if (!isNamedProjection) {
           // This is not the cleanest test for definition,
@@ -156,10 +152,7 @@ export default class CoordinateDisplay extends React.Component {
     try {
       // TODO: This assumes resolution is in meters per pixel
       const resolution = this.props.resolution;
-      const digits = Math.max(
-        Math.min(Math.ceil(Math.log10(100000 / resolution)), 5),
-        0
-      );
+      const digits = Math.max(Math.min(Math.ceil(Math.log10(100000 / resolution)), 5), 0);
       return this.u.fromLonLat({ lon: coords[0], lat: coords[1] }, digits);
     } catch (e) {
       console.error("Bug with USNG coordinate", e);
@@ -191,11 +184,7 @@ export default class CoordinateDisplay extends React.Component {
     //       and defined by the user.
     const mapProj = "EPSG:3857";
     // transform the point, slice is used to ensure only 2D coordinates.
-    const coords = proj4(
-      mapProj,
-      projection.ref,
-      this.props.coords.slice(0, 2)
-    );
+    const coords = proj4(mapProj, projection.ref, this.props.coords.slice(0, 2));
     return formatCoordinates(projection, coords);
   }
 
@@ -248,8 +237,7 @@ export default class CoordinateDisplay extends React.Component {
     return (
       <span className="coordinate-display">
         {this.projections.map((projection) => {
-          const className =
-            "coordinates map-" + projection.ref.replace(/:/g, "-");
+          const className = "coordinates map-" + projection.ref.replace(/:/g, "-");
           const data = this.getData(projection);
           return (
             <span className={className} key={projection.ref}>

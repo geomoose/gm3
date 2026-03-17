@@ -26,9 +26,7 @@ import { createAction } from "@reduxjs/toolkit";
 
 export const setCursor = createAction("cursor/cursor");
 
-export const updateSketchGeometry = createAction(
-  "cursor/update-sketch-geometry"
-);
+export const updateSketchGeometry = createAction("cursor/update-sketch-geometry");
 
 /* Set the size of the map in the state as a hint
  * to other components.

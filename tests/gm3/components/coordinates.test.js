@@ -24,9 +24,7 @@
 
 import React from "react";
 import { render } from "@testing-library/react";
-import CoordinateDisplay, {
-  formatCoordinates,
-} from "gm3/components/coordinate-display";
+import CoordinateDisplay, { formatCoordinates } from "gm3/components/coordinate-display";
 
 // this is necessary to configure the UTM projections
 import { configureProjections } from "gm3/util";
@@ -58,12 +56,10 @@ describe("coordinate display component", () => {
   });
 
   it("renders a coordinate display", () => {
-    const { container } = render(
-      <CoordinateDisplay coords={[100000, 100000]} />
+    const { container } = render(<CoordinateDisplay coords={[100000, 100000]} />);
+    expect(container.getElementsByClassName("coordinate-display")[0].innerHTML).toContain(
+      "100000.0, 100000.0"
     );
-    expect(
-      container.getElementsByClassName("coordinate-display")[0].innerHTML
-    ).toContain("100000.0, 100000.0");
   });
 
   it("accepts a custom projections list", () => {
@@ -91,10 +87,7 @@ describe("coordinate display component", () => {
     ];
 
     const { container } = render(
-      <CoordinateDisplay
-        coords={[-10370000, 5550000]}
-        projections={projections}
-      />
+      <CoordinateDisplay coords={[-10370000, 5550000]} projections={projections} />
     );
     expect(container.innerHTML).toContain("487664, 4932296");
   });

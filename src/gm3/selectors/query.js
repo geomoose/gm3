@@ -15,17 +15,13 @@ export const getHotFilter = (state) => state.query.hotFilter;
 // TODO: Move this to a map sources selector
 export const getMapSources = (state) => state.mapSources;
 
-export const getQueryResults = createSelector(
-  getAllResults,
-  getFilter,
-  (results, filter) => {
-    const features = {};
-    for (const path in results) {
-      features[path] = matchFeatures(results[path], filter);
-    }
-    return features;
+export const getQueryResults = createSelector(getAllResults, getFilter, (results, filter) => {
+  const features = {};
+  for (const path in results) {
+    features[path] = matchFeatures(results[path], filter);
   }
-);
+  return features;
+});
 
 export const getFlatResults = createSelector(getAllResults, (results) => {
   let features = [];
@@ -55,7 +51,7 @@ export const getHighlightResults = createSelector(
         if (hotFilter) {
           layerFeatures = layerFeatures.map((feature) => {
             // featureMatch uses a different query syntax than
-            //  the rest of the filters, so requries the featureMatch
+            //  the rest of the filters, so requires the featureMatch
             //  function.
             if (featureMatch(feature, hotFilter)) {
               // this is necessary because the feature from

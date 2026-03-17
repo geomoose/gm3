@@ -59,12 +59,7 @@ const LoadingIndicator = ({ loadingHTML }) => {
         displayHTML = element.innerHTML;
       }
     }
-    return (
-      <div
-        className="loading-message"
-        dangerouslySetInnerHTML={{ __html: displayHTML }}
-      />
-    );
+    return <div className="loading-message" dangerouslySetInnerHTML={{ __html: displayHTML }} />;
   }
   return <DefaultLoadingIndicator />;
 };

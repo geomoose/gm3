@@ -113,11 +113,7 @@ export const CatalogLayer = ({ layer, resolution, forceTools }) => {
         <LayerFavorite layer={layer} />
         <span>{layer.label}</span>
         {layer.refresh === null ? false : <RefreshTool layer={layer} />}
-        {!layer.metadata_url ? (
-          false
-        ) : (
-          <MetadataTool href={layer.metadata_url} />
-        )}
+        {!layer.metadata_url ? false : <MetadataTool href={layer.metadata_url} />}
       </div>
       <div className="layer-tools">
         {getTools(layer, enabledTools)}

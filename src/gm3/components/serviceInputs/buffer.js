@@ -33,7 +33,7 @@ BufferInput.propTypes = {
 
 BufferInput.defaultProps = {
   distance: 0,
-  setBuffer: (distance, units) => {},
+  setBuffer: () => {},
 };
 
 function mapState(state) {

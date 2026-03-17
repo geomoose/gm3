@@ -32,8 +32,7 @@ export function getScalelineInfo(viewState, units, inOpts = {}) {
 
   const center = viewState.getCenter();
   const projection = viewState.getProjection();
-  const pointResolutionUnits =
-    units === Units.DEGREES ? ProjUnits.DEGREES : ProjUnits.METERS;
+  const pointResolutionUnits = units === Units.DEGREES ? ProjUnits.DEGREES : ProjUnits.METERS;
   if (!projection) {
     return { label: "", width: 0, error: "no-projection" };
   }
@@ -119,8 +118,7 @@ export function getScalelineInfo(viewState, units, inOpts = {}) {
     };
   }
 
-  let i =
-    3 * Math.floor(Math.log(options.minWidth * pointResolution) / Math.log(10));
+  let i = 3 * Math.floor(Math.log(options.minWidth * pointResolution) / Math.log(10));
   let count, width;
   while (true) {
     count = LEADING_DIGITS[((i % 3) + 3) % 3] * Math.pow(10, Math.floor(i / 3));

@@ -49,7 +49,7 @@ The above defines the entire map-source but the following is what
 enables the layer to be used for select:
 
 1. In ``<map-source ...>``, ``type="mapserver-wfs"``: WFS is the OGC Web
-   Feature Serice.
+   Feature Service.
 
 WFS servers emit actual vector features definitions and not rendered
 maps.

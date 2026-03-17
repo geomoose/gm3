@@ -52,10 +52,7 @@ const getImage = (parentElement, exportSize) => {
           .split(",")
           .map(Number);
         // Apply the transform to the export map context
-        CanvasRenderingContext2D.prototype.setTransform.apply(
-          mapContext,
-          matrix
-        );
+        CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
         mapContext.drawImage(canvas, 0, 0);
       }
     }

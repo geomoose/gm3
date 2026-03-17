@@ -37,9 +37,7 @@ const getAllChildLayers = (catalog, id, found = []) => {
       for (let i = 0, ii = node.children.length; i < ii; i++) {
         const child = catalog[node.children[i]];
         if (child.children) {
-          found = found.concat(
-            getAllChildLayers(catalog, node.children[i], found)
-          );
+          found = found.concat(getAllChildLayers(catalog, node.children[i], found));
         } else {
           found = found.concat([child]);
         }
@@ -53,7 +51,7 @@ const getAllChildLayers = (catalog, id, found = []) => {
 };
 
 const getNeighboringLayers = (catalog, layer) => {
-  // find the root of the exclusivitiy.
+  // find the root of the exclusivity.
   let root = layer.parent;
   while (
     catalog[root] &&

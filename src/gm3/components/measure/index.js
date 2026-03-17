@@ -30,11 +30,7 @@ import { getArea } from "ol/sphere";
 import DrawTool from "../drawTool";
 import { updateSketchGeometry } from "../../actions/cursor";
 import { changeTool, clearSelectionFeatures } from "../../actions/map";
-import {
-  clearFeatures,
-  removeFeature,
-  saveFeature,
-} from "../../actions/mapSource";
+import { clearFeatures, removeFeature, saveFeature } from "../../actions/mapSource";
 import { PolygonIcon } from "../polygon-icon";
 import { LineIcon } from "../line-icon";
 import { PointIcon } from "../point-icon";
@@ -75,12 +71,8 @@ export class MeasureTool extends Component {
     const savedAreaUnits = localStorage.getItem(AREA_KEY) || "ft";
 
     this.state = {
-      lengthUnits: this.props.initialUnits
-        ? this.props.initialUnits
-        : savedLengthUnits,
-      areaUnits: this.props.initialUnits
-        ? this.props.initialUnits
-        : savedAreaUnits,
+      lengthUnits: this.props.initialUnits ? this.props.initialUnits : savedLengthUnits,
+      areaUnits: this.props.initialUnits ? this.props.initialUnits : savedAreaUnits,
     };
 
     // localize all of the ordinals
@@ -96,17 +88,13 @@ export class MeasureTool extends Component {
     this.props.clearSelectionFeatures();
     // change the tool to be the default and target the measure source
     this.props.updateSketchGeometry(null);
-    this.props.changeTool(
-      this.props.defaultTool,
-      util.getMapSourceName(this.props.targetLayer)
-    );
+    this.props.changeTool(this.props.defaultTool, util.getMapSourceName(this.props.targetLayer));
   }
 
   componentDidUpdate(prevProps) {
     // check to see if a feature was added to the mapSource
     if (
-      prevProps.measureSource.features.length !==
-        this.props.measureSource.features.length &&
+      prevProps.measureSource.features.length !== this.props.measureSource.features.length &&
       this.props.measureSource.features.length > 0
     ) {
       const features = this.props.measureSource.features;
@@ -132,34 +120,22 @@ export class MeasureTool extends Component {
    */
   renderSegments(geom, live, properties) {
     const cursorCoords = toLonLat(this.props.cursor.coords);
-    const isDrawing =
-      live !== false && this.props.cursor.sketchGeometry !== null;
-    const segments = getSegmentInfo(
-      geom,
-      cursorCoords,
-      isDrawing,
-      this.ordinalDictionary
-    );
+    const isDrawing = live !== false && this.props.cursor.sketchGeometry !== null;
+    const segments = getSegmentInfo(geom, cursorCoords, isDrawing, this.ordinalDictionary);
 
     let totalLength = 0;
 
     const segmentHtml = [];
     for (let i = 0, ii = segments.length; i < ii; i++) {
       const seg = segments[i];
-      const lineLength = util.metersLengthToUnits(
-        seg.len,
-        this.state.lengthUnits
-      );
+      const lineLength = util.metersLengthToUnits(seg.len, this.state.lengthUnits);
       totalLength += lineLength;
 
       segmentHtml.push(
         <tr key={"segment" + i}>
           <td>{seg.id}</td>
           <td className="segment-length">{lineLength.toFixed(2)}</td>
-          <td
-            className="segment-bearing"
-            style={{ width: "100px", overflow: "hidden" }}
-          >
+          <td className="segment-bearing" style={{ width: "100px", overflow: "hidden" }}>
             {this.props.t(seg.bearing)}
           </td>
         </tr>
@@ -214,15 +190,11 @@ export class MeasureTool extends Component {
    * @return JSX
    */
   renderArea(geom, live, properties) {
-    const interimPolygons = this.props.showPolySegments
-      ? deconstructPolygon(geom)
-      : [];
+    const interimPolygons = this.props.showPolySegments ? deconstructPolygon(geom) : [];
 
     const formatArea = (polygon) => {
       const areaMeters = getArea(util.jsonToGeom(polygon));
-      return util
-        .metersAreaToUnits(areaMeters, this.state.areaUnits)
-        .toFixed(2);
+      return util.metersAreaToUnits(areaMeters, this.state.areaUnits).toFixed(2);
     };
 
     const iconProps = {
@@ -235,9 +207,7 @@ export class MeasureTool extends Component {
     }
 
     // trailing space in the constructed string is intentional.
-    const sqLabel = hasSqLabel(this.state.areaUnits)
-      ? `${this.props.t("measure-sq")} `
-      : "";
+    const sqLabel = hasSqLabel(this.state.areaUnits) ? `${this.props.t("measure-sq")} ` : "";
 
     return (
       <div className="gm-grid">
@@ -269,9 +239,7 @@ export class MeasureTool extends Component {
                   <td>
                     <PolygonIcon geometry={interimPolygon} />
                   </td>
-                  <td className="segment-length">
-                    {formatArea(interimPolygon)}
-                  </td>
+                  <td className="segment-length">{formatArea(interimPolygon)}</td>
                 </tr>
               ))}
           </tbody>
@@ -299,10 +267,7 @@ export class MeasureTool extends Component {
           <thead>
             <tr key="header">
               <th>
-                <PointIcon
-                  stroke={properties?.outlineColor}
-                  fill={properties?.coreColor}
-                />
+                <PointIcon stroke={properties?.outlineColor} fill={properties?.coreColor} />
               </th>
               <th style={{ textAlign: "right" }}>
                 <RemoveFeatureButton
@@ -415,31 +380,15 @@ export class MeasureTool extends Component {
           dangerouslySetInnerHTML={{ __html: this.props.t("measure-help") }}
         />
         <div className="draw-tools">
-          <DrawTool
-            key="measure-point"
-            geomType="Point"
-            layer={this.props.targetLayer}
-          />
-          <DrawTool
-            key="measure-line"
-            geomType="LineString"
-            layer={this.props.targetLayer}
-          />
-          <DrawTool
-            key="measure-poly"
-            geomType="Polygon"
-            layer={this.props.targetLayer}
-          />
+          <DrawTool key="measure-point" geomType="Point" layer={this.props.targetLayer} />
+          <DrawTool key="measure-line" geomType="LineString" layer={this.props.targetLayer} />
+          <DrawTool key="measure-poly" geomType="Polygon" layer={this.props.targetLayer} />
           <DrawTool key="measure-select" geomType="Select" />
         </div>
 
         <div className="clear-parent">
           <button
-            onClick={() =>
-              this.props.clearFeatures(
-                util.getMapSourceName(this.props.targetLayer)
-              )
-            }
+            onClick={() => this.props.clearFeatures(util.getMapSourceName(this.props.targetLayer))}
           >
             <span className="icon clear"></span>
             {this.props.t("measure-clear", "Clear measure features")}
@@ -478,7 +427,4 @@ const mapDispatchToProps = {
   updateSketchGeometry,
 };
 
-export default connect(
-  mapToProps,
-  mapDispatchToProps
-)(withTranslation()(MeasureTool));
+export default connect(mapToProps, mapDispatchToProps)(withTranslation()(MeasureTool));

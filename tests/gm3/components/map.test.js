@@ -52,10 +52,7 @@ if (!window.requestAnimationFrame) {
     const timeoutCb = function () {
       callbackFun(+new Date());
     };
-    return window.setTimeout(
-      timeoutCb,
-      Math.max(targetTime + 16, currentTime) - currentTime
-    );
+    return window.setTimeout(timeoutCb, Math.max(targetTime + 16, currentTime) - currentTime);
   };
 }
 

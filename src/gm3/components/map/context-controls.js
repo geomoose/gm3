@@ -6,13 +6,7 @@ import { featureToJson } from "../../util";
 
 import MapButton from "./button";
 
-const EditLayerControls = ({
-  editPath,
-  saveFeature,
-  olLayers,
-  changeTool,
-  setFeatures,
-}) => {
+const EditLayerControls = ({ editPath, saveFeature, olLayers, changeTool, setFeatures }) => {
   const clearChanges = useCallback(() => {
     setFeatures(EDIT_LAYER_NAME, []);
 
@@ -26,22 +20,19 @@ const EditLayerControls = ({
     changeTool(null);
   }, [setFeatures, changeTool]);
 
-  const saveChanges = useCallback(
-    (evt) => {
-      // the edit layer should only ever have one feature!
-      const features = olLayers[EDIT_LAYER_NAME].getSource()
-        .getFeatures()
-        .slice(0, 1)
-        .map((f) => featureToJson(f));
+  const saveChanges = useCallback(() => {
+    // the edit layer should only ever have one feature!
+    const features = olLayers[EDIT_LAYER_NAME].getSource()
+      .getFeatures()
+      .slice(0, 1)
+      .map((f) => featureToJson(f));
 
-      if (features.length > 0) {
-        const feature = features[0];
-        saveFeature(editPath, feature);
-        clearChanges();
-      }
-    },
-    [olLayers, saveFeature, clearChanges, editPath]
-  );
+    if (features.length > 0) {
+      const feature = features[0];
+      saveFeature(editPath, feature);
+      clearChanges();
+    }
+  }, [olLayers, saveFeature, clearChanges, editPath]);
 
   useEffect(() => {
     const keyFn = (evt) => {
@@ -71,28 +62,13 @@ const EditLayerControls = ({
 
   return (
     <React.Fragment>
-      <MapButton
-        label="save-changes"
-        icon="icon save"
-        index={4}
-        onClick={saveChanges}
-      />
+      <MapButton label="save-changes" icon="icon save" index={4} onClick={saveChanges} />
 
       <MapButton disabled label="undo-changes" icon="icon undo" index={3} />
 
-      <MapButton
-        label="cancel-changes"
-        icon="icon cancel"
-        index={2}
-        onClick={clearChanges}
-      />
+      <MapButton label="cancel-changes" icon="icon cancel" index={2} onClick={clearChanges} />
 
-      <MapButton
-        label="end-drawing"
-        icon="icon stop"
-        index={1}
-        onClick={done}
-      />
+      <MapButton label="end-drawing" icon="icon stop" index={1} onClick={done} />
     </React.Fragment>
   );
 };
@@ -118,14 +94,7 @@ const StopControl = ({ changeTool, setFeatures }) => {
     };
   }, [changeTool, done]);
 
-  return (
-    <MapButton
-      label="end-drawing"
-      icon="icon stop"
-      index={1}
-      onClick={() => done()}
-    />
-  );
+  return <MapButton label="end-drawing" icon="icon stop" index={1} onClick={() => done()} />;
 };
 
 const ICON_CLASSES = {
@@ -146,13 +115,7 @@ const DRAW_TYPES = {
   "draw-edit": "Edit",
 };
 
-const DrawTools = ({
-  editTools,
-  editPath,
-  setEditPath,
-  setEditTools,
-  changeTool,
-}) => {
+const DrawTools = ({ editTools, editPath, setEditPath, setEditTools, changeTool }) => {
   return (
     <React.Fragment>
       {editTools.map((editTool, idx) => (
@@ -219,10 +182,8 @@ const ContextControls = ({
         setFeatures={setFeatures}
       />
     );
-  } else if (!!interactionType) {
-    controls = (
-      <StopControl changeTool={changeTool} setFeatures={setFeatures} />
-    );
+  } else if (interactionType) {
+    controls = <StopControl changeTool={changeTool} setFeatures={setFeatures} />;
   }
 
   const getZoom = () => {

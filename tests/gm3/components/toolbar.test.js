@@ -29,9 +29,7 @@ import { Provider } from "react-redux";
 import { createStore } from "gm3/store";
 
 import SmartToolbar, { Toolbar } from "gm3/components/toolbar";
-import SmartToolbarButton, {
-  ToolbarButton,
-} from "gm3/components/toolbar/button";
+import SmartToolbarButton, { ToolbarButton } from "gm3/components/toolbar/button";
 import ToolbarDrawer from "gm3/components/toolbar/drawer";
 
 import * as actions from "gm3/actions/toolbar";
@@ -51,7 +49,8 @@ describe("Toolbar component tests", () => {
       actionDetail: "sample",
     };
 
-    render(<ToolbarButton tool={tool} />);
+    const { getByText } = render(<ToolbarButton tool={tool} />);
+    expect(getByText("Sample Zero")).toBeTruthy();
   });
 
   it("renders a drawer", () => {
@@ -62,11 +61,12 @@ describe("Toolbar component tests", () => {
       actionDetail: "sample",
     };
 
-    render(
+    const { getByText } = render(
       <Provider store={store}>
         <ToolbarDrawer label="Drawer Zero" tools={[tool]} services={{}} />
       </Provider>
     );
+    expect(getByText("Drawer Zero")).toBeTruthy();
   });
 
   it("renders a toolbar", () => {
@@ -87,7 +87,8 @@ describe("Toolbar component tests", () => {
       drawer0: [tool],
     };
 
-    render(<Toolbar store={store} toolbar={toolbar} services={{}} />);
+    const { getByText } = render(<Toolbar store={store} toolbar={toolbar} services={{}} />);
+    expect(getByText("Drawer Zero")).toBeTruthy();
   });
 
   it("renders a toolbar from the store", function () {
@@ -106,7 +107,8 @@ describe("Toolbar component tests", () => {
       })
     );
 
-    render(<SmartToolbar store={store} services={{}} />);
+    const { getByText } = render(<SmartToolbar store={store} services={{}} />);
+    expect(getByText("Drawer 0")).toBeTruthy();
   });
 
   it("renders a toolbar from a mapbook fragment", function () {
@@ -122,15 +124,14 @@ describe("Toolbar component tests", () => {
 
     const parser = new DOMParser();
     const xml = parser.parseFromString(toolbarXml, "text/xml");
-    const results = actions.parseToolbar(
-      xml.getElementsByTagName("toolbar")[0]
-    );
+    const results = actions.parseToolbar(xml.getElementsByTagName("toolbar")[0]);
 
     results.forEach((action) => {
       store.dispatch(action);
     });
 
-    render(<SmartToolbar store={store} services={{}} />);
+    const { getByText } = render(<SmartToolbar store={store} services={{}} />);
+    expect(getByText("Dummy Drawer")).toBeTruthy();
   });
 
   it("changes the active service when clicked.", function () {
@@ -158,9 +159,7 @@ describe("Toolbar component tests", () => {
       actionType: "action",
     };
 
-    const { container } = render(
-      <SmartToolbarButton tool={tool} store={store} />
-    );
+    const { container } = render(<SmartToolbarButton tool={tool} store={store} />);
     fireEvent.click(container.getElementsByClassName("tool")[0]);
 
     expect(store.getState().ui.action).toBe("sample0");

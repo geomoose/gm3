@@ -32,9 +32,7 @@ function OpenNewService(Application, options) {
   this.title = options.title ? options.title : "Jump to external service";
 
   /** Title to show at the top of the results. */
-  this.resultsTitle = options.resultsTitle
-    ? options.resultsTitle
-    : "Open Results";
+  this.resultsTitle = options.resultsTitle ? options.resultsTitle : "Open Results";
 
   this.showGrid = false;
 
@@ -52,7 +50,7 @@ function OpenNewService(Application, options) {
   this.autoGo = true;
 
   /** keepAlive = true will keep the service in 'query mode'
-   *                   in the background, until it is explictly turned off.
+   *                   in the background, until it is explicitly turned off.
    */
   this.keepAlive = true;
 
@@ -73,7 +71,7 @@ function OpenNewService(Application, options) {
    *  @param fields    is an array containing any user-input
    *                   given to the service.
    */
-  this.query = function (selection, fields) {
+  this.query = function (selection) {
     window.open(this.getUrl(selection));
     Application.dispatchQuery(this.name, selection, [], [], []);
   };
@@ -84,9 +82,7 @@ function OpenNewService(Application, options) {
   this.resultsAsHtml = function (queryId, query) {
     const html = `
       <div>
-        <a target="_blank" href="${this.getUrl(
-          query.selection
-        )}">Opened</a> in a new tab.
+        <a target="_blank" href="${this.getUrl(query.selection)}">Opened</a> in a new tab.
       </div>
     `;
     return html;

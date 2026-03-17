@@ -98,10 +98,7 @@ export const QueryResults = ({
       <div className="results-query-id">{queryId}</div>
       {showHeader && (
         <div className="results-info">
-          <button
-            className="results-info-item buffer-all"
-            onClick={() => finishService()}
-          >
+          <button className="results-info-item buffer-all" onClick={() => finishService()}>
             <div className="label">{t("results-clear")}</div>
             <div className="value">
               <span className="icon clear"></span>
@@ -127,10 +124,7 @@ export const QueryResults = ({
           )}
 
           {resultsConfig.showZoomToAll && (
-            <button
-              className="results-info-item zoomto"
-              onClick={zoomToResults}
-            >
+            <button className="results-info-item zoomto" onClick={zoomToResults}>
               <div className="label">{t("zoomto-results")}</div>
               <div className="value">
                 <span className="icon zoomto"></span>
@@ -154,20 +148,18 @@ export const QueryResults = ({
           </div>
         )}
 
-        {showHeader &&
-          resultsConfig.showFeatureCount &&
-          featureCount < allFeatureCount && (
-            <div className="results-info-item filtered-features">
-              {t(
-                "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
-                {
-                  allFeatureCount: allFeatureCount,
-                  missing: allFeatureCount - featureCount,
-                  featureCount: featureCount,
-                }
-              )}
-            </div>
-          )}
+        {showHeader && resultsConfig.showFeatureCount && featureCount < allFeatureCount && (
+          <div className="results-info-item filtered-features">
+            {t(
+              "The search returned {{allFeatureCount}} results. {{missing}} results are filtered out, and the remaining {{featureCount}} results are displayed.",
+              {
+                allFeatureCount: allFeatureCount,
+                missing: allFeatureCount - featureCount,
+                featureCount: featureCount,
+              }
+            )}
+          </div>
+        )}
       </div>
 
       {showHeader && allFeatureCount === 0 && (
@@ -177,10 +169,7 @@ export const QueryResults = ({
           )}
         </div>
       )}
-      <div
-        className="results"
-        dangerouslySetInnerHTML={{ __html: htmlContents }}
-      />
+      <div className="results" dangerouslySetInnerHTML={{ __html: htmlContents }} />
     </div>
   );
 };
@@ -202,7 +191,4 @@ const mapDispatchToProps = {
   finishService,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withTranslation()(QueryResults));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation()(QueryResults));

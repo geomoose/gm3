@@ -541,7 +541,7 @@
     </catalog>
 
     <!--
-        The toolbar defines which services are referneces in the toolbar
+        The toolbar defines which services are references in the toolbar
     -->
     <toolbar>
         <tool name="fullextent" title="Full Extent" type="action"/>

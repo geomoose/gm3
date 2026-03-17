@@ -40,7 +40,7 @@ describe("test the `ui` reducer", () => {
   });
 
   it("sets and clears the ui hint", () => {
-    // set the hint ot test-hint and verify the change in the state
+    // set the hint to test-hint and verify the change in the state
     store.dispatch(actions.setUiHint("test-hint"));
     expect(store.getState().ui.hint).toBe("test-hint");
 

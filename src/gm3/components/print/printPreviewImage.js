@@ -30,14 +30,14 @@ const PrintPreviewImage = ({ printData, previewSize }) => {
       <div className="error-message">
         There was an error generating the print image.
         <br />
-        This is likely due to a cross-origin/CORS error with a map-source which
-        is being served from an external server. Check:
+        This is likely due to a cross-origin/CORS error with a map-source which is being served from
+        an external server. Check:
         <ol>
           <li>The server supports cross-origin requests.</li>
           <li>That the cross-origin param is set in the mapbook.</li>
           <li>
-            If the server does not support cross-origin requests, set the
-            map-source's printable attribute to false.
+            If the server does not support cross-origin requests, set the map-source&apos;s
+            printable attribute to false.
           </li>
         </ol>
       </div>
