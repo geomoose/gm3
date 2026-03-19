@@ -55,6 +55,5 @@ Add Firestations to the catalog
 Using identify with Firestatations
 ----------------------------------
 
-The:doc:`./add-identify` guide
-features the firestations layer. And describes adding identify and how
-identify works.
+The :doc:`/howto/identify/add-identify` guide 
+describes how identify works and how to add it (using the firestations layer as an example).

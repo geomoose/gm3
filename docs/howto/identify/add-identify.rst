@@ -121,7 +121,7 @@ The Firestations layer
 
 This section references the ``firestations`` source and
 ``fire_stations`` layer. For more information on setting those up in
-your local demo, read the:doc:`./add-a-layer`
+your local demo, read the :doc:`/howto/addlayer/add-a-layer`
 guide.
 
 Adding identify to Firestations
@@ -165,3 +165,98 @@ Adding identify to Firestations
 -  This example uses GeoMoose's template system. GeoMoose has a rich
    template system provided by Mark.up. :ref:`More information on GeoMoose
    templates here. <templates>`
+
+Adding identify to Raster Data
+-------------------------------
+
+Identify can also be set up for raster data. For example, if you have DEM,
+you can set it up to allow users to identify elevation.
+
+This example assumes you're connecting to a GeoTiff in a mapfile. Optionally,
+you can also connect via WMS, either in a mapfile, or in the ``mapbook.xml``.
+
+See below for an example configuration of the mapfile. Note that the
+``TEMPLATE 'dummy'`` and the ``ows/gml_include_items 'all'`` lines are necessary
+for results to be returned. ``TOLERANCE 0`` is also needed to prevent too
+many results from being returned.
+
+::
+
+    LAYER
+        NAME "ExampleDEM"
+        DATA "./pathToDEM.tif"
+        STATUS ON
+        TYPE RASTER
+
+        PROJECTION
+            "init=epsg:3857"
+        END
+
+        METADATA
+            'wms_title' 'Example_DEM'
+            'ows_include_items' 'all'
+            'gml_include_items' 'all'
+            'ows_exclude_items' 'SHAPE_area,SHAPE_len'
+            'gml_exclude_items' 'SHAPE_area,SHAPE_len'
+        END
+
+        TOLERANCE 0
+        TOLERANCEUNITS METERS
+
+        TEMPLATE 'dummy'
+
+    END
+
+Once the mapfile is configured you can connect to the data in the ``mapbook.xml``. Make sure
+to adjust the mapfile and layer names to match your mapfile. You will also need to change the 
+field name value to match the value in your DEM. You can use ``template name="identify" auto="true"/>``
+to automatically generate the template.
+
+.. code:: xml
+
+        <map-source name="DEM_Identify" type="mapserver">
+            <file>./pathToDEMMapfile</file>
+            <layer name="ExampleDEM" status="on">
+
+                <template name="identify"><![CDATA[
+                    <div class="identify-result">
+                        <div class="item"><label>Elevation:</label>{{ properties.DEMFieldName|fix>1 }}</div>
+                    </div>
+
+                ]]></template>
+
+            </layer>
+
+            <param name="FORMAT" value="image/png"/>
+            <param name="TRANSPARENT" value="TRUE"/>
+            <param name="cross-origin" value="anonymous"/>
+        </map-source>
+
+Optionally, you can also connect to a WMS instead of a mapfile. The main things to
+be aware of when connecting via WMS are making sure that the WMS is configured to 
+allow identify, and making sure that the WMS is configured to allow connections
+from other servers (i.e. Cross-origin-resource-sharing or CORS).
+
+.. code:: xml
+
+        <map-source name="DEM_Identify" type="wms">
+            <url>https://location/of/DEM?</url>
+            <layer name="ExampleDEM" status="on">
+
+                <template name="identify"><![CDATA[
+                    <div class="identify-result">
+                        <div class="item"><label>Elevation:</label>{{ properties.item name=value_0|fix>1 }}</div>
+                    </div>
+
+                ]]></template>
+
+            </layer>
+
+            <param name="FORMAT" value="image/png"/>
+            <param name="TRANSPARENT" value="TRUE"/>
+            <param name="cross-origin" value="anonymous"/>
+        </map-source>
+
+
+
+

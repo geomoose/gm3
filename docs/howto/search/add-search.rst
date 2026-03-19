@@ -11,7 +11,7 @@ Add a supported vector map-source
 
 This how-to references the ``firestations`` source and ``fire_stations``
 layer. For more information on setting those up in your local demo, read
-the:doc:`./add-a-layer` guide. This example
+the :doc:`/howto/addlayer/add-a-layer` guide. This example
 creates a WFS-source for the Firestations layer.
 
 Add the following to ``mapbook.xml``:

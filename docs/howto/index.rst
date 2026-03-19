@@ -6,6 +6,7 @@ How-Tos
 .. toctree::
     :maxdepth: 3
     :glob:
+    :titlesonly:
 
     
     
