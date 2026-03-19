@@ -65,7 +65,7 @@
   "measure-due-south" : "Due South",
   "measure-due-west" : "Due West",
   "measure-east-abbr" : "E",
-  "measure-help" : "Use <b>Draw line</b> to measure distances and <b>Draw Polygon</b> to measure areas.",
+  "measure-help" : "Use <b>Draw Point</b> to measure coordinates, <b>Draw Line</b> to measure distances, and <b>Draw Polygon</b> to measure areas.",
   "measure-north-abbr" : "N",
   "measure-segment-length" : "Segment length",
   "measure-south-abbr" : "S",
