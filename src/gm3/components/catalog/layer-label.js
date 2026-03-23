@@ -33,7 +33,7 @@ const LayerLabel = ({ layer, on, catalog, onChange }) => {
   }, [onChange, on, catalog]);
 
   return (
-    <MinimalButton title={title} onClick={handleClick}>
+    <MinimalButton tabindex={-1} title={title} onClick={handleClick}>
       {layer.label}
     </MinimalButton>
   );
