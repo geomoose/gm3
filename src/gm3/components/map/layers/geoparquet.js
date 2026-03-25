@@ -71,10 +71,22 @@ export const createGeoParquetLoader = (url) => {
       new GeoJSON({
         featureProjection: "EPSG:3857",
         dataProjection: "EPSG:4326",
-      }).readFeatures({
-        type: "FeatureCollection",
-        features,
       })
+        .readFeatures({
+          type: "FeatureCollection",
+          features,
+        })
+        .map((feature) => {
+          feature.setProperties(
+            {
+              ...feature.getProperties(),
+              // boundedBy bug caught by Mariana...
+              boundedBy: feature.getGeometry().getExtent(),
+            },
+            true
+          );
+          return feature;
+        })
     );
 
     success();
