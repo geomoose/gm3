@@ -1,18 +1,16 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
- *
+ * Copyright (c) 2016-2026 Dan "Ducky" Little & GeoMoose.org
+
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,29 +20,19 @@
  * SOFTWARE.
  */
 
-import React, { useCallback } from "react";
-import { connect } from "react-redux";
+import React from "react";
 
-import { useControlTitle, mapLayerStateProps, mapLayerDispatchProps } from "./layer-control";
-
-const LayerCheckbox = ({ catalog, layer, on, onChange }) => {
-  const isExclusive = layer.exclusive === true;
-  const label = useControlTitle(on, layer);
-
-  const handleChange = useCallback(() => {
-    onChange(!on, catalog);
-  }, [onChange, on, catalog]);
-
+/**
+ * MinimalButton provides a collection of inline buttons that are a11y friendly.
+ *
+ */
+const MinimalButton = ({ children, className, ...rest }) => {
+  const cls = `minimal-button ${className}`;
   return (
-    <input
-      className="layer-toggle icon"
-      type={isExclusive ? "radio" : "checkbox"}
-      checked={on}
-      aria-label={label}
-      title={label}
-      onChange={handleChange}
-    />
+    <button className={cls} {...rest}>
+      {children}
+    </button>
   );
 };
 
-export default connect(mapLayerStateProps, mapLayerDispatchProps)(LayerCheckbox);
+export default MinimalButton;

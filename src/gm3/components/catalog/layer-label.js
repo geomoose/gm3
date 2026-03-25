@@ -1,7 +1,5 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2016-2017,2025 Dan "Ducky" Little
+ * Copyright (c) 2016-2026 Dan "Ducky" Little & GeoMoose.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +21,29 @@
  */
 
 import React, { useCallback } from "react";
-import { connect } from "react-redux";
 
 import { useControlTitle, mapLayerStateProps, mapLayerDispatchProps } from "./layer-control";
+import { connect } from "react-redux";
+import MinimalButton from "../MinimalButton";
 
-const LayerCheckbox = ({ catalog, layer, on, onChange }) => {
-  const isExclusive = layer.exclusive === true;
-  const label = useControlTitle(on, layer);
+// if the layer has a "tip" defined, use that for the `title`,
+//  otherwise, use the title generated for a layer toggle.
+const useTipOrTitle = (on, layer) => {
+  const title = useControlTitle(on, layer);
+  return layer.tip || title;
+};
 
-  const handleChange = useCallback(() => {
+const LayerLabel = ({ layer, on, catalog, onChange }) => {
+  const title = useTipOrTitle(on, layer);
+  const handleClick = useCallback(() => {
     onChange(!on, catalog);
   }, [onChange, on, catalog]);
 
   return (
-    <input
-      className="layer-toggle icon"
-      type={isExclusive ? "radio" : "checkbox"}
-      checked={on}
-      aria-label={label}
-      title={label}
-      onChange={handleChange}
-    />
+    <MinimalButton tabindex={-1} title={title} onClick={handleClick}>
+      {layer.label}
+    </MinimalButton>
   );
 };
 
-export default connect(mapLayerStateProps, mapLayerDispatchProps)(LayerCheckbox);
+export default connect(mapLayerStateProps, mapLayerDispatchProps)(LayerLabel);
