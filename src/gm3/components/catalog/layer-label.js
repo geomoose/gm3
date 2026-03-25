@@ -26,8 +26,15 @@ import { useControlTitle, mapLayerStateProps, mapLayerDispatchProps } from "./la
 import { connect } from "react-redux";
 import MinimalButton from "../MinimalButton";
 
-const LayerLabel = ({ layer, on, catalog, onChange }) => {
+// if the layer has a "tip" defined, use that for the `title`,
+//  otherwise, use the title generated for a layer toggle.
+const useTipOrTitle = (on, layer) => {
   const title = useControlTitle(on, layer);
+  return layer.tip || title;
+};
+
+const LayerLabel = ({ layer, on, catalog, onChange }) => {
+  const title = useTipOrTitle(on, layer);
   const handleClick = useCallback(() => {
     onChange(!on, catalog);
   }, [onChange, on, catalog]);
