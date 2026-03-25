@@ -105,15 +105,11 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
     });
   }
 
-  console.log(query.fields);
-
   query.fields?.forEach((field) => {
     if (field.comparitor in FILTER_FUNCTIONS) {
       filters.push(FILTER_FUNCTIONS[field.comparitor](field));
     }
   });
-
-  console.log("filters=", filters);
 
   // return an empty set if no filters are set.
   if (filters.length < 1) {
