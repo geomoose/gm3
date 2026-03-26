@@ -364,7 +364,7 @@ class Application {
 
     if (this.config.mapbooks) {
       // check for a mapbook in the hash
-      const mapbookName = parseQuery().query.mapbook || "default";
+      const mapbookName = parseQuery().mapbook || "default";
       if (mapbookName && this.config.mapbooks[mapbookName]) {
         mapbookUrl = this.config.mapbooks[mapbookName];
       }
@@ -947,7 +947,7 @@ class Application {
    * Checks for a start-up service from the query-parameters
    */
   startServiceFromQuery() {
-    const query = parseQuery().query;
+    const query = parseQuery();
     if (query.service) {
       const serviceDef = this.services[query.service];
       if (serviceDef) {
