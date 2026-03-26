@@ -99,7 +99,7 @@ module.exports = env => {
         },
         output: {
             path: __dirname + '/dist',
-            publicPath: '/',
+            publicPath: isDevelopment ? '/examples/geomoose/dist/' : '/',
             filename,
             library: ['gm3'],
             libraryTarget: 'umd'
