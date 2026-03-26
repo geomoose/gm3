@@ -202,7 +202,6 @@ class Map extends React.Component {
       //  parameter set.
       case "geojson":
       case "geoparquet":
-        console.log("Create layer called", mapSource);
         return vectorLayer.createLayer(mapSource, this.props.setFeatures);
       case "bing":
         return bingLayer.createLayer(mapSource);

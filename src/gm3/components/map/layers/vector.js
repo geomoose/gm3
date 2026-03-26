@@ -108,7 +108,7 @@ function defineSource(mapSource) {
     return {
       format: new GeoJSONFormat(),
       projection: "EPSG:4326",
-      loader: createGeoParquetLoader(mapSource.urls[0]),
+      loader: createGeoParquetLoader(mapSource.name, mapSource.urls[0]),
       strategy: all,
     };
   } else if (mapSource.type === "ags-vector") {
