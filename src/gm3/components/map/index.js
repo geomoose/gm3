@@ -161,6 +161,7 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
       case "geojson":
+      case "geoparquet":
         vectorLayer.updateLayer(this.map, olLayer, mapSource, this.props.mapView.interactionType);
         break;
       case "bing":
@@ -196,8 +197,12 @@ class Map extends React.Component {
       case "vector":
       case "wfs":
       case "ags-vector":
-      case "geojson":
         return vectorLayer.createLayer(mapSource);
+      // geojson and geoparquet layers become queryable with the setFeatures
+      //  parameter set.
+      case "geojson":
+      case "geoparquet":
+        return vectorLayer.createLayer(mapSource, this.props.setFeatures);
       case "bing":
         return bingLayer.createLayer(mapSource);
       case "usng":
@@ -554,7 +559,10 @@ class Map extends React.Component {
           }
         };
 
-        if (isSelection || ["wfs", "vector", "geojson"].indexOf(mapSource.type) >= 0) {
+        if (
+          isSelection ||
+          ["wfs", "vector", "geojson", "geoparquet"].indexOf(mapSource.type) >= 0
+        ) {
           const layers = isSelection ? [this.selectionLayer] : [this.olLayers[mapSourceName]];
 
           this.drawTool = new olSelectInteraction({
@@ -936,9 +944,9 @@ function mapDispatch(dispatch) {
         dispatch(mapActions.addSelectionFeature(feature));
       });
     },
-    setFeatures: (mapSourceName, features, copy = false) => {
-      dispatch(mapSourceActions.clearFeatures(mapSourceName));
-      dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy));
+    setFeatures: (mapSourceName, features, copy = false, silent = false) => {
+      dispatch(mapSourceActions.clearFeatures(mapSourceName, silent));
+      dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy, silent));
     },
     setEditPath: (path) => dispatch(mapActions.setEditPath(path)),
     setEditTools: (tools) => dispatch(mapActions.setEditTools(tools)),
