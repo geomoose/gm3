@@ -46,6 +46,7 @@
     "babel-jest": "^27.3.1",
     "babel-loader": "^8.2.3",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-import-meta": "^2.3.3",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-jest": "^29.0.1",
