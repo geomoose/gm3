@@ -20,22 +20,22 @@ therefore work within the framework of the installer's organization.
 For Library Development
 -----------------------
 
-GeoMoose provides an ``eslint`` set of styles that will check-code
-before publishing. The ``eslintrc`` will provide for both the evolving
-and enforced coding style. Code that does not lint will be rejected from
-merges.
+GeoMoose provides ``eslint`` and ``prettier`` configurations that will
+check and format code before publishing. The ``eslint.config.mjs`` and
+``.prettierrc`` files provide for both the evolving and enforced coding
+style. Code that does not lint will be rejected from merges.
 
 This is a summary of changes and is inspired by the `AirBnB Javascript
 Style Guide <https://github.com/airbnb/javascript>`__.
 
 -  GeoMoose 3 uses ES6/ES2015 styles. Generally:
--  Use Classes and Modules using Es6 style.
--  import and export should be used.
--  No hard tabs. Please use "4 space" tabs. In VIMspeak:
+-  Use Classes and Modules using ES6 style.
+-  ``import`` and ``export`` should be used.
+-  No hard tabs. Please use 2-space indentation. In VIMspeak:
 
    ::
 
-       autocmd BufRead,BufNewFile,BufEnter */GeoMOOSE/gm3/* :setlocal expandtab ts=4 sts=4 sw=4
+       autocmd BufRead,BufNewFile,BufEnter */GeoMOOSE/gm3/* :setlocal expandtab ts=2 sts=2 sw=2
 
 -  Avoid ``var``. Prefer ``const`` and ``let``, ``var`` creates scoping
    and localization issues solved by ``let`` and ``const``. ``const``
@@ -44,25 +44,27 @@ Style Guide <https://github.com/airbnb/javascript>`__.
    and ``[]`` not ``new Object`` and ``new Array``)
 -  Do not use ``"`` for object properties unless they are invalid
    property names.
--  Prefer single quotes for strings.
+-  Prefer double quotes for strings (enforced by Prettier).
 
    ::
 
-       const name = "bad";
+       const name = 'bad';
 
-       const name = 'good';
+       const name = "good";
 
 -  Do not break long strings across newlines. This makes the code harder
    to search.
 -  Naming conventions:
 
-   -  Classes: UpperCaseClassNames
-   -  Methods and Functions: shouldBeCamelCased
-   -  Method and Function Parameters: alsoCamelCased \`\`\` function
-      mySuperDuperFunction(parameterA, secondParameter) {
+   -  Classes: ``UpperCaseClassNames``
+   -  Methods and Functions: ``shouldBeCamelCased``
+   -  Method and Function Parameters: ``alsoCamelCased``
+   -  Local variables: ``alsoCamelCased``
 
-   } \`\`\`
--  Local variables: should\_be\_undercase\_delimited
+   ::
+
+       function mySuperDuperFunction(parameterA, secondParameter) {
+       }
 
 -  Comments
 
@@ -79,3 +81,4 @@ Regarding CSS/LESS
    purposes.
 -  The LESS files *should never* refer to an element by ID. The LESS
    files are to provide styling for *components only.*
+-  CSS and LESS files are formatted with Prettier.
