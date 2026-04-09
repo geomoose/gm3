@@ -41,6 +41,7 @@ import ZoomToTool from "./tools/zoomto";
 import Legend from "./legend";
 import LayerCheckbox from "./layer-checkbox";
 import LayerFavorite from "./layer-favorite";
+import LayerLabel from "./layer-label";
 
 const getTools = (layer, enabledTools) => {
   const tools = [];
@@ -111,7 +112,7 @@ export const CatalogLayer = ({ layer, resolution, forceTools }) => {
       <div className="layer-label" title={layer.tip}>
         <LayerCheckbox layer={layer} />
         <LayerFavorite layer={layer} />
-        <span>{layer.label}</span>
+        <LayerLabel layer={layer} />
         {layer.refresh === null ? false : <RefreshTool layer={layer} />}
         {!layer.metadata_url ? false : <MetadataTool href={layer.metadata_url} />}
       </div>
