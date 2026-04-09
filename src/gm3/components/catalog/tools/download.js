@@ -72,14 +72,41 @@ function doDownload(features, downloadFormat) {
   FileSaver.saveAs(outputBlob, filename);
 }
 
+/**
+ * onDownload is the event handler for the button, it uses doDownload
+ * for the logical part of the export.
+ */
+function onDownload(src, mapSource, downloadFormat) {
+  // find the layer and check to see if it has features,
+  //  if features is undefined, then just return an empty collection.
+  let features = mapSource?.features || [];
+
+  // check to see if there is a filter on the specified layer
+  let filter = null;
+  for (let i = 0, ii = mapSource.layers.length; filter === null && i < ii; i++) {
+    const layer = mapSource.layers[i];
+    if (layer.name === src.layerName && layer.filter !== undefined) {
+      filter = layer.filter;
+    }
+  }
+
+  // if a filter is found on the layer,
+  // then ensure only those features are matched.
+  if (filter !== null) {
+    features = matchFeatures(features, filter);
+  }
+
+  doDownload(features, downloadFormat);
+}
+
 /** Download features to a vector layer from a file
  *  on the user's hard drive.
  *
  *  Currently supports KML and GeoJSON.
  *
  */
-export const DownloadTool = ({ layer, mapSources, onDownload }) => {
-  const [downloadFormat, setFormat] = useState("kml");
+export const DownloadTool = ({ layer, mapSources }) => {
+  const [downloadFormat, setFormat] = useState("geojson");
   const [modalOpen, setModalOpen] = useState(false);
   const { t } = useTranslation();
 
@@ -92,9 +119,7 @@ export const DownloadTool = ({ layer, mapSources, onDownload }) => {
           setModalOpen(true);
         }}
       />
-      {!modalOpen ? (
-        false
-      ) : (
+      {modalOpen && (
         <Modal
           open
           title="download-features"
@@ -136,31 +161,4 @@ function mapState(state) {
   };
 }
 
-function mapDispatch() {
-  return {
-    onDownload: (src, mapSource, downloadFormat) => {
-      // find the layer and check to see if it has features,
-      //  if features is undefined, then just return an empty collection.
-      let features = mapSource.features;
-
-      // check to see if there is a filter on the specified layer
-      let filter = null;
-      for (let i = 0, ii = mapSource.layers.length; filter === null && i < ii; i++) {
-        const layer = mapSource.layers[i];
-        if (layer.name === src.layerName && layer.filter !== undefined) {
-          filter = layer.filter;
-        }
-      }
-
-      // if a filter is found on the layer,
-      // then ensure only those features are matched.
-      if (filter !== null) {
-        features = matchFeatures(features, filter);
-      }
-
-      doDownload(features, downloadFormat);
-    },
-  };
-}
-
-export default connect(mapState, mapDispatch)(DownloadTool);
+export default connect(mapState)(DownloadTool);

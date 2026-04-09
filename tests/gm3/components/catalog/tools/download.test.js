@@ -29,17 +29,23 @@ import { DownloadTool } from "gm3/components/catalog/tools/download";
 
 describe("Download tool test", () => {
   it("renders a download tool and dispatches an action", () => {
-    let clicked = false;
-
     const props = {
-      onDownload: function () {
-        clicked = true;
-      },
       layer: {
-        src: ["test/test"],
+        src: [
+          {
+            mapSourceName: "test",
+            layerName: "test",
+          },
+        ],
       },
       mapSources: {
-        test: {},
+        test: {
+          layers: [
+            {
+              name: "test",
+            },
+          ],
+        },
       },
     };
 
@@ -48,9 +54,16 @@ describe("Download tool test", () => {
     // click on the tool
     fireEvent.click(screen.getByRole("button"));
 
+    // setup a call to intercept the "file save"
+    global.URL.createObjectURL = jest.fn();
+
     // click the download button
     fireEvent.click(screen.getByText("Okay"));
 
-    expect(clicked).toBe(true);
+    // expect file save to have been called
+    expect(global.URL.createObjectURL).toHaveBeenCalled();
+
+    // now remove the mock
+    delete global.URL.createObjectURL;
   });
 });
