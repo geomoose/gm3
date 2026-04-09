@@ -831,24 +831,6 @@ class Map extends React.Component {
   }
 
   render() {
-    // ensure the map is defined and ready.
-    if (this.map) {
-      // update the map size when data changes
-      setTimeout(this.updateMapSize, 250);
-    }
-
-    // IE has some DOM sizing/display issues on startup
-    //  when we're using react. This ensures the map is
-    //  drawn correctly on startup.
-    const updateMapSize = this.updateMapSize;
-    if (!updateMapSize()) {
-      const startupInterval = setInterval(function () {
-        if (updateMapSize()) {
-          clearInterval(startupInterval);
-        }
-      }, 250);
-    }
-
     const config = this.props.config || {};
 
     const enableZoomJump = config.enableZoomJump === true;
