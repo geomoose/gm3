@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-import { parse as urlParse } from "url";
-
 import Request from "reqwest";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
@@ -32,16 +30,27 @@ import { featureFilter as createFilter } from "@mapbox/mapbox-gl-style-spec";
 
 /** Collection of handy functions
  */
+
+/**
+ * This ensures the caller gets an object, new URLSearchParams
+ * is object like but doesn't work with Object.keys() and related
+ */
+function paramStringToObject(paramString) {
+  const params = new URLSearchParams(paramString);
+  return Object.fromEntries(params);
+}
+
 export function parseHash() {
   // take the hash and parse it like a query string.
   // The "substring(1)" removes the "#" from the leading edge,
   //  replacing it with the '?' then causes the hash to be parsed like
   //  a normal query string.
-  return urlParse("?" + window.location.hash.substring(1), true);
+  return paramStringToObject(window.location.hash.substring(1));
 }
 
 export function parseQuery() {
-  return urlParse(window.location.search, true);
+  // parse the query string, return as an object
+  return paramStringToObject(window.location.search);
 }
 
 export function parseBoolean(bool, def = false) {
