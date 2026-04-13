@@ -91,9 +91,12 @@
       <!--
        - Warning! GeoParquet files require an absolute URL!
        - They are loaded in the background and do not follow relative path rules.
-      <url>https://storage.googleapis.com/gm4-demo-data/county/parcels.geoparquet</url>
       -->
+      <url>https://storage.googleapis.com/gm4-demo-data/county/parcels2.geoparquet</url>
+      <!--
       <url>/examples/desktop/parcels.geoparquet</url>
+      -->
+
       <layer selectable="true" name="default">
           <style><![CDATA[
           {
