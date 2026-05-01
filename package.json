@@ -91,7 +91,7 @@
     "reqwest": "^2.0.5",
     "usng-map-collar": "^1.0.1",
     "usng-tools-js": "git+https://github.com/klassenjs/usng-tools-js.git",
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   },
   "browserslist": [
     "defaults",
