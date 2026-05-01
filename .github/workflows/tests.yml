@@ -37,11 +37,11 @@ jobs:
       fail-fast: true
       matrix:
         platform: [ 'ubuntu-24.04' ]
-        node-version: [ '22.x' ]
+        node-version: [ '24.x' ]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
 
