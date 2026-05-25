@@ -60,6 +60,9 @@ module.exports = env => {
             fallback: {
                 url: require.resolve('url'),
             },
+            alias: {
+              "@gm3": path.resolve(__dirname, "src/gm3"),
+            },
         },
         module: {
             rules: [{

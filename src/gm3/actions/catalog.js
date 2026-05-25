@@ -26,7 +26,7 @@
  *
  */
 
-import { v4 as uuid } from "uuid";
+import { uuid } from "@gm3/uuid";
 import { createAction } from "@reduxjs/toolkit";
 
 import { parseBoolean, getTagContents } from "../util";
