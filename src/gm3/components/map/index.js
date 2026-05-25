@@ -61,7 +61,6 @@ import * as xyzLayer from "./layers/xyz";
 import * as agsLayer from "./layers/ags";
 import * as vectorLayer from "./layers/vector";
 import * as bingLayer from "./layers/bing";
-import * as usngLayer from "./layers/usng";
 import * as cogLayer from "./layers/cog";
 import { createLayer as createBlankLayer } from "./layers/blank";
 import {
@@ -167,9 +166,6 @@ class Map extends React.Component {
       case "bing":
         bingLayer.updateLayer(this.map, olLayer, mapSource);
         break;
-      case "usng":
-        usngLayer.updateLayer(this.map, olLayer, mapSource);
-        break;
       case "cog":
         cogLayer.updateLayer(this.map, olLayer, mapSource);
         break;
@@ -204,8 +200,6 @@ class Map extends React.Component {
         return vectorLayer.createLayer(mapSource);
       case "bing":
         return bingLayer.createLayer(mapSource);
-      case "usng":
-        return usngLayer.createLayer(mapSource);
       case "cog":
         return cogLayer.createLayer(mapSource);
       case "blank":

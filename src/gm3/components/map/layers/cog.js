@@ -29,9 +29,22 @@
 import GeoTIFFSource from "ol/source/GeoTIFF";
 import WebGLTileLayer from "ol/layer/WebGLTile";
 
+function parseBands(value) {
+  if (!value) {
+    return undefined;
+  }
+  const bands = value
+    .split(",")
+    .map((b) => parseInt(b.trim(), 10))
+    .filter((b) => Number.isFinite(b) && b > 0);
+  return bands.length > 0 ? bands : undefined;
+}
+
 function defineSource(mapSource) {
+  const bands = parseBands(mapSource.params && mapSource.params.bands);
   return {
-    sources: mapSource.urls.map((url) => ({ url })),
+    sources: mapSource.urls.map((url) => (bands ? { url, bands } : { url })),
+    convertToRGB: true,
   };
 }
 

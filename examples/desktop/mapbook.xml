@@ -4,10 +4,6 @@
         The mapping services define the source of the mapping data.
     -->
 
-    <map-source name="usng-grid" type="usng">
-        <layer name="usng-grid" status="off" />
-    </map-source>
-
     <map-source name="sketch" type="vector" title="Drawing and Markup">
         <layer name="default" selectable="true" status="on">
             <style><![CDATA[
@@ -465,6 +461,10 @@
     <map-source name="county-aerial-cog" type="cog">
         <layer name="aerial2022"/>
         <url>https://storage.googleapis.com/gm4-demo-data/county/2022-aerial.tiff</url>
+        <!--
+        <url>https://sharedgeo-open-data.s3.us-east-2.amazonaws.com/imagery/mosaic_3857/mn/MN_Dakota_Co_2024_3857.tif</url>
+        -->
+        <param name="bands" value="1,2,3"/>
     </map-source>
 
     <map-source name="bing" type="bing">
@@ -517,7 +517,6 @@
         </group>
 
         <group title="Grids">
-            <layer src="usng-grid/usng-grid" title="USNG Grid" />
             <layer title="1 km grid" src="grids/grid_1km"/>
             <layer title="1 mile grid" src="grids/grid_1mile"/>
         </group>
