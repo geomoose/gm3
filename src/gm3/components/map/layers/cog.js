@@ -29,49 +29,83 @@
 import GeoTIFFSource from "ol/source/GeoTIFF";
 import WebGLTileLayer from "ol/layer/WebGLTile";
 
+const COG_KEY = "_gm3_cog_key";
+
 function parseBands(value) {
-  if (!value) {
+  if (typeof value !== "string" || value === "") {
     return undefined;
   }
-  const bands = value
-    .split(",")
-    .map((b) => parseInt(b.trim(), 10))
-    .filter((b) => Number.isFinite(b) && b > 0);
+  const tokens = value.split(",").map((b) => b.trim());
+  const bands = [];
+  for (const tok of tokens) {
+    if (!/^\d+$/.test(tok)) {
+      console.warn(`cog: ignoring invalid band token "${tok}" in "${value}"`);
+      return undefined;
+    }
+    const n = parseInt(tok, 10);
+    if (n < 1) {
+      console.warn(`cog: band indices are 1-based; got ${n}`);
+      return undefined;
+    }
+    bands.push(n);
+  }
   return bands.length > 0 ? bands : undefined;
 }
 
-function defineSource(mapSource) {
+function withCacheBuster(url, buster) {
+  if (!buster) {
+    return url;
+  }
+  const sep = url.indexOf("?") >= 0 ? "&" : "?";
+  return `${url}${sep}_=${buster}`;
+}
+
+function defineSource(mapSource, cacheBuster) {
+  if (!Array.isArray(mapSource.urls) || mapSource.urls.length === 0) {
+    throw new Error(`cog map-source "${mapSource.name || ""}" requires at least one <url>`);
+  }
   const bands = parseBands(mapSource.params && mapSource.params.bands);
   return {
-    sources: mapSource.urls.map((url) => (bands ? { url, bands } : { url })),
+    sources: mapSource.urls.map((url) => {
+      const u = withCacheBuster(url, cacheBuster);
+      return bands ? { url: u, bands: [...bands] } : { url: u };
+    }),
     convertToRGB: true,
   };
 }
 
+function cogKey(mapSource) {
+  const params = mapSource.params || {};
+  return JSON.stringify([mapSource.urls || [], params.bands || null]);
+}
+
+function rebuildSource(layer, mapSource, cacheBuster) {
+  const prev = layer.getSource();
+  layer.setSource(new GeoTIFFSource(defineSource(mapSource, cacheBuster)));
+  if (prev && typeof prev.dispose === "function") {
+    prev.dispose();
+  }
+}
+
 export function createLayer(mapSource) {
-  return new WebGLTileLayer({
+  const layer = new WebGLTileLayer({
     source: new GeoTIFFSource(defineSource(mapSource)),
     minResolution: mapSource.minresolution,
     maxResolution: mapSource.maxresolution,
   });
+  layer.set(COG_KEY, cogKey(mapSource));
+  return layer;
 }
 
 export function updateLayer(map, layer, mapSource) {
-  const src = layer.getSource();
-  const currentUrls = src.getSourceOptions ? src.getSourceOptions().map((s) => s.url) : [];
-  const nextUrls = mapSource.urls;
-
-  let changed = currentUrls.length !== nextUrls.length;
-  if (!changed) {
-    for (let i = 0; i < nextUrls.length; i++) {
-      if (currentUrls[i] !== nextUrls[i]) {
-        changed = true;
-        break;
-      }
-    }
+  const nextKey = cogKey(mapSource);
+  if (layer.get(COG_KEY) === nextKey) {
+    return;
   }
+  rebuildSource(layer, mapSource);
+  layer.set(COG_KEY, nextKey);
+}
 
-  if (changed) {
-    layer.setSource(new GeoTIFFSource(defineSource(mapSource)));
-  }
+export function refreshLayer(map, layer, mapSource) {
+  rebuildSource(layer, mapSource, Date.now());
 }

@@ -169,6 +169,9 @@ class Map extends React.Component {
       case "cog":
         cogLayer.updateLayer(this.map, olLayer, mapSource);
         break;
+      case "usng":
+        console.warn('map-source type "usng" is no longer supported; ignoring');
+        break;
       case "blank":
         // this is a non-op, blank will be blank for all time.
         break;
@@ -202,6 +205,9 @@ class Map extends React.Component {
         return bingLayer.createLayer(mapSource);
       case "cog":
         return cogLayer.createLayer(mapSource);
+      case "usng":
+        console.warn('map-source type "usng" is no longer supported; rendering blank');
+        return createBlankLayer();
       case "blank":
         return createBlankLayer();
       default:
@@ -237,6 +243,9 @@ class Map extends React.Component {
     switch (mapSource.type) {
       case "wms":
         refreshWMS();
+        break;
+      case "cog":
+        cogLayer.refreshLayer(this.map, this.olLayers[mapSource.name], mapSource);
         break;
       default:
       // do nothing
