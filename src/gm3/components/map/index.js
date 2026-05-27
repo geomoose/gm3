@@ -478,6 +478,27 @@ class Map extends React.Component {
     });
   }
 
+  /** Tear down OL objects, timers, and listeners on unmount to prevent leaks.
+   *  Triggered when the Map is removed from the tree (e.g. the print modal
+   *  closing) — without this, the OL Map, its event handlers, and any refresh
+   *  setInterval timers would survive forever.
+   */
+  componentWillUnmount() {
+    Object.keys(this.intervals).forEach((name) => this.removeRefreshInterval(name));
+
+    this.stopDrawing();
+
+    if (this.map) {
+      this.map.setTarget(null);
+      this.map.dispose();
+      this.map = null;
+    }
+
+    this.olLayers = {};
+    this.selectionLayer = null;
+    this.sketchFeature = null;
+  }
+
   /** Switch the drawing tool.
    *
    *  @param type The type of drawing tool (Point,LineString,Polygon)
