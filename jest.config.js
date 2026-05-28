@@ -7,4 +7,7 @@ module.exports = {
     moduleDirectories: ["./src", "./node_modules"],
     setupFiles: ["./tests/setup.js"],
     testEnvironment: "jsdom",
+    moduleNameMapper: {
+      "^@gm3/(.*)$": "<rootDir>/src/gm3/$1",
+    },
 };

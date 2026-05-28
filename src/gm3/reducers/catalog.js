@@ -27,7 +27,7 @@
  */
 
 import { createReducer } from "@reduxjs/toolkit";
-import { v4 as uuid } from "uuid";
+import { uuid } from "@gm3/uuid";
 import {
   addLayer,
   addGroup,
