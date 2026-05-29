@@ -22,49 +22,45 @@
  * SOFTWARE.
  */
 
-import { asyncBufferFromUrl, parquetReadObjects } from "hyparquet";
+import { asyncBufferFromUrl, parquetMetadataAsync, parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import { scrubProperties } from "@gm3/util";
 
 const loadParquet = async (srcName, url) => {
   const file = await asyncBufferFromUrl({ url });
-  const data = await parquetReadObjects({ file, compressors });
-  // TODO: Test for zero data
+  const metadata = await parquetMetadataAsync(file);
+  const geomColumns = metadata.schema.filter((col) => col?.logical_type?.type === "GEOMETRY");
 
-  // TODO: This should be done via a sniff
-  const geometryColumns = ["geom", "geometry"];
-  let geometryColumn = "";
-  const allColumns = Object.keys(data[0]);
-  for (const testCol of geometryColumns) {
-    if (allColumns.includes(testCol)) {
-      geometryColumn = testCol;
-      break;
-    }
-  }
-
-  // if there is no geometry column, bail early
-  if (!geometryColumn) {
-    console.error("Failed to find geometry column in: ", url);
+  if (geomColumns === 0) {
+    console.error(`[gm3:geoparquet] Failed to find any geometry columns for ${srcName}`);
     return;
+  } else if (geomColumns > 1) {
+    console.warn(
+      `[gm3:geoparquet] Multiple geometry columns found for ${srcName}, using the first.`
+    );
   }
 
-  const rowToFeature = (row) => {
-    const geometry = row[geometryColumn];
-    const properties = row;
-    // remove the geometry column from the properties
-    delete properties[geometryColumn];
+  const data = await parquetReadObjects({ file, compressors });
 
-    return {
+  const features = [];
+
+  const geomColumnName = geomColumns[0].name;
+  for (const row of data) {
+    const geometry = row[geomColumnName];
+    const properties = { ...row };
+    delete properties[geomColumnName];
+
+    features.push({
       type: "Feature",
-      properties: scrubProperties(properties),
       geometry,
-    };
-  };
+      properties: scrubProperties(properties),
+    });
+  }
 
   postMessage({
     type: "FEATURES_READY",
     srcName,
-    features: data.map(rowToFeature),
+    features,
   });
 };
 
