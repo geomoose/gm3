@@ -38,6 +38,11 @@ var app = new gm3.Application({
             units: 'imperial'
         }
     },
+    measure: {
+        // opt-in: annotate each measured line/polygon segment with its
+        //  length directly on the map (in the panel's selected units).
+        segmentLabels: true
+    },
     mapbooks: {
         'default': 'mapbook.xml',
         'editing': 'mapbook-editing.xml',

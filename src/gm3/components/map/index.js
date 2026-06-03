@@ -68,6 +68,7 @@ import {
   createLayer as createMeasureLayer,
   updateLayer as updateMeasureLayer,
 } from "./layers/measure";
+import { getMeasureLabelStyles } from "../measure/labels";
 
 import { wfsGetFeatures } from "./layers/wfs";
 import { EDIT_LAYER_NAME } from "../../defaults";
@@ -135,6 +136,27 @@ class Map extends React.Component {
 
     // this is used when a feature isn't finished yet.
     this.sketchFeature = null;
+
+    // an overlay layer that annotates selected features with their
+    //  per-segment lengths when measure segment labels are enabled.
+    this.measureLabelLayer = null;
+
+    // bound so it can be handed to the OL style functions and read the
+    //  latest config on every render.
+    this.getMeasureLabelOptions = this.getMeasureLabelOptions.bind(this);
+  }
+
+  /** Current on-map segment-label options, read live from the measure config.
+   *
+   *  @returns {Object} `{ enabled, units }`
+   */
+  getMeasureLabelOptions() {
+    const measureConfig = this.props.measureConfig || {};
+    return {
+      enabled: measureConfig.segmentLabels === true,
+      lengthUnits: measureConfig.defaultLengthUnits || "ft",
+      areaUnits: measureConfig.defaultAreaUnits || "ft",
+    };
   }
 
   /** Update a source's important bits.
@@ -156,7 +178,7 @@ class Map extends React.Component {
         agsLayer.updateLayer(this.map, olLayer, mapSource);
         break;
       case "measure":
-        updateMeasureLayer(this.map, olLayer, mapSource);
+        updateMeasureLayer(this.map, olLayer, mapSource, undefined, this.getMeasureLabelOptions);
         break;
       case "vector":
       case "wfs":
@@ -196,7 +218,7 @@ class Map extends React.Component {
       case "ags":
         return agsLayer.createLayer(mapSource);
       case "measure":
-        return createMeasureLayer(mapSource);
+        return createMeasureLayer(mapSource, this.getMeasureLabelOptions);
       case "vector":
       case "wfs":
       case "ags-vector":
@@ -394,6 +416,20 @@ class Map extends React.Component {
     vectorLayer.applyStyle(this.selectionLayer, {
       layers: [{ on: true, style: this.props.selectionStyle }],
     });
+
+    // A sibling layer that shares the selection source and annotates each
+    //  selected feature's segments with their lengths.  This is what makes
+    //  segment labels work when measuring polygons selected from other layers.
+    this.measureLabelLayer = new VectorLayer({
+      source: srcSelection,
+      style: (feature) => {
+        const labelOptions = this.getMeasureLabelOptions();
+        if (!labelOptions.enabled) {
+          return [];
+        }
+        return getMeasureLabelStyles(feature.getGeometry(), labelOptions);
+      },
+    });
   }
 
   /** This is called after the first render.
@@ -436,7 +472,7 @@ class Map extends React.Component {
     // initialize the map.
     this.map = new olMap({
       target: this.mapDiv,
-      layers: [this.selectionLayer],
+      layers: [this.selectionLayer, this.measureLabelLayer],
       logo: false,
       view: new olView(viewParams),
       controls: getControls(this.props.config),
@@ -505,6 +541,7 @@ class Map extends React.Component {
 
     this.olLayers = {};
     this.selectionLayer = null;
+    this.measureLabelLayer = null;
     this.sketchFeature = null;
   }
 
@@ -764,6 +801,25 @@ class Map extends React.Component {
    *  cycle where the state can get modified.
    */
   componentDidUpdate(prevProps) {
+    // When the measure label config changes (the opt-in toggle or the
+    //  selected units), force the affected layers to restyle.  These changes
+    //  do not bump any layer's featuresVersion, so a manual redraw is needed.
+    if (this.props.measureConfig !== prevProps.measureConfig) {
+      const measureLayer = this.olLayers["measure"];
+      if (measureLayer) {
+        updateMeasureLayer(
+          this.map,
+          measureLayer,
+          this.props.mapSources["measure"],
+          undefined,
+          this.getMeasureLabelOptions
+        );
+      }
+      if (this.measureLabelLayer) {
+        this.measureLabelLayer.changed();
+      }
+    }
+
     // extent takes precedent over the regular map-view,
     if (this.props.mapView.extent) {
       this.zoomToExtent(this.props.mapView.extent);
@@ -922,6 +978,7 @@ function mapState(state) {
     mapSources: state.mapSources,
     mapView: state.map,
     config: state.config.map || {},
+    measureConfig: state.config.measure || {},
     selectionStyle: state.config.selectionStyle || {},
     // resolve this to meters
     selectionBuffer: util.convertLength(
