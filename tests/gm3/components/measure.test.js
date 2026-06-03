@@ -198,8 +198,11 @@ describe("getAreaLabelStyles tests", () => {
   test("labels a polygon's area at an interior point", () => {
     const styles = getAreaLabelStyles(polygon, "ft");
     expect(styles).toHaveLength(1);
-    expect(styles[0].getText().getText()).toMatch(/ sq\. ft$/);
+    // outline-pentagon prefix, white halo, no backer.
+    expect(styles[0].getText().getText()).toMatch(/^⬠ .* sq\. ft$/);
     expect(styles[0].getGeometry().getType()).toBe("Point");
+    expect(styles[0].getText().getStroke().getColor()).toBe("#ffffff");
+    expect(styles[0].getText().getBackgroundFill()).toBe(null);
   });
 
   test("getMeasureLabelStyles combines segment and area labels (4 edges + area)", () => {

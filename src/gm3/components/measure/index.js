@@ -29,9 +29,8 @@ import { getArea } from "ol/sphere";
 
 import DrawTool from "../drawTool";
 import { updateSketchGeometry } from "../../actions/cursor";
-import { changeTool, clearSelectionFeatures } from "../../actions/map";
+import { changeTool, clearSelectionFeatures, setMeasureUnits } from "../../actions/map";
 import { clearFeatures, removeFeature, saveFeature } from "../../actions/mapSource";
-import { setMeasureUnits } from "../../actions/config";
 import { PolygonIcon } from "../polygon-icon";
 import { LineIcon } from "../line-icon";
 import { PointIcon } from "../point-icon";
@@ -64,11 +63,11 @@ export class MeasureTool extends Component {
   constructor(props) {
     super(props);
 
-    // The selected units live in local component state.  The config only
-    //  provides the defaults (and an optional initialUnits prop override).
+    // The selected units live in local component state, seeded from the map's
+    //  current measure units (or an optional initialUnits prop override).
     this.state = {
-      lengthUnits: this.props.initialUnits || this.props.config.defaultLengthUnits,
-      areaUnits: this.props.initialUnits || this.props.config.defaultAreaUnits,
+      lengthUnits: this.props.initialUnits || this.props.map.measureLengthUnits,
+      areaUnits: this.props.initialUnits || this.props.map.measureAreaUnits,
     };
 
     // localize all of the ordinals
@@ -85,11 +84,11 @@ export class MeasureTool extends Component {
     // change the tool to be the default and target the measure source
     this.props.updateSketchGeometry(null);
     this.props.changeTool(this.props.defaultTool, util.getMapSourceName(this.props.targetLayer));
-    // mirror the initial unit selection into the config so the on-map labels
-    //  render in the matching units.
+    // mirror the initial unit selection into the map state so the on-map
+    //  labels render in the matching units.
     this.props.setMeasureUnits({
-      defaultLengthUnits: this.state.lengthUnits,
-      defaultAreaUnits: this.state.areaUnits,
+      measureLengthUnits: this.state.lengthUnits,
+      measureAreaUnits: this.state.areaUnits,
     });
   }
 
@@ -326,8 +325,8 @@ export class MeasureTool extends Component {
     const areaUnits = getComplementaryUnit(lengthUnits, "area");
     this.setState({ lengthUnits, areaUnits });
     this.props.setMeasureUnits({
-      defaultLengthUnits: lengthUnits,
-      defaultAreaUnits: areaUnits,
+      measureLengthUnits: lengthUnits,
+      measureAreaUnits: areaUnits,
     });
   }
 
@@ -337,8 +336,8 @@ export class MeasureTool extends Component {
     const lengthUnits = getComplementaryUnit(areaUnits, "length");
     this.setState({ areaUnits, lengthUnits });
     this.props.setMeasureUnits({
-      defaultAreaUnits: areaUnits,
-      defaultLengthUnits: lengthUnits,
+      measureAreaUnits: areaUnits,
+      measureLengthUnits: lengthUnits,
     });
   }
 
