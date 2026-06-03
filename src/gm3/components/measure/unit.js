@@ -24,6 +24,33 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+// The preferred complementary unit so that length and area never mix
+//  systems.  Keyed by the complementary measurement type being computed:
+//   - "area":   which area unit to use for a given length unit
+//   - "length": which length unit to use for a given area unit
+const COMPLEMENTARY_UNIT = {
+  // length unit -> area unit
+  area: { m: "m", km: "km", ft: "ft", mi: "mi", ch: "ft" },
+  // area unit -> length unit
+  length: { m: "m", km: "km", ft: "ft", mi: "mi", a: "ft", h: "m" },
+};
+
+/* Given a newly-selected unit, return the unit the complementary measurement
+ *  (length <-> area) should use so the two never mix -- e.g. so we never pair
+ *  kilometers with square feet.
+ *
+ * @param {String} selectedUnit The unit just chosen.
+ * @param {String} otherType    "length" or "area" -- the complementary type to
+ *                               compute.
+ *
+ * @returns {String} The unit the complementary measurement should switch to.
+ */
+export const getComplementaryUnit = (selectedUnit, otherType) => {
+  const mapping = COMPLEMENTARY_UNIT[otherType] || {};
+  // fall back to the selected unit if it has no explicit mapping.
+  return mapping[selectedUnit] || selectedUnit;
+};
+
 export const UnitOption = ({ onClick, unit, selected, isSq }) => {
   const { t } = useTranslation();
   return (
