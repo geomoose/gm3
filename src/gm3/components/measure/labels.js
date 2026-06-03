@@ -26,11 +26,11 @@
  *  directly on the map: each line/polygon segment with its length, and each
  *  polygon with its area at the centroid.
  *
- * This is opt-in via the application's measure configuration
- *  (config.measure.segmentLabels) and renders in whichever length/area units
- *  the user currently has selected in the measure panel, so metric/imperial is
- *  always honored.  The enabled flag and the units are passed in by the caller
- *  -- this module intentionally owns no state of its own.
+ * Display is toggled at runtime (state.map.showMeasureLabels) and renders in
+ *  whichever length/area units the user currently has selected in the measure
+ *  panel, so metric/imperial is always honored.  The enabled flag and the
+ *  units are passed in by the caller -- this module intentionally owns no
+ *  state of its own.
  */
 
 import { Fill, Stroke, Style, Text } from "ol/style";
@@ -144,10 +144,14 @@ const formatArea = (areaMeters, units) => {
   return `${value} ${label}`;
 };
 
-/* A point-placed Text style used for the area label at a polygon's centroid. */
+// prefixed before the area value to mark it as a (polygon) area measurement.
+const AREA_PREFIX = "⬠ ";
+
+/* A point-placed Text style used for the area label at a polygon's centroid,
+ *  drawn with a white halo for legibility. */
 const buildAreaText = (label) =>
   new Text({
-    text: label,
+    text: `${AREA_PREFIX}${label}`,
     font: "bold 13px sans-serif",
     placement: "point",
     fill: new Fill({ color: "#222222" }),
@@ -191,7 +195,7 @@ export const getAreaLabelStyles = (geometry, units) => {
  *  for polygons, the area at the centroid.
  *
  * @param {ol/geom/Geometry} geometry Geometry in the map projection (EPSG:3857).
- * @param {Object} units              `{ lengthUnits, areaUnits }`
+ * @param {Object} options            `{ lengthUnits, areaUnits }`.
  *
  * @returns {Array} List of ol/style/Style.
  */

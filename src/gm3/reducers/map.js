@@ -37,6 +37,8 @@ import {
   setSelectionBuffer,
   setEditPath,
   setEditTools,
+  setShowMeasureLabels,
+  setMeasureUnits,
 } from "../actions/map";
 
 const defaultState = {
@@ -52,6 +54,11 @@ const defaultState = {
   editPath: "",
   editTools: [],
   projection: "EPSG:3857",
+  // on-map measure annotations (rendering concerns).  On by default; a
+  //  deployer can opt out via config.map.showMeasureLabels = false.
+  showMeasureLabels: true,
+  measureLengthUnits: "ft",
+  measureAreaUnits: "ft",
 };
 
 const reducer = createReducer(defaultState, {
@@ -95,6 +102,13 @@ const reducer = createReducer(defaultState, {
   },
   [setEditTools]: (state, { payload: tools }) => {
     state.editTools = tools;
+  },
+  [setShowMeasureLabels]: (state, { payload: show }) => {
+    state.showMeasureLabels = show;
+  },
+  [setMeasureUnits]: (state, { payload }) => {
+    state.measureLengthUnits = payload.measureLengthUnits || state.measureLengthUnits;
+    state.measureAreaUnits = payload.measureAreaUnits || state.measureAreaUnits;
   },
 });
 
