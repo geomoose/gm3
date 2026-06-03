@@ -23,7 +23,7 @@
  */
 
 import { createReducer } from "@reduxjs/toolkit";
-import { setConfig } from "../actions/config";
+import { setConfig, setMeasureUnits } from "../actions/config";
 
 const DEFAULT_CONFIG = {
   map: {},
@@ -31,13 +31,36 @@ const DEFAULT_CONFIG = {
   measure: {
     areaUnits: ["m", "km", "ft", "mi", "a", "h"],
     lengthUnits: ["m", "km", "ft", "mi", "ch"],
+    // opt-in: annotate each line/polygon segment with its length on the map.
+    segmentLabels: false,
+    // the default units the measure panel starts with.  The panel mirrors its
+    //  live selection back here so non-React consumers (the map layer styles)
+    //  can render the on-map labels in the matching units.
+    defaultLengthUnits: "ft",
+    defaultAreaUnits: "ft",
   },
 };
 
 const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
   builder.addCase(setConfig, (state, action) => {
     const config = action.payload;
-    return { ...state, ...config };
+    // Merge the measure config so a deployer that only overrides part of it
+    //  (e.g. just `segmentLabels`) does not drop the unit defaults.
+    return {
+      ...state,
+      ...config,
+      measure: {
+        ...state.measure,
+        ...(config.measure || {}),
+      },
+    };
+  });
+
+  builder.addCase(setMeasureUnits, (state, action) => {
+    state.measure = {
+      ...state.measure,
+      ...action.payload,
+    };
   });
 });
 

@@ -31,6 +31,7 @@ import DrawTool from "../drawTool";
 import { updateSketchGeometry } from "../../actions/cursor";
 import { changeTool, clearSelectionFeatures } from "../../actions/map";
 import { clearFeatures, removeFeature, saveFeature } from "../../actions/mapSource";
+import { setMeasureUnits } from "../../actions/config";
 import { PolygonIcon } from "../polygon-icon";
 import { LineIcon } from "../line-icon";
 import { PointIcon } from "../point-icon";
@@ -39,15 +40,12 @@ import * as util from "../../util";
 import { projectFeatures } from "../../util";
 
 import { toLonLat } from "ol/proj";
-import { UnitOption } from "./unit";
+import { UnitOption, getComplementaryUnit } from "./unit";
 
 import CoordinateDisplay from "../coordinate-display";
 
 import { getSegmentInfo, normalizeGeometry, deconstructPolygon } from "./calc";
 import { colorizeFromIndex } from "./colorize";
-
-const LENGTH_KEY = "gm3:length-units";
-const AREA_KEY = "gm3:area-units";
 
 const hasSqLabel = (unit) => unit !== "a" && unit !== "h";
 
@@ -66,13 +64,11 @@ export class MeasureTool extends Component {
   constructor(props) {
     super(props);
 
-    // look for unit measurements from local storage.
-    const savedLengthUnits = localStorage.getItem(LENGTH_KEY) || "ft";
-    const savedAreaUnits = localStorage.getItem(AREA_KEY) || "ft";
-
+    // The selected units live in local component state.  The config only
+    //  provides the defaults (and an optional initialUnits prop override).
     this.state = {
-      lengthUnits: this.props.initialUnits ? this.props.initialUnits : savedLengthUnits,
-      areaUnits: this.props.initialUnits ? this.props.initialUnits : savedAreaUnits,
+      lengthUnits: this.props.initialUnits || this.props.config.defaultLengthUnits,
+      areaUnits: this.props.initialUnits || this.props.config.defaultAreaUnits,
     };
 
     // localize all of the ordinals
@@ -89,6 +85,12 @@ export class MeasureTool extends Component {
     // change the tool to be the default and target the measure source
     this.props.updateSketchGeometry(null);
     this.props.changeTool(this.props.defaultTool, util.getMapSourceName(this.props.targetLayer));
+    // mirror the initial unit selection into the config so the on-map labels
+    //  render in the matching units.
+    this.props.setMeasureUnits({
+      defaultLengthUnits: this.state.lengthUnits,
+      defaultAreaUnits: this.state.areaUnits,
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -318,8 +320,26 @@ export class MeasureTool extends Component {
     );
   }
 
-  changeUnits(value) {
-    this.setState({ units: value });
+  /* Change the length units, keeping the area units in the same measurement
+   *  system so lengths and areas never mix metric and imperial. */
+  setLengthUnits(lengthUnits) {
+    const areaUnits = getComplementaryUnit(lengthUnits, "area");
+    this.setState({ lengthUnits, areaUnits });
+    this.props.setMeasureUnits({
+      defaultLengthUnits: lengthUnits,
+      defaultAreaUnits: areaUnits,
+    });
+  }
+
+  /* Change the area units, keeping the length units in the same measurement
+   *  system (see setLengthUnits). */
+  setAreaUnits(areaUnits) {
+    const lengthUnits = getComplementaryUnit(areaUnits, "length");
+    this.setState({ areaUnits, lengthUnits });
+    this.props.setMeasureUnits({
+      defaultAreaUnits: areaUnits,
+      defaultLengthUnits: lengthUnits,
+    });
   }
 
   renderUnitOptions() {
@@ -340,10 +360,7 @@ export class MeasureTool extends Component {
               key={unit}
               unit={unit}
               selected={unit === this.state.lengthUnits}
-              onClick={() => {
-                localStorage.setItem(LENGTH_KEY, unit);
-                this.setState({ lengthUnits: unit });
-              }}
+              onClick={() => this.setLengthUnits(unit)}
             />
           ))}
         </div>
@@ -358,10 +375,7 @@ export class MeasureTool extends Component {
               unit={unit}
               isSq={hasSqLabel(unit)}
               selected={unit === this.state.areaUnits}
-              onClick={() => {
-                localStorage.setItem(AREA_KEY, unit);
-                this.setState({ areaUnits: unit });
-              }}
+              onClick={() => this.setAreaUnits(unit)}
             />
           ))}
         </div>
@@ -425,6 +439,7 @@ const mapDispatchToProps = {
   saveFeature,
   clearSelectionFeatures,
   updateSketchGeometry,
+  setMeasureUnits,
 };
 
 export default connect(mapToProps, mapDispatchToProps)(withTranslation()(MeasureTool));

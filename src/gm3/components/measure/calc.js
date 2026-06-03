@@ -96,6 +96,39 @@ function calculateLengthAndBearing(a, b, utmZone, ordinalDictionary) {
   };
 }
 
+/* Break a path of lon/lat coordinates into its individual segments,
+ *  returning the geodesic length (in meters) and the lon/lat midpoint
+ *  of each segment.  This is shared by the on-map segment annotations
+ *  so that the labels use the same UTM-based measurement as the panel.
+ *
+ * @param {Array} coordinatesLonLat Array of [lon, lat] pairs.
+ *
+ * @returns {Array} List of { len, midpointLonLat } objects, one per segment.
+ */
+export function getPathSegments(coordinatesLonLat) {
+  if (!coordinatesLonLat || coordinatesLonLat.length < 2) {
+    return [];
+  }
+
+  // determine an appropriate utm zone for measurement.
+  const utmZone = getProjection(getUtmZone(coordinatesLonLat[0]));
+
+  const segments = [];
+  for (let i = 1, ii = coordinatesLonLat.length; i < ii; i++) {
+    const aLonLat = coordinatesLonLat[i - 1];
+    const bLonLat = coordinatesLonLat[i];
+    let line = new olLineString([aLonLat, bLonLat]);
+    line = line.transform("EPSG:4326", utmZone);
+    segments.push({
+      // this is in meters!
+      len: line.getLength(),
+      // the midpoint is kept in lon/lat for re-projection by the caller.
+      midpointLonLat: [(aLonLat[0] + bLonLat[0]) / 2, (aLonLat[1] + bLonLat[1]) / 2],
+    });
+  }
+  return segments;
+}
+
 export function getSegmentInfo(geom, cursorCoords, isDrawing, ordinalDictionary) {
   // determine an appropriate utm zone for measurement.
   const utmZone = getProjection(getUtmZone(geom.coordinates[0]));
