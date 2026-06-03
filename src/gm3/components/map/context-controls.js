@@ -155,6 +155,7 @@ const ContextControls = ({
   setEditTools,
   zoom,
   resolution,
+  children,
 }) => {
   let controls = false;
   // do not bother rendering anything if the interaction is null
@@ -211,6 +212,7 @@ const ContextControls = ({
 
       <span style={{ display: "inline-block", width: 16 }}></span>
       {controls}
+      {children}
     </React.Fragment>
   );
 };

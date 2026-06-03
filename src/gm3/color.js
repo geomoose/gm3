@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2026 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +22,21 @@
  * SOFTWARE.
  */
 
-import { createReducer } from "@reduxjs/toolkit";
-import { setConfig } from "../actions/config";
+/* Shared color helpers. */
 
-const DEFAULT_CONFIG = {
-  map: {},
-  serviceManager: {},
-  measure: {
-    areaUnits: ["m", "km", "ft", "mi", "a", "h"],
-    lengthUnits: ["m", "km", "ft", "mi", "ch"],
-  },
+/* Convert a "#rrggbb" color to an [r, g, b, a] array at the given opacity.
+ *
+ * @param {String} hexColor A "#rrggbb" color string.
+ * @param {Number} opacity  Alpha from 0 to 1.
+ *
+ * @returns {Array} [r, g, b, a] suitable for an OpenLayers fill/stroke color.
+ */
+export const withOpacity = (hexColor, opacity) => {
+  const hex = hexColor.replace("#", "");
+  return [
+    parseInt(hex.substring(0, 2), 16),
+    parseInt(hex.substring(2, 4), 16),
+    parseInt(hex.substring(4, 6), 16),
+    opacity,
+  ];
 };
-
-const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
-  builder.addCase(setConfig, (state, action) => {
-    const config = action.payload;
-    return { ...state, ...config };
-  });
-});
-
-export default reducer;

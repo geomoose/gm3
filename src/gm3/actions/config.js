@@ -25,10 +25,3 @@
 import { createAction } from "@reduxjs/toolkit";
 
 export const setConfig = createAction("mapsource/config");
-
-/* Mirror the measure panel's currently-selected units into the config so the
- *  on-map segment labels can be rendered in the matching units.
- *
- * @param {Object} units e.g. { defaultLengthUnits: "ft" }
- */
-export const setMeasureUnits = createAction("config/measure-units");
