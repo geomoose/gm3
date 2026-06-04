@@ -235,13 +235,11 @@ export default class HashTracker {
   restore() {
     const parsed = parseHash();
 
-    if (parsed.query) {
-      if (parsed.query.loc) {
-        this.restoreLocation(parsed.query.loc);
-      }
-      if (parsed.query.on) {
-        this.restoreLayers(parsed.query.on);
-      }
+    if (parsed.loc) {
+      this.restoreLocation(parsed.loc);
+    }
+    if (parsed.on) {
+      this.restoreLayers(parsed.on);
     }
   }
 
