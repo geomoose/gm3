@@ -164,4 +164,42 @@ describe("Toolbar component tests", () => {
 
     expect(store.getState().ui.action).toBe("sample0");
   });
+
+  it("renders a link tool as an anchor with the configured href.", function () {
+    const tool = {
+      name: "helpful-link",
+      label: "Helpful Link",
+      actionType: "link",
+      href: "https://geomoose.org/",
+    };
+
+    const { container } = render(<SmartToolbarButton tool={tool} store={store} />);
+    const anchor = container.querySelector("a.tool");
+
+    expect(anchor).toBeTruthy();
+    expect(anchor.getAttribute("href")).toBe("https://geomoose.org/");
+    expect(anchor.getAttribute("target")).toBe("_blank");
+    expect(anchor.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("parses a link tool from a mapbook fragment.", function () {
+    const toolbarXml = `
+            <toolbar>
+                <drawer name="helpful-links" title="Helpful Links">
+                    <tool name="docs" type="link" href="https://docs.geomoose.org/" title="Docs"/>
+                </drawer>
+            </toolbar>`;
+
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(toolbarXml, "text/xml");
+    const results = actions.parseToolbar(xml.getElementsByTagName("toolbar")[0]);
+
+    results.forEach((action) => {
+      store.dispatch(action);
+    });
+
+    const linkTool = store.getState().toolbar["helpful-links"][0];
+    expect(linkTool.actionType).toBe("link");
+    expect(linkTool.href).toBe("https://docs.geomoose.org/");
+  });
 });

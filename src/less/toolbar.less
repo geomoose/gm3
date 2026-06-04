@@ -3,6 +3,7 @@
   align-items: center;
 
   .tool {
+    box-sizing: border-box;
     height: 22px;
     padding: 2px 7px;
     font-size: 14px;
@@ -12,9 +13,16 @@
     margin-bottom: 4px;
     margin-right: 4px;
 
+    color: inherit;
+    text-decoration: none;
+
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    &:visited {
+      color: inherit;
+    }
 
     &:hover {
       cursor: pointer;
@@ -155,6 +163,15 @@
     .fa;
     &:before {
       content: @fa-var-bookmark-o;
+    }
+  }
+}
+
+.tool.link {
+  .icon {
+    .fa;
+    &:before {
+      content: @fa-var-external-link;
     }
   }
 }

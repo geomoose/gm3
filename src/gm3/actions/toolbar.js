@@ -60,6 +60,7 @@ function parseTool(toolXml) {
     actionDetail: toolXml.getAttribute("action"),
     cssClass: toolXml.getAttribute("css-class"),
     tip: toolXml.getAttribute("tip"),
+    href: toolXml.getAttribute("href"),
   };
 }
 

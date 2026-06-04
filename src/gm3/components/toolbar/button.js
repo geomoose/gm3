@@ -46,6 +46,7 @@ export const ToolbarButton = ({ tool, runAction, startService, currentService, s
   const label = t(tool.label);
   const tip = tool.tip ? t(tool.tip) : label;
   const active = tool.name === currentService;
+  const className = `${active ? "active " : ""}${tool.cssClass || "tool " + tool.name}`;
 
   const onClick = useCallback(() => {
     if (tool.actionType === "service") {
@@ -59,13 +60,29 @@ export const ToolbarButton = ({ tool, runAction, startService, currentService, s
     }
   }, [startService, tool, serviceDef, runAction]);
 
+  if (tool.actionType === "link") {
+    const linkClass = `${active ? "active " : ""}${tool.cssClass || `tool link ${tool.name}`}`;
+    return (
+      <a
+        className={`toolbar-button ${linkClass}`}
+        href={tool.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={tip}
+      >
+        <span className="icon"></span>
+        <span className="label">{label}</span>
+      </a>
+    );
+  }
+
   return (
     <BaseToolbarButton
       key={tool.name}
       onClick={onClick}
       label={label}
       tip={tip}
-      className={`${active ? "active " : ""}${tool.cssClass || "tool " + tool.name}`}
+      className={className}
     />
   );
 };
