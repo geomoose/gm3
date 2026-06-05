@@ -462,6 +462,15 @@
         </layer>
     </map-source>
 
+    <map-source name="county-aerial-cog" type="cog">
+        <layer name="aerial2022"/>
+        <url>https://storage.googleapis.com/gm4-demo-data/county/2022-aerial.tiff</url>
+        <!--
+        <url>https://sharedgeo-open-data.s3.us-east-2.amazonaws.com/imagery/mosaic_3857/mn/MN_Dakota_Co_2024_3857.tif</url>
+        -->
+        <param name="bands" value="1,2,3"/>
+    </map-source>
+
     <map-source name="bing" type="bing">
         <layer name="canvasDark"/>
         <layer name="canvasLight"/>
@@ -522,6 +531,7 @@
             <layer title="Reprojected Regional Aerial" src="lmic/mncomp" show-legend="false" legend="false" fade="true" unfade="true" classNames="inline-tools"/>
 
             <layer title="OpenStreetMap" src="openstreetmap/osm_mapnik" legend="false" fade="true" unfade="true" classNames="inline-tools" />
+            <layer title="County Aerial (COG)" src="county-aerial-cog/aerial2022" legend="false" fade="true" unfade="true" classNames="inline-tools" />
             <!-- These layers can be *very* slow, they are left here
               -  for demonstration purposes.
             <layer title="USGS DOQs" src="usgs/usgs_imagery" show-legend="false" legend="false" fade="true" unfade="true"/>

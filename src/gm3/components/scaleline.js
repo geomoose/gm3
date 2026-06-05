@@ -5,7 +5,6 @@
  * for rendering.
  */
 import { getPointResolution, METERS_PER_UNIT } from "ol/proj";
-import ProjUnits from "ol/proj/Units";
 
 /**
  * Units for the scale line. Supported values are `'degrees'`, `'imperial'`,
@@ -32,7 +31,7 @@ export function getScalelineInfo(viewState, units, inOpts = {}) {
 
   const center = viewState.getCenter();
   const projection = viewState.getProjection();
-  const pointResolutionUnits = units === Units.DEGREES ? ProjUnits.DEGREES : ProjUnits.METERS;
+  const pointResolutionUnits = units === Units.DEGREES ? "degrees" : "m";
   if (!projection) {
     return { label: "", width: 0, error: "no-projection" };
   }
@@ -44,9 +43,9 @@ export function getScalelineInfo(viewState, units, inOpts = {}) {
     pointResolutionUnits
   );
   if (
-    projection.getUnits() !== ProjUnits.DEGREES &&
+    projection.getUnits() !== "degrees" &&
     projection.getMetersPerUnit() &&
-    pointResolutionUnits === ProjUnits.METERS
+    pointResolutionUnits === "m"
   ) {
     pointResolution *= projection.getMetersPerUnit();
   }
@@ -54,8 +53,8 @@ export function getScalelineInfo(viewState, units, inOpts = {}) {
   let nominalCount = options.minWidth * pointResolution;
   let suffix = "";
   if (units === Units.DEGREES) {
-    const metersPerDegree = METERS_PER_UNIT[ProjUnits.DEGREES];
-    if (projection.getUnits() === ProjUnits.DEGREES) {
+    const metersPerDegree = METERS_PER_UNIT.degrees;
+    if (projection.getUnits() === "degrees") {
       nominalCount *= metersPerDegree;
     } else {
       pointResolution /= metersPerDegree;
