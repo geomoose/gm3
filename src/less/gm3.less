@@ -25,6 +25,7 @@
 @import (inline) "../../node_modules/ol/ol.css";
 @import "../../node_modules/font-awesome/less/font-awesome.less";
 @import (inline) "../../node_modules/mapskin/css/mapskin.min.css";
+@import "variables.less";
 @import "modal.less";
 @import "icons.less";
 @import "catalog.less";
@@ -89,7 +90,7 @@
   background-color: lightsteelblue;
   margin: 7px;
   padding: 5px;
-  font-size: 10pt;
+  font-size: @gm-text-secondary;
 }
 
 .spinner {
@@ -117,21 +118,18 @@ input[type="checkbox"] {
   font: inherit;
   color: currentColor;
 
-  width: 1em;
-  height: 1em;
-  border: 0.15em solid currentColor;
+  width: @gm-control-size;
+  height: @gm-control-size;
+  border: @gm-control-stroke solid currentColor;
   margin: 0.5em;
   margin-left: 0;
-}
+  vertical-align: middle;
 
-input[type="radio"],
-input[type="checkbox"] {
-  border-radius: 50%;
+  /* the checked-state mark; drawn with the box-shadow fill so it
+   * follows currentColor and stays geometrically centered by the
+   * grid at any font-size. */
   &::before {
     content: "";
-    width: 0.65em;
-    height: 0.65em;
-    border-radius: 50%;
     transform: scale(0);
     transition: 120ms transform ease-in-out;
     box-shadow: inset 1em 1em currentColor;
@@ -140,18 +138,31 @@ input[type="checkbox"] {
   &:checked::before {
     transform: scale(1);
   }
+
+  /* appearance: none also removes the native focus ring */
+  &:focus-visible {
+    outline: @gm-control-stroke solid currentColor;
+    outline-offset: 0.125em;
+  }
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+
+  &::before {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+  }
 }
 
 input[type="checkbox"] {
-  border-radius: 10%;
+  border-radius: 0.2em;
+
   &::before {
-    content: "\2714";
-    width: 0.5em;
-    height: 0.5em;
-    box-shadow: none;
-  }
-  &:checked::before {
-    transform: scale(1) translateY(-0.5em) translateX(-0.125em);
+    width: 0.7em;
+    height: 0.7em;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
   }
 }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2017, 2025 Dan "Ducky" Little
+ * Copyright (c) 2026 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,20 @@
  * SOFTWARE.
  */
 
-.attribution-display {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  z-index: 99;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 5px;
-  margin: 10px;
-  font-size: @gm-text-fine;
-}
+/* Shared sizing scale.
+ *
+ * Everything is em-based so the whole UI scales together from the
+ * font-size of the embedding element.  At the browser-default 16px
+ * base, @gm-control-size works out to the 20px the icons have
+ * historically used.
+ */
+
+/* checkboxes, radios, and icon glyphs share one optical size */
+@gm-control-size: 1.25em;
+@gm-control-stroke: 0.125em;
+
+/* text roles */
+@gm-text-title: 1.375em;
+@gm-text-header: 1.125em;
+@gm-text-secondary: 0.875em;
+@gm-text-fine: 0.75em;

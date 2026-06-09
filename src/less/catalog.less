@@ -26,7 +26,7 @@
 
 .group {
   .group {
-    padding-left: 20px;
+    padding-left: @gm-control-size;
   }
 
   .group-label {
@@ -36,14 +36,18 @@
     align-items: center;
 
     input[type="checkbox"] {
-      /* force fontawesome for the checkbox */
-      .fa;
+      /* render a fontawesome chevron instead of a checkbox */
       border: none;
 
       &::before {
-        display: inline-block;
+        .fa;
+
         content: @fa-var-chevron-right;
-        transform: translateX(50%) translateY(0%);
+        width: auto;
+        height: auto;
+        box-shadow: none;
+        clip-path: none;
+        transform: none;
       }
 
       transition: 120ms transform ease-in-out;
@@ -51,9 +55,6 @@
 
       &:checked {
         transform: rotate(90deg);
-        &::before {
-          transform: translateX(50%) translateY(-50%);
-        }
       }
     }
 
@@ -63,7 +64,7 @@
   }
 
   .layer {
-    padding-left: 20px;
+    padding-left: @gm-control-size;
   }
 
   &.gm-collapse {
@@ -88,8 +89,8 @@
   }
 }
 
-@checkbox-width: 20px;
-@checkbox-margin: 2px;
+@checkbox-width: @gm-control-size;
+@checkbox-margin: 0.125em;
 
 .layer {
   /* unstyle the tool buttons */
@@ -102,6 +103,10 @@
 
   .layer-label {
     cursor: pointer;
+    /* center the toggle, favorite, and label on a common axis,
+     * the same way .group-label does. */
+    display: flex;
+    align-items: center;
 
     .checkbox {
       margin: @checkbox-margin;
@@ -139,17 +144,17 @@
   .layer-tools {
     .icon {
       color: #333;
-      font-size: 20px;
-      width: 28px;
-      height: 28px;
-      border-radius: 14px;
+      font-size: @gm-control-size;
+      width: 1.75em;
+      height: 1.75em;
+      border-radius: 50%;
 
       display: inline-flex;
       justify-content: center;
       align-items: center;
 
-      margin-right: 4px;
-      margin-bottom: 4px;
+      margin-right: 0.25em;
+      margin-bottom: 0.25em;
 
       &:hover {
         box-shadow: 0 0 1px 1px #a09999;
@@ -165,6 +170,17 @@
   input[type="checkbox"].favorite {
     color: @favorite-star-color;
     border: none;
+
+    /* the star glyphs come from .icon.favorite in icons.less */
+    &::before {
+      .fa;
+
+      width: auto;
+      height: auto;
+      box-shadow: none;
+      clip-path: none;
+      transform: none;
+    }
   }
 }
 
