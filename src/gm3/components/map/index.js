@@ -68,7 +68,6 @@ import {
   createLayer as createMeasureLayer,
   updateLayer as updateMeasureLayer,
 } from "./layers/measure";
-import { getMeasureLabelStyles } from "../measure/labels";
 import MapButton from "./button";
 
 import { wfsGetFeatures } from "./layers/wfs";
@@ -137,10 +136,6 @@ class Map extends React.Component {
 
     // this is used when a feature isn't finished yet.
     this.sketchFeature = null;
-
-    // an overlay layer that annotates selected features with their
-    //  per-segment lengths when measure segment labels are enabled.
-    this.measureLabelLayer = null;
 
     // bound so it can be handed to the OL style functions and read the
     //  latest config on every render.
@@ -417,20 +412,6 @@ class Map extends React.Component {
     vectorLayer.applyStyle(this.selectionLayer, {
       layers: [{ on: true, style: this.props.selectionStyle }],
     });
-
-    // A sibling layer that shares the selection source and annotates each
-    //  selected feature's segments with their lengths.  This is what makes
-    //  segment labels work when measuring polygons selected from other layers.
-    this.measureLabelLayer = new VectorLayer({
-      source: srcSelection,
-      style: (feature) => {
-        const labelOptions = this.getMeasureLabelOptions();
-        if (!labelOptions.enabled) {
-          return [];
-        }
-        return getMeasureLabelStyles(feature.getGeometry(), labelOptions);
-      },
-    });
   }
 
   /** This is called after the first render.
@@ -480,7 +461,7 @@ class Map extends React.Component {
     // initialize the map.
     this.map = new olMap({
       target: this.mapDiv,
-      layers: [this.selectionLayer, this.measureLabelLayer],
+      layers: [this.selectionLayer],
       logo: false,
       view: new olView(viewParams),
       controls: getControls(this.props.config),
@@ -549,7 +530,6 @@ class Map extends React.Component {
 
     this.olLayers = {};
     this.selectionLayer = null;
-    this.measureLabelLayer = null;
     this.sketchFeature = null;
   }
 
@@ -810,8 +790,8 @@ class Map extends React.Component {
    */
   componentDidUpdate(prevProps) {
     // When the measure label options change (the toggle or the selected
-    //  units), force the affected layers to restyle.  These changes do not
-    //  bump any layer's featuresVersion, so a manual redraw is needed.
+    //  units), force the measure layer to restyle.  These changes do not
+    //  bump the layer's featuresVersion, so a manual redraw is needed.
     const mapView = this.props.mapView;
     const prevMapView = prevProps.mapView;
     if (
@@ -828,9 +808,6 @@ class Map extends React.Component {
           undefined,
           this.getMeasureLabelOptions
         );
-      }
-      if (this.measureLabelLayer) {
-        this.measureLabelLayer.changed();
       }
     }
 
