@@ -8,7 +8,7 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Provider, connect } from "react-redux";
 
 import { getMapSourceName, getLayerName } from "./util";
@@ -26,11 +26,11 @@ export function addConnectedPlugin(plugin, domId, inProps = {}) {
   });
 
   // this.store comes from Application.
-  ReactDOM.createRoot(
+  const root = createRoot(document.getElementById(domId));
+  root.render(
     <Provider store={this.store}>
       <WrappedComponent {...props} />
-    </Provider>,
-    document.getElementById(domId)
+    </Provider>
   );
 }
 
