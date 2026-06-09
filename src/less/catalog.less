@@ -93,12 +93,14 @@
 @checkbox-margin: 0.125em;
 
 .layer {
-  /* unstyle the tool buttons */
+  /* unstyle the tool buttons; buttons do not inherit font by
+   * default, which would detach the icons from the panel scale. */
   button {
     margin: 0;
     padding: 0;
     background: none;
     border: none;
+    font: inherit;
   }
 
   .layer-label {
@@ -119,11 +121,13 @@
     padding-left: (@checkbox-width + @checkbox-margin * 2);
   }
 
+  /* keep all of the row's glyphs on the label's scale; the layer
+   * toggle stays the visually-largest control in the row. */
   .metadata.icon,
   .favorite.icon,
   .refresh.icon,
   .checkbox.icon {
-    font-size: 110%;
+    font-size: 1em;
   }
 
   .favorite.icon {
@@ -196,6 +200,10 @@
 }
 
 .catalog {
+  /* dense-panel scale: the labels and, through their em sizing,
+   * the controls and glyphs all step down together. */
+  font-size: @gm-text-ui;
+
   .searchbox {
     position: absolute;
     width: 100%;
@@ -209,7 +217,7 @@
       margin: 4px;
       text-align: left;
       width: 85%;
-      height: 20px;
+      height: 1.5em;
     }
   }
 
