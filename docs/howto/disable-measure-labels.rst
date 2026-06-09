@@ -9,8 +9,9 @@ Users can always toggle the annotations on or off while measuring using
 the labels button in the upper-left map controls.
 
 To change the *default* so the annotations start **off**, set
-``showMeasureLabels`` to ``false`` in the application's ``map``
-configuration object.
+``showMeasureLabels`` to ``false`` in the application's ``measure``
+configuration object, alongside the other measure options such as
+``areaUnits`` and ``lengthUnits``.
 
 Example:
 
@@ -19,7 +20,9 @@ Example:
     var app = new gm3.Application({
         mapserver_url: CONFIG.mapserver_url,
         mapfile_root: CONFIG.mapfile_root,
-        map: {
+        measure: {
+            areaUnits: ["ft", "mi", "a", "h", "m", "km"],
+            lengthUnits: ["ft", "mi", "ch", "r", "m", "km"],
             showMeasureLabels: false
         }
     });
