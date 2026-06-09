@@ -169,7 +169,9 @@ describe("getComplementaryUnit tests", () => {
     expect(getComplementaryUnit("ft", "area")).toBe("ft");
     expect(getComplementaryUnit("m", "area")).toBe("m");
     expect(getComplementaryUnit("km", "area")).toBe("km");
-    expect(getComplementaryUnit("ch", "area")).toBe("ft");
+    // chains and rods pair with acres (surveyor convention).
+    expect(getComplementaryUnit("ch", "area")).toBe("a");
+    expect(getComplementaryUnit("r", "area")).toBe("a");
   });
 
   test("maps an area unit to its preferred length unit", () => {
