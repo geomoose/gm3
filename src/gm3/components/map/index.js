@@ -423,10 +423,11 @@ class Map extends React.Component {
     this.configureSelectionLayer();
 
     // Measure annotations are on by default (opt-out).  Honor a deployer's
-    //  config.map.showMeasureLabels override here -- the map mounts once, so
+    //  config.measure.showMeasureLabels override here -- it sits alongside the
+    //  other measure options (areaUnits, lengthUnits).  The map mounts once, so
     //  this seeds the initial state without clobbering later user toggles.
-    if (typeof this.props.config.showMeasureLabels === "boolean") {
-      this.props.setShowMeasureLabels(this.props.config.showMeasureLabels);
+    if (typeof this.props.measureConfig.showMeasureLabels === "boolean") {
+      this.props.setShowMeasureLabels(this.props.measureConfig.showMeasureLabels);
     }
 
     const viewParams = {};
@@ -987,6 +988,7 @@ function mapState(state) {
     mapView: state.map,
     serviceName: state.query.serviceName,
     config: state.config.map || {},
+    measureConfig: state.config.measure || {},
     selectionStyle: state.config.selectionStyle || {},
     // resolve this to meters
     selectionBuffer: util.convertLength(

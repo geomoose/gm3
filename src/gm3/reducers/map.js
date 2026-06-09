@@ -55,7 +55,7 @@ const defaultState = {
   editTools: [],
   projection: "EPSG:3857",
   // on-map measure annotations (rendering concerns).  On by default; a
-  //  deployer can opt out via config.map.showMeasureLabels = false.
+  //  deployer can opt out via config.measure.showMeasureLabels = false.
   showMeasureLabels: true,
   measureLengthUnits: "ft",
   measureAreaUnits: "ft",

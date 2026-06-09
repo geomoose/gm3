@@ -29,8 +29,10 @@ import { useTranslation } from "react-i18next";
 //   - "area":   which area unit to use for a given length unit
 //   - "length": which length unit to use for a given area unit
 const COMPLEMENTARY_UNIT = {
-  // length unit -> area unit
-  area: { m: "m", km: "km", ft: "ft", mi: "mi", ch: "ft" },
+  // length unit -> area unit.  Chains and rods pair with acres: surveyors
+  //  (the chain/rod users) expect acres, and square rods are not a selectable
+  //  area unit, which would otherwise leave the area with no unit chosen.
+  area: { m: "m", km: "km", ft: "ft", mi: "mi", ch: "a", r: "a" },
   // area unit -> length unit
   length: { m: "m", km: "km", ft: "ft", mi: "mi", a: "ft", h: "m" },
 };
