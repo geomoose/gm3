@@ -24,13 +24,16 @@
 
 import intersects from "@turf/boolean-intersects";
 
+// RegExp.escape is not available until ES2025
+const escapeRegExp = (literal) => literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // converts the SQL-style wild cards of '%' and '_' to their equivalent
 //  reg-exp expressions and compiles them
 const likeSQLtoRegExp = (pattern, ignoreCase = false) => {
   const parts = [];
 
   const addLiteral = () => {
-    parts.push(RegExp.escape(currentLiteral));
+    parts.push(escapeRegExp(currentLiteral));
     currentLiteral = "";
   };
 
@@ -71,7 +74,12 @@ const likeSQLtoRegExp = (pattern, ignoreCase = false) => {
 export const FILTER_FUNCTIONS = {
   like: (filter, ignoreCase = false) => {
     const re = likeSQLtoRegExp(filter.value, ignoreCase);
-    return (f) => f.properties[filter.name]?.match(re) !== null;
+    return (f) => {
+      const value = f.properties[filter.name];
+      // null values never match a like, this also coerces
+      //  numbers to strings so they do not throw on .match
+      return value !== null && value !== undefined && re.test(String(value));
+    };
   },
   ilike: (filter) => {
     return FILTER_FUNCTIONS.like(filter, true);
@@ -81,17 +89,44 @@ export const FILTER_FUNCTIONS = {
     return (f) => f.properties[filter.name] == filter.value;
   },
   ge: (filter) => {
-    return (f) => filter.value >= f.properties[filter.name];
+    return (f) => f.properties[filter.name] >= filter.value;
   },
   gt: (filter) => {
-    return (f) => filter.value > f.properties[filter.name];
+    return (f) => f.properties[filter.name] > filter.value;
   },
   le: (filter) => {
-    return (f) => filter.value <= f.properties[filter.name];
+    return (f) => f.properties[filter.name] <= filter.value;
   },
   lt: (filter) => {
-    return (f) => filter.value < f.properties[filter.name];
+    return (f) => f.properties[filter.name] < filter.value;
   },
+};
+
+/** Convert a query field definition into a feature filter function.
+ *
+ *  Fields can either be a simple {comparitor, name, value} definition
+ *  or a nested ["and"/"or", ...fields] array as created by services
+ *  using prepareFields.
+ *
+ *  @returns A filter function or null when the definition is unsupported.
+ */
+export const buildFilterFunction = (field) => {
+  if (Array.isArray(field)) {
+    const [operator, ...subFields] = field;
+    const subFilters = subFields.map(buildFilterFunction).filter((fn) => fn !== null);
+    if (operator === "and") {
+      return (f) => subFilters.every((filterFn) => filterFn(f));
+    } else if (operator === "or") {
+      return (f) => subFilters.some((filterFn) => filterFn(f));
+    }
+    console.warn(`[gm3:query] Unsupported filter operator: ${operator}`);
+    return null;
+  }
+  if (field.comparitor in FILTER_FUNCTIONS) {
+    return FILTER_FUNCTIONS[field.comparitor](field);
+  }
+  console.warn(`[gm3:query] Unsupported filter comparitor: ${field.comparitor}`);
+  return null;
 };
 
 export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
@@ -106,8 +141,9 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
   }
 
   query.fields?.forEach((field) => {
-    if (field.comparitor in FILTER_FUNCTIONS) {
-      filters.push(FILTER_FUNCTIONS[field.comparitor](field));
+    const filterFn = buildFilterFunction(field);
+    if (filterFn !== null) {
+      filters.push(filterFn);
     }
   });
 

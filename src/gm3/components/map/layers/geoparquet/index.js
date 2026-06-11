@@ -24,32 +24,35 @@
 
 import GeoJSON from "ol/format/GeoJSON";
 
-export const createGeoParquetLoader = (srcName, url) => {
-  let parquetWorker;
+/** Load a GeoParquet file in a worker and return its contents
+ *  as OpenLayers features in the map projection.
+ *
+ *  @param srcName The name of the map-source.
+ *  @param url     The URL of the GeoParquet file.
+ *
+ *  @returns A Promise resolving to a list of OpenLayers features.
+ */
+export const fetchGeoParquetFeatures = (srcName, url) =>
+  new Promise((resolve, reject) => {
+    const parquetWorker = new Worker(
+      new URL(/* webpackChunkName: "parquet-worker" */ "./worker.js", import.meta.url)
+    );
 
-  return async function (extent, resolution, projection, success) {
-    if (!parquetWorker) {
-      parquetWorker = new Worker(
-        new URL(/* webpackChunkName: "parquet-worker" */ "./worker.js", import.meta.url)
-      );
-    }
+    const settle = (fn, value) => {
+      parquetWorker.terminate();
+      fn(value);
+    };
 
-    parquetWorker.postMessage({
-      type: "LOAD_PARQUET",
-      srcName,
-      url,
-    });
-
-    parquetWorker.addEventListener("error", (err) => {
-      console.error("error loading parquet data=", srcName, err);
-    });
+    parquetWorker.addEventListener("error", (err) => settle(reject, err));
 
     parquetWorker.addEventListener("message", (event) => {
       const eventData = event.data;
-      if (eventData.type === "FEATURES_READY" && eventData.srcName === srcName) {
-        // silently remove features
-        this.clear(true);
-        this.addFeatures(
+      if (eventData.srcName !== srcName) {
+        return;
+      }
+      if (eventData.type === "FEATURES_READY") {
+        settle(
+          resolve,
           new GeoJSON({
             featureProjection: "EPSG:3857",
             dataProjection: "EPSG:4326",
@@ -70,8 +73,32 @@ export const createGeoParquetLoader = (srcName, url) => {
               return feature;
             })
         );
-        success();
+      } else if (eventData.type === "FEATURES_ERROR") {
+        settle(reject, new Error(eventData.message));
       }
     });
+
+    parquetWorker.postMessage({
+      type: "LOAD_PARQUET",
+      srcName,
+      url,
+    });
+  });
+
+export const createGeoParquetLoader = (srcName, url) => {
+  return function (extent, resolution, projection, success, failure) {
+    fetchGeoParquetFeatures(srcName, url)
+      .then((features) => {
+        // silently remove features
+        this.clear(true);
+        this.addFeatures(features);
+        success(features);
+      })
+      .catch((err) => {
+        console.error("error loading parquet data=", srcName, err);
+        if (failure) {
+          failure();
+        }
+      });
   };
 };
