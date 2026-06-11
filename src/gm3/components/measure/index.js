@@ -29,7 +29,7 @@ import { getArea } from "ol/sphere";
 
 import DrawTool from "../drawTool";
 import { updateSketchGeometry } from "../../actions/cursor";
-import { changeTool, clearSelectionFeatures } from "../../actions/map";
+import { changeTool, clearSelectionFeatures, setMeasureUnits } from "../../actions/map";
 import { clearFeatures, removeFeature, saveFeature } from "../../actions/mapSource";
 import { PolygonIcon } from "../polygon-icon";
 import { LineIcon } from "../line-icon";
@@ -39,15 +39,12 @@ import * as util from "../../util";
 import { projectFeatures } from "../../util";
 
 import { toLonLat } from "ol/proj";
-import { UnitOption } from "./unit";
+import { UnitOption, getComplementaryUnit } from "./unit";
 
 import CoordinateDisplay from "../coordinate-display";
 
-import { getSegmentInfo, normalizeGeometry, deconstructPolygon } from "./calc";
+import { getSegmentInfo, deconstructPolygon } from "./calc";
 import { colorizeFromIndex } from "./colorize";
-
-const LENGTH_KEY = "gm3:length-units";
-const AREA_KEY = "gm3:area-units";
 
 const hasSqLabel = (unit) => unit !== "a" && unit !== "h";
 
@@ -66,13 +63,11 @@ export class MeasureTool extends Component {
   constructor(props) {
     super(props);
 
-    // look for unit measurements from local storage.
-    const savedLengthUnits = localStorage.getItem(LENGTH_KEY) || "ft";
-    const savedAreaUnits = localStorage.getItem(AREA_KEY) || "ft";
-
+    // The selected units live in local component state, seeded from the map's
+    //  current measure units (or an optional initialUnits prop override).
     this.state = {
-      lengthUnits: this.props.initialUnits ? this.props.initialUnits : savedLengthUnits,
-      areaUnits: this.props.initialUnits ? this.props.initialUnits : savedAreaUnits,
+      lengthUnits: this.props.initialUnits || this.props.map.measureLengthUnits,
+      areaUnits: this.props.initialUnits || this.props.map.measureAreaUnits,
     };
 
     // localize all of the ordinals
@@ -89,6 +84,12 @@ export class MeasureTool extends Component {
     // change the tool to be the default and target the measure source
     this.props.updateSketchGeometry(null);
     this.props.changeTool(this.props.defaultTool, util.getMapSourceName(this.props.targetLayer));
+    // mirror the initial unit selection into the map state so the on-map
+    //  labels render in the matching units.
+    this.props.setMeasureUnits({
+      measureLengthUnits: this.state.lengthUnits,
+      measureAreaUnits: this.state.areaUnits,
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -107,6 +108,34 @@ export class MeasureTool extends Component {
         },
       };
       this.props.saveFeature(this.props.targetLayer, nextFeature);
+    }
+
+    // A feature was selected from another layer (the "Select" tool). Copy it
+    //  into the measure source so it becomes a first-class measure feature:
+    //  it picks up the measure-layer styling (per-segment and area
+    //  annotations for Polygon/MultiPolygon), a colorized swatch, a per-
+    //  feature remove button, and is cleared by "Clear measure features".
+    //  Then drop the ephemeral selection so it is not drawn twice.
+    const selected = this.props.map.selectionFeatures;
+    if (selected.length > 0 && selected !== prevProps.map.selectionFeatures) {
+      const base = this.props.measureSource.features.length;
+      selected.forEach((feature, i) => {
+        // drop the source layer's id so the measure source assigns its own --
+        //  otherwise saveFeature treats the copy as an update to a feature that
+        //  does not exist in the measure source and never adds it.
+        const { _uuid, ...properties } = feature.properties || {};
+        this.props.saveFeature(this.props.targetLayer, {
+          type: "Feature",
+          // selection geometry is already in the map projection (EPSG:3857),
+          //  the same projection the measure source stores.
+          geometry: feature.geometry,
+          properties: {
+            ...properties,
+            ...colorizeFromIndex(base + i),
+          },
+        });
+      });
+      this.props.clearSelectionFeatures();
     }
   }
 
@@ -167,11 +196,13 @@ export class MeasureTool extends Component {
               <th>
                 {this.props.t("measure-segment-length")} (
                 {this.props.t(`units-${this.state.lengthUnits}`)})
-                <RemoveFeatureButton
-                  removeFeature={this.props.removeFeature}
-                  targetLayer={this.props.targetLayer}
-                  properties={properties}
-                />
+                {properties && (
+                  <RemoveFeatureButton
+                    removeFeature={this.props.removeFeature}
+                    targetLayer={this.props.targetLayer}
+                    properties={properties}
+                  />
+                )}
               </th>
               <th>{this.props.t("measure-bearing", "Bearing")}</th>
             </tr>
@@ -286,6 +317,25 @@ export class MeasureTool extends Component {
         live,
         properties
       );
+    } else if (g.type === "MultiLineString") {
+      // getSegmentInfo only understands a single LineString, so split the
+      //  multi-geometry into its parts and render a table per line.  The
+      //  remove button is attached to the first part only so the whole
+      //  feature is not offered for removal once per line.
+      const lonLat = projectFeatures([g], "EPSG:3857", "EPSG:4326")[0].geometry;
+      return (
+        <React.Fragment>
+          {lonLat.coordinates.map((line, idx) => (
+            <React.Fragment key={`part-${idx}`}>
+              {this.renderSegments(
+                { type: "LineString", coordinates: line },
+                live,
+                idx === 0 ? properties : undefined
+              )}
+            </React.Fragment>
+          ))}
+        </React.Fragment>
+      );
     } else if (g.type === "Polygon" || g.type === "MultiPolygon") {
       // assume polygon
       return this.renderArea(g, live, properties);
@@ -295,11 +345,10 @@ export class MeasureTool extends Component {
   }
 
   renderMeasureOutput() {
-    let g = this.props.cursor.sketchGeometry;
-
-    if (g === null && this.props.map.selectionFeatures.length > 0) {
-      g = normalizeGeometry(this.props.map.selectionFeatures);
-    }
+    // features selected from another layer are copied into the measure source
+    //  (see componentDidUpdate), so only the live sketch needs special casing
+    //  here -- everything else renders from measureSource.features below.
+    const g = this.props.cursor.sketchGeometry;
 
     const measureFeatures = this.props.measureSource.features;
 
@@ -318,20 +367,41 @@ export class MeasureTool extends Component {
     );
   }
 
-  changeUnits(value) {
-    this.setState({ units: value });
+  /* Change the length units, keeping the area units in the same measurement
+   *  system so lengths and areas never mix metric and imperial. */
+  setLengthUnits(lengthUnits) {
+    const areaUnits = getComplementaryUnit(lengthUnits, "area");
+    this.setState({ lengthUnits, areaUnits });
+    this.props.setMeasureUnits({
+      measureLengthUnits: lengthUnits,
+      measureAreaUnits: areaUnits,
+    });
+  }
+
+  /* Change the area units, keeping the length units in the same measurement
+   *  system (see setLengthUnits). */
+  setAreaUnits(areaUnits) {
+    const lengthUnits = getComplementaryUnit(areaUnits, "length");
+    this.setState({ areaUnits, lengthUnits });
+    this.props.setMeasureUnits({
+      measureAreaUnits: areaUnits,
+      measureLengthUnits: lengthUnits,
+    });
   }
 
   renderUnitOptions() {
     const units = this.props.t("units");
     let measurementType = this.props.map.interactionType;
     if (measurementType === "Select") {
-      if (this.props.map.selectionFeatures.length > 0) {
-        measurementType = this.props.map.selectionFeatures[0].geometry.type;
+      // the selected feature is copied into the measure source, so base the
+      //  unit options on the most recently measured feature's geometry.
+      const measureFeatures = this.props.measureSource.features;
+      if (measureFeatures.length > 0) {
+        measurementType = measureFeatures[measureFeatures.length - 1].geometry.type;
       }
     }
 
-    if (measurementType === "LineString") {
+    if (measurementType && measurementType.indexOf("LineString") >= 0) {
       return (
         <div className="measure-units">
           <b>{units}:</b>
@@ -340,10 +410,7 @@ export class MeasureTool extends Component {
               key={unit}
               unit={unit}
               selected={unit === this.state.lengthUnits}
-              onClick={() => {
-                localStorage.setItem(LENGTH_KEY, unit);
-                this.setState({ lengthUnits: unit });
-              }}
+              onClick={() => this.setLengthUnits(unit)}
             />
           ))}
         </div>
@@ -358,10 +425,7 @@ export class MeasureTool extends Component {
               unit={unit}
               isSq={hasSqLabel(unit)}
               selected={unit === this.state.areaUnits}
-              onClick={() => {
-                localStorage.setItem(AREA_KEY, unit);
-                this.setState({ areaUnits: unit });
-              }}
+              onClick={() => this.setAreaUnits(unit)}
             />
           ))}
         </div>
@@ -425,6 +489,7 @@ const mapDispatchToProps = {
   saveFeature,
   clearSelectionFeatures,
   updateSketchGeometry,
+  setMeasureUnits,
 };
 
 export default connect(mapToProps, mapDispatchToProps)(withTranslation()(MeasureTool));

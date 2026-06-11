@@ -68,6 +68,7 @@ import {
   createLayer as createMeasureLayer,
   updateLayer as updateMeasureLayer,
 } from "./layers/measure";
+import MapButton from "./button";
 
 import { wfsGetFeatures } from "./layers/wfs";
 import { EDIT_LAYER_NAME } from "../../defaults";
@@ -135,6 +136,23 @@ class Map extends React.Component {
 
     // this is used when a feature isn't finished yet.
     this.sketchFeature = null;
+
+    // bound so it can be handed to the OL style functions and read the
+    //  latest config on every render.
+    this.getMeasureLabelOptions = this.getMeasureLabelOptions.bind(this);
+  }
+
+  /** Current on-map measure-label options, read live from the map state.
+   *
+   *  @returns {Object} `{ enabled, lengthUnits, areaUnits }`
+   */
+  getMeasureLabelOptions() {
+    const mapView = this.props.mapView;
+    return {
+      enabled: mapView.showMeasureLabels === true,
+      lengthUnits: mapView.measureLengthUnits || "ft",
+      areaUnits: mapView.measureAreaUnits || "ft",
+    };
   }
 
   /** Update a source's important bits.
@@ -156,7 +174,7 @@ class Map extends React.Component {
         agsLayer.updateLayer(this.map, olLayer, mapSource);
         break;
       case "measure":
-        updateMeasureLayer(this.map, olLayer, mapSource);
+        updateMeasureLayer(this.map, olLayer, mapSource, undefined, this.getMeasureLabelOptions);
         break;
       case "vector":
       case "wfs":
@@ -196,7 +214,7 @@ class Map extends React.Component {
       case "ags":
         return agsLayer.createLayer(mapSource);
       case "measure":
-        return createMeasureLayer(mapSource);
+        return createMeasureLayer(mapSource, this.getMeasureLabelOptions);
       case "vector":
       case "wfs":
       case "ags-vector":
@@ -403,6 +421,14 @@ class Map extends React.Component {
   componentDidMount() {
     // create the selection layer.
     this.configureSelectionLayer();
+
+    // Measure annotations are on by default (opt-out).  Honor a deployer's
+    //  config.measure.showMeasureLabels override here -- it sits alongside the
+    //  other measure options (areaUnits, lengthUnits).  The map mounts once, so
+    //  this seeds the initial state without clobbering later user toggles.
+    if (typeof this.props.measureConfig.showMeasureLabels === "boolean") {
+      this.props.setShowMeasureLabels(this.props.measureConfig.showMeasureLabels);
+    }
 
     const viewParams = {};
 
@@ -764,6 +790,28 @@ class Map extends React.Component {
    *  cycle where the state can get modified.
    */
   componentDidUpdate(prevProps) {
+    // When the measure label options change (the toggle or the selected
+    //  units), force the measure layer to restyle.  These changes do not
+    //  bump the layer's featuresVersion, so a manual redraw is needed.
+    const mapView = this.props.mapView;
+    const prevMapView = prevProps.mapView;
+    if (
+      mapView.showMeasureLabels !== prevMapView.showMeasureLabels ||
+      mapView.measureLengthUnits !== prevMapView.measureLengthUnits ||
+      mapView.measureAreaUnits !== prevMapView.measureAreaUnits
+    ) {
+      const measureLayer = this.olLayers["measure"];
+      if (measureLayer) {
+        updateMeasureLayer(
+          this.map,
+          measureLayer,
+          this.props.mapSources["measure"],
+          undefined,
+          this.getMeasureLabelOptions
+        );
+      }
+    }
+
     // extent takes precedent over the regular map-view,
     if (this.props.mapView.extent) {
       this.zoomToExtent(this.props.mapView.extent);
@@ -865,6 +913,14 @@ class Map extends React.Component {
 
     const enableZoomJump = config.enableZoomJump === true;
 
+    // the measure-label toggle is relevant when the measure service is active
+    //  (rather than the active draw source, which clears on "stop") or while
+    //  there are measure features lingering on the map.
+    const measureSource = this.props.mapSources.measure;
+    const measuring =
+      this.props.serviceName === "measure" || (measureSource && measureSource.features.length > 0);
+    const showMeasureLabels = this.props.mapView.showMeasureLabels === true;
+
     return (
       <div
         className="map"
@@ -905,7 +961,16 @@ class Map extends React.Component {
             showZoom={config.showZoom === true}
             setEditPath={this.props.setEditPath}
             setEditTools={this.props.setEditTools}
-          />
+          >
+            {measuring && (
+              <MapButton
+                label={showMeasureLabels ? "measure-hide-labels" : "measure-show-labels"}
+                icon="icon labels"
+                active={showMeasureLabels}
+                onClick={() => this.props.setShowMeasureLabels(!showMeasureLabels)}
+              />
+            )}
+          </ContextControls>
         </div>
       </div>
     );
@@ -921,7 +986,9 @@ function mapState(state) {
   return {
     mapSources: state.mapSources,
     mapView: state.map,
+    serviceName: state.query.serviceName,
     config: state.config.map || {},
+    measureConfig: state.config.measure || {},
     selectionStyle: state.config.selectionStyle || {},
     // resolve this to meters
     selectionBuffer: util.convertLength(
@@ -958,6 +1025,7 @@ function mapDispatch(dispatch) {
       dispatch(mapSourceActions.saveFeature(path, feature));
     },
     setZoom: (z) => dispatch(mapActions.setView({ zoom: z })),
+    setShowMeasureLabels: (show) => dispatch(mapActions.setShowMeasureLabels(show)),
     removeFeature: (path, feature) => {
       dispatch(removeFeature(path, feature));
     },
