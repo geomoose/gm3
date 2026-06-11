@@ -36,6 +36,7 @@ import { getHighlightResults } from "../../selectors/query";
 
 import * as util from "../../util";
 import * as jsts from "../../jsts";
+import { getSource as getStoredSource, unregisterSource } from "../../featureStore";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
 import VectorSource from "ol/source/Vector";
@@ -202,11 +203,13 @@ class Map extends React.Component {
       case "wfs":
       case "ags-vector":
         return vectorLayer.createLayer(mapSource);
-      // geojson and geoparquet layers become queryable with the setFeatures
-      //  parameter set.
+      // geojson and geoparquet layers become queryable by
+      //  registering their source in the feature store. the
+      //  print map skips this so it does not displace the
+      //  sources registered by the main map.
       case "geojson":
       case "geoparquet":
-        return vectorLayer.createLayer(mapSource, this.props.setFeatures);
+        return vectorLayer.createLayer(mapSource, this.props.printOnly !== true);
       case "bing":
         return bingLayer.createLayer(mapSource);
       case "cog":
@@ -507,6 +510,13 @@ class Map extends React.Component {
       this.map.dispose();
       this.map = null;
     }
+
+    // release any sources this map placed in the feature store
+    Object.keys(this.olLayers).forEach((name) => {
+      if (getStoredSource(name) === this.olLayers[name]?.getSource()) {
+        unregisterSource(name);
+      }
+    });
 
     this.olLayers = {};
     this.selectionLayer = null;

@@ -23,6 +23,11 @@
  */
 
 import intersects from "@turf/boolean-intersects";
+import GeoJSONFormat from "ol/format/GeoJSON";
+
+import { getSource } from "../featureStore";
+
+const GEOJSON_FORMAT = new GeoJSONFormat();
 
 // RegExp.escape is not available until ES2025
 const escapeRegExp = (literal) => literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -130,34 +135,59 @@ export const buildFilterFunction = (field) => {
 };
 
 export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
-  const filters = [];
-
   // if a selection is available, use it as a geometry filter
   const selection = query.selection?.[0];
-  if (selection) {
-    filters.push((feature) => {
-      return intersects(selection, feature.geometry);
-    });
-  }
 
+  const fieldFilters = [];
   query.fields?.forEach((field) => {
     const filterFn = buildFilterFunction(field);
     if (filterFn !== null) {
-      filters.push(filterFn);
+      fieldFilters.push(filterFn);
     }
   });
 
   // return an empty set if no filters are set.
-  if (filters.length < 1) {
+  if (!selection && fieldFilters.length < 1) {
     return {
       layer,
       features: [],
     };
   }
 
-  // iterate through the features, applying each to the list
+  // when the features live in an OpenLayers source, query them
+  //  in place instead of from a copy in the store
+  const olSource = getSource(mapSource.name);
+  if (olSource !== null) {
+    // the spatial index narrows the candidates down to those
+    //  whose extents intersect the selection's extent
+    const candidates = selection
+      ? olSource.getFeaturesInExtent(GEOJSON_FORMAT.readGeometry(selection.geometry).getExtent())
+      : olSource.getFeatures();
+
+    const features = [];
+    for (const olFeature of candidates) {
+      const properties = olFeature.getProperties();
+      // evaluate the attribute filters before paying for
+      //  the GeoJSON conversion and precise intersection test
+      if (fieldFilters.every((filterFn) => filterFn({ properties }))) {
+        const feature = GEOJSON_FORMAT.writeFeatureObject(olFeature);
+        if (!selection || intersects(selection, feature.geometry)) {
+          features.push(feature);
+        }
+      }
+    }
+    return {
+      layer,
+      features,
+    };
+  }
+
+  // fall back to features kept in the store (e.g. "vector" sources)
   let features = mapSource.features || [];
-  filters.forEach((filterFn) => {
+  if (selection) {
+    features = features.filter((feature) => intersects(selection, feature.geometry));
+  }
+  fieldFilters.forEach((filterFn) => {
     features = features.filter(filterFn);
   });
   return {
