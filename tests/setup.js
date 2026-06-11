@@ -36,6 +36,9 @@ window.ResizeObserver = jest.fn().mockImplementation(() => ({
 
 window.Worker = jest.fn().mockImplementation(() => ({
   postMessage: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  terminate: jest.fn(),
 }));
 
 // add an i18n setup

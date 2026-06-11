@@ -31,10 +31,14 @@ const loadParquet = async (srcName, url) => {
   const metadata = await parquetMetadataAsync(file);
   const geomColumns = metadata.schema.filter((col) => col?.logical_type?.type === "GEOMETRY");
 
-  if (geomColumns === 0) {
-    console.error(`[gm3:geoparquet] Failed to find any geometry columns for ${srcName}`);
+  if (geomColumns.length === 0) {
+    postMessage({
+      type: "FEATURES_ERROR",
+      srcName,
+      message: `Failed to find any geometry columns for ${srcName}`,
+    });
     return;
-  } else if (geomColumns > 1) {
+  } else if (geomColumns.length > 1) {
     console.warn(
       `[gm3:geoparquet] Multiple geometry columns found for ${srcName}, using the first.`
     );
@@ -68,6 +72,12 @@ self.addEventListener("message", (event) => {
   const eventData = event.data;
   if (eventData.type === "LOAD_PARQUET") {
     const { srcName, url } = eventData;
-    loadParquet(srcName, url);
+    loadParquet(srcName, url).catch((err) => {
+      postMessage({
+        type: "FEATURES_ERROR",
+        srcName,
+        message: `Failed to load ${srcName}: ${err?.message || err}`,
+      });
+    });
   }
 });
