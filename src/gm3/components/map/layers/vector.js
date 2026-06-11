@@ -363,7 +363,7 @@ export function createLayer(mapSource, registerForQuery = false, styleLayer = ap
   // data-driven layers can be very large, rendering them to an
   //  image keeps pan and zoom from re-rendering every feature
   //  on each frame
-  const isImageLayer = mapSource.type === "geojson" || mapSource.type === "geoparquet";
+  const isImageLayer = mapSource.type === "geoparquet";
   const vectorLayer = isImageLayer ? new VectorImageLayer(opts) : new VectorLayer(opts);
   styleLayer(vectorLayer, mapSource);
 
