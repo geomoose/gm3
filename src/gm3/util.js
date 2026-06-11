@@ -26,6 +26,8 @@ import Request from "reqwest";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
 
+import { getSource as getStoredSource } from "./featureStore";
+
 import { featureFilter as createFilter } from "@mapbox/mapbox-gl-style-spec";
 
 /** Collection of handy functions
@@ -442,6 +444,13 @@ export function getVersion() {
  * @returns Array containing [minx,miny,maxx,maxy]
  */
 export function getFeaturesExtent(mapSource) {
+  // features kept in the feature store carry their own
+  //  spatial index which already knows the extent
+  const olSource = getStoredSource(mapSource.name);
+  if (olSource !== null && olSource.getFeatures().length > 0) {
+    return olSource.getExtent().slice();
+  }
+
   const bounds = [null, null, null, null];
 
   const min = function (x, y) {

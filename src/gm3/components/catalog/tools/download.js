@@ -36,6 +36,7 @@ import { Tool } from "../tools";
 import Modal from "../../modal";
 
 import { matchFeatures } from "../../../util";
+import { getSource as getStoredSource } from "../../../featureStore";
 
 function doDownload(features, downloadFormat) {
   let filename = "geomoose_" + new Date().getTime();
@@ -80,6 +81,14 @@ function onDownload(src, mapSource, downloadFormat) {
   // find the layer and check to see if it has features,
   //  if features is undefined, then just return an empty collection.
   let features = mapSource?.features || [];
+
+  // data-driven layers keep their features in the feature store
+  if (features.length === 0) {
+    const olSource = getStoredSource(mapSource.name);
+    if (olSource !== null) {
+      features = new GeoJSONFormat().writeFeaturesObject(olSource.getFeatures()).features;
+    }
+  }
 
   // check to see if there is a filter on the specified layer
   let filter = null;

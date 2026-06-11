@@ -77,7 +77,11 @@ const applyMeasureStyle = (layer, getLabelOptions) => {
 };
 
 export const createLayer = (mapSource, getLabelOptions) => {
-  return createVectorLayer(mapSource, (layer) => applyMeasureStyle(layer, getLabelOptions));
+  // the measure layer is never registered for query, and its style needs
+  //  the live label options (see updateLayer).
+  return createVectorLayer(mapSource, false, (layer) =>
+    applyMeasureStyle(layer, getLabelOptions)
+  );
 };
 
 export const updateLayer = (map, layer, mapSource, mapTool, getLabelOptions) => {

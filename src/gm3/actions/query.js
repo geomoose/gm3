@@ -1,11 +1,13 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import GeoJSONFormat from "ol/format/GeoJSON";
+import VectorSource from "ol/source/Vector";
 
 import { agsFeatureQuery } from "../query/ags";
 import { vectorFeatureQuery } from "../query/vector";
 import { wfsGetFeatureQuery } from "../query/wfs";
 import { wmsGetFeatureInfoQuery } from "../query/wms";
 import { fetchGeoParquetFeatures } from "../components/map/layers/geoparquet";
+import { getSource, registerSource } from "../featureStore";
 import { getMapSourceName } from "../util";
 import { getQueryResults } from "../selectors/query";
 
@@ -104,34 +106,37 @@ export const removeFilter = createAction("query/remove-filter");
  */
 export const setHotFilter = createAction("query/set-hot-filter");
 
+// loads in flight from ensureMapSourceFeatures, keyed by
+//  map-source name, to keep concurrent queries from
+//  fetching the same data twice
+const pendingFeatureLoads = {};
+
 /** Ensure a vector-style map-source has its features available
- *  in the store. Sources whose layers have never been turned on
- *  will not have loaded their features yet, making them
- *  un-queryable without this step.
+ *  in the feature store. Sources whose layers have never been
+ *  turned on will not have loaded their features yet, making
+ *  them un-queryable without this step.
  *
- *  @returns A Promise resolving to a map-source with features.
+ *  @returns A Promise resolving to the map-source once features are loaded.
  */
-export const ensureMapSourceFeatures = (mapSource, dispatch) => {
-  if (mapSource.features?.length > 0) {
+export const ensureMapSourceFeatures = (mapSource) => {
+  if (getSource(mapSource.name) !== null || mapSource.features?.length > 0) {
     return Promise.resolve(mapSource);
+  }
+  if (pendingFeatureLoads[mapSource.name]) {
+    return pendingFeatureLoads[mapSource.name];
   }
 
   let loadFeatures = null;
   if (mapSource.type === "geoparquet") {
-    loadFeatures = fetchGeoParquetFeatures(mapSource.name, mapSource.urls[0]).then(
-      (olFeatures) => new GeoJSONFormat().writeFeaturesObject(olFeatures).features
-    );
+    loadFeatures = fetchGeoParquetFeatures(mapSource.name, mapSource.urls[0]);
   } else if (mapSource.type === "geojson") {
     loadFeatures = fetch(mapSource.urls[0])
       .then((r) => r.json())
-      .then(
-        (geojson) =>
-          new GeoJSONFormat().writeFeaturesObject(
-            new GeoJSONFormat({
-              dataProjection: mapSource.params?.crs || "EPSG:4326",
-              featureProjection: "EPSG:3857",
-            }).readFeatures(geojson)
-          ).features
+      .then((geojson) =>
+        new GeoJSONFormat({
+          dataProjection: mapSource.params?.crs || "EPSG:4326",
+          featureProjection: "EPSG:3857",
+        }).readFeatures(geojson)
       );
   }
 
@@ -139,18 +144,21 @@ export const ensureMapSourceFeatures = (mapSource, dispatch) => {
     return Promise.resolve(mapSource);
   }
 
-  return loadFeatures
-    .then((features) => {
-      // mirror the features into the store, silent prevents
-      //  triggering a map redraw
-      dispatch(clearFeatures(mapSource.name, true));
-      dispatch(addFeatures(mapSource.name, features, false, true));
-      return { ...mapSource, features };
+  pendingFeatureLoads[mapSource.name] = loadFeatures
+    .then((olFeatures) => {
+      const source = new VectorSource();
+      source.addFeatures(olFeatures);
+      registerSource(mapSource.name, source);
+      return mapSource;
     })
     .catch((err) => {
       console.error(`Failed to load features for ${mapSource.name}`, err);
       return mapSource;
+    })
+    .finally(() => {
+      delete pendingFeatureLoads[mapSource.name];
     });
+  return pendingFeatureLoads[mapSource.name];
 };
 
 export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, dispatch }) => {
@@ -177,7 +185,7 @@ export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, di
       case "geojson":
       case "vector":
       case "geoparquet":
-        return ensureMapSourceFeatures(mapSource, dispatch).then((source) =>
+        return ensureMapSourceFeatures(mapSource).then((source) =>
           vectorFeatureQuery(layer, state.map, source, queryDef)
         );
       default:
