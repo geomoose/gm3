@@ -63,7 +63,7 @@ var BasemapToggle = {
             //  selected.
             let active = 0;
             for (let i = 0, ii = layers.length; i < ii; i++) {
-                if (layers.path !== '' && visibleLayers.indexOf(layers[i].path) >= 0) {
+                if (layers[i].path !== '' && visibleLayers.indexOf(layers[i].path) >= 0) {
                     active = i;
                     break;
                 }
