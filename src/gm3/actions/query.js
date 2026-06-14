@@ -1,9 +1,13 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import GeoJSONFormat from "ol/format/GeoJSON";
+import VectorSource from "ol/source/Vector";
 
 import { agsFeatureQuery } from "../query/ags";
 import { vectorFeatureQuery } from "../query/vector";
 import { wfsGetFeatureQuery } from "../query/wfs";
 import { wmsGetFeatureInfoQuery } from "../query/wms";
+import { fetchGeoParquetFeatures } from "../components/map/layers/geoparquet";
+import { getSource, registerSource } from "../featureStore";
 import { getMapSourceName } from "../util";
 import { getQueryResults } from "../selectors/query";
 
@@ -102,6 +106,61 @@ export const removeFilter = createAction("query/remove-filter");
  */
 export const setHotFilter = createAction("query/set-hot-filter");
 
+// loads in flight from ensureMapSourceFeatures, keyed by
+//  map-source name, to keep concurrent queries from
+//  fetching the same data twice
+const pendingFeatureLoads = {};
+
+/** Ensure a vector-style map-source has its features available
+ *  in the feature store. Sources whose layers have never been
+ *  turned on will not have loaded their features yet, making
+ *  them un-queryable without this step.
+ *
+ *  @returns A Promise resolving to the map-source once features are loaded.
+ */
+export const ensureMapSourceFeatures = (mapSource) => {
+  if (getSource(mapSource.name) !== null || mapSource.features?.length > 0) {
+    return Promise.resolve(mapSource);
+  }
+  if (pendingFeatureLoads[mapSource.name]) {
+    return pendingFeatureLoads[mapSource.name];
+  }
+
+  let loadFeatures = null;
+  if (mapSource.type === "geoparquet") {
+    loadFeatures = fetchGeoParquetFeatures(mapSource.name, mapSource.urls[0]);
+  } else if (mapSource.type === "geojson") {
+    loadFeatures = fetch(mapSource.urls[0])
+      .then((r) => r.json())
+      .then((geojson) =>
+        new GeoJSONFormat({
+          dataProjection: mapSource.params?.crs || "EPSG:4326",
+          featureProjection: "EPSG:3857",
+        }).readFeatures(geojson)
+      );
+  }
+
+  if (loadFeatures === null) {
+    return Promise.resolve(mapSource);
+  }
+
+  pendingFeatureLoads[mapSource.name] = loadFeatures
+    .then((olFeatures) => {
+      const source = new VectorSource();
+      source.addFeatures(olFeatures);
+      registerSource(mapSource.name, source);
+      return mapSource;
+    })
+    .catch((err) => {
+      console.error(`Failed to load features for ${mapSource.name}`, err);
+      return mapSource;
+    })
+    .finally(() => {
+      delete pendingFeatureLoads[mapSource.name];
+    });
+  return pendingFeatureLoads[mapSource.name];
+};
+
 export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, dispatch }) => {
   const state = getState();
   const queryDef = state.query.query;
@@ -125,7 +184,10 @@ export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, di
         return agsFeatureQuery(layer, state.map, mapSource, queryDef);
       case "geojson":
       case "vector":
-        return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
+      case "geoparquet":
+        return ensureMapSourceFeatures(mapSource).then((source) =>
+          vectorFeatureQuery(layer, state.map, source, queryDef)
+        );
       default:
         // this is an un-supported type so just bail
         return new Promise((resolve) => resolve({ layer, features: [] }));

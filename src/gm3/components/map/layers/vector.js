@@ -32,9 +32,10 @@ import { parseBoolean, transformProperties, joinUrl, requEstimator } from "../..
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
 import EsriJsonFormat from "ol/format/EsriJSON";
-import { tile, bbox } from "ol/loadingstrategy";
+import { all, tile, bbox } from "ol/loadingstrategy";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
+import VectorImageLayer from "ol/layer/VectorImage";
 import { createXYZ } from "ol/tilegrid";
 import { getEditStyle } from "./edit";
 import { EDIT_LAYER_NAME } from "../../../defaults";
@@ -44,8 +45,17 @@ import { EDIT_LAYER_NAME } from "../../../defaults";
 // area. The default behaviour for this is to limit the
 // label to inside the polygon.
 import Text from "ol/style/Text";
-import { applyStyle as applyStyleFunction } from "ol-mapbox-style";
+// the applyStyle wrapper from ol-mapbox-style rejects layer classes
+//  other than VectorLayer/VectorTileLayer (e.g. VectorImageLayer).
+//  stylefunction is what it delegates to and works with any layer
+//  that has setStyle; the GeoMoose glStyles never use sprites so
+//  the wrapper adds nothing else.
+import stylefunction from "ol-mapbox-style/dist/stylefunction";
+import { _getFonts as getFonts } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
+
+import { createGeoParquetLoader } from "./geoparquet";
+import { registerSource } from "../../../featureStore";
 
 // for JSONP support
 import request from "reqwest";
@@ -101,6 +111,13 @@ function defineSource(mapSource) {
       format: new GeoJSONFormat(),
       projection: mapSource.params.crs ? mapSource.params.crs : "EPSG:4326",
       url: mapSource.urls[0],
+    };
+  } else if (mapSource.type === "geoparquet") {
+    return {
+      format: new GeoJSONFormat(),
+      projection: "EPSG:4326",
+      loader: createGeoParquetLoader(mapSource.name, mapSource.urls[0]),
+      strategy: all,
     };
   } else if (mapSource.type === "ags-vector") {
     // Add an A**GIS FeatureService layer.
@@ -286,7 +303,7 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
     }
   }
 
-  applyStyleFunction(
+  stylefunction(
     vectorLayer,
     {
       version: 8,
@@ -297,18 +314,29 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
         },
       },
     },
-    "dummy-source"
+    "dummy-source",
+    undefined,
+    undefined,
+    undefined,
+    getFonts
   );
 }
 
 /** Return an OpenLayers Layer for the Vector source.
  *
  *  @param mapSource The MapSource definition from the store.
+ *  @param registerForQuery When true, the source is registered in the
+ *                          feature store, making it the canonical home
+ *                          of the features for queries.
  *
  *  @returns OpenLayers Layer instance.
  */
-export function createLayer(mapSource, styleLayer = applyStyle) {
+export function createLayer(mapSource, registerForQuery = false, styleLayer = applyStyle) {
   const source = new VectorSource(defineSource(mapSource));
+
+  if (registerForQuery) {
+    registerSource(mapSource.name, source);
+  }
 
   // get the transforms for the layer
   if (mapSource.transforms) {
@@ -324,7 +352,19 @@ export function createLayer(mapSource, styleLayer = applyStyle) {
     maxResolution: mapSource.maxresolution,
     declutter: parseBoolean((mapSource.config || {}).declutter),
   };
-  const vectorLayer = new VectorLayer(opts);
+
+  // the featuresVersion is undefined by default
+  // with the geoparquet loader, setting to 0 prevents an infinite loop
+  // on loading when undefined is compared to zero and never increments
+  if (mapSource.type === "geoparquet") {
+    opts.featuresVersion = 0;
+  }
+
+  // data-driven layers can be very large, rendering them to an
+  //  image keeps pan and zoom from re-rendering every feature
+  //  on each frame
+  const isImageLayer = mapSource.type === "geoparquet";
+  const vectorLayer = isImageLayer ? new VectorImageLayer(opts) : new VectorLayer(opts);
   styleLayer(vectorLayer, mapSource);
 
   return vectorLayer;
@@ -363,6 +403,7 @@ export function updateLayer(map, layer, mapSource, mapTool, styleLayer = applySt
       // refresh is available to all vector layers,
       //  this should force a reload of the features from the server
       //  upon update.
+      console.log("refresh called for", mapSource.type, layerVersion, mapSource.featuresVersion);
       layer.getSource().refresh();
     }
   }

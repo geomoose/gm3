@@ -26,6 +26,8 @@ import Request from "reqwest";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
 
+import { getSource as getStoredSource } from "./featureStore";
+
 import { featureFilter as createFilter } from "@mapbox/mapbox-gl-style-spec";
 
 /** Collection of handy functions
@@ -442,6 +444,13 @@ export function getVersion() {
  * @returns Array containing [minx,miny,maxx,maxy]
  */
 export function getFeaturesExtent(mapSource) {
+  // features kept in the feature store carry their own
+  //  spatial index which already knows the extent
+  const olSource = getStoredSource(mapSource.name);
+  if (olSource !== null && olSource.getFeatures().length > 0) {
+    return olSource.getExtent().slice();
+  }
+
   const bounds = [null, null, null, null];
 
   const min = function (x, y) {
@@ -912,4 +921,29 @@ export const getFilterFieldNames = (filterDef, fieldNames = []) => {
     }
   });
   return fieldNames;
+};
+
+/**
+ * Clean feature properties to be better stored in state
+ *
+ * @param properties - Feature properties
+ *
+ * @returns Object. The same properties but scrubbed for redux storage
+ */
+export const scrubProperties = (properties) => {
+  const cleanProps = {};
+  Object.keys(properties).forEach((key) => {
+    const val = properties[key];
+    // convert all dates to their ISO string equivalent for storage
+    if (val instanceof Date) {
+      cleanProps[key] = val.toISOString();
+      // Yikes, an object, give up and try JSON
+    } else if (val instanceof Object) {
+      cleanProps[key] = JSON.stringify(val);
+      // Oh good, this seems fine...
+    } else {
+      cleanProps[key] = val;
+    }
+  });
+  return cleanProps;
 };

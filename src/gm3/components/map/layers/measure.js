@@ -62,7 +62,7 @@ const applyMeasureStyle = (layer) => {
 };
 
 export const createLayer = (mapSource) => {
-  return createVectorLayer(mapSource, applyMeasureStyle);
+  return createVectorLayer(mapSource, false, applyMeasureStyle);
 };
 
 export const updateLayer = (map, layer, mapSource, mapTool) => {
