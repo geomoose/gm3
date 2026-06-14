@@ -472,19 +472,23 @@ class Map extends React.Component {
       this.zoomToExtent(this.props.mapView.extent);
     }
 
-    // when the map moves, dispatch an action
-    this.map.on("moveend", () => {
-      // get the view of the map
-      const view = this.map.getView();
-      // create a "mapAction" and dispatch it.
-      this.props.store.dispatch(
-        mapActions.setView({
-          center: view.getCenter(),
-          resolution: view.getResolution(),
-          zoom: view.getZoom(),
-        })
-      );
-    });
+    // when the map moves, dispatch an action. The print map is a
+    //  disconnected, props-driven snapshot, so it must not write its
+    //  (scale-specific) view back to the shared map state.
+    if (!this.props.printOnly) {
+      this.map.on("moveend", () => {
+        // get the view of the map
+        const view = this.map.getView();
+        // create a "mapAction" and dispatch it.
+        this.props.store.dispatch(
+          mapActions.setView({
+            center: view.getCenter(),
+            resolution: view.getResolution(),
+            zoom: view.getZoom(),
+          })
+        );
+      });
+    }
 
     // and when the cursor moves, dispatch an action
     //  there as well.
@@ -812,8 +816,27 @@ class Map extends React.Component {
       }
     }
 
-    // extent takes precedent over the regular map-view,
-    if (this.props.mapView.extent) {
+    // The print map is a disconnected snapshot: it follows its own
+    //  center/resolution props and ignores the shared, interactive
+    //  map-view (extent/center/resolution). This keeps it isolated so
+    //  changing the print scale cannot disturb the main map, and stops
+    //  the main map from snapping the print render to the wrong scale.
+    if (this.props.printOnly) {
+      const view = this.map.getView();
+      const center = view.getCenter();
+      if (
+        this.props.center &&
+        (center[0] !== this.props.center[0] ||
+          center[1] !== this.props.center[1] ||
+          (this.props.resolution && view.getResolution() !== this.props.resolution))
+      ) {
+        view.setCenter(this.props.center);
+        if (this.props.resolution) {
+          view.setResolution(this.props.resolution);
+        }
+      }
+      // extent takes precedent over the regular map-view,
+    } else if (this.props.mapView.extent) {
       this.zoomToExtent(this.props.mapView.extent);
       // check to see if the view has been altered.
     } else if (this.props.mapView) {

@@ -35,6 +35,7 @@ import { connect } from "react-redux";
 import { Translation } from "react-i18next";
 
 import View from "ol/View";
+import { getPointResolution } from "ol/proj";
 
 import jsPDF from "jspdf";
 import Mark from "markup-js";
@@ -108,6 +109,123 @@ function isLegendEmpty(img) {
   return true;
 }
 
+const toPoints = (n, unit) => {
+  let k = 1;
+
+  // this code is borrowed from jsPDF
+  //  as it does not expose a public API
+  //  for converting units to points.
+  switch (unit) {
+    case "pt":
+      k = 1;
+      break;
+    case "mm":
+      k = 72 / 25.4;
+      break;
+    case "cm":
+      k = 72 / 2.54;
+      break;
+    case "in":
+      k = 72;
+      break;
+    case "px":
+      k = 96 / 72;
+      break;
+    case "pc":
+      k = 12;
+      break;
+    case "em":
+      k = 12;
+      break;
+    case "ex":
+      k = 6;
+      break;
+    default:
+      throw new Error("Invalid unit: " + unit);
+  }
+
+  return n * k;
+};
+
+// The basemap is assumed to be in meters (the default for web mercator).
+// TODO: derive this from state once non-mercator basemaps are supported.
+const MAP_PROJECTION = "EPSG:3857";
+
+// Unit conversions used to express scale presets.
+
+const POINTS_PER_INCH = 72;
+const INCHES_TO_METERS = 0.0254;
+
+// The ground distance, in meters, that one PDF point of paper represents
+//  at 1:1 scale. PDF points (72 per inch) are the print's display unit, so
+//  scales are expressed as "meters of ground per point". For a 1:N ratio
+//  that is simply N * METERS_PER_POINT.
+const METERS_PER_POINT = INCHES_TO_METERS / POINTS_PER_INCH;
+
+// DPI used when rendering a fixed-scale print, expressed as a multiplier
+//  of POINTS_PER_INCH (2 => 144 DPI). Fixed scales re-render the map at a
+//  scale-derived resolution, so this just controls the image sharpness.
+const SCALE_DPI_MULTIPLIER = 2;
+
+// "Fit" presets are always available regardless of configuration. They
+//  are a simple DPI multiplier applied to the layout size and render
+//  whatever the current map view shows.
+const FIT_SCALES = [
+  // fit will attempt to place the entire map into the given space
+  { value: "fit", label: "Scale to fit", ratio: 1, fit: true },
+  { value: "fit-higher", label: "Scale to fit (higher resolution)", ratio: 1.5, fit: true },
+  { value: "fit-highest", label: "Scale to fit (highest resolution)", ratio: 2, fit: true },
+];
+
+// Fixed scale presets used when the application config does not provide
+//  its own (config.print.scales). Each entry carries "metersPerPt": the
+//  ground distance, in meters, that one PDF point of paper represents,
+//  which for a 1:N ratio is N * METERS_PER_POINT. The map resolution
+//  needed to honor the scale is derived at print time, see getPrintMap().
+//
+// These are the engineering "feet per inch" scales common to US local
+//  government work, per the discussion in geomoose/gm3#999. A foot is
+//  exactly 12 inches, so every one of them is an exact 1:N ratio:
+//  X ft / in == 1:(X * 12).
+const DEFAULT_SCALES = [
+  { value: "10ft", label: "10 ft / in", metersPerPt: 120 * METERS_PER_POINT },
+  { value: "20ft", label: "20 ft / in", metersPerPt: 240 * METERS_PER_POINT },
+  { value: "40ft", label: "40 ft / in", metersPerPt: 480 * METERS_PER_POINT },
+  { value: "50ft", label: "50 ft / in", metersPerPt: 600 * METERS_PER_POINT },
+  { value: "100ft", label: "100 ft / in", metersPerPt: 1200 * METERS_PER_POINT },
+  { value: "200ft", label: "200 ft / in", metersPerPt: 2400 * METERS_PER_POINT },
+  { value: "300ft", label: "300 ft / in", metersPerPt: 3600 * METERS_PER_POINT },
+  { value: "400ft", label: "400 ft / in", metersPerPt: 4800 * METERS_PER_POINT },
+  { value: "500ft", label: "500 ft / in", metersPerPt: 6000 * METERS_PER_POINT },
+  { value: "600ft", label: "600 ft / in", metersPerPt: 7200 * METERS_PER_POINT },
+  { value: "2000ft", label: "2000 ft / in", metersPerPt: 24000 * METERS_PER_POINT },
+];
+
+// Normalize a user-supplied scale definition (config.print.scales) into the
+//  internal form. A definition declares the scale in one of two ways:
+//    { scale: 24000 }       -> a 1:N ratio (the simplest form)
+//    { metersPerPt: 0.847 } -> ground meters per PDF point, directly
+//  "label" and "value" are optional and derived when omitted. Returns null
+//  when neither "scale" nor "metersPerPt" is provided.
+function buildScale(def, index) {
+  let metersPerPt = null;
+  let label = def.label;
+  if (def.scale != null) {
+    metersPerPt = def.scale * METERS_PER_POINT;
+    label = label || `1:${def.scale}`;
+  } else if (def.metersPerPt != null) {
+    metersPerPt = def.metersPerPt;
+  } else {
+    return null;
+  }
+
+  return {
+    value: def.value || label || `scale-${index}`,
+    label: label || `scale-${index}`,
+    metersPerPt,
+  };
+}
+
 export class PrintModal extends Modal {
   constructor(props) {
     super(props);
@@ -119,7 +237,7 @@ export class PrintModal extends Modal {
     this.state = {
       mapTitle: "",
       layout: 0,
-      resolution: 1,
+      resolution: "fit",
       layouts: props.layouts ? props.layouts : DefaultLayouts,
       includeSelection: "true",
     };
@@ -274,21 +392,24 @@ export class PrintModal extends Modal {
 
     // construct the extents from the map
     const mapView = state.map;
-    // TODO: get this from state
-    const mapProj = "EPSG:3857";
+
+    // mirror the parameters the print image was rendered with so the
+    //  georeferencing matches the pixels: a fixed scale re-renders at a
+    //  scale-derived resolution, "fit" stays at the current view resolution.
+    const printMap = this.getPrintMap();
+    const renderResolution =
+      printMap.resolution !== null ? printMap.resolution : mapView.resolution;
 
     const view = new View({
       center: mapView.center,
-      resolution: mapView.resolution,
-      projection: mapProj,
+      resolution: renderResolution,
+      projection: MAP_PROJECTION,
     });
 
     const u = layout.units;
-    const resolution = parseFloat(this.state.resolution);
-    const mapExtents = view.calculateExtent([
-      this.toPoints(def.width, u) * resolution,
-      this.toPoints(def.height, u) * resolution,
-    ]);
+    // the image fills the map element, so its ground extent is just the
+    //  pixel size times the render resolution, centered on the map center.
+    const mapExtents = view.calculateExtent([printMap.width, printMap.height]);
 
     const pdfExtents = [def.x, def.y, def.x + def.width, def.y + def.height];
     for (let i = 0; i < pdfExtents.length; i++) {
@@ -298,8 +419,10 @@ export class PrintModal extends Modal {
     // add a scale line
     const scaleLine = state.config.map.scaleLine;
     if (scaleLine && scaleLine.enabled) {
+      // the view renders at "render-pixel" resolution; the scale bar is
+      //  drawn in PDF points, so scale up by the image's pixels-per-point.
       const scaleInfo = getScalelineInfo(view, scaleLine.units || "us", {
-        multiplier: resolution,
+        multiplier: printMap.dpiMultiplier,
       });
       const ptToLayout = 1 / this.toPoints(1, layout.units);
       const margin = 12 * ptToLayout;
@@ -373,41 +496,7 @@ export class PrintModal extends Modal {
    *
    */
   toPoints(n, unit) {
-    let k = 1;
-
-    // this code is borrowed from jsPDF
-    //  as it does not expose a public API
-    //  for converting units to points.
-    switch (unit) {
-      case "pt":
-        k = 1;
-        break;
-      case "mm":
-        k = 72 / 25.4;
-        break;
-      case "cm":
-        k = 72 / 2.54;
-        break;
-      case "in":
-        k = 72;
-        break;
-      case "px":
-        k = 96 / 72;
-        break;
-      case "pc":
-        k = 12;
-        break;
-      case "em":
-        k = 12;
-        break;
-      case "ex":
-        k = 6;
-        break;
-      default:
-        throw new Error("Invalid unit: " + unit);
-    }
-
-    return n * k;
+    return toPoints(n, unit);
   }
 
   makePDF(layout) {
@@ -475,16 +564,52 @@ export class PrintModal extends Modal {
     return <div className={this.getFooterClass(2)}>{buttons}</div>;
   }
 
-  /* The Map Image size changes based on the layout used
-   * and the resolution selected by the user.
+  /* The full list of scale options shown to the user.
    *
-   * @return An object with "width" and "height" properties.
+   * The "Fit" options are always present; the fixed scales come from the
+   * application config (config.print.scales) when provided. When scales are
+   * omitted the built-in defaults are used; an explicit empty array yields
+   * the "Fit" options only.
+   *
+   * @return An array of scale definitions.
    */
-  getMapSize() {
+  getScales() {
+    const configScales = this.props.printScales;
+    const fixedScales =
+      configScales === undefined
+        ? DEFAULT_SCALES
+        : configScales.map((def, i) => buildScale(def, i)).filter((scale) => scale !== null);
+    return [...FIT_SCALES, ...fixedScales];
+  }
+
+  /* The rendering parameters for the print map.
+   *
+   * The map image always fills the layout's map element at a fixed pixel
+   * size (set by the print DPI), so honoring a requested scale is a matter
+   * of rendering the map at the right resolution: a re-render centered on
+   * the current map center recomputes the extent so the fixed-size image
+   * covers exactly the ground distance the scale demands.
+   *
+   *   width (px)     = toPoints(mapWidth) * dpiMultiplier
+   *   resolution     = metersPerPt / dpiMultiplier   (ground meters/pixel)
+   *
+   * "fit" scales have no fixed ground distance, so they render at the
+   * current map view resolution (resolution === null).
+   *
+   * @return { width, height, resolution, dpiMultiplier }
+   *   width/height in pixels, resolution in meters/pixel (or null to use
+   *   the current map view resolution), dpiMultiplier as image px per point.
+   */
+  getPrintMap() {
     const layout = this.state.layouts[this.state.layout];
-    const resolution = this.state.resolution;
-    // iterate through the layout elements looking
-    //  for the map.
+    const scales = this.getScales();
+    const scaleDef = scales.find((s) => s.value === this.state.resolution) || scales[0];
+
+    // "fit" scales are a simple DPI multiplier on the layout size; fixed
+    //  scales render at a constant, print-quality DPI.
+    const dpiMultiplier = scaleDef.fit ? scaleDef.ratio : SCALE_DPI_MULTIPLIER;
+
+    // locate the map element in the layout.
     let mapElement = null;
     for (const element of layout.elements) {
       if (element.type === "map") {
@@ -493,10 +618,33 @@ export class PrintModal extends Modal {
       }
     }
 
-    // calculate the width and height and kick it back.
+    // the resolution (meters/pixel) to re-render the map at; null means
+    //  "leave the map at its current view resolution".
+    let resolution = null;
+    if (!scaleDef.fit) {
+      // the image renders at dpiMultiplier pixels per PDF point, so the
+      //  ground distance each pixel must cover is the per-point distance
+      //  spread across those pixels.
+      const groundResolution = scaleDef.metersPerPt / dpiMultiplier;
+      // web mercator (EPSG:3857) stretches distances by latitude, so the
+      //  view resolution OL renders with is not true ground meters. Convert
+      //  the desired ground resolution into a projected one at the map
+      //  center; this also keeps the scale bar (which corrects the same
+      //  way) in agreement with the printed map.
+      const projectionFactor = getPointResolution(
+        MAP_PROJECTION,
+        1,
+        this.props.mapView.center,
+        "m"
+      );
+      resolution = groundResolution / projectionFactor;
+    }
+
     return {
-      width: this.toPoints(mapElement.width, layout.units) * resolution,
-      height: this.toPoints(mapElement.height, layout.units) * resolution,
+      width: this.toPoints(mapElement.width, layout.units) * dpiMultiplier,
+      height: this.toPoints(mapElement.height, layout.units) * dpiMultiplier,
+      resolution,
+      dpiMultiplier,
     };
   }
 
@@ -522,7 +670,7 @@ export class PrintModal extends Modal {
   /** Render a select drop down that allows the user
    *  to up the DPI.
    */
-  renderResolutionSelect(t) {
+  renderResolutionSelect(_t) {
     return (
       <select
         onChange={(evt) => {
@@ -532,9 +680,12 @@ export class PrintModal extends Modal {
         }}
         value={this.state.resolution}
       >
-        <option value="1">{t("resolution-normal")}</option>
-        <option value="1.5">{t("resolution-higher")}</option>
-        <option value="2">{t("resolution-highest")}</option>
+        {this.getScales().map((scaleDef) => (
+          // TODO: Add i18n definitions for the scales
+          <option key={scaleDef.value} value={scaleDef.value}>
+            {scaleDef.label}
+          </option>
+        ))}
       </select>
     );
   }
@@ -586,7 +737,7 @@ export class PrintModal extends Modal {
       );
     }
 
-    const mapSize = this.getMapSize();
+    const mapSize = this.getPrintMap();
     return (
       <div>
         {printWarning}
@@ -630,6 +781,7 @@ export class PrintModal extends Modal {
           <PrintImage
             width={mapSize.width}
             height={mapSize.height}
+            resolution={mapSize.resolution}
             store={this.props.store}
             includeSelection={this.state.includeSelection === "true"}
           />
@@ -645,6 +797,7 @@ const mapStateToProps = (state) => ({
   mapView: state.map,
   printData: state.print.printData,
   catalog: state.catalog,
+  printScales: state.config.print ? state.config.print.scales : undefined,
 });
 
 const mapDispatchToProps = {

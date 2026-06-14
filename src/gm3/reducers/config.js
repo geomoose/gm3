@@ -32,6 +32,7 @@ const DEFAULT_CONFIG = {
     areaUnits: ["m", "km", "ft", "mi", "a", "h"],
     lengthUnits: ["m", "km", "ft", "mi", "ch"],
   },
+  print: {},
 };
 
 const reducer = createReducer(DEFAULT_CONFIG, (builder) => {
