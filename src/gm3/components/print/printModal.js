@@ -424,34 +424,94 @@ export class PrintModal extends Modal {
       const scaleInfo = getScalelineInfo(view, scaleLine.units || "us", {
         multiplier: printMap.dpiMultiplier,
       });
+
+      // everything below is sized in points then converted to the layout's
+      //  units; ptToLayout converts a measurement in points to layout units.
       const ptToLayout = 1 / this.toPoints(1, layout.units);
-      const margin = 12 * ptToLayout;
-      const height = 12 * ptToLayout;
+      const pt = (n) => n * ptToLayout;
+      const margin = pt(12);
+      // buffer drawn around the scale line and its label.
+      const pad = pt(4);
+      // gap between the bottom of the label and the scale line.
+      const gap = pt(2);
+      const labelSize = 12;
+      const labelHeight = pt(labelSize);
+      // the end ticks rise from the line to 60% of the label's height.
+      const tickHeight = 0.6 * labelHeight;
+
+      // the scale line itself, mirroring the OpenLayers scale line: a
+      //  horizontal distance line capped with a tick on each end.
+      const lineWidth = scaleInfo.width * ptToLayout;
+
+      // measure the label so the background wraps whichever is wider,
+      //  the line or its label.
+      doc.setFont("NotoSans", "regular");
+      doc.setFontSize(labelSize);
+      const labelWidth = doc.getTextWidth(scaleInfo.label);
+
+      const contentWidth = Math.max(lineWidth, labelWidth);
+      const contentHeight = labelHeight + gap;
+
+      const boxWidth = contentWidth + 2 * pad;
+      const boxHeight = contentHeight + 2 * pad;
+
+      // anchor the background box in the lower-left corner of the map.
+      const boxLeft = def.x + margin;
+      const boxBottom = def.y + def.height - margin;
+      const boxTop = boxBottom - boxHeight;
+
+      // contrasting background: white with a small rounded corner and a
+      //  thin border so the dark scale line reads against the map.
       this.addDrawing(doc, {
         type: "rect",
         filled: true,
-        // place this in the lower left corner of the map
-        x: def.x + margin,
-        y: def.y + def.height - margin - height,
-        // width info comes as points, this
-        //  should convert the width
-        width: scaleInfo.width * ptToLayout,
-        height,
+        x: boxLeft,
+        y: boxTop,
+        width: boxWidth,
+        height: boxHeight,
+        borderRadius: pt(3),
+        fill: [255, 255, 255],
         strokeWidth: 0,
-        fill: [178, 196, 219],
+        opacity: 0.8,
       });
 
+      // the scale line sits at the bottom of the content area, centered.
+      const lineY = boxBottom - pad;
+      const lineLeft = boxLeft + pad + (contentWidth - lineWidth) / 2;
+      const lineRight = lineLeft + lineWidth;
+      const lineStyle = { type: "line", stroke: [0, 0, 0], strokeWidth: pt(1) };
+
+      // the horizontal distance line ...
+      this.addDrawing(doc, { ...lineStyle, x: lineLeft, y: lineY, x2: lineRight, y2: lineY });
+      // ... with a tick rising from each end.
+      this.addDrawing(doc, {
+        ...lineStyle,
+        x: lineLeft,
+        y: lineY,
+        x2: lineLeft,
+        y2: lineY - tickHeight,
+      });
+      this.addDrawing(doc, {
+        ...lineStyle,
+        x: lineRight,
+        y: lineY,
+        x2: lineRight,
+        y2: lineY - tickHeight,
+      });
+
+      // the distance label, centered 2pt above the line.
       this.addText(
         doc,
         {
-          x: def.x + margin + 2 * ptToLayout,
-          y: def.y + def.height - margin - height / 2,
+          x: boxLeft + boxWidth / 2,
+          y: lineY - gap,
           text: scaleInfo.label,
-          size: 12,
-          color: [238, 238, 238],
+          size: labelSize,
+          color: [0, 0, 0],
         },
         {
-          baseline: "middle",
+          align: "center",
+          baseline: "bottom",
         }
       );
     }
@@ -461,7 +521,11 @@ export class PrintModal extends Modal {
 
   /* Draw a shape on the map.
    *
-   * Supported shapes: rect, ellipse
+   * Supported shapes: rect, ellipse, line
+   *
+   * rect honors optional rounded corners via def.borderRadius (used as
+   *  both the x and y corner radius).
+   * line draws from (def.x, def.y) to (def.x2, def.y2).
    */
   addDrawing(doc, def) {
     // determine the style string
@@ -470,6 +534,11 @@ export class PrintModal extends Modal {
       style = "DF";
       const fill = def.fill ? def.fill : [255, 255, 255];
       doc.setFillColor(fill[0], fill[1], fill[2]);
+    }
+
+    if (def.opacity) {
+      const scopedOpacity = new doc.GState({ opacity: def.opacity });
+      doc.setGState(scopedOpacity);
     }
 
     // set the stroke width
@@ -485,9 +554,31 @@ export class PrintModal extends Modal {
 
     // draw the shape.
     if (def.type === "rect") {
-      doc.rect(def.x, def.y, def.width, def.height, style);
+      // when a corner radius is supplied, draw a rounded rectangle using
+      //  borderRadius for both the x and y corner radii.
+      if (def.borderRadius != null) {
+        doc.roundedRect(
+          def.x,
+          def.y,
+          def.width,
+          def.height,
+          def.borderRadius,
+          def.borderRadius,
+          style
+        );
+      } else {
+        doc.rect(def.x, def.y, def.width, def.height, style);
+      }
     } else if (def.type === "ellipse") {
       doc.ellipse(def.x, def.y, def.rx, def.ry, style);
+    } else if (def.type === "line") {
+      // lines are stroke-only; a zero stroke width would render nothing.
+      doc.line(def.x, def.y, def.x2, def.y2, "S");
+    }
+
+    // reset to 1
+    if (def.opacity) {
+      doc.setGState(new doc.GState({ opacity: 1.0 }));
     }
   }
 
@@ -537,6 +628,7 @@ export class PrintModal extends Modal {
           break;
         case "rect":
         case "ellipse":
+        case "line":
           this.addDrawing(doc, element);
           break;
         case "legend":
