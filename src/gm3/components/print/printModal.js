@@ -439,17 +439,28 @@ export class PrintModal extends Modal {
       // the end ticks rise from the line to 60% of the label's height.
       const tickHeight = 0.6 * labelHeight;
 
+      // when a fixed scale is chosen, caption the indicator with that
+      //  scale's label (e.g. "1:24000"); "Fit" scales have no fixed ratio.
+      const scaleDef = this.getScales().find((s) => s.value === this.state.resolution);
+      const fixedLabel = scaleDef && !scaleDef.fit ? scaleDef.label : null;
+
       // the scale line itself, mirroring the OpenLayers scale line: a
       //  horizontal distance line capped with a tick on each end.
       const lineWidth = scaleInfo.width * ptToLayout;
 
-      // measure the label so the background wraps whichever is wider,
-      //  the line or its label.
+      // measure the labels so the background wraps whichever is wider,
+      //  the line or its distance label, plus the optional fixed caption.
       doc.setFont("NotoSans", "regular");
       doc.setFontSize(labelSize);
       const labelWidth = doc.getTextWidth(scaleInfo.label);
+      // gap between the scale-line group and the fixed-scale caption.
+      const captionGap = pt(8);
+      const fixedLabelWidth = fixedLabel ? doc.getTextWidth(fixedLabel) : 0;
 
-      const contentWidth = Math.max(lineWidth, labelWidth);
+      // the scale line and its distance label form the left "group"; the
+      //  fixed-scale caption (when present) sits to its right.
+      const groupWidth = Math.max(lineWidth, labelWidth);
+      const contentWidth = groupWidth + (fixedLabel ? captionGap + fixedLabelWidth : 0);
       const contentHeight = labelHeight + gap;
 
       const boxWidth = contentWidth + 2 * pad;
@@ -475,9 +486,10 @@ export class PrintModal extends Modal {
         opacity: 0.8,
       });
 
-      // the scale line sits at the bottom of the content area, centered.
+      // the scale line sits at the bottom of the group, centered on it.
+      const groupLeft = boxLeft + pad;
       const lineY = boxBottom - pad;
-      const lineLeft = boxLeft + pad + (contentWidth - lineWidth) / 2;
+      const lineLeft = groupLeft + (groupWidth - lineWidth) / 2;
       const lineRight = lineLeft + lineWidth;
       const lineStyle = { type: "line", stroke: [0, 0, 0], strokeWidth: pt(1) };
 
@@ -499,11 +511,11 @@ export class PrintModal extends Modal {
         y2: lineY - tickHeight,
       });
 
-      // the distance label, centered 2pt above the line.
+      // the distance label, centered over the scale-line group.
       this.addText(
         doc,
         {
-          x: boxLeft + boxWidth / 2,
+          x: groupLeft + groupWidth / 2,
           y: lineY - gap,
           text: scaleInfo.label,
           size: labelSize,
@@ -514,6 +526,24 @@ export class PrintModal extends Modal {
           baseline: "bottom",
         }
       );
+
+      // the fixed-scale caption, vertically centered to the right.
+      if (fixedLabel) {
+        this.addText(
+          doc,
+          {
+            x: groupLeft + groupWidth + captionGap,
+            y: boxTop + boxHeight / 2,
+            text: fixedLabel,
+            size: labelSize,
+            color: [0, 0, 0],
+          },
+          {
+            align: "left",
+            baseline: "middle",
+          }
+        );
+      }
     }
 
     doc.setGeoArea(pdfExtents, mapExtents);
