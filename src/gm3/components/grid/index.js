@@ -34,6 +34,8 @@ import FileSaver from "file-saver";
 import { FORMAT_OPTIONS, matchFeatures } from "../../util";
 
 import { getLayerFromPath } from "../../actions/mapSource";
+import { openReport } from "../../actions/report";
+import { showModal } from "../../actions/ui";
 
 import { getFlatResults } from "../../selectors/query";
 import { SERVICE_STEPS } from "../../reducers/query";
@@ -280,6 +282,9 @@ class Grid extends React.Component {
 
     let features = [];
     let displayTable = false;
+    // the layer path whose results are being displayed; used to target the
+    //  feature report.
+    let reportLayerPath = null;
 
     let gridColumns, gridRow;
 
@@ -319,6 +324,7 @@ class Grid extends React.Component {
           if (gridColumns && gridRow) {
             // render as a grid.
             features = matchFeatures(query.results[layerPath], this.props.filters);
+            reportLayerPath = layerPath;
             if (query.results[layerPath].length > 0) {
               displayTable = true;
             }
@@ -363,6 +369,17 @@ class Grid extends React.Component {
             title={this.props.t("grid-download-csv")}
           >
             <i className="icon download"></i>
+          </button>
+          <button
+            onClick={() => {
+              this.props.store.dispatch(
+                openReport(reportLayerPath, this.props.serviceName, "results", null)
+              );
+              this.props.store.dispatch(showModal("report"));
+            }}
+            title={this.props.t("grid-report")}
+          >
+            <i className="icon report"></i>
           </button>
           <button
             onClick={toggleGrid}
