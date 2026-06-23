@@ -55,6 +55,9 @@ import DefaultLayouts from "./printLayouts";
 
 import GeoPdfPlugin from "./geopdf";
 import { getScalelineInfo } from "../scaleline";
+import drawTable from "./drawTable";
+
+import { FORMAT_OPTIONS } from "../../util";
 
 function loadFonts(fontsUrl) {
   if (fontsUrl) {
@@ -263,15 +266,24 @@ export class PrintModal extends Modal {
     return "Print";
   }
 
-  addText(doc, def, options = {}) {
-    // these are the substitution strings for the map text elements
+  /* The substitution dictionary used to interpolate text and table cells.
+   *
+   * Subclasses (e.g. the feature report) extend this with feature
+   * attributes so layouts can reference them as {{PROPERTY}}.
+   */
+  getSubstDict() {
     const date = new Date();
-    const substDict = {
+    return {
       title: this.state.mapTitle,
       year: date.getFullYear(),
       month: date.getMonth() + 1,
       day: date.getDate(),
     };
+  }
+
+  addText(doc, def, options = {}) {
+    // these are the substitution strings for the map text elements
+    const substDict = this.getSubstDict();
 
     // def needs to define: x, y, text
     const defaults = {
@@ -612,6 +624,71 @@ export class PrintModal extends Modal {
     }
   }
 
+  /* Resolve the column/row arrays for a "table" element from a bound data
+   * source (e.g. a selected feature or the results set).
+   *
+   * The base print has no feature/results context, so it returns null and
+   * only inline-row tables render. The feature report overrides this to
+   * supply data-driven rows. Returns { columns, rows } or null.
+   */
+  resolveTableData(_element) {
+    return null;
+  }
+
+  /* Render a "table" element.
+   *
+   * Two data sources are supported, with inline winning:
+   *   - element.rows: a literal 2D array straight from the layout, each
+   *     cell interpolated against the substitution dictionary.
+   *   - a bound source resolved by resolveTableData() (feature/results).
+   *
+   * The heavy lifting (widths, wrapping, striping, pagination) lives in the
+   * pure drawTable() primitive; this method only resolves the data and the
+   * page geometry.
+   */
+  addTable(doc, element) {
+    let columns, rows;
+    if (element.rows) {
+      const substDict = this.getSubstDict();
+      columns = element.columns || [];
+      rows = element.rows.map((row) =>
+        row.map((cell) => Mark.up(String(cell), substDict, FORMAT_OPTIONS))
+      );
+    } else {
+      const data = this.resolveTableData(element);
+      if (!data) {
+        return;
+      }
+      columns = data.columns;
+      rows = data.rows;
+    }
+
+    // the bottom of the printable area; tables paginate against this. The
+    //  bottom margin mirrors the element's left inset unless overridden.
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginBottom = element.marginBottom != null ? element.marginBottom : element.x || 0;
+
+    drawTable(doc, {
+      x: element.x,
+      y: element.y,
+      width: element.width,
+      columns,
+      rows,
+      rowHeight: element.rowHeight,
+      header: element.header,
+      stripe: element.stripe,
+      pageBottom: pageHeight - marginBottom,
+      pageTop: marginBottom,
+      // use the embedded print font; it is registered with a "regular"
+      //  (rather than "normal") style, see makePDF().
+      font: element.font || "NotoSans",
+      bodyStyle: element.bodyStyle || "regular",
+      headerStyle: element.headerStyle || "bold",
+      fontSize: element.fontSize,
+      color: element.color,
+    });
+  }
+
   /**
    * Convert units to PDF units
    *
@@ -660,6 +737,9 @@ export class PrintModal extends Modal {
         case "ellipse":
         case "line":
           this.addDrawing(doc, element);
+          break;
+        case "table":
+          this.addTable(doc, element);
           break;
         case "legend":
           promises = promises.concat(this.addLegends(doc, element));
@@ -913,7 +993,11 @@ export class PrintModal extends Modal {
   }
 }
 
-const mapStateToProps = (state) => ({
+/* Base state mapping shared with subclasses (e.g. the feature report).
+ *
+ * Subclasses spread this and override "open" plus add their own props.
+ */
+export const mapStateToProps = (state) => ({
   mapSources: state.mapSources,
   open: state.ui.modal === "print",
   mapView: state.map,

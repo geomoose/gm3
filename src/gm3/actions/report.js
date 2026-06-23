@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2024 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,23 @@
  * SOFTWARE.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
+import { createAction } from "@reduxjs/toolkit";
 
-import catalogReducer from "./reducers/catalog";
-import msReducer from "./reducers/mapSource";
-import mapReducer from "./reducers/map";
-import toolbarReducer from "./reducers/toolbar";
-import queryReducer from "./reducers/query";
-import uiReducer from "./reducers/ui";
-import cursorReducer from "./reducers/cursor";
-import printReducer from "./reducers/print";
-import reportReducer from "./reducers/report";
-import configReducer from "./reducers/config";
-import editorReducer from "./reducers/editor";
+/* Point the feature report at a layer's results.
+ *
+ * The slice holds references, not a copy of the feature(s): the actual
+ * feature is resolved from the live query results by getReportData(). A
+ * "feature" report (mode) is identified by a filter; a "results" report
+ * covers the whole result set for the layer.
+ */
+export const openReport = createAction("report/open", (layerPath, serviceName, mode, filter) => ({
+  payload: {
+    layerPath,
+    serviceName,
+    mode: mode || "feature",
+    filter: filter || null,
+  },
+}));
 
-export const createStore = () => {
-  return configureStore({
-    reducer: {
-      mapSources: msReducer,
-      catalog: catalogReducer,
-      map: mapReducer,
-      toolbar: toolbarReducer,
-      query: queryReducer,
-      ui: uiReducer,
-      cursor: cursorReducer,
-      print: printReducer,
-      report: reportReducer,
-      config: configReducer,
-      editor: editorReducer,
-    },
-  });
-};
+/* Clear the report target. */
+export const closeReport = createAction("report/close");

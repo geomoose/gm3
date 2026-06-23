@@ -48,6 +48,7 @@ import {
 import { parseCatalog } from "./actions/catalog";
 import { parseToolbar } from "./actions/toolbar";
 import { setConfig } from "./actions/config";
+import { openReport } from "./actions/report";
 
 import Modal from "./components/modal";
 
@@ -65,7 +66,15 @@ import {
 
 import Mark from "markup-js";
 
-import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from "./util";
+import {
+  addProjDef,
+  getMapSourceName,
+  getLayerName,
+  FORMAT_OPTIONS,
+  parseQuery,
+  matchFeatures,
+  getExtentForQuery,
+} from "./util";
 import { normalizeFieldValues, normalizeSelection } from "./query/util";
 
 import i18nConfigure from "./i18n";
@@ -883,6 +892,43 @@ class Application {
 
   showModal(modalKey) {
     this.store.dispatch(uiActions.showModal(modalKey));
+  }
+
+  /** Open a feature report for a single feature.
+   *
+   * The feature is identified within the layer's current results by a
+   * filter (the same predicate-array form used by removeQueryResults, e.g.
+   * [["==", "PIN", "12345"]]). By default the map is zoomed to the feature
+   * so the report's map image and georeferencing are centered on it.
+   *
+   * @param {String} layerPath The "map-source/layer" path of the results.
+   * @param {Array}  filter    A filter identifying the feature.
+   * @param {Object} options   { zoomToFeature: bool (default true) }
+   */
+  showFeatureReport(layerPath, filter, options = {}) {
+    const state = this.store.getState();
+    const results = state.query.results[layerPath] || [];
+    const matched = filter ? matchFeatures(results, filter) : results;
+
+    if (options.zoomToFeature !== false && matched.length > 0) {
+      const extent = getExtentForQuery({ [layerPath]: matched });
+      if (extent) {
+        this.zoomToExtent(extent);
+      }
+    }
+
+    this.store.dispatch(openReport(layerPath, state.query.serviceName, "feature", filter));
+    this.showModal("report");
+  }
+
+  /** Open a report covering all results for a layer.
+   *
+   * @param {String} layerPath The "map-source/layer" path of the results.
+   */
+  showResultsReport(layerPath) {
+    const state = this.store.getState();
+    this.store.dispatch(openReport(layerPath, state.query.serviceName, "results", null));
+    this.showModal("report");
   }
 
   /* Set the view of the map
