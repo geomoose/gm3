@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2024 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,26 @@
  * SOFTWARE.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
+import { createReducer } from "@reduxjs/toolkit";
+import { openReport, closeReport } from "../actions/report";
 
-import catalogReducer from "./reducers/catalog";
-import msReducer from "./reducers/mapSource";
-import mapReducer from "./reducers/map";
-import toolbarReducer from "./reducers/toolbar";
-import queryReducer from "./reducers/query";
-import uiReducer from "./reducers/ui";
-import cursorReducer from "./reducers/cursor";
-import printReducer from "./reducers/print";
-import reportReducer from "./reducers/report";
-import configReducer from "./reducers/config";
-import editorReducer from "./reducers/editor";
-
-export const createStore = () => {
-  return configureStore({
-    reducer: {
-      mapSources: msReducer,
-      catalog: catalogReducer,
-      map: mapReducer,
-      toolbar: toolbarReducer,
-      query: queryReducer,
-      ui: uiReducer,
-      cursor: cursorReducer,
-      print: printReducer,
-      report: reportReducer,
-      config: configReducer,
-      editor: editorReducer,
-    },
-  });
+// References only; the feature(s) are derived from the live query results
+//  by selectors/report.js getReportData().
+const defaultState = {
+  layerPath: null,
+  serviceName: null,
+  mode: "feature",
+  filter: null,
 };
+
+const reducer = createReducer(defaultState, {
+  [openReport]: (state, { payload }) => ({
+    layerPath: payload.layerPath,
+    serviceName: payload.serviceName,
+    mode: payload.mode || "feature",
+    filter: payload.filter || null,
+  }),
+  [closeReport]: () => ({ ...defaultState }),
+});
+
+export default reducer;

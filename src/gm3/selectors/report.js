@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Dan "Ducky" Little
+ * Copyright (c) 2024 Dan "Ducky" Little
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,26 @@
  * SOFTWARE.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
+import { matchFeatures } from "../util";
 
-import catalogReducer from "./reducers/catalog";
-import msReducer from "./reducers/mapSource";
-import mapReducer from "./reducers/map";
-import toolbarReducer from "./reducers/toolbar";
-import queryReducer from "./reducers/query";
-import uiReducer from "./reducers/ui";
-import cursorReducer from "./reducers/cursor";
-import printReducer from "./reducers/print";
-import reportReducer from "./reducers/report";
-import configReducer from "./reducers/config";
-import editorReducer from "./reducers/editor";
-
-export const createStore = () => {
-  return configureStore({
-    reducer: {
-      mapSources: msReducer,
-      catalog: catalogReducer,
-      map: mapReducer,
-      toolbar: toolbarReducer,
-      query: queryReducer,
-      ui: uiReducer,
-      cursor: cursorReducer,
-      print: printReducer,
-      report: reportReducer,
-      config: configReducer,
-      editor: editorReducer,
-    },
-  });
+/* Resolve the report target into concrete data from the live query results.
+ *
+ * Returns null when no report is targeted, otherwise:
+ *   {
+ *     feature,      // the subject feature ("feature" mode) or first result
+ *     results,      // all results for the layer ("results" mode)
+ *     layerPath, serviceName, mode,
+ *   }
+ *
+ * The feature is matched from state.query.results so the report always
+ * reflects the current selection rather than a stale copy.
+ */
+export const getReportData = (state) => {
+  const { layerPath, serviceName, mode, filter } = state.report;
+  if (!layerPath) {
+    return null;
+  }
+  const results = state.query.results[layerPath] || [];
+  const feature = filter ? matchFeatures(results, filter)[0] : results[0];
+  return { feature, results, layerPath, serviceName, mode };
 };

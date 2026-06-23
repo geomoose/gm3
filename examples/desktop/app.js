@@ -282,6 +282,10 @@ app.loadMapbook().then(function() {
         }
     }, {});
 
+    // the feature report reuses the print pipeline; it is driven by
+    //  app.showFeatureReport() / app.showResultsReport().
+    app.add(gm3.components.ReportModal, 'report-preview', {});
+
     app.add(gm3.components.BookmarkModal, 'bookmark-modal', {});
     app.registerAction('bookmark', function() {
         this.run = function() {
