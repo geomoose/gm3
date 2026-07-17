@@ -53,6 +53,24 @@ export function parseQuery() {
   return paramStringToObject(window.location.search);
 }
 
+/**
+ * Build a new query string containing only the parameters
+ * named in safeList, taken from an existing query string.
+ * Used when resetting the app (e.g. "Start Over") so that
+ * structural parameters like "mapbook" survive the reset
+ * while transient ones do not.
+ */
+export function buildSafeQueryString(searchString, safeList = ["mapbook"]) {
+  const params = new URLSearchParams(searchString);
+  const safeParams = new URLSearchParams();
+  safeList.forEach((paramName) => {
+    if (params.has(paramName)) {
+      safeParams.set(paramName, params.get(paramName));
+    }
+  });
+  return safeParams.toString();
+}
+
 export function parseBoolean(bool, def = false) {
   if (typeof bool == "undefined" || bool === null) {
     return def;

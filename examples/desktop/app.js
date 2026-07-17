@@ -295,8 +295,14 @@ app.loadMapbook().then(function() {
             app.confirm('reload-okay', reload_msg, function(response) {
                 if(response === 'confirm') {
                     document.location.hash = '';
-                    if (document.location.search.length > 0) {
-                      document.location.search = '';
+                    // Clear the query string but preserve "safe" params
+                    // (e.g. "mapbook") so Start Over keeps using the
+                    // current mapbook instead of always reverting to
+                    // the default one.
+                    var currentSearch = document.location.search.replace(/^\?/, '');
+                    var nextSearch = gm3.util.buildSafeQueryString(document.location.search);
+                    if (nextSearch !== currentSearch) {
+                      document.location.search = nextSearch;
                     } else {
                       document.location.reload();
                     }

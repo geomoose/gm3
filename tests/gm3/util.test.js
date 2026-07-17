@@ -10,6 +10,24 @@ test("parseBoolean", () => {
   expect(util.parseBoolean("true")).toBe(true);
 });
 
+describe("buildSafeQueryString", () => {
+  test("preserves a param on the default safe list", () => {
+    expect(util.buildSafeQueryString("?mapbook=test&other=1")).toBe("mapbook=test");
+  });
+
+  test("returns an empty string when nothing on the safe list is present", () => {
+    expect(util.buildSafeQueryString("?other=1&another=2")).toBe("");
+  });
+
+  test("returns an empty string for an empty query string", () => {
+    expect(util.buildSafeQueryString("")).toBe("");
+  });
+
+  test("honors a custom safe list", () => {
+    expect(util.buildSafeQueryString("?a=1&b=2&c=3", ["b", "c"])).toBe("b=2&c=3");
+  });
+});
+
 /*
  * Test the query filter matching.
  */
