@@ -42,6 +42,7 @@ import { hideModal } from "../../actions/ui";
 import { getReportData } from "../../selectors/report";
 import { getLayerFromPath } from "../../actions/mapSource";
 import { FORMAT_OPTIONS } from "../../util";
+import { colorizeFromIndex } from "../measure/colorize";
 
 import DefaultReportLayouts from "./reportLayouts";
 
@@ -124,6 +125,65 @@ export class ReportModal extends PrintModal {
     };
   }
 
+  /* The active report definition (the currently selected layout). */
+  getReportDefinition() {
+    return (this.state.layouts && this.state.layouts[this.state.layout]) || {};
+  }
+
+  /* When the report definition opts in via "showMeasurements", annotate the
+   * subject feature on the print map exactly like the measure tool: the
+   * feature is colorized and rendered (measure-styled geometry plus on-map
+   * length/area labels) by the print map's measure layer. It is never added
+   * to the shared map state, so it stays off the interactive map.
+   *
+   * Memoized so each render hands the print map a stable array reference
+   * (see PrintModal.getMeasureFeatures).
+   */
+  getMeasureFeatures() {
+    const def = this.getReportDefinition();
+    const feature = this.props.report && this.props.report.feature;
+    if (!def.showMeasurements || !feature || !feature.geometry) {
+      this._measureCache = null;
+      return null;
+    }
+    if (
+      this._measureCache &&
+      this._measureCache.feature === feature &&
+      this._measureCache.layout === this.state.layout
+    ) {
+      return this._measureCache.result;
+    }
+    const result = [
+      {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          ...colorizeFromIndex(0),
+        },
+      },
+    ];
+    this._measureCache = { feature, layout: this.state.layout, result };
+    return result;
+  }
+
+  /* Units the on-map measurement annotations render in, taken from the report
+   * definition (defaulting to feet). Memoized to a stable reference.
+   */
+  getMeasureUnits() {
+    const def = this.getReportDefinition();
+    const lengthUnits = def.lengthUnits || "ft";
+    const areaUnits = def.areaUnits || "ft";
+    if (
+      this._unitsCache &&
+      this._unitsCache.lengthUnits === lengthUnits &&
+      this._unitsCache.areaUnits === areaUnits
+    ) {
+      return this._unitsCache;
+    }
+    this._unitsCache = { lengthUnits, areaUnits };
+    return this._unitsCache;
+  }
+
   /* Resolve a "table" element's column definitions.
    *
    * "columns" may be an inline array, the name of one of the layer's
@@ -144,12 +204,16 @@ export class ReportModal extends PrintModal {
       return colDefs.filter((col) => col.property);
     }
 
+    const skipProperties = ["boundedBy", "_uuid"];
+
     // no column spec: list every attribute of the feature.
     if (feature) {
-      return Object.keys(feature.properties).map((property) => ({
-        property,
-        title: property,
-      }));
+      return Object.keys(feature.properties)
+        .filter((property) => !skipProperties.includes(property))
+        .map((property) => ({
+          property,
+          title: property,
+        }));
     }
     return [];
   }
@@ -186,7 +250,10 @@ export class ReportModal extends PrintModal {
     const effectiveMode = element.data || mode || "feature";
 
     const colDefs = this.getColumnDefs(element, feature);
-    const fmt = (col, f) => Mark.up(col.format || `{{${col.property}}}`, f, FORMAT_OPTIONS);
+    const fmt = (col, f) => {
+      const fStr = `{{ properties.${col.property} }}`;
+      return Mark.up(col.format || fStr, f, FORMAT_OPTIONS);
+    };
 
     if (element.transpose) {
       if (!feature) {
