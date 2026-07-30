@@ -281,6 +281,23 @@ export class PrintModal extends Modal {
     };
   }
 
+  /* Features to draw (measure-styled, with on-map length/area labels) on the
+   * print map only. The base print has none; the feature report overrides
+   * this to annotate its subject feature. Must return a stable reference
+   * across renders (see PrintImage) -- a fresh array each render would thrash
+   * the print image.
+   */
+  getMeasureFeatures() {
+    return null;
+  }
+
+  /* Units the print-only measure annotations render in ({ lengthUnits,
+   * areaUnits }); undefined falls back to feet.
+   */
+  getMeasureUnits() {
+    return undefined;
+  }
+
   addText(doc, def, options = {}) {
     // these are the substitution strings for the map text elements
     const substDict = this.getSubstDict();
@@ -869,6 +886,20 @@ export class PrintModal extends Modal {
     );
   }
 
+  /** Render the layout picker row.
+   *
+   *  Split out from renderBody so subclasses that choose the layout
+   *  themselves (the feature report) can drop the row entirely.
+   */
+  renderLayoutRow(t) {
+    return (
+      <p>
+        <label>{`${t("page-layout")}:`}</label>
+        {this.renderLayoutSelect(t)}
+      </p>
+    );
+  }
+
   /** Render a select drop down that allows the user
    *  to up the DPI.
    */
@@ -957,10 +988,7 @@ export class PrintModal extends Modal {
                   }}
                 />
               </p>
-              <p>
-                <label>{`${t("page-layout")}:`}</label>
-                {this.renderLayoutSelect(t)}
-              </p>
+              {this.renderLayoutRow(t)}
               <p>
                 <label>{`${t("resolution")}:`}</label>
                 {this.renderResolutionSelect(t)}
@@ -986,6 +1014,8 @@ export class PrintModal extends Modal {
             resolution={mapSize.resolution}
             store={this.props.store}
             includeSelection={this.state.includeSelection === "true"}
+            measureFeatures={this.getMeasureFeatures()}
+            measureUnits={this.getMeasureUnits()}
           />
         </div>
       </div>

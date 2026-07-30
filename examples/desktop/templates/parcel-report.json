@@ -4,6 +4,8 @@
         "orientation": "portrait",
         "page": "letter",
         "units": "in",
+        "showMeasurements": true,
+        "areaUnits": "a",
         "elements": [
             {
                 "type": "text",
@@ -11,7 +13,7 @@
                 "fontStyle": "bold",
                 "x": 0.5,
                 "y": 0.7,
-                "text": "Parcel Report: {{PIN}}"
+                "text": "Parcel Report: {{properties.PIN}}"
             },
             { "type": "map", "x": 0.5, "y": 0.9, "width": 7.5, "height": 5 },
             {
@@ -28,7 +30,7 @@
                 "fontStyle": "bold",
                 "x": 0.5,
                 "y": 6.1,
-                "text": "{{OWNER_NAME}}"
+                "text": "{{properties.OWNER_NAME}}"
             },
             {
                 "type": "table",

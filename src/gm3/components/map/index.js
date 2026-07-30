@@ -414,6 +414,57 @@ class Map extends React.Component {
     });
   }
 
+  /** Create the print-only measure-annotation layer.
+   *
+   *  The feature report annotates its subject feature exactly like the
+   *  measure tool -- the measure-styled geometry plus on-map length/area
+   *  labels -- but only on the background print map. The features live in
+   *  this per-instance OpenLayers layer rather than the Redux-backed
+   *  "measure" map-source, which is precisely what keeps them off the shared,
+   *  interactive map.
+   */
+  configurePrintMeasureLayer() {
+    // labels are always drawn for a report (in the report's units), so the
+    //  annotations do not depend on the interactive measure-label toggle.
+    const getLabelOptions = () => {
+      const units = this.props.measureUnits || {};
+      return {
+        enabled: true,
+        lengthUnits: units.lengthUnits || "ft",
+        areaUnits: units.areaUnits || "ft",
+      };
+    };
+    this.printMeasureLayer = createMeasureLayer(
+      { name: "print-measure", type: "measure" },
+      getLabelOptions
+    );
+    // draw above the data layers, mirroring the interactive measure layer.
+    this.printMeasureLayer.setZIndex(200002);
+    this.map.addLayer(this.printMeasureLayer);
+    this.syncPrintMeasureFeatures();
+  }
+
+  /** Replace the print-only measure features from props (GeoJSON in the map
+   *  projection). Clearing and re-adding also forces a restyle, so a units
+   *  change is reflected in the labels.
+   */
+  syncPrintMeasureFeatures() {
+    if (!this.printMeasureLayer) {
+      return;
+    }
+    const source = this.printMeasureLayer.getSource();
+    source.clear(true);
+    const features = this.props.measureFeatures;
+    if (features && features.length > 0) {
+      source.addFeatures(
+        GEOJSON_FORMAT.readFeatures({
+          type: "FeatureCollection",
+          features,
+        })
+      );
+    }
+  }
+
   /** This is called after the first render.
    *  As state changes will not actually change the DOM according to
    *  React, this will establish the map.
@@ -510,6 +561,12 @@ class Map extends React.Component {
     // once the map is created, kick off the initial startup.
     this.refreshMapSources();
 
+    // the print map may carry feature-report measurement annotations that
+    //  must render here but never on the shared, interactive map.
+    if (this.props.printOnly) {
+      this.configurePrintMeasureLayer();
+    }
+
     // note the size of the map
     this.props.onMapResize({
       width: this.mapDiv.clientWidth,
@@ -535,6 +592,7 @@ class Map extends React.Component {
 
     this.olLayers = {};
     this.selectionLayer = null;
+    this.printMeasureLayer = null;
     this.sketchFeature = null;
   }
 
@@ -814,6 +872,15 @@ class Map extends React.Component {
           this.getMeasureLabelOptions
         );
       }
+    }
+
+    // keep the print-only measure annotations in sync with the report.
+    if (
+      this.printMeasureLayer &&
+      (prevProps.measureFeatures !== this.props.measureFeatures ||
+        prevProps.measureUnits !== this.props.measureUnits)
+    ) {
+      this.syncPrintMeasureFeatures();
     }
 
     // The print map is a disconnected snapshot: it follows its own

@@ -24,6 +24,49 @@
 
 import { createAction } from "@reduxjs/toolkit";
 
+import { getMapSourceName, getLayerName } from "../util";
+import { getLayerFromPath, setLayerTemplate } from "./mapSource";
+
+/* Ensure the layer's "report" layout template is loaded into the store.
+ *
+ * A report layout defined with a `src` attribute is stored as a "remote"
+ * template with no `contents` until it is fetched. Unlike identify/select
+ * templates (fetched during the query cycle), nothing else fetches the
+ * "report" template, so without this the report modal silently falls back to
+ * the built-in default layouts -- ignoring the deployer's layout,
+ * showMeasurements, custom columns, etc.
+ *
+ * This mirrors Application.getTemplate()'s remote branch: fetch the src and
+ * rewrite the template as a "local" one in the store. It is a no-op for
+ * inline (already-local) templates and for layers without a report template.
+ */
+export const ensureReportTemplate = (layerPath) => (dispatch, getState) => {
+  let layer = null;
+  try {
+    layer = getLayerFromPath(getState().mapSources, layerPath);
+  } catch {
+    layer = null;
+  }
+  const template = layer && layer.templates && layer.templates.report;
+  if (!template || template.type !== "remote") {
+    return;
+  }
+  fetch(template.src)
+    .then((response) => response.text())
+    .then((contents) => {
+      dispatch(
+        setLayerTemplate(getMapSourceName(layerPath), getLayerName(layerPath), "report", {
+          ...template,
+          type: "local",
+          contents,
+        })
+      );
+    })
+    // a failed fetch (404, offline, ...) leaves the remote template in place;
+    //  the report falls back to the default layouts, same as before.
+    .catch(() => {});
+};
+
 /* Point the feature report at a layer's results.
  *
  * The slice holds references, not a copy of the feature(s): the actual

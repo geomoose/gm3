@@ -48,7 +48,7 @@ import {
 import { parseCatalog } from "./actions/catalog";
 import { parseToolbar } from "./actions/toolbar";
 import { setConfig } from "./actions/config";
-import { openReport } from "./actions/report";
+import { openReport, ensureReportTemplate } from "./actions/report";
 
 import Modal from "./components/modal";
 
@@ -917,6 +917,11 @@ class Application {
       }
     }
 
+    // Make sure the layer's "report" layout template is fetched into the
+    //  store so the report uses the deployer's layout (and its
+    //  showMeasurements/columns) instead of the built-in default layouts.
+    this.store.dispatch(ensureReportTemplate(layerPath));
+
     this.store.dispatch(openReport(layerPath, state.query.serviceName, "feature", filter));
     this.showModal("report");
   }
@@ -927,6 +932,10 @@ class Application {
    */
   showResultsReport(layerPath) {
     const state = this.store.getState();
+    // See showFeatureReport: make sure the "report" layout template (which may
+    //  be a `src`-based remote template) is fetched into the store so the
+    //  report uses the deployer's layout rather than the built-in default.
+    this.store.dispatch(ensureReportTemplate(layerPath));
     this.store.dispatch(openReport(layerPath, state.query.serviceName, "results", null));
     this.showModal("report");
   }
