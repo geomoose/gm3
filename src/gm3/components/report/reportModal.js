@@ -107,6 +107,14 @@ export class ReportModal extends PrintModal {
     return "Feature Report";
   }
 
+  /* The report's layout is picked from the report mode (a single feature vs.
+   * the whole results set), not by the user, so the print modal's layout
+   * picker is dropped.
+   */
+  renderLayoutRow() {
+    return null;
+  }
+
   /* Extend the print substitution dictionary with the report feature's
    * attributes so layouts can reference {{PROPERTY}} (or {{properties.X}})
    * directly. Reserved print tokens (title/date) win over attribute names.

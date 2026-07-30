@@ -34,7 +34,7 @@ import FileSaver from "file-saver";
 import { FORMAT_OPTIONS, matchFeatures } from "../../util";
 
 import { getLayerFromPath } from "../../actions/mapSource";
-import { openReport } from "../../actions/report";
+import { openReport, ensureReportTemplate } from "../../actions/report";
 import { showModal } from "../../actions/ui";
 
 import { getFlatResults } from "../../selectors/query";
@@ -372,6 +372,7 @@ class Grid extends React.Component {
           </button>
           <button
             onClick={() => {
+              this.props.store.dispatch(ensureReportTemplate(reportLayerPath));
               this.props.store.dispatch(
                 openReport(reportLayerPath, this.props.serviceName, "results", null)
               );
