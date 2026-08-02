@@ -1,0 +1,59 @@
+.basemap-toggle {
+  position: absolute;
+  bottom: 30px;
+  right: 10px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  padding: 5px;
+  display: flex;
+
+  &.full-open {
+    .basemap-toggle-chip {
+      margin-left: 5px;
+      margin-right: 5px;
+      &.active {
+        background-color: rgba(123, 178, 116, 0.75);
+      }
+    }
+  }
+}
+
+.basemap-toggle-chip {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  cursor: pointer;
+  transition:
+    width 1s,
+    margin 1s;
+  width: 0;
+  margin: 0;
+
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+
+  img {
+    border-radius: 5px;
+  }
+
+  &.open {
+    width: 100px;
+  }
+}
+
+.basemap-toggle-image {
+  display: block;
+  width: 100px;
+  height: 100px;
+}
+
+.basemap-toggle-label {
+  text-align: center;
+  margin: 0;
+  flex: 1;
+  width: 115px;
+  font-size: 10px;
+  font-weight: bold;
+}
