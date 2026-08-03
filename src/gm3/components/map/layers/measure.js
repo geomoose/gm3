@@ -24,12 +24,20 @@
 
 import { Circle, Fill, Style, Stroke } from "ol/style";
 import { createLayer as createVectorLayer, updateLayer as updateVectorLayer } from "./vector";
+import { getMeasureLabelStyles } from "../../measure/labels";
 
-const applyMeasureStyle = (layer) => {
+/* Build the style function for the measure layer.
+ *
+ * @param {Function} getLabelOptions Returns the current on-map label options,
+ *   `{ enabled, units }`.  It is read on every render so that toggling the
+ *   opt-in or switching units takes effect without re-creating the layer.
+ */
+const applyMeasureStyle = (layer, getLabelOptions) => {
   layer.setStyle((feature) => {
+    const geometry = feature.getGeometry();
     const { outlineColor, coreColor } = feature.getProperties();
 
-    if (feature.getGeometry().getType() === "Point") {
+    if (geometry.getType() === "Point") {
       return new Style({
         image: new Circle({
           radius: 7,
@@ -44,7 +52,7 @@ const applyMeasureStyle = (layer) => {
       });
     }
 
-    return [
+    const styles = [
       new Style({
         stroke: new Stroke({
           color: outlineColor,
@@ -58,13 +66,22 @@ const applyMeasureStyle = (layer) => {
         }),
       }),
     ];
+
+    const labelOptions = getLabelOptions ? getLabelOptions() : null;
+    if (labelOptions && labelOptions.enabled) {
+      styles.push(...getMeasureLabelStyles(geometry, labelOptions));
+    }
+
+    return styles;
   });
 };
 
-export const createLayer = (mapSource) => {
-  return createVectorLayer(mapSource, applyMeasureStyle);
+export const createLayer = (mapSource, getLabelOptions) => {
+  return createVectorLayer(mapSource, (layer) => applyMeasureStyle(layer, getLabelOptions));
 };
 
-export const updateLayer = (map, layer, mapSource, mapTool) => {
-  return updateVectorLayer(map, layer, mapSource, mapTool, applyMeasureStyle);
+export const updateLayer = (map, layer, mapSource, mapTool, getLabelOptions) => {
+  return updateVectorLayer(map, layer, mapSource, mapTool, (styledLayer) =>
+    applyMeasureStyle(styledLayer, getLabelOptions)
+  );
 };

@@ -88,3 +88,19 @@ export const setEditPath = createAction("map/set-edit-path");
  * @return action definition
  */
 export const setEditTools = createAction("map/set-edit-tools");
+
+/* Toggle (or set) the display of the on-map measure annotations.
+ *
+ * @param show {Boolean}
+ *
+ * @return action definition
+ */
+export const setShowMeasureLabels = createAction("map/set-show-measure-labels");
+
+/* Set the units the on-map measure annotations are rendered in.
+ *
+ * @param units {Object} e.g. { measureLengthUnits: "ft", measureAreaUnits: "ft" }
+ *
+ * @return action definition
+ */
+export const setMeasureUnits = createAction("map/set-measure-units");
