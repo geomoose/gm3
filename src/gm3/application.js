@@ -66,7 +66,7 @@ import {
 import Mark from "markup-js";
 
 import {
-  addProjDef,
+  ensureProjection,
   getMapSourceName,
   getLayerName,
   FORMAT_OPTIONS,
@@ -912,7 +912,7 @@ class Application {
    * @param {string} projDef.def - a string definition of the projection, in WKT/Proj format
    */
   addProjection(projDef) {
-    addProjDef(proj4, projDef.ref, projDef.def);
+    ensureProjection(projDef.ref, projDef.def);
   }
 
   /* Short hand for toggling the highlight of features.

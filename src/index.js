@@ -49,10 +49,6 @@ import HashTracker from "./gm3/trackers/hash";
 import * as util from "./gm3/util";
 import * as jsts from "./gm3/jsts";
 
-import proj4 from "proj4";
-
-util.configureProjections(proj4);
-
 var components = {
   Catalog: Catalog,
   Map: Map,

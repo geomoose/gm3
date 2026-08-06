@@ -32,8 +32,7 @@
 
 import { BufferOp, GeoJSONReader, GeoJSONWriter } from "turf-jsts";
 import turfUnion from "@turf/union";
-import * as proj from "ol/proj";
-import { jsonToGeom, geomToJson, getUtmZone } from "./util";
+import { ensureProjection, jsonToGeom, geomToJson, getUtmZone } from "./util";
 
 export function buffer(feature, meters) {
   return bufferFeature(feature, meters).geometry;
@@ -59,7 +58,7 @@ export function bufferFeature(feature, meters) {
   const posPt = getAnchorPoint(feature, [0, 0]);
 
   // find the feature's location in UTM space.
-  const utmZone = proj.get(getUtmZone(posPt));
+  const utmZone = ensureProjection(getUtmZone(posPt));
 
   // convert the geometry to an OL geometry
   let geom = jsonToGeom(feature.geometry);
