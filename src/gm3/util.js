@@ -490,35 +490,6 @@ export function getFeaturesExtent(mapSource) {
   return bounds;
 }
 
-/* Configure a set of projections useful for GeoMoose.
- *
- * At this point this will just configure the UTM zones
- * as they are used to do accurate measurement and buffers.
- *
- * @param {Proj4} p4 The Proj4 Library.
- *
- */
-export function configureProjections(p4) {
-  for (let utmZone = 1; utmZone <= 60; utmZone++) {
-    for (const north of ["north", "south"]) {
-      // southern utm zones are 327XX, northern 326XX
-      const epsgCode = 32600 + utmZone + (north === "north" ? 0 : 100);
-
-      const projId = "EPSG:" + epsgCode;
-      const projAlias = "UTM" + utmZone + (north === "north" ? "N" : "S");
-      // it's nice to have a formulary.
-      const projString =
-        "+proj=utm +zone=" + utmZone + " +" + north + "+datum=WGS84 +units=m +no_defs";
-
-      // set up the standard way of calling the projection
-      //  (using the EPSG Code)
-      p4.defs(projId, projString);
-      // add an alias, so it can be referred by 'UTM15N' for example.
-      p4.defs(projAlias, p4.defs(projId));
-    }
-  }
-}
-
 /**
  * addProjDef
  * Add a projection definition
@@ -531,7 +502,7 @@ export function addProjDef(p4, code, def) {
   p4.defs(code, def);
 }
 
-function getUtmProjectionDef(projCode) {
+export function getUtmProjectionDef(projCode) {
   const match = projCode.match(/^UTM([1-9]|[1-5][0-9]|60)([NS])$/);
   if (!match) {
     return null;

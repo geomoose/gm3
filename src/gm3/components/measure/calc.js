@@ -110,7 +110,7 @@ export function getPathSegments(coordinatesLonLat) {
   }
 
   // determine an appropriate utm zone for measurement.
-  const utmZone = getProjection(getUtmZone(coordinatesLonLat[0]));
+  const utmZone = ensureProjection(getUtmZone(coordinatesLonLat[0]));
 
   const segments = [];
   for (let i = 1, ii = coordinatesLonLat.length; i < ii; i++) {
