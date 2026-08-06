@@ -23,8 +23,11 @@
  */
 
 import Request from "reqwest";
+import proj4 from "proj4";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
+import { get as getProjection } from "ol/proj";
+import { register } from "ol/proj/proj4";
 
 import { featureFilter as createFilter } from "@mapbox/mapbox-gl-style-spec";
 
@@ -526,6 +529,30 @@ export function configureProjections(p4) {
  */
 export function addProjDef(p4, code, def) {
   p4.defs(code, def);
+}
+
+function getUtmProjectionDef(projCode) {
+  const match = projCode.match(/^UTM([1-9]|[1-5][0-9]|60)([NS])$/);
+  if (!match) {
+    return null;
+  }
+
+  const zone = parseInt(match[1], 10);
+  const north = match[2] === "N" ? "north" : "south";
+
+  return "+proj=utm +zone=" + zone + " +" + north + "+datum=WGS84 +units=m +no_defs";
+}
+
+export function ensureProjection(projCode, projDef) {
+  if (!proj4.defs(projCode)) {
+    const def = projDef || getUtmProjectionDef(projCode);
+    if (def) {
+      addProjDef(proj4, projCode, def);
+      register(proj4);
+    }
+  }
+
+  return getProjection(projCode);
 }
 
 /* Determine the UTM zone for a point
