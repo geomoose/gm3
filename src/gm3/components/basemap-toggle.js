@@ -95,6 +95,27 @@ const BasemapToggleComponent = ({ layers, mapSources, onSetLayerVisibility }) =>
     [layers, setVis]
   );
 
+  // This happens, generally, during a misconfiguration::
+  // - The admin configures the base layers to work "in a group"
+  // - The user clicks a layer that is in a group where the rest of the configured basemaps are "off"
+  // This means there is no placeholder for that layer in the basemap toggle!
+  //
+  if (activeIndex < 0) {
+    console.warn("Basemap toggle configuration error! All exclusive layers are off.");
+
+    // short circuit the rendering
+    return (
+      <div className="basemap-toggle error">
+        <span
+          className="error-indicator"
+          title="Invalid basemap toggle state: choose a different base layer"
+        >
+          {/* unicode warning symbol */ "\u26A0"}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div
       onMouseEnter={() => setOpen(true)}
@@ -105,6 +126,8 @@ const BasemapToggleComponent = ({ layers, mapSources, onSetLayerVisibility }) =>
           setOpen(false);
         }
       }}
+      // When there is no active index "fold" the basemap chooser down
+      //  to prevent being in an indeterminate state.
       className={`basemap-toggle ${isOpen ? "full-open" : ""}`}
     >
       {layers.map((layer, idx) => (
