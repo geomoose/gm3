@@ -36,15 +36,8 @@ jest.mock("gm3/actions/mapSource", () => ({
 }));
 
 describe("BasemapToggle", () => {
-  let warnSpy = null;
-
   beforeEach(() => {
     setLayerVisibility.mockClear();
-    warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    warnSpy.mockRestore();
   });
 
   const layers = [
@@ -75,6 +68,7 @@ describe("BasemapToggle", () => {
             layers: [{ name: "mncomp", on: true }],
           },
         }}
+        mapbookReady={true}
         onSetLayerVisibility={jest.fn()}
       />
     );
@@ -90,9 +84,27 @@ describe("BasemapToggle", () => {
     expect(blankChip.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("does not render before the mapbook is ready", () => {
+    const { container } = render(
+      <BasemapToggleComponent
+        layers={layers}
+        mapSources={{}}
+        mapbookReady={false}
+        onSetLayerVisibility={jest.fn()}
+      />
+    );
+
+    expect(container.firstChild).toBe(null);
+  });
+
   it("shows an error state when no basemap is active", () => {
     render(
-      <BasemapToggleComponent layers={layers} mapSources={{}} onSetLayerVisibility={jest.fn()} />
+      <BasemapToggleComponent
+        layers={layers}
+        mapSources={{}}
+        mapbookReady={true}
+        onSetLayerVisibility={jest.fn()}
+      />
     );
 
     const error = document.querySelector(".basemap-toggle.error");
@@ -101,9 +113,7 @@ describe("BasemapToggle", () => {
     expect(
       screen.getByTitle("Invalid basemap toggle state: choose a different base layer")
     ).not.toBe(null);
-    expect(warnSpy).toHaveBeenCalledWith(
-      "Basemap toggle configuration error! All exclusive layers are off."
-    );
+    expect(error.querySelector(".error-indicator")).not.toBe(null);
   });
 
   it("toggles the clicked basemap on and the others off", () => {
@@ -117,6 +127,7 @@ describe("BasemapToggle", () => {
             layers: [{ name: "blank", on: true }],
           },
         }}
+        mapbookReady={true}
         onSetLayerVisibility={onSetLayerVisibility}
       />
     );
@@ -136,6 +147,7 @@ describe("BasemapToggle", () => {
           layers: [{ name: "blank", on: true }],
         },
       },
+      mapbookReady: true,
       onSetLayerVisibility: jest.fn(),
     };
 
@@ -158,6 +170,7 @@ describe("BasemapToggle", () => {
             layers: [{ name: "blank", on: true }],
           },
         }}
+        mapbookReady={true}
         onSetLayerVisibility={jest.fn()}
       />
     );
