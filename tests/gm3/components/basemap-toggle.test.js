@@ -36,8 +36,15 @@ jest.mock("gm3/actions/mapSource", () => ({
 }));
 
 describe("BasemapToggle", () => {
+  let warnSpy = null;
+
   beforeEach(() => {
     setLayerVisibility.mockClear();
+    warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
   });
 
   const layers = [
@@ -83,17 +90,20 @@ describe("BasemapToggle", () => {
     expect(blankChip.getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("shows a neutral state when no basemap is active", () => {
+  it("shows an error state when no basemap is active", () => {
     render(
       <BasemapToggleComponent layers={layers} mapSources={{}} onSetLayerVisibility={jest.fn()} />
     );
 
-    layers.forEach((layer) => {
-      const chip = screen.getByRole("button", { name: layer.label });
-      expect(chip.classList.contains("active")).toBe(false);
-      expect(chip.classList.contains("open")).toBe(false);
-      expect(chip.getAttribute("aria-pressed")).toBe("false");
-    });
+    const error = document.querySelector(".basemap-toggle.error");
+    expect(error).not.toBe(null);
+    expect(screen.queryByRole("button", { name: "No background" })).toBe(null);
+    expect(
+      screen.getByTitle("Invalid basemap toggle state: choose a different base layer")
+    ).not.toBe(null);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Basemap toggle configuration error! All exclusive layers are off."
+    );
   });
 
   it("toggles the clicked basemap on and the others off", () => {
@@ -102,7 +112,11 @@ describe("BasemapToggle", () => {
     render(
       <BasemapToggleComponent
         layers={layers}
-        mapSources={{}}
+        mapSources={{
+          blank: {
+            layers: [{ name: "blank", on: true }],
+          },
+        }}
         onSetLayerVisibility={onSetLayerVisibility}
       />
     );
@@ -117,7 +131,11 @@ describe("BasemapToggle", () => {
   it("expands on hover", () => {
     const props = {
       layers,
-      mapSources: {},
+      mapSources: {
+        blank: {
+          layers: [{ name: "blank", on: true }],
+        },
+      },
       onSetLayerVisibility: jest.fn(),
     };
 
@@ -133,7 +151,15 @@ describe("BasemapToggle", () => {
 
   it("expands on focus", () => {
     render(
-      <BasemapToggleComponent layers={layers} mapSources={{}} onSetLayerVisibility={jest.fn()} />
+      <BasemapToggleComponent
+        layers={layers}
+        mapSources={{
+          blank: {
+            layers: [{ name: "blank", on: true }],
+          },
+        }}
+        onSetLayerVisibility={jest.fn()}
+      />
     );
 
     const chip = screen.getByRole("button", { name: "No background" });
