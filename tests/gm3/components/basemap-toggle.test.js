@@ -72,13 +72,28 @@ describe("BasemapToggle", () => {
       />
     );
 
-    const aerialChip = screen.getByText("Aerial").closest(".basemap-toggle-chip");
-    const blankChip = screen.getByText("No background").closest(".basemap-toggle-chip");
+    const aerialChip = screen.getByRole("button", { name: "Aerial" });
+    const blankChip = screen.getByRole("button", { name: "No background" });
 
     expect(aerialChip.classList.contains("active")).toBe(true);
     expect(aerialChip.classList.contains("open")).toBe(true);
+    expect(aerialChip.getAttribute("aria-pressed")).toBe("true");
     expect(blankChip.classList.contains("active")).toBe(false);
     expect(blankChip.classList.contains("open")).toBe(false);
+    expect(blankChip.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("shows a neutral state when no basemap is active", () => {
+    render(
+      <BasemapToggleComponent layers={layers} mapSources={{}} onSetLayerVisibility={jest.fn()} />
+    );
+
+    layers.forEach((layer) => {
+      const chip = screen.getByRole("button", { name: layer.label });
+      expect(chip.classList.contains("active")).toBe(false);
+      expect(chip.classList.contains("open")).toBe(false);
+      expect(chip.getAttribute("aria-pressed")).toBe("false");
+    });
   });
 
   it("toggles the clicked basemap on and the others off", () => {
@@ -92,7 +107,7 @@ describe("BasemapToggle", () => {
       />
     );
 
-    fireEvent.click(screen.getByText("Aerial"));
+    fireEvent.click(screen.getByRole("button", { name: "Aerial" }));
 
     expect(onSetLayerVisibility).toHaveBeenCalledWith("lmic/mncomp", true);
     expect(onSetLayerVisibility).toHaveBeenCalledWith("blank/blank", false);
@@ -108,9 +123,22 @@ describe("BasemapToggle", () => {
 
     render(<BasemapToggleComponent {...props} />);
 
-    fireEvent.mouseOver(screen.getByText("No background").closest(".basemap-toggle"));
-    expect(
-      screen.getByText("No background").closest(".basemap-toggle-chip").classList.contains("open")
-    ).toBe(true);
+    fireEvent.mouseEnter(
+      screen.getByRole("button", { name: "No background" }).closest(".basemap-toggle")
+    );
+    expect(screen.getByRole("button", { name: "No background" }).classList.contains("open")).toBe(
+      true
+    );
+  });
+
+  it("expands on focus", () => {
+    render(
+      <BasemapToggleComponent layers={layers} mapSources={{}} onSetLayerVisibility={jest.fn()} />
+    );
+
+    const chip = screen.getByRole("button", { name: "No background" });
+    fireEvent.focus(chip);
+
+    expect(chip.classList.contains("open")).toBe(true);
   });
 });

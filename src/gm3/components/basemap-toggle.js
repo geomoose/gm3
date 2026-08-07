@@ -44,19 +44,21 @@ function getActiveLayerIndex(layers, mapSources) {
       return i;
     }
   }
-  return 0;
+  return -1;
 }
 
 const BasemapToggleChip = ({ active, open, path, src, label, onClick }) => {
   return (
-    <div
+    <button
+      type="button"
       key={path || label}
       onClick={onClick}
+      aria-pressed={active}
       className={`basemap-toggle-chip ${open ? "open" : ""} ${active ? "active" : ""}`}
     >
-      <img src={src} alt={label} className="basemap-toggle-image" />
-      <label className="basemap-toggle-label">{label}</label>
-    </div>
+      <img src={src} alt="" className="basemap-toggle-image" />
+      <span className="basemap-toggle-label">{label}</span>
+    </button>
   );
 };
 
@@ -95,8 +97,14 @@ const BasemapToggleComponent = ({ layers, mapSources, onSetLayerVisibility }) =>
 
   return (
     <div
-      onMouseOver={() => setOpen(true)}
-      onMouseOut={() => setOpen(false)}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={(evt) => {
+        if (!evt.currentTarget.contains(evt.relatedTarget)) {
+          setOpen(false);
+        }
+      }}
       className={`basemap-toggle ${isOpen ? "full-open" : ""}`}
     >
       {layers.map((layer, idx) => (
