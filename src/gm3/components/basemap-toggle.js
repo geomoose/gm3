@@ -78,7 +78,7 @@ BasemapToggleChip.defaultProps = {
   onClick: () => {},
 };
 
-const BasemapToggleComponent = ({ layers, mapSources, onSetLayerVisibility }) => {
+const BasemapToggleComponent = ({ layers, mapSources, mapbookReady, onSetLayerVisibility }) => {
   const [isOpen, setOpen] = useState(false);
   const activeIndex = useMemo(() => getActiveLayerIndex(layers, mapSources), [layers, mapSources]);
   const setVis = onSetLayerVisibility;
@@ -94,6 +94,10 @@ const BasemapToggleComponent = ({ layers, mapSources, onSetLayerVisibility }) =>
     },
     [layers, setVis]
   );
+
+  if (!mapbookReady) {
+    return null;
+  }
 
   // This happens, generally, during a misconfiguration::
   // - The admin configures the base layers to work "in a group"
@@ -154,6 +158,7 @@ BasemapToggleComponent.propTypes = {
     })
   ),
   mapSources: PropTypes.object.isRequired,
+  mapbookReady: PropTypes.bool.isRequired,
   onSetLayerVisibility: PropTypes.func.isRequired,
 };
 
@@ -163,6 +168,7 @@ BasemapToggleComponent.defaultProps = {
 
 export const mapStateToProps = (state) => ({
   mapSources: state.mapSources,
+  mapbookReady: state.ui.mapbookReady,
 });
 
 export const mapDispatchToProps = (dispatch) => ({
