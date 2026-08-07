@@ -343,6 +343,8 @@ class Application {
   }
 
   populateMapbook(contents) {
+    this.store.dispatch(uiActions.setMapbookReady(false));
+
     let mapbookXml = contents;
     if (typeof contents === "string") {
       mapbookXml = new DOMParser().parseFromString(contents, "text/xml");
@@ -369,6 +371,8 @@ class Application {
     parseToolbar(mapbookXml.getElementsByTagName("toolbar")[0]).forEach((action) =>
       this.store.dispatch(action)
     );
+
+    this.store.dispatch(uiActions.setMapbookReady(true));
 
     // return the parsed version of the document.
     return mapbookXml;
