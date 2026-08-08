@@ -46,13 +46,13 @@ const getImage = (parentElement, exportSize) => {
         mapContext.globalAlpha = opacity === "" ? 1 : Number(opacity);
         const transform = canvas.style.transform;
         // Get the transform parameters from the style's transform matrix
-        const matrix = transform
-          // eslint-disable-next-line
-                    .match(/^matrix\(([^\(]*)\)$/)[1]
-          .split(",")
-          .map(Number);
-        // Apply the transform to the export map context
-        CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+        const parsedMatrix = transform.match(/^matrix\(([^)]*)\)$/)?.[1];
+
+        if (parsedMatrix) {
+          const matrix = parsedMatrix.split(",").map(Number);
+          // Apply the transform to the export map context
+          CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+        }
         mapContext.drawImage(canvas, 0, 0);
       }
     }
