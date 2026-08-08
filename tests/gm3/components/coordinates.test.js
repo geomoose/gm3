@@ -26,11 +26,6 @@ import React from "react";
 import { render } from "@testing-library/react";
 import CoordinateDisplay, { formatCoordinates } from "gm3/components/coordinate-display";
 
-// this is necessary to configure the UTM projections
-import { configureProjections } from "gm3/util";
-import { register } from "ol/proj/proj4";
-import proj4 from "proj4";
-
 describe("coordinate display component", () => {
   it("formats coordinates with default precision", () => {
     const proj = {
@@ -63,12 +58,11 @@ describe("coordinate display component", () => {
   });
 
   it("accepts a custom projections list", () => {
-    configureProjections(proj4);
-    register(proj4);
     const projections = [
       {
         label: "UTM",
         ref: "EPSG:32615",
+        projDef: "+proj=utm +zone=15 +north +datum=WGS84 +units=m +no_defs",
         precision: 0,
       },
       {
