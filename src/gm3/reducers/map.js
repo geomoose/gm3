@@ -76,11 +76,22 @@ const reducer = createReducer(defaultState, {
     }
   },
   [zoomToExtent]: (state, { payload }) => {
+    // default to having padding if undefined.
+    let padding = true;
+    if (payload.padding !== undefined) {
+      padding = payload.padding;
+    }
+
+    let maxScale = null;
+    if (payload.maxScale !== undefined) {
+      maxScale = payload.maxScale;
+    }
+
     state.extent = {
       bbox: payload.extent,
       projection: payload.projection,
-      // default to having padding if undefined.
-      padding: payload.padding !== undefined ? payload.padding : true,
+      padding,
+      maxScale,
     };
   },
   [changeTool]: (state, { payload }) => {

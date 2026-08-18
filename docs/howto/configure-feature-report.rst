@@ -54,6 +54,38 @@ the existing zoom/remove/buffer actions:
 The results grid renders its own report button, which calls
 ``showResultsReport`` for the displayed layer -- no configuration needed.
 
+Framing the feature
+-------------------
+
+Fitting the map to a single parcel puts its boundary flat against the edge
+of the frame, and on a small lot zooms in past whatever imagery the
+basemap has. ``showFeatureReport`` takes two options to control that:
+
+* ``padding`` - pixels of gutter to leave around the feature's extent.
+  Defaults to ``30``.
+* ``maxScale`` - the largest scale the zoom is allowed to reach, as a
+  scale denominator: ``1200`` stops at 1:1200 (1 inch = 100 feet) no
+  matter how small the feature is. Defaults to ``1200``. Set it to
+  ``null`` to let the map zoom in as far as the feature warrants.
+
+::
+
+    app.showFeatureReport(
+      'vector-parcels/parcels',
+      [['==', 'PIN', '{{ properties.PIN }}']],
+      {padding: 60, maxScale: 2400}
+    )
+
+Both settings give the feature more room, from different directions: a
+wider ``padding`` always leaves a gutter around the feature, however
+large it is, while ``maxScale`` only ever takes effect on features small
+enough that the fit would otherwise zoom past it. Raising the
+``maxScale`` denominator (``2400``) stops the zoom further out; lowering
+it (``600``) lets the map get closer before stopping.
+
+Both feed the ordinary map fit, so they behave the same as any other
+zoom-to-extent in GeoMoose.
+
 .. note::
 
     The report resolves its feature from the live query results rather
