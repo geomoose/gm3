@@ -54,6 +54,11 @@ the existing zoom/remove/buffer actions:
 The results grid renders its own report button, which calls
 ``showResultsReport`` for the displayed layer -- no configuration needed.
 
+.. note::
+
+    The report resolves its feature from the live query results rather
+    than from a copy, so a report always reflects the current selection.
+
 Framing the feature
 -------------------
 
@@ -84,12 +89,8 @@ enough that the fit would otherwise zoom past it. Raising the
 it (``600``) lets the map get closer before stopping.
 
 Both feed the ordinary map fit, so they behave the same as any other
-zoom-to-extent in GeoMoose.
-
-.. note::
-
-    The report resolves its feature from the live query results rather
-    than from a copy, so a report always reflects the current selection.
+zoom-to-extent in GeoMoose. Neither has any effect alongside
+``{zoomToFeature: false}``, which leaves the map where the user had it.
 
 Defining the layout
 -------------------
@@ -109,8 +110,9 @@ mapbook:
 
 The template contains a print layout, or an array of them, in exactly the
 form described in :doc:`print-layouts`. When a layer has no ``report``
-template, a built-in default layout is used: a title, the map, and a
-table listing every attribute of the feature.
+template, a built-in default layout is used: a heading (``Feature
+Report``, unless the user types their own), the map, and a table listing
+every attribute of the feature.
 
 Which layout is used is chosen automatically from how the report was
 opened -- a layout whose table is bound to ``results`` for a results
