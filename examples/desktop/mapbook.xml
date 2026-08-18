@@ -146,6 +146,8 @@
             <template name="select-grid-row" src="./templates/parcel-row.html" />
 
             <template name="identify" src="./templates/parcels.html" />
+
+            <template name="report" src="./templates/parcel-report.json" />
        </layer>
     </map-source>
 

@@ -77,11 +77,21 @@ const PrintImage = (props) => {
   //  otherwise ("fit") fall back to the current map view resolution.
   const rez = props.resolution != null ? props.resolution : props.mapView.resolution;
 
-  // empty the print image whenever something changes.
+  // empty the print image whenever something changes. measureFeatures/
+  //  measureUnits are memoized upstream, so they change reference only when
+  //  the annotated feature or its units actually change.
   useEffect(() => {
     setImage("");
     printImage("");
-  }, [printImage, props.width, props.height, center, rez]);
+  }, [
+    printImage,
+    props.width,
+    props.height,
+    center,
+    rez,
+    props.measureFeatures,
+    props.measureUnits,
+  ]);
 
   useEffect(() => {
     printImage(image);
@@ -95,6 +105,8 @@ const PrintImage = (props) => {
         resolution={rez}
         printOnly={true}
         includeSelection={props.includeSelection}
+        measureFeatures={props.measureFeatures}
+        measureUnits={props.measureUnits}
         mapRenderedCallback={() => {
           if (parentRef.current) {
             setImage(getImage(parentRef.current, [props.width, props.height]));
@@ -110,6 +122,8 @@ PrintImage.defaultProps = {
   height: 400,
   resolution: null,
   includeSelection: true,
+  measureFeatures: null,
+  measureUnits: undefined,
 };
 
 const mapToProps = (state) => ({

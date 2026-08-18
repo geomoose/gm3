@@ -62,9 +62,16 @@
 .icon.cancel,
 .icon.undo,
 .icon.stop,
+.icon.report,
 .icon.close {
   .fa;
   font-size: @icon-size / 1;
+}
+
+.icon.report {
+  &:before {
+    content: @fa-var-print;
+  }
 }
 
 .icon.close {

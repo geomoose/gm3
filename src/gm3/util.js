@@ -854,6 +854,25 @@ export function getScale(resolution, projection) {
 }
 
 /**
+ * Calculate the resolution that renders at a given scale.
+ * The inverse of getScale.
+ *
+ * @params scale - Scale denominator (the 1200 of 1:1200).
+ * @params projection - Map projection
+ *
+ * @returns Number. The resolution.
+ */
+export function getResolutionForScale(scale, projection) {
+  let mpu = 1;
+  if (projection) {
+    mpu = projection.getMetersPerUnit();
+  }
+  const dpi = 25.4 / 0.28;
+  const inchesPerMeter = 39.37;
+  return scale / (mpu * inchesPerMeter * dpi);
+}
+
+/**
  * Ensure there is no funny business joining a URL to its parameters.
  *
  * @param url - The URL

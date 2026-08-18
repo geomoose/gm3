@@ -40,6 +40,7 @@ import Version from "./gm3/components/version";
 import CoordinateDisplay from "./gm3/components/coordinates";
 import MeasureTool from "./gm3/components/measure";
 import PrintModal from "./gm3/components/print/printModal";
+import ReportModal from "./gm3/components/report/reportModal";
 import JumpToExtent from "./gm3/components/jumpToExtent";
 import BookmarkModal from "./gm3/components/bookmark-modal";
 
@@ -65,6 +66,7 @@ var components = {
   CoordinateDisplay: CoordinateDisplay,
   MeasureTool: MeasureTool,
   PrintModal: PrintModal,
+  ReportModal: ReportModal,
   JumpToExtent: JumpToExtent,
   BookmarkModal,
 };

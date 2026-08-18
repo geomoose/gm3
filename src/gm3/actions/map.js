@@ -28,13 +28,22 @@ import { createAction } from "@reduxjs/toolkit";
  *
  */
 
+/* Zoom the map to an extent.
+ *
+ * padding  - true for the default gutter, false for an exact fit, or a
+ *            number of pixels to inset the extent by on every side.
+ * maxScale - the largest scale to zoom in to (the 1200 of 1:1200). Fitting a
+ *            small feature -- a single parcel -- otherwise zooms in far
+ *            enough that the feature fills the frame edge to edge.
+ */
 export const zoomToExtent = createAction(
   "map/zoom-to-extent",
-  (extent, projection, padding = true) => ({
+  (extent, projection, padding = true, maxScale = null) => ({
     payload: {
       extent,
       projection,
       padding,
+      maxScale,
     },
   })
 );

@@ -55,6 +55,9 @@ import DefaultLayouts from "./printLayouts";
 
 import GeoPdfPlugin from "./geopdf";
 import { getScalelineInfo } from "../scaleline";
+import drawTable from "./drawTable";
+
+import { FORMAT_OPTIONS } from "../../util";
 
 function loadFonts(fontsUrl) {
   if (fontsUrl) {
@@ -263,15 +266,88 @@ export class PrintModal extends Modal {
     return "Print";
   }
 
-  addText(doc, def, options = {}) {
-    // these are the substitution strings for the map text elements
+  /* The substitution values available to layouts, excluding the title.
+   *
+   * Subclasses (e.g. the feature report) extend this with feature
+   * attributes so layouts can reference them as {{PROPERTY}}. Split from
+   * getSubstDict because a layout's default title is itself a template that
+   * interpolates against these values -- resolving it needs the dictionary
+   * without the title already in it.
+   */
+  getSubstValues() {
     const date = new Date();
-    const substDict = {
-      title: this.state.mapTitle,
+    return {
       year: date.getFullYear(),
       month: date.getMonth() + 1,
       day: date.getDate(),
     };
+  }
+
+  /* The active layout's own title, interpolated.
+   *
+   * "title" is a template like any other layout text, so a feature report can
+   * title itself "Parcel Report: {{properties.PIN}}". Empty when the layout
+   * does not define one.
+   */
+  getDefaultTitle(values) {
+    const layout = this.state.layouts[this.state.layout];
+    if (!layout) {
+      return "";
+    }
+    if (!layout.title) {
+      return "";
+    }
+    return Mark.up(layout.title, values, FORMAT_OPTIONS);
+  }
+
+  /* The title layouts see as {{title}}.
+   *
+   * The user's input wins when they typed one; otherwise the layout's
+   * default applies. With neither, the title resolves to nothing and addText
+   * skips the heading entirely.
+   */
+  getMapTitle(values) {
+    let typed = "";
+    if (this.state.mapTitle) {
+      typed = this.state.mapTitle.trim();
+    }
+
+    if (typed !== "") {
+      return typed;
+    } else {
+      return this.getDefaultTitle(values);
+    }
+  }
+
+  /* The substitution dictionary used to interpolate text and table cells. */
+  getSubstDict() {
+    const values = this.getSubstValues();
+    return {
+      ...values,
+      title: this.getMapTitle(values),
+    };
+  }
+
+  /* Features to draw (measure-styled, with on-map length/area labels) on the
+   * print map only. The base print has none; the feature report overrides
+   * this to annotate its subject feature. Must return a stable reference
+   * across renders (see PrintImage) -- a fresh array each render would thrash
+   * the print image.
+   */
+  getMeasureFeatures() {
+    return null;
+  }
+
+  /* Units the print-only measure annotations render in ({ lengthUnits,
+   * areaUnits }); undefined falls back to feet.
+   */
+  getMeasureUnits() {
+    return undefined;
+  }
+
+  addText(doc, def, options = {}) {
+    // these are the substitution strings for the map text elements
+    const substDict = this.getSubstDict();
 
     // def needs to define: x, y, text
     const defaults = {
@@ -286,6 +362,16 @@ export class PrintModal extends Modal {
     //  passed in by the user.
     const fullDef = Object.assign({}, defaults, def);
 
+    const text = Mark.up(fullDef.text, substDict);
+
+    // a text element that substitutes away to nothing -- the stock layouts'
+    //  "{{title}}" heading when the user left the title blank -- is skipped
+    //  rather than drawn as an empty string, so the layout does not reserve
+    //  space for a heading that is not there.
+    if (text.trim() === "") {
+      return;
+    }
+
     // set the size
     doc.setFontSize(fullDef.size);
     // the color
@@ -293,7 +379,7 @@ export class PrintModal extends Modal {
     // and the font face.
     doc.setFont(fullDef.font, fullDef.fontStyle);
     // then mark the face.
-    doc.text(fullDef.x, fullDef.y, Mark.up(fullDef.text, substDict), options);
+    doc.text(fullDef.x, fullDef.y, text, options);
   }
 
   /* Embed an image in the PDF
@@ -612,6 +698,71 @@ export class PrintModal extends Modal {
     }
   }
 
+  /* Resolve the column/row arrays for a "table" element from a bound data
+   * source (e.g. a selected feature or the results set).
+   *
+   * The base print has no feature/results context, so it returns null and
+   * only inline-row tables render. The feature report overrides this to
+   * supply data-driven rows. Returns { columns, rows } or null.
+   */
+  resolveTableData(_element) {
+    return null;
+  }
+
+  /* Render a "table" element.
+   *
+   * Two data sources are supported, with inline winning:
+   *   - element.rows: a literal 2D array straight from the layout, each
+   *     cell interpolated against the substitution dictionary.
+   *   - a bound source resolved by resolveTableData() (feature/results).
+   *
+   * The heavy lifting (widths, wrapping, striping, pagination) lives in the
+   * pure drawTable() primitive; this method only resolves the data and the
+   * page geometry.
+   */
+  addTable(doc, element) {
+    let columns, rows;
+    if (element.rows) {
+      const substDict = this.getSubstDict();
+      columns = element.columns || [];
+      rows = element.rows.map((row) =>
+        row.map((cell) => Mark.up(String(cell), substDict, FORMAT_OPTIONS))
+      );
+    } else {
+      const data = this.resolveTableData(element);
+      if (!data) {
+        return;
+      }
+      columns = data.columns;
+      rows = data.rows;
+    }
+
+    // the bottom of the printable area; tables paginate against this. The
+    //  bottom margin mirrors the element's left inset unless overridden.
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginBottom = element.marginBottom != null ? element.marginBottom : element.x || 0;
+
+    drawTable(doc, {
+      x: element.x,
+      y: element.y,
+      width: element.width,
+      columns,
+      rows,
+      rowHeight: element.rowHeight,
+      header: element.header,
+      stripe: element.stripe,
+      pageBottom: pageHeight - marginBottom,
+      pageTop: marginBottom,
+      // use the embedded print font; it is registered with a "regular"
+      //  (rather than "normal") style, see makePDF().
+      font: element.font || "NotoSans",
+      bodyStyle: element.bodyStyle || "regular",
+      headerStyle: element.headerStyle || "bold",
+      fontSize: element.fontSize,
+      color: element.color,
+    });
+  }
+
   /**
    * Convert units to PDF units
    *
@@ -660,6 +811,9 @@ export class PrintModal extends Modal {
         case "ellipse":
         case "line":
           this.addDrawing(doc, element);
+          break;
+        case "table":
+          this.addTable(doc, element);
           break;
         case "legend":
           promises = promises.concat(this.addLegends(doc, element));
@@ -789,6 +943,55 @@ export class PrintModal extends Modal {
     );
   }
 
+  /** Render the layout picker row.
+   *
+   *  Split out from renderBody so subclasses that choose the layout
+   *  themselves (the feature report) can drop the row entirely.
+   */
+  renderLayoutRow(t) {
+    return (
+      <p>
+        <label>{`${t("page-layout")}:`}</label>
+        {this.renderLayoutSelect(t)}
+      </p>
+    );
+  }
+
+  /** Render the map title row.
+   *
+   *  The row is dropped for layouts that set "allowTitleOverride": false,
+   *  which fix their own heading and would discard whatever the user typed.
+   *  Otherwise the input is optional: leaving it blank falls back to the
+   *  layout's default title, which the placeholder previews.
+   */
+  renderTitleRow(t) {
+    const layout = this.state.layouts[this.state.layout];
+    if (layout && layout.allowTitleOverride === false) {
+      return null;
+    }
+
+    // preview the layout's default in the box, so it is clear what leaving
+    //  it empty will produce.
+    let placeholder = t("map-title");
+    const defaultTitle = this.getDefaultTitle(this.getSubstValues());
+    if (defaultTitle !== "") {
+      placeholder = defaultTitle;
+    }
+
+    return (
+      <p>
+        <label>{`${t("map-title")}:`}</label>
+        <input
+          placeholder={placeholder}
+          value={this.state.mapTitle}
+          onChange={(evt) => {
+            this.setState({ mapTitle: evt.target.value });
+          }}
+        />
+      </p>
+    );
+  }
+
   /** Render a select drop down that allows the user
    *  to up the DPI.
    */
@@ -867,20 +1070,8 @@ export class PrintModal extends Modal {
         <Translation>
           {(t) => (
             <div>
-              <p>
-                <label>{`${t("map-title")}:`}</label>
-                <input
-                  placeholder={t("map-title")}
-                  value={this.state.mapTitle}
-                  onChange={(evt) => {
-                    this.setState({ mapTitle: evt.target.value });
-                  }}
-                />
-              </p>
-              <p>
-                <label>{`${t("page-layout")}:`}</label>
-                {this.renderLayoutSelect(t)}
-              </p>
+              {this.renderTitleRow(t)}
+              {this.renderLayoutRow(t)}
               <p>
                 <label>{`${t("resolution")}:`}</label>
                 {this.renderResolutionSelect(t)}
@@ -906,6 +1097,8 @@ export class PrintModal extends Modal {
             resolution={mapSize.resolution}
             store={this.props.store}
             includeSelection={this.state.includeSelection === "true"}
+            measureFeatures={this.getMeasureFeatures()}
+            measureUnits={this.getMeasureUnits()}
           />
         </div>
       </div>
@@ -913,7 +1106,11 @@ export class PrintModal extends Modal {
   }
 }
 
-const mapStateToProps = (state) => ({
+/* Base state mapping shared with subclasses (e.g. the feature report).
+ *
+ * Subclasses spread this and override "open" plus add their own props.
+ */
+export const mapStateToProps = (state) => ({
   mapSources: state.mapSources,
   open: state.ui.modal === "print",
   mapView: state.map,
