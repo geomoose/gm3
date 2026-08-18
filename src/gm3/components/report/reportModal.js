@@ -115,12 +115,13 @@ export class ReportModal extends PrintModal {
     return null;
   }
 
-  /* Extend the print substitution dictionary with the report feature's
+  /* Extend the print substitution values with the report feature's
    * attributes so layouts can reference {{PROPERTY}} (or {{properties.X}})
-   * directly. Reserved print tokens (title/date) win over attribute names.
+   * directly -- including from a layout's default "title". Reserved print
+   * tokens (the date parts) win over attribute names.
    */
-  getSubstDict() {
-    const base = super.getSubstDict();
+  getSubstValues() {
+    const base = super.getSubstValues();
     const data = this.props.report;
     const feature = data && data.feature;
     if (!feature) {
