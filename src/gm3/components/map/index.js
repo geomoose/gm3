@@ -94,6 +94,11 @@ function getControls(mapConfig) {
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
 
+/* Pixels of gutter left around an extent when fitting the map to it, unless
+ * the caller asked for an exact fit or named its own padding.
+ */
+const DEFAULT_FIT_PADDING = 15;
+
 const getPixelTolerance = (querySource, defaultPx = 10) => {
   // the default pixel tolerance is 10 pixels.
   let pxTolerance = defaultPx;
@@ -833,19 +838,36 @@ class Map extends React.Component {
   zoomToExtent(extent) {
     let bbox = extent.bbox;
     const bboxCode = extent.projection;
+    const view = this.map.getView();
     if (bboxCode) {
-      const mapProj = this.map.getView().getProjection();
+      const mapProj = view.getProjection();
       bbox = proj.transformExtent(bbox, proj.get(bboxCode), mapProj);
     }
     const options = {
       size: this.map.getSize(),
     };
-    // if the bbox was an exact capture, then do not pad.
-    if (extent.padding !== false) {
-      options.padding = [15, 15, 15, 15];
+
+    // padding is either a flag for the default gutter or an explicit number
+    //  of pixels to inset on every side.
+    if (extent.padding === false) {
+      // an exact capture; do not pad.
+    } else if (typeof extent.padding === "number") {
+      const pad = extent.padding;
+      options.padding = [pad, pad, pad, pad];
+    } else {
+      const pad = DEFAULT_FIT_PADDING;
+      options.padding = [pad, pad, pad, pad];
     }
+
+    // stop the fit short of maxScale. Fitting a single small feature
+    //  otherwise zooms in until it fills the frame, which loses the context
+    //  around it -- and on a parcel puts the boundary right on the edge.
+    if (extent.maxScale) {
+      options.minResolution = util.getResolutionForScale(extent.maxScale, view.getProjection());
+    }
+
     // move the map to the new extent.
-    this.map.getView().fit(bbox, options);
+    view.fit(bbox, options);
   }
 
   /** Intercept extent changes during a part of the render

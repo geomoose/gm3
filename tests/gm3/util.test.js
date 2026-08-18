@@ -145,3 +145,23 @@ describe("getExtentForQuery", () => {
     expect(util.getExtentForQuery({})).toEqual(null);
   });
 });
+
+describe("getResolutionForScale", () => {
+  // a projection stub is all getScale/getResolutionForScale ask for.
+  const meters = { getMetersPerUnit: () => 1 };
+
+  test("inverts getScale", () => {
+    const resolution = util.getResolutionForScale(1200, meters);
+    expect(util.getScale(resolution, meters)).toBeCloseTo(1200, 6);
+  });
+
+  test("a larger scale denominator zooms further out", () => {
+    expect(util.getResolutionForScale(2400, meters)).toBeGreaterThan(
+      util.getResolutionForScale(1200, meters)
+    );
+  });
+
+  test("defaults to one meter per unit without a projection", () => {
+    expect(util.getResolutionForScale(1200, null)).toBe(util.getResolutionForScale(1200, meters));
+  });
+});
