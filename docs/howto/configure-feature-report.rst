@@ -130,6 +130,33 @@ attributes directly, either bare or through ``properties``:
 The reserved print mustaches (``{{title}}``, ``{{month}}``, ``{{day}}``,
 ``{{year}}``, ...) take precedence over an attribute of the same name.
 
+Titling the report
+------------------
+
+A report is usually titled from the feature it describes rather than by
+the user. Give the layout a ``title`` and it becomes the default, used
+whenever the user leaves the title box empty:
+
+::
+
+    {
+        "label": "parcel-report",
+        "title": "Parcel Report: {{properties.PIN}}",
+        "elements": [
+            {"type": "text", "size": 18, "fontStyle": "bold",
+             "x": 0.5, "y": 0.7, "text": "{{title}}"}
+        ]
+    }
+
+The user still sees the title box -- with the resolved default as its
+placeholder -- and anything they type replaces the default for that
+report. To title the report from the feature and *not* let the user
+change it, add ``"allowTitleOverride": false`` and the box is hidden.
+
+Writing the heading as a literal ``"Parcel Report: {{properties.PIN}}"``
+text element works too, but the user's title is then silently discarded,
+which is the behavior ``title`` exists to avoid.
+
 Measuring the reported feature
 ------------------------------
 

@@ -58,6 +58,15 @@ the PrintModal:
     * ``orientation`` - Page orientation. One of ``'landscape'`` or ``'portrait``'.
     * ``page`` - The page size (as supported by [usejsdoc.org]). e.g. ``'letter'``, ``'a4'``, ...
     * ``units`` - The units used to specify the position of elements (e.g. for ``x``, ``y``, ``width``, ``height``, ``strokeWidth``,...). Can any units supported by jsDoc including: ``'in'``, ``'mm'``, ``'pt'``.
+    * ``title`` - Optional. A default title for the layout, used when the
+      user leaves the title box empty. It is a template like any other
+      layout text, so it can be built from whatever is in the substitution
+      dictionary (in a :doc:`feature report <configure-feature-report>`,
+      that includes the subject feature's attributes). Shown to the user as
+      the placeholder in the title box.
+    * ``allowTitleOverride`` - Optional, defaults to ``true``. Set it to
+      ``false`` for a layout whose title is fixed; the title box is then
+      hidden, since anything typed there would be discarded.
     * ``elements`` - An array of elements, described below.
 
 The following elements are available:
@@ -66,7 +75,10 @@ The following elements are available:
 
     -  ``text`` - The content to put on the map. Supports :doc:`GeoMoose
        Templates <../templates>` including a special ``{{title}}``
-       mustache which is the user's inputted title.
+       mustache. ``{{title}}`` is the title the user typed, falling back to
+       the layout's ``title`` when they typed nothing. A text element that
+       substitutes away to an empty string is skipped rather than drawn, so
+       a ``{{title}}`` heading leaves no gap when there is no title at all.
     -  ``size`` - The font size in points.
     -  ``fontStyle`` - ``normal``, ``italic`` or ``bold``
     -  ``font`` - Defaults to Arial but could be any common font available

@@ -229,12 +229,14 @@ describe("resolveTableData", () => {
   });
 });
 
-describe("getSubstDict", () => {
-  // the report extends the print dictionary; stub the parent's contribution.
+describe("getSubstValues", () => {
+  // the report extends the print values; stub the parent's contribution.
   const withBase = (base, report) => {
     const modal = modalWith({ report });
     modal.constructor = ReportModal;
-    jest.spyOn(Object.getPrototypeOf(ReportModal.prototype), "getSubstDict").mockReturnValue(base);
+    jest
+      .spyOn(Object.getPrototypeOf(ReportModal.prototype), "getSubstValues")
+      .mockReturnValue(base);
     return modal;
   };
 
@@ -243,22 +245,55 @@ describe("getSubstDict", () => {
   });
 
   test("exposes feature attributes alongside the print tokens", () => {
-    const modal = withBase({ title: "Feature Report" }, { feature: parcel });
-    const dict = modal.getSubstDict();
-    expect(dict.PIN).toBe("12345");
-    expect(dict.properties.OWNER).toBe("Smith, John");
-    expect(dict.title).toBe("Feature Report");
+    const modal = withBase({ year: 2026 }, { feature: parcel });
+    const values = modal.getSubstValues();
+    expect(values.PIN).toBe("12345");
+    expect(values.properties.OWNER).toBe("Smith, John");
+    expect(values.year).toBe(2026);
   });
 
   test("reserved print tokens win over same-named attributes", () => {
-    const clashing = featureOf({ title: "Parcel 12345" });
-    const modal = withBase({ title: "Feature Report" }, { feature: clashing });
-    expect(modal.getSubstDict().title).toBe("Feature Report");
+    const clashing = featureOf({ year: 1999 });
+    const modal = withBase({ year: 2026 }, { feature: clashing });
+    expect(modal.getSubstValues().year).toBe(2026);
   });
 
-  test("passes the print dictionary through untouched with no feature", () => {
-    const base = { title: "Feature Report" };
-    expect(withBase(base, null).getSubstDict()).toEqual(base);
+  test("passes the print values through untouched with no feature", () => {
+    const base = { year: 2026 };
+    expect(withBase(base, null).getSubstValues()).toEqual(base);
+  });
+});
+
+describe("title resolution", () => {
+  // the layout's title is a template like any other layout text, so a report
+  //  can title itself from the subject feature's attributes.
+  const titled = (title, mapTitle = "") =>
+    modalWith(
+      { report: { feature: parcel, mode: "feature" } },
+      { layouts: [{ label: "parcel-report", title }], layout: 0, mapTitle }
+    );
+
+  test("interpolates the layout title against the feature attributes", () => {
+    const modal = titled("Parcel Report: {{properties.PIN}}");
+    expect(modal.getSubstDict().title).toBe("Parcel Report: 12345");
+  });
+
+  test("a title typed by the user overrides the layout default", () => {
+    const modal = titled("Parcel Report: {{properties.PIN}}", "Smith Parcel");
+    expect(modal.getSubstDict().title).toBe("Smith Parcel");
+  });
+
+  test("a blank or whitespace-only entry falls back to the layout default", () => {
+    expect(titled("Parcel Results", "   ").getSubstDict().title).toBe("Parcel Results");
+  });
+
+  test("resolves to nothing when neither the user nor the layout supplies one", () => {
+    expect(titled(undefined).getSubstDict().title).toBe("");
+  });
+
+  test("getDefaultTitle ignores what the user typed", () => {
+    const modal = titled("Parcel Report: {{properties.PIN}}", "Smith Parcel");
+    expect(modal.getDefaultTitle(modal.getSubstValues())).toBe("Parcel Report: 12345");
   });
 });
 

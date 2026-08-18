@@ -266,18 +266,65 @@ export class PrintModal extends Modal {
     return "Print";
   }
 
-  /* The substitution dictionary used to interpolate text and table cells.
+  /* The substitution values available to layouts, excluding the title.
    *
    * Subclasses (e.g. the feature report) extend this with feature
-   * attributes so layouts can reference them as {{PROPERTY}}.
+   * attributes so layouts can reference them as {{PROPERTY}}. Split from
+   * getSubstDict because a layout's default title is itself a template that
+   * interpolates against these values -- resolving it needs the dictionary
+   * without the title already in it.
    */
-  getSubstDict() {
+  getSubstValues() {
     const date = new Date();
     return {
-      title: this.state.mapTitle,
       year: date.getFullYear(),
       month: date.getMonth() + 1,
       day: date.getDate(),
+    };
+  }
+
+  /* The active layout's own title, interpolated.
+   *
+   * "title" is a template like any other layout text, so a feature report can
+   * title itself "Parcel Report: {{properties.PIN}}". Empty when the layout
+   * does not define one.
+   */
+  getDefaultTitle(values) {
+    const layout = this.state.layouts[this.state.layout];
+    if (!layout) {
+      return "";
+    }
+    if (!layout.title) {
+      return "";
+    }
+    return Mark.up(layout.title, values, FORMAT_OPTIONS);
+  }
+
+  /* The title layouts see as {{title}}.
+   *
+   * The user's input wins when they typed one; otherwise the layout's
+   * default applies. With neither, the title resolves to nothing and addText
+   * skips the heading entirely.
+   */
+  getMapTitle(values) {
+    let typed = "";
+    if (this.state.mapTitle) {
+      typed = this.state.mapTitle.trim();
+    }
+
+    if (typed !== "") {
+      return typed;
+    } else {
+      return this.getDefaultTitle(values);
+    }
+  }
+
+  /* The substitution dictionary used to interpolate text and table cells. */
+  getSubstDict() {
+    const values = this.getSubstValues();
+    return {
+      ...values,
+      title: this.getMapTitle(values),
     };
   }
 
@@ -315,6 +362,16 @@ export class PrintModal extends Modal {
     //  passed in by the user.
     const fullDef = Object.assign({}, defaults, def);
 
+    const text = Mark.up(fullDef.text, substDict);
+
+    // a text element that substitutes away to nothing -- the stock layouts'
+    //  "{{title}}" heading when the user left the title blank -- is skipped
+    //  rather than drawn as an empty string, so the layout does not reserve
+    //  space for a heading that is not there.
+    if (text.trim() === "") {
+      return;
+    }
+
     // set the size
     doc.setFontSize(fullDef.size);
     // the color
@@ -322,7 +379,7 @@ export class PrintModal extends Modal {
     // and the font face.
     doc.setFont(fullDef.font, fullDef.fontStyle);
     // then mark the face.
-    doc.text(fullDef.x, fullDef.y, Mark.up(fullDef.text, substDict), options);
+    doc.text(fullDef.x, fullDef.y, text, options);
   }
 
   /* Embed an image in the PDF
@@ -900,6 +957,41 @@ export class PrintModal extends Modal {
     );
   }
 
+  /** Render the map title row.
+   *
+   *  The row is dropped for layouts that set "allowTitleOverride": false,
+   *  which fix their own heading and would discard whatever the user typed.
+   *  Otherwise the input is optional: leaving it blank falls back to the
+   *  layout's default title, which the placeholder previews.
+   */
+  renderTitleRow(t) {
+    const layout = this.state.layouts[this.state.layout];
+    if (layout && layout.allowTitleOverride === false) {
+      return null;
+    }
+
+    // preview the layout's default in the box, so it is clear what leaving
+    //  it empty will produce.
+    let placeholder = t("map-title");
+    const defaultTitle = this.getDefaultTitle(this.getSubstValues());
+    if (defaultTitle !== "") {
+      placeholder = defaultTitle;
+    }
+
+    return (
+      <p>
+        <label>{`${t("map-title")}:`}</label>
+        <input
+          placeholder={placeholder}
+          value={this.state.mapTitle}
+          onChange={(evt) => {
+            this.setState({ mapTitle: evt.target.value });
+          }}
+        />
+      </p>
+    );
+  }
+
   /** Render a select drop down that allows the user
    *  to up the DPI.
    */
@@ -978,16 +1070,7 @@ export class PrintModal extends Modal {
         <Translation>
           {(t) => (
             <div>
-              <p>
-                <label>{`${t("map-title")}:`}</label>
-                <input
-                  placeholder={t("map-title")}
-                  value={this.state.mapTitle}
-                  onChange={(evt) => {
-                    this.setState({ mapTitle: evt.target.value });
-                  }}
-                />
-              </p>
+              {this.renderTitleRow(t)}
               {this.renderLayoutRow(t)}
               <p>
                 <label>{`${t("resolution")}:`}</label>
