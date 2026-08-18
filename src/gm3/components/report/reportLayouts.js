@@ -33,6 +33,9 @@ const LAYOUTS = [
     orientation: "portrait",
     page: "letter",
     units: "in",
+    // without a default the heading would be blank -- and therefore skipped
+    //  -- for any user who does not type a title.
+    title: "Feature Report",
     elements: [
       {
         type: "text",
