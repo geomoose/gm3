@@ -101,6 +101,24 @@ test("getUtmZone", () => {
   expect(util.getUtmZone([-93, 45])).toBe("UTM15N");
 });
 
+test("getUtmProjectionDef", () => {
+  expect(util.getUtmProjectionDef("UTM15N")).toBe(
+    "+proj=utm +zone=15 +north+datum=WGS84 +units=m +no_defs"
+  );
+  expect(util.getUtmProjectionDef("UTM21S")).toBe(
+    "+proj=utm +zone=21 +south+datum=WGS84 +units=m +no_defs"
+  );
+});
+
+test("getUtmProjectionDef anti-cases", () => {
+  expect(util.getUtmProjectionDef("UTM0N")).toBe(null);
+  expect(util.getUtmProjectionDef("UTM61N")).toBe(null);
+  expect(util.getUtmProjectionDef("UTM15")).toBe(null);
+  expect(util.getUtmProjectionDef("UTM15n")).toBe(null);
+  expect(util.getUtmProjectionDef("EPSG:32615")).toBe(null);
+  expect(util.getUtmProjectionDef("foo")).toBe(null);
+});
+
 test("metersLengthToUnits", () => {
   expect(util.metersLengthToUnits(1, "ft")).toBe(1 / 0.3048);
   expect(util.metersLengthToUnits(1, "mi")).toBe(1 / 1609.347);
