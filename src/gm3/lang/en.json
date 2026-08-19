@@ -124,5 +124,9 @@
   "yes": "Yes",
   "no": "No",
   "show-layer": "Show layer {{label}}",
-  "hide-layer": "Hide layer {{label}}"
+  "hide-layer": "Hide layer {{label}}",
+  "scale-line": "Scale line",
+  "scale-line-none": "None",
+  "scale-line-line-distance": "Line and Distance",
+  "scale-line-line-distance-scale": "Line, Distance, and Scale"
 }
