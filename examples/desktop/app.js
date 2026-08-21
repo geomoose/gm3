@@ -275,6 +275,33 @@ app.loadMapbook().then(function() {
 
     app.add(gm3.components.Map, 'map', {});
 
+    var lmicPreviewUrl = CONFIG.mapserver_url
+      + '?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fjpeg'
+      + '&LAYERS=mncomp'
+      + '&MAP=' + encodeURIComponent(CONFIG.mapfile_root + 'demo/wms/wms_proxy.map')
+      + '&SRS=EPSG%3A3857&STYLES=&WIDTH=40&HEIGHT=40'
+      + '&BBOX=-10389135.541557081%2C5535452.120985681%2C-10351566.742154919%2C5566447.33595532';
+
+    app.add(gm3.components.BasemapToggle, 'basemap-toggle', {
+        layers: [
+            {
+                label: 'No background',
+                src: 'data:image/gif;base64,R0lGODlhAQABAIAAAP7//wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==',
+                path: 'blank/blank',
+            },
+            {
+                label: 'OpenStreetMap',
+                src: 'https://a.tile.openstreetmap.org/12/989/1480.png',
+                path: 'openstreetmap/osm_mapnik',
+            },
+            {
+                label: 'Aerial',
+                src: lmicPreviewUrl,
+                path: 'lmic/mncomp',
+            }
+        ]
+    });
+
     var print_preview = app.add(gm3.components.PrintModal, 'print-preview', {});
     app.registerAction('print', function() {
         this.run = function() {

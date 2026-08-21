@@ -42,6 +42,7 @@ import MeasureTool from "./gm3/components/measure";
 import PrintModal from "./gm3/components/print/printModal";
 import JumpToExtent from "./gm3/components/jumpToExtent";
 import BookmarkModal from "./gm3/components/bookmark-modal";
+import BasemapToggle from "./gm3/components/basemap-toggle";
 
 import LocalStorageTracker from "./gm3/trackers/localStorage";
 import HashTracker from "./gm3/trackers/hash";
@@ -67,6 +68,7 @@ var components = {
   PrintModal: PrintModal,
   JumpToExtent: JumpToExtent,
   BookmarkModal,
+  BasemapToggle,
 };
 
 var trackers = {
