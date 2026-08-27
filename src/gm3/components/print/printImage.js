@@ -73,7 +73,9 @@ const PrintImage = (props) => {
   };
 
   const center = props.mapView.center;
-  const rez = props.mapView.resolution;
+  // when a fixed print scale is selected, render at that scale's resolution;
+  //  otherwise ("fit") fall back to the current map view resolution.
+  const rez = props.resolution != null ? props.resolution : props.mapView.resolution;
 
   // empty the print image whenever something changes.
   useEffect(() => {
@@ -106,6 +108,7 @@ const PrintImage = (props) => {
 PrintImage.defaultProps = {
   width: 600,
   height: 400,
+  resolution: null,
   includeSelection: true,
 };
 
