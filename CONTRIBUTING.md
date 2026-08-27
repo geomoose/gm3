@@ -2,7 +2,7 @@
 
 ## Welcome
 
-The GeoMoose Project Steering Committee and maintainers strive to promote a welcoming environment for all contributors.  We welcome both technical and non-technical contributions (e.g., documentation, translations, testing, community support, design).
+The GeoMoose [Project Steering Committee](https://geomoose.org/rfc/rfc-1.html) and maintainers strive to promote a welcoming environment for all contributors.  We welcome both technical and non-technical contributions (e.g., documentation, translations, testing, community support, design).
 
 ## How to connect with the GeoMoose community
 
