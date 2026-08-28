@@ -11,6 +11,5 @@ The GeoMoose project does not expressly discourage the use of AI/LLM tooling. Ho
 1. No submissions by agents. All submissions should be contributed by a human in the loop. That human is responsible for their contribution.
 2. There is still a preference for handwritten code.
 3. New contributors who arrive with large AI refactors or changes that do not satisfy a project goal will be rejected.
-4. The typical high verbosity of LLM code and text is actively discouraged. More code is more code to maintain.
 
 These guidelines are here to protect the interest of the active GeoMoose projects members without providing a blocker on the adoption of new tooling. They will be subject to change over time as the technological, legal, and ethical landscape evolves.
