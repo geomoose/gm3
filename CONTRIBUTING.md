@@ -20,7 +20,7 @@ We especially appreciate bug reports that include a proposed fix.
 
 ## Before a Pull Request can be merged
 
-1. Code must follow the [coding style guide](docs/style_guide.rst).
+1. Code must follow the [coding style guide](docs/style_guide.md).
 2. All tests (including the linter) must pass.  (You can run `npm test` locally, or wait for the GitHub CI Action.)
 3. The contributor must confirm that the code may be released under the GeoMoose [License](LICENSE.md) (see [RFC-4](https://geomoose.org/rfc/rfc-4.html) for full details).
 4. Keep changes minimal. Large refactors are usually rejected.  If a bigger change is genuinely needed, split it into a series of small, self-contained commits.
