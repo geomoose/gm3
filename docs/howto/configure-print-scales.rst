@@ -82,3 +82,48 @@ Scale                     ``scale``    Typical use
 
     Scales assume a basemap in meters (web mercator) and are true at the
     map center; like any web-mercator map, scale distorts toward the poles.
+
+Zoom restrictions and the offered scales
+----------------------------------------
+
+Printing at a fixed scale re-renders the map at the resolution that scale
+requires. The print map is rendered by the same map component as the main
+map, so it inherits any ``map.view`` zoom restrictions -- and a scale
+finer than those restrictions permit **cannot be honored**.
+
+::
+
+    var app = new gm3.Application({
+        map: {
+            view: {
+                maxZoom: 20
+            }
+        }
+    });
+
+With ``maxZoom: 20``, a request for ``1 inch = 10 feet`` cannot be met:
+OpenLayers clamps the render at the zoom-20 limit, and the map comes out
+several times coarser than asked for.
+
+The same applies at the other end. ``view.extent`` caps how far out the
+map can zoom -- the extent has to fit the printed map's pixel size -- so
+a very coarse scale on a tightly bounded map is equally unreachable.
+
+**Unreachable scales are not offered.** GeoMoose tests each configured
+scale against the view's limits and leaves out the ones it cannot honor,
+so a user cannot select a scale the print would silently fail to deliver.
+Any dropped scales are named in the print dialog and in the browser
+console.
+
+.. warning::
+
+    A scale you configured can therefore be missing from the print dialog
+    on some layouts and present on others -- the check depends on the size
+    of the layout's map element as well as on the zoom limits.
+
+The fix is to make the settings agree: either widen the zoom limits far
+enough to reach your finest and coarsest scales, or set ``print.scales``
+so only reachable scales are offered.
+
+The printed scale caption is drawn only for a scale that passed this
+check -- see the **Scale line** option in :doc:`configure-scaleline`.
