@@ -109,4 +109,23 @@ describe("test the `map` reducer", () => {
     expect(st.bbox).toBe(view.bbox);
     expect(st.projection).toBe(view.projection);
   });
+
+  it("defaults the extent to padded and unrestricted", () => {
+    store.dispatch(actions.zoomToExtent([100, 100, 200, 200], "EPSG:3857"));
+    const st = store.getState().map.extent;
+    expect(st.padding).toBe(true);
+    expect(st.maxScale).toBe(null);
+  });
+
+  it("carries an explicit pixel padding and maxScale", () => {
+    store.dispatch(actions.zoomToExtent([100, 100, 200, 200], "EPSG:3857", 30, 1200));
+    const st = store.getState().map.extent;
+    expect(st.padding).toBe(30);
+    expect(st.maxScale).toBe(1200);
+  });
+
+  it("keeps an exact fit unpadded", () => {
+    store.dispatch(actions.zoomToExtent([100, 100, 200, 200], "EPSG:3857", false));
+    expect(store.getState().map.extent.padding).toBe(false);
+  });
 });

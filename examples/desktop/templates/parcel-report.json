@@ -1,0 +1,93 @@
+[
+    {
+        "label": "parcel-report",
+        "orientation": "portrait",
+        "page": "letter",
+        "units": "in",
+        "title": "Parcel Report: {{properties.PIN}}",
+        "showMeasurements": true,
+        "areaUnits": "a",
+        "elements": [
+            {
+                "type": "text",
+                "size": 18,
+                "fontStyle": "bold",
+                "x": 0.5,
+                "y": 0.7,
+                "text": "{{title}}"
+            },
+            { "type": "map", "x": 0.5, "y": 0.9, "width": 7.5, "height": 5 },
+            {
+                "type": "rect",
+                "x": 0.5,
+                "y": 0.9,
+                "width": 7.5,
+                "height": 5,
+                "strokeWidth": 0.01
+            },
+            {
+                "type": "text",
+                "size": 13,
+                "fontStyle": "bold",
+                "x": 0.5,
+                "y": 6.1,
+                "text": "{{properties.OWNER_NAME}}"
+            },
+            {
+                "type": "table",
+                "x": 0.5,
+                "y": 6.3,
+                "width": 7.5,
+                "data": "feature",
+                "transpose": true,
+                "header": false,
+                "labelWidth": 2.5,
+                "columns": "select-grid-columns",
+                "stripe": [245, 245, 245]
+            },
+            {
+                "type": "text",
+                "x": 0.5,
+                "y": 10.5,
+                "text": "Printed on {{month}} / {{day}} / {{year}}"
+            }
+        ]
+    },
+    {
+        "label": "parcel-results",
+        "orientation": "portrait",
+        "page": "letter",
+        "units": "in",
+        "title": "Parcel Results",
+        "elements": [
+            {
+                "type": "text",
+                "size": 18,
+                "fontStyle": "bold",
+                "x": 0.5,
+                "y": 0.7,
+                "text": "{{title}}"
+            },
+            { "type": "map", "x": 0.5, "y": 0.9, "width": 7.5, "height": 3.5 },
+            {
+                "type": "rect",
+                "x": 0.5,
+                "y": 0.9,
+                "width": 7.5,
+                "height": 3.5,
+                "strokeWidth": 0.01
+            },
+            {
+                "type": "table",
+                "x": 0.5,
+                "y": 4.7,
+                "width": 7.5,
+                "data": "results",
+                "header": true,
+                "rowHeight": 0.28,
+                "columns": "select-grid-columns",
+                "stripe": [245, 245, 245]
+            }
+        ]
+    }
+]

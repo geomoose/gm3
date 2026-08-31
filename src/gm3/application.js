@@ -48,6 +48,7 @@ import {
 import { parseCatalog } from "./actions/catalog";
 import { parseToolbar } from "./actions/toolbar";
 import { setConfig } from "./actions/config";
+import { openReport, ensureReportTemplate } from "./actions/report";
 
 import Modal from "./components/modal";
 
@@ -65,7 +66,15 @@ import {
 
 import Mark from "markup-js";
 
-import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from "./util";
+import {
+  addProjDef,
+  getMapSourceName,
+  getLayerName,
+  FORMAT_OPTIONS,
+  parseQuery,
+  matchFeatures,
+  getExtentForQuery,
+} from "./util";
 import { normalizeFieldValues, normalizeSelection } from "./query/util";
 
 import i18nConfigure from "./i18n";
@@ -98,6 +107,16 @@ function hydrateConfig(userConfig = {}) {
 
   return config;
 }
+
+/* Defaults for the zoom a feature report performs before printing.
+ *
+ * A plain fit to one parcel puts its boundary on the frame edge and, on a
+ * small lot, zooms past anything the basemap has imagery for. The gutter is
+ * wider than the map's usual fit padding because the result is a printed
+ * page, and 1:1200 (1" = 100') is about as close as a parcel map is useful.
+ */
+const REPORT_ZOOM_PADDING = 30;
+const REPORT_MAX_SCALE = 1200;
 
 function getServiceRunOptions(serviceDef) {
   const runOpts = {};
@@ -883,6 +902,69 @@ class Application {
 
   showModal(modalKey) {
     this.store.dispatch(uiActions.showModal(modalKey));
+  }
+
+  /** Open a feature report for a single feature.
+   *
+   * The feature is identified within the layer's current results by a
+   * filter (the same predicate-array form used by removeQueryResults, e.g.
+   * [["==", "PIN", "12345"]]). By default the map is zoomed to the feature
+   * so the report's map image and georeferencing are centered on it.
+   *
+   * A bare fit to a single parcel puts its boundary right on the frame edge,
+   * so the zoom takes two settings to leave the feature some context:
+   * "padding" insets the extent by a number of pixels, and "maxScale" caps
+   * how far in the fit is allowed to go.
+   *
+   * @param {String} layerPath The "map-source/layer" path of the results.
+   * @param {Array}  filter    A filter identifying the feature.
+   * @param {Object} options   { zoomToFeature: bool (default true),
+   *                             padding: px (default 30),
+   *                             maxScale: scale denominator (default 1200) }
+   */
+  showFeatureReport(layerPath, filter, options = {}) {
+    const state = this.store.getState();
+    const results = state.query.results[layerPath] || [];
+    const matched = filter ? matchFeatures(results, filter) : results;
+
+    if (options.zoomToFeature !== false && matched.length > 0) {
+      const extent = getExtentForQuery({ [layerPath]: matched });
+      if (extent) {
+        let padding = REPORT_ZOOM_PADDING;
+        if (options.padding !== undefined) {
+          padding = options.padding;
+        }
+
+        let maxScale = REPORT_MAX_SCALE;
+        if (options.maxScale !== undefined) {
+          maxScale = options.maxScale;
+        }
+
+        this.store.dispatch(mapActions.zoomToExtent(extent, undefined, padding, maxScale));
+      }
+    }
+
+    // Make sure the layer's "report" layout template is fetched into the
+    //  store so the report uses the deployer's layout (and its
+    //  showMeasurements/columns) instead of the built-in default layouts.
+    this.store.dispatch(ensureReportTemplate(layerPath));
+
+    this.store.dispatch(openReport(layerPath, state.query.serviceName, "feature", filter));
+    this.showModal("report");
+  }
+
+  /** Open a report covering all results for a layer.
+   *
+   * @param {String} layerPath The "map-source/layer" path of the results.
+   */
+  showResultsReport(layerPath) {
+    const state = this.store.getState();
+    // See showFeatureReport: make sure the "report" layout template (which may
+    //  be a `src`-based remote template) is fetched into the store so the
+    //  report uses the deployer's layout rather than the built-in default.
+    this.store.dispatch(ensureReportTemplate(layerPath));
+    this.store.dispatch(openReport(layerPath, state.query.serviceName, "results", null));
+    this.showModal("report");
   }
 
   /* Set the view of the map
