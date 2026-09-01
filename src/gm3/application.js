@@ -65,7 +65,13 @@ import {
 
 import Mark from "markup-js";
 
-import { addProjDef, getMapSourceName, getLayerName, FORMAT_OPTIONS, parseQuery } from "./util";
+import {
+  ensureProjection,
+  getMapSourceName,
+  getLayerName,
+  FORMAT_OPTIONS,
+  parseQuery,
+} from "./util";
 import { normalizeFieldValues, normalizeSelection } from "./query/util";
 
 import i18nConfigure from "./i18n";
@@ -905,7 +911,7 @@ class Application {
    * @param {string} projDef.def - a string definition of the projection, in WKT/Proj format
    */
   addProjection(projDef) {
-    addProjDef(proj4, projDef.ref, projDef.def);
+    ensureProjection(projDef.ref, projDef.def);
   }
 
   /* Short hand for toggling the highlight of features.
