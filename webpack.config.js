@@ -55,16 +55,13 @@ module.exports = env => {
         ],
         resolve: {
             alias: {
-              "@gm3": path.resolve(__dirname, "./src/gm3"),
+              "@gm3": path.resolve(__dirname, "src/gm3"),
             },
             extensions: [
                 '.js', '.jsx',
             ],
             fallback: {
                 url: require.resolve('url'),
-            },
-            alias: {
-              "@gm3": path.resolve(__dirname, "src/gm3"),
             },
         },
         module: {
