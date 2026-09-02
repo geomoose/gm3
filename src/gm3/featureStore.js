@@ -22,7 +22,12 @@
  * SOFTWARE.
  */
 
-/** A registry of OpenLayers vector sources.
+import GeoJSONFormat from "ol/format/GeoJSON";
+import VectorSource from "ol/source/Vector";
+
+import { fetchGeoParquetFeatures } from "./components/map/layers/geoparquet";
+
+/** The registry and loader for data-driven vector sources.
  *
  *  This is the single, canonical in-memory home for the features
  *  of data-driven vector layers (geojson, geoparquet). Keeping the
@@ -30,10 +35,17 @@
  *  into the store as GeoJSON - halves the memory footprint of large
  *  datasets and makes the spatial index available to queries.
  *
+ *  The store also owns the fetch. A map-source is only registered once
+ *  its features have arrived, so "registered" always means "loaded" -
+ *  and the map layer, a query, and the print map share one download
+ *  instead of racing each other to three.
+ *
  *  Features in registered sources are in the map projection (EPSG:3857).
  */
 
 const sources = {};
+// loads in flight, keyed by map-source name
+const loads = {};
 
 export const registerSource = (mapSourceName, source) => {
   sources[mapSourceName] = source;
@@ -41,6 +53,81 @@ export const registerSource = (mapSourceName, source) => {
 
 export const unregisterSource = (mapSourceName) => {
   delete sources[mapSourceName];
+  delete loads[mapSourceName];
 };
 
 export const getSource = (mapSourceName) => sources[mapSourceName] || null;
+
+/** Drop every source. The store outlives individual layers, so this is
+ *  how an Application releases its memory on teardown.
+ */
+export const clearSources = () => {
+  Object.keys(sources).forEach((name) => delete sources[name]);
+  Object.keys(loads).forEach((name) => delete loads[name]);
+};
+
+/** Fetch the features for a data-driven map-source.
+ *
+ *  @returns A Promise of OpenLayers features, or null when the type
+ *           keeps its features somewhere else.
+ */
+const fetchFeatures = (mapSource) => {
+  if (mapSource.type === "geoparquet") {
+    return fetchGeoParquetFeatures(mapSource.name, mapSource.urls[0]);
+  } else if (mapSource.type === "geojson") {
+    return fetch(mapSource.urls[0])
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((geojson) =>
+        new GeoJSONFormat({
+          dataProjection: mapSource.params?.crs || "EPSG:4326",
+          featureProjection: "EPSG:3857",
+        }).readFeatures(geojson)
+      );
+  }
+  return null;
+};
+
+/** Ensure a map-source's features are loaded and registered.
+ *
+ *  Concurrent callers share the one in-flight load. A failed load is not
+ *  cached, so a later call retries rather than being stuck with an
+ *  empty source.
+ *
+ *  @returns A Promise resolving to the VectorSource, or to null for
+ *           map-sources whose features live in the redux store.
+ */
+export const ensureSourceData = (mapSource) => {
+  if (sources[mapSource.name]) {
+    return Promise.resolve(sources[mapSource.name]);
+  }
+  if (loads[mapSource.name]) {
+    return loads[mapSource.name];
+  }
+  // "vector" sources, and anything already mirrored into redux,
+  //  are queried from the redux copy.
+  if (mapSource.features?.length > 0) {
+    return Promise.resolve(null);
+  }
+
+  const loadFeatures = fetchFeatures(mapSource);
+  if (loadFeatures === null) {
+    return Promise.resolve(null);
+  }
+
+  loads[mapSource.name] = loadFeatures
+    .then((olFeatures) => {
+      const source = new VectorSource();
+      source.addFeatures(olFeatures);
+      sources[mapSource.name] = source;
+      return source;
+    })
+    .finally(() => {
+      delete loads[mapSource.name];
+    });
+  return loads[mapSource.name];
+};

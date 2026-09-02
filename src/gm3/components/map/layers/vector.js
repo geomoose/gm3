@@ -54,8 +54,30 @@ import stylefunction from "ol-mapbox-style/dist/stylefunction";
 import { _getFonts as getFonts } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
 
-import { createGeoParquetLoader } from "./geoparquet";
-import { registerSource } from "../../../featureStore";
+import { ensureSourceData } from "../../../featureStore";
+
+/** An OpenLayers loader which renders whatever the feature store has.
+ *
+ *  The layer holds the same Feature instances as the store rather than
+ *  a second copy of them, and shares the store's single download.
+ */
+const createStoreLoader = (mapSource) =>
+  function (extent, resolution, projection, success, failure) {
+    ensureSourceData(mapSource)
+      .then((source) => {
+        const features = source.getFeatures();
+        // silently remove features
+        this.clear(true);
+        this.addFeatures(features);
+        success(features);
+      })
+      .catch((err) => {
+        console.error("error loading features for", mapSource.name, err);
+        if (failure) {
+          failure();
+        }
+      });
+  };
 
 // for JSONP support
 import request from "reqwest";
@@ -114,9 +136,8 @@ function defineSource(mapSource) {
     };
   } else if (mapSource.type === "geoparquet") {
     return {
-      format: new GeoJSONFormat(),
-      projection: "EPSG:4326",
-      loader: createGeoParquetLoader(mapSource.name, mapSource.urls[0]),
+      // format and projection are unused when a loader is supplied
+      loader: createStoreLoader(mapSource),
       strategy: all,
     };
   } else if (mapSource.type === "ags-vector") {
@@ -325,18 +346,11 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
 /** Return an OpenLayers Layer for the Vector source.
  *
  *  @param mapSource The MapSource definition from the store.
- *  @param registerForQuery When true, the source is registered in the
- *                          feature store, making it the canonical home
- *                          of the features for queries.
  *
  *  @returns OpenLayers Layer instance.
  */
-export function createLayer(mapSource, registerForQuery = false, styleLayer = applyStyle) {
+export function createLayer(mapSource, styleLayer = applyStyle) {
   const source = new VectorSource(defineSource(mapSource));
-
-  if (registerForQuery) {
-    registerSource(mapSource.name, source);
-  }
 
   // get the transforms for the layer
   if (mapSource.transforms) {

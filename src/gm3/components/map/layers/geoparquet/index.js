@@ -84,21 +84,3 @@ export const fetchGeoParquetFeatures = (srcName, url) =>
       url,
     });
   });
-
-export const createGeoParquetLoader = (srcName, url) => {
-  return function (extent, resolution, projection, success, failure) {
-    fetchGeoParquetFeatures(srcName, url)
-      .then((features) => {
-        // silently remove features
-        this.clear(true);
-        this.addFeatures(features);
-        success(features);
-      })
-      .catch((err) => {
-        console.error("error loading parquet data=", srcName, err);
-        if (failure) {
-          failure();
-        }
-      });
-  };
-};
