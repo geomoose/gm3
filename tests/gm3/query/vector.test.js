@@ -381,6 +381,51 @@ describe("vectorFeatureQuery", () => {
       expect(results.layer).toBe(LAYER);
     });
 
+    test("a null geometry never matches a selection, and does not throw", async () => {
+      // turf throws a TypeError when handed a null geometry, and unlike
+      //  the feature store path there is no spatial index to filter
+      //  these out first
+      const withNullGeom = {
+        name: "store-nulls",
+        features: [
+          { type: "Feature", properties: { NAME: "NoGeom" }, geometry: null },
+          {
+            type: "Feature",
+            properties: { NAME: "Real" },
+            geometry: box(0, 0, 1, 1).geometry,
+          },
+        ],
+      };
+
+      const results = await vectorFeatureQuery(LAYER, {}, withNullGeom, {
+        selection: [box(0, 0, 5, 5)],
+      });
+      expect(results.features.map((f) => f.properties.NAME)).toEqual(["Real"]);
+    });
+
+    test("uses boundedBy as a free extent gate when present", async () => {
+      const withBounds = {
+        name: "store-bounds",
+        features: [
+          {
+            type: "Feature",
+            properties: { NAME: "Far", boundedBy: [500, 500, 501, 501] },
+            geometry: box(500, 500, 501, 501).geometry,
+          },
+          {
+            type: "Feature",
+            properties: { NAME: "Near", boundedBy: [0, 0, 1, 1] },
+            geometry: box(0, 0, 1, 1).geometry,
+          },
+        ],
+      };
+
+      const results = await vectorFeatureQuery(LAYER, {}, withBounds, {
+        selection: [box(0, 0, 5, 5)],
+      });
+      expect(results.features.map((f) => f.properties.NAME)).toEqual(["Near"]);
+    });
+
     test("tolerates a map-source with no features", async () => {
       const results = await vectorFeatureQuery(
         LAYER,
@@ -501,6 +546,115 @@ describe("vectorFeatureQuery", () => {
       });
 
       expect(results.features.map((f) => f.properties.NAME).sort()).toEqual(["A", "B"]);
+    });
+
+    test("matches features from every selection, not just the first", async () => {
+      // buffer-select produces one selection feature per buffered shape
+      load([
+        { type: "Feature", properties: { NAME: "InFirst" }, geometry: box(0, 0, 1, 1).geometry },
+        {
+          type: "Feature",
+          properties: { NAME: "InSecond" },
+          geometry: box(50, 50, 51, 51).geometry,
+        },
+        {
+          type: "Feature",
+          properties: { NAME: "InNeither" },
+          geometry: box(25, 25, 26, 26).geometry,
+        },
+      ]);
+
+      const results = await vectorFeatureQuery(LAYER, {}, mapSource, {
+        selection: [box(0, 0, 5, 5), box(48, 48, 55, 55)],
+      });
+
+      expect(results.features.map((f) => f.properties.NAME).sort()).toEqual([
+        "InFirst",
+        "InSecond",
+      ]);
+    });
+
+    test("excludes a feature inside the combined extent but outside every selection", async () => {
+      // the extent gate is a prefilter, not the answer - this feature
+      //  sits in the gap between two disjoint selections
+      load([
+        { type: "Feature", properties: { NAME: "InGap" }, geometry: box(25, 25, 26, 26).geometry },
+      ]);
+
+      const results = await vectorFeatureQuery(LAYER, {}, mapSource, {
+        selection: [box(0, 0, 5, 5), box(48, 48, 55, 55)],
+      });
+
+      expect(results.features).toEqual([]);
+    });
+
+    test("the spatial index leaves out null-geometry features", async () => {
+      // OpenLayers keeps them out of the RTree, so a selection query
+      //  never sees them at all
+      load([
+        { type: "Feature", properties: { NAME: "NoGeom" }, geometry: null },
+        { type: "Feature", properties: { NAME: "Real" }, geometry: box(0, 0, 1, 1).geometry },
+      ]);
+
+      const withSelection = await vectorFeatureQuery(LAYER, {}, mapSource, {
+        selection: [box(0, 0, 5, 5)],
+      });
+      expect(withSelection.features.map((f) => f.properties.NAME)).toEqual(["Real"]);
+
+      // without a selection they come back, since getFeatures() has them
+      const noSelection = await vectorFeatureQuery(LAYER, {}, mapSource, {
+        fields: [{ comparitor: "like", name: "NAME", value: "%" }],
+      });
+      expect(noSelection.features.map((f) => f.properties.NAME).sort()).toEqual(["NoGeom", "Real"]);
+    });
+
+    test("buffers a point selection by the pixel tolerance", async () => {
+      // a click is a zero-area point and can never intersect a polygon
+      //  without the tolerance buffer
+      load([
+        { type: "Feature", properties: { NAME: "Parcel" }, geometry: box(0, 0, 100, 100).geometry },
+      ]);
+
+      const clickInside = {
+        type: "Feature",
+        properties: {},
+        geometry: { type: "Point", coordinates: [50, 50] },
+      };
+
+      const results = await vectorFeatureQuery(LAYER, { resolution: 1 }, mapSource, {
+        selection: [clickInside],
+      });
+      expect(results.features.map((f) => f.properties.NAME)).toEqual(["Parcel"]);
+    });
+
+    test("a point just outside is pulled in by the tolerance, and excluded without it", async () => {
+      load([
+        { type: "Feature", properties: { NAME: "Parcel" }, geometry: box(0, 0, 100, 100).geometry },
+      ]);
+
+      // 5 ground units away, tolerance 10px at resolution 1 reaches it
+      const nearMiss = {
+        type: "Feature",
+        properties: {},
+        geometry: { type: "Point", coordinates: [105, 50] },
+      };
+
+      const withTolerance = await vectorFeatureQuery(LAYER, { resolution: 1 }, mapSource, {
+        selection: [nearMiss],
+      });
+      expect(withTolerance.features).toHaveLength(1);
+
+      // the map-source can opt out, as the demo's vector-parcels does.
+      //  note the string - mapbook config values arrive as strings, and
+      //  getPixelTolerance tests them for truthiness, so a numeric 0
+      //  would be ignored and fall back to the default.
+      const noTolerance = await vectorFeatureQuery(
+        LAYER,
+        { resolution: 1 },
+        { name: SRC_NAME, config: { "pixel-tolerance": "0" } },
+        { selection: [nearMiss] }
+      );
+      expect(noTolerance.features).toEqual([]);
     });
 
     test("returns an empty set when the registered source has not loaded yet", async () => {

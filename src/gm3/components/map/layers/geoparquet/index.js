@@ -56,8 +56,9 @@ export const fetchGeoParquetFeatures = (srcName, url) =>
           // parsing is the only step which can throw, and a throw here
           //  would escape the listener, leaving the promise neither
           //  resolved nor rejected and the worker running.
-          // TODO: the GeoParquet metadata declares its own CRS, this
-          //  should use it instead of assuming 4326.
+          // TODO(#1026): the GeoParquet metadata declares its own CRS,
+          //  this should use it instead of assuming 4326. Anything not
+          //  in 4326 currently reprojects to NaN and never renders.
           features = readFeatureCollection(eventData.features);
         } catch (err) {
           settle(reject, err);

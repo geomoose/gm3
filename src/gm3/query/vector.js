@@ -24,10 +24,16 @@
 
 import intersects from "@turf/boolean-intersects";
 import GeoJSONFormat from "ol/format/GeoJSON";
+import { createEmpty, extend, intersects as extentsIntersect } from "ol/extent";
 
 import { getSource } from "@gm3/featureStore";
+import { applyPixelTolerance } from "@gm3/query/util";
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
+
+// the same default the WFS query uses. Both are overridden per
+//  map-source by config["pixel-tolerance"].
+const DEFAULT_PIXEL_TOLERANCE = 10;
 
 // RegExp.escape is not available until ES2025
 const escapeRegExp = (literal) => literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -138,9 +144,6 @@ export const buildFilterFunction = (field) => {
 };
 
 export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
-  // if a selection is available, use it as a geometry filter
-  const selection = query.selection?.[0];
-
   let fieldFilters;
   try {
     fieldFilters = (query.fields || []).map(buildFilterFunction);
@@ -155,8 +158,58 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
     };
   }
 
+  // Identify produces a zero-area Point, which can never intersect a
+  //  parcel. Buffering it by the pixel tolerance is what makes
+  //  click-to-identify work, and is what the WFS and AGS queries
+  //  already do. applyPixelTolerance only touches Points, so running
+  //  it over the whole list is a no-op for drawn polygons.
+  const selections = (query.selection || []).map((selectionFeature) =>
+    applyPixelTolerance(selectionFeature, mapSource, mapState.resolution, DEFAULT_PIXEL_TOLERANCE)
+  );
+  const hasSelection = selections.length > 0;
+
+  // computed once here rather than per candidate feature
+  const selectionExtents = selections.map((selectionFeature) =>
+    GEOJSON_FORMAT.readGeometry(selectionFeature.geometry).getExtent()
+  );
+
+  /** Cheap gate. An extent overlap is a necessary condition for a
+   *  geometry intersection, so a miss here is always a real miss.
+   */
+  const extentCouldMatch = (featureExtent) => {
+    for (let i = 0, ii = selectionExtents.length; i < ii; i++) {
+      if (extentsIntersect(selectionExtents[i], featureExtent)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /** Precise test, skipping any selection this feature cannot reach.
+   *  Every selection is ORed together, matching buildWfsQuery.
+   */
+  const matchesSelection = (geometry, featureExtent) => {
+    if (!hasSelection) {
+      return true;
+    }
+    if (!geometry) {
+      // turf throws on a null geometry, and a feature without one
+      //  cannot intersect anything anyway
+      return false;
+    }
+    for (let i = 0, ii = selections.length; i < ii; i++) {
+      if (featureExtent && !extentsIntersect(selectionExtents[i], featureExtent)) {
+        continue;
+      }
+      if (intersects(selections[i], geometry)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // return an empty set if no filters are set.
-  if (!selection && fieldFilters.length < 1) {
+  if (!hasSelection && fieldFilters.length < 1) {
     return {
       layer,
       features: [],
@@ -167,22 +220,44 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
   //  in place instead of from a copy in the store
   const olSource = getSource(mapSource.name);
   if (olSource !== null) {
-    // the spatial index narrows the candidates down to those
-    //  whose extents intersect the selection's extent
-    const candidates = selection
-      ? olSource.getFeaturesInExtent(GEOJSON_FORMAT.readGeometry(selection.geometry).getExtent())
-      : olSource.getFeatures();
+    // the spatial index narrows the candidates down to those whose
+    //  extents intersect the combined extent of the selections
+    let candidates;
+    if (hasSelection) {
+      const searchExtent = createEmpty();
+      selectionExtents.forEach((selectionExtent) => extend(searchExtent, selectionExtent));
+      candidates = olSource.getFeaturesInExtent(searchExtent);
+    } else {
+      candidates = olSource.getFeatures();
+    }
 
     const features = [];
     for (const olFeature of candidates) {
       const properties = olFeature.getProperties();
-      // evaluate the attribute filters before paying for
-      //  the GeoJSON conversion and precise intersection test
-      if (fieldFilters.every((filterFn) => filterFn({ properties }))) {
-        const feature = GEOJSON_FORMAT.writeFeatureObject(olFeature);
-        if (!selection || intersects(selection, feature.geometry)) {
-          features.push(feature);
+      // evaluate the attribute filters first, they are the cheapest
+      if (!fieldFilters.every((filterFn) => filterFn({ properties }))) {
+        continue;
+      }
+
+      // then reject on the extent, before paying for the GeoJSON
+      //  conversion which is the expensive step in this loop
+      let featureExtent = null;
+      if (hasSelection) {
+        const geometry = olFeature.getGeometry();
+        if (!geometry) {
+          // defensive: OpenLayers keeps null-geometry features out of
+          //  the RTree, so getFeaturesInExtent should never hand us one
+          continue;
         }
+        featureExtent = geometry.getExtent();
+        if (!extentCouldMatch(featureExtent)) {
+          continue;
+        }
+      }
+
+      const feature = GEOJSON_FORMAT.writeFeatureObject(olFeature);
+      if (matchesSelection(feature.geometry, featureExtent)) {
+        features.push(feature);
       }
     }
     return {
@@ -191,10 +266,13 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
     };
   }
 
-  // fall back to features kept in the store (e.g. "vector" sources)
+  // fall back to features kept in the store (e.g. "vector" sources).
+  //  these already carry boundedBy, so the extent gate is free.
   let features = mapSource.features || [];
-  if (selection) {
-    features = features.filter((feature) => intersects(selection, feature.geometry));
+  if (hasSelection) {
+    features = features.filter((feature) =>
+      matchesSelection(feature.geometry, feature.properties?.boundedBy)
+    );
   }
   fieldFilters.forEach((filterFn) => {
     features = features.filter(filterFn);
