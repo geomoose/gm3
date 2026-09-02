@@ -25,7 +25,7 @@
 import intersects from "@turf/boolean-intersects";
 import GeoJSONFormat from "ol/format/GeoJSON";
 
-import { getSource } from "../featureStore";
+import { getSource } from "@gm3/featureStore";
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
 

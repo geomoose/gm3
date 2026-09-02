@@ -4,7 +4,7 @@ import { agsFeatureQuery } from "../query/ags";
 import { vectorFeatureQuery } from "../query/vector";
 import { wfsGetFeatureQuery } from "../query/wfs";
 import { wmsGetFeatureInfoQuery } from "../query/wms";
-import { ensureSourceData } from "../featureStore";
+import { ensureSourceData } from "@gm3/featureStore";
 import { getMapSourceName } from "../util";
 import { getQueryResults } from "../selectors/query";
 

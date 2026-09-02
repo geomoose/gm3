@@ -36,11 +36,7 @@ import { Tool } from "../tools";
 import Modal from "../../modal";
 
 import { matchFeatures } from "../../../util";
-import {
-  ensureSourceData,
-  getSource as getStoredSource,
-  isStoreBacked,
-} from "../../../featureStore";
+import { ensureSourceData, getSource as getStoredSource, isStoreBacked } from "@gm3/featureStore";
 
 function doDownload(features, downloadFormat) {
   let filename = "geomoose_" + new Date().getTime();

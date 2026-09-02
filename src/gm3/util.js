@@ -700,19 +700,21 @@ export function projectFeatures(features, srcProj, destProj) {
 }
 
 /** Get the extent of a query's results.
- *  All features must have a boundedBy property.
+ *  Features without a boundedBy property are skipped - a row with a
+ *  NULL geometry has no extent to contribute.
  */
 export function getExtentForQuery(results, minSize = 150) {
   let extent = null;
 
   for (const path in results) {
-    const features = results[path];
-    if (features.length > 0) {
-      if (extent === null) {
-        extent = features[0].properties.boundedBy.slice();
+    for (const feature of results[path]) {
+      const e = feature.properties.boundedBy;
+      if (!e) {
+        continue;
       }
-      for (let i = 1, ii = features.length; i < ii; i++) {
-        const e = features[i].properties.boundedBy;
+      if (extent === null) {
+        extent = e.slice();
+      } else {
         extent[0] = Math.min(extent[0], e[0]);
         extent[1] = Math.min(extent[1], e[1]);
         extent[2] = Math.max(extent[2], e[2]);

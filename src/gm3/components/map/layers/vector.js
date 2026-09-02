@@ -28,7 +28,7 @@
  */
 
 import { parseBoolean, joinUrl, requEstimator } from "../../../util";
-import { transformProperties } from "../../../json";
+import { transformProperties } from "@gm3/json";
 
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
@@ -61,7 +61,7 @@ import stylefunction from "ol-mapbox-style/dist/stylefunction";
 import { _getFonts as getFonts } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
 
-import { ensureSourceData } from "../../../featureStore";
+import { ensureSourceData } from "@gm3/featureStore";
 
 /** An OpenLayers loader which renders whatever the feature store has.
  *

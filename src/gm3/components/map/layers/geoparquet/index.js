@@ -22,35 +22,7 @@
  * SOFTWARE.
  */
 
-import GeoJSON from "ol/format/GeoJSON";
-
-/** Convert the worker's GeoJSON payload into OpenLayers features in
- *  the map projection.
- *
- *  @param rawFeatures The GeoJSON features from the worker.
- *
- *  @returns A list of OpenLayers features.
- */
-const parseFeatures = (rawFeatures) => {
-  const features = new GeoJSON({
-    featureProjection: "EPSG:3857",
-    dataProjection: "EPSG:4326",
-  }).readFeatures({
-    type: "FeatureCollection",
-    features: rawFeatures,
-  });
-
-  features.forEach((feature) => {
-    const geometry = feature.getGeometry();
-    // a row with a NULL geometry has no extent to report
-    if (geometry) {
-      // boundedBy bug caught by Mariana...
-      feature.set("boundedBy", geometry.getExtent(), true);
-    }
-  });
-
-  return features;
-};
+import { readFeatureCollection } from "@gm3/features";
 
 /** Load a GeoParquet file in a worker and return its contents
  *  as OpenLayers features in the map projection.
@@ -84,7 +56,9 @@ export const fetchGeoParquetFeatures = (srcName, url) =>
           // parsing is the only step which can throw, and a throw here
           //  would escape the listener, leaving the promise neither
           //  resolved nor rejected and the worker running.
-          features = parseFeatures(eventData.features);
+          // TODO: the GeoParquet metadata declares its own CRS, this
+          //  should use it instead of assuming 4326.
+          features = readFeatureCollection(eventData.features);
         } catch (err) {
           settle(reject, err);
           return;

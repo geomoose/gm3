@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-import GeoJSONFormat from "ol/format/GeoJSON";
 import VectorSource from "ol/source/Vector";
 
-import { fetchGeoParquetFeatures } from "./components/map/layers/geoparquet";
+import { fetchGeoParquetFeatures } from "@gm3/components/map/layers/geoparquet";
+import { readFeatureCollection } from "@gm3/features";
 
 /** The registry and loader for data-driven vector sources.
  *
@@ -95,12 +95,7 @@ const fetchFeatures = (mapSource) => {
         }
         return response.json();
       })
-      .then((geojson) =>
-        new GeoJSONFormat({
-          dataProjection: mapSource.params?.crs || "EPSG:4326",
-          featureProjection: "EPSG:3857",
-        }).readFeatures(geojson)
-      );
+      .then((geojson) => readFeatureCollection(geojson, mapSource.params?.crs || "EPSG:4326"));
   }
   return null;
 };

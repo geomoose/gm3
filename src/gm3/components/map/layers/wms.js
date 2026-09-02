@@ -27,7 +27,7 @@
  */
 
 import * as util from "../../../util";
-import { objectsDiffer } from "../../../json";
+import { objectsDiffer } from "@gm3/json";
 import Image from "ol/layer/Image";
 import ImageWMS from "ol/source/ImageWMS";
 import * as proj from "ol/proj";

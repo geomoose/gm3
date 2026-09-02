@@ -144,4 +144,32 @@ describe("getExtentForQuery", () => {
   test("extent for an empty result", () => {
     expect(util.getExtentForQuery({})).toEqual(null);
   });
+
+  test("combines the extents across features and layers", () => {
+    const fakeResults = {
+      a: [
+        { type: "Feature", properties: { boundedBy: [0, 0, 300, 300] } },
+        { type: "Feature", properties: { boundedBy: [-100, 50, 100, 900] } },
+      ],
+      b: [{ type: "Feature", properties: { boundedBy: [10, 10, 20, 20] } }],
+    };
+    expect(util.getExtentForQuery(fakeResults)).toEqual([-100, 0, 300, 900]);
+  });
+
+  test("skips features which have no boundedBy", () => {
+    // a row with a NULL geometry has no extent to contribute, and used
+    //  to throw here rather than being ignored
+    const fakeResults = {
+      dummy: [
+        { type: "Feature", properties: {} },
+        { type: "Feature", properties: { boundedBy: [0, 0, 300, 300] } },
+      ],
+    };
+    expect(util.getExtentForQuery(fakeResults)).toEqual([0, 0, 300, 300]);
+  });
+
+  test("returns null when no feature has a boundedBy", () => {
+    const fakeResults = { dummy: [{ type: "Feature", properties: {} }] };
+    expect(util.getExtentForQuery(fakeResults)).toEqual(null);
+  });
 });

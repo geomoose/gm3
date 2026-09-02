@@ -73,6 +73,9 @@ describe("ensureSourceData", () => {
     expect(features).toHaveLength(1);
     expect(features[0].get("OWNER_NAME")).toBe("Bob Smith");
     expect(features[0].getGeometry().getCoordinates()).toEqual([100, 100]);
+    // geojson sources now get boundedBy too, which the search templates
+    //  and getExtentForQuery both rely on
+    expect(features[0].get("boundedBy")).toEqual([100, 100, 100, 100]);
   });
 
   test("concurrent calls share a single load", async () => {

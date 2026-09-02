@@ -4,7 +4,8 @@ import GML2Format from "ol/format/GML2";
 
 import { applyPixelTolerance } from "./util";
 import { formatUrlParameters } from "../util";
-import { transformFeatures } from "../json";
+import { transformFeatures } from "@gm3/json";
+import { getBoundedBy } from "@gm3/features";
 
 import { buildWfsQuery } from "../components/map/layers/wfs";
 
@@ -87,7 +88,7 @@ export const wfsGetFeatureQuery = (layer, mapState, mapSource, query) => {
               // feature to JSON.
               const jsFeature = jsonFormat.writeFeatureObject(feature);
               // ensure that every feature has a "boundedBy" attribute.
-              jsFeature.properties.boundedBy = feature.getGeometry().getExtent();
+              jsFeature.properties.boundedBy = getBoundedBy(feature);
               // add it to the stack.
               jsFeatures.push(jsFeature);
             }

@@ -2,7 +2,8 @@ import EsriJSONFormat from "ol/format/EsriJSON";
 import GeoJSONFormat from "ol/format/GeoJSON";
 
 import { xhr } from "../util";
-import { transformFeatures } from "../json";
+import { transformFeatures } from "@gm3/json";
+import { getBoundedBy } from "@gm3/features";
 import { applyPixelTolerance } from "./util";
 
 export const agsFeatureQuery = (layer, mapState, mapSource, query) => {
@@ -120,7 +121,7 @@ export const agsFeatureQuery = (layer, mapState, mapSource, query) => {
               // feature to JSON.
               const jsFeature = jsonFormat.writeFeatureObject(feature);
               // ensure that every feature has a "boundedBy" attribute.
-              jsFeature.properties.boundedBy = feature.getGeometry().getExtent();
+              jsFeature.properties.boundedBy = getBoundedBy(feature);
               // add it to the stack.
               jsFeatures.push(jsFeature);
             }

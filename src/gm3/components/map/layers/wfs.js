@@ -30,7 +30,8 @@ import * as olFilters from "ol/format/filter";
 import * as proj from "ol/proj";
 
 import { featureToJson } from "../../../util";
-import { transformFeatures } from "../../../json";
+import { transformFeatures } from "@gm3/json";
+import { getBoundedBy } from "@gm3/features";
 
 function chainFilters(operator, filters) {
   let chainedFilters = null;
@@ -175,7 +176,7 @@ export function wfsGetFeatures(
         const jsonFeature = featureToJson(feature);
         jsonFeature.properties = {
           ...jsonFeature.properties,
-          boundedBy: feature.getGeometry().getExtent(),
+          boundedBy: getBoundedBy(feature),
         };
         return jsonFeature;
       });
