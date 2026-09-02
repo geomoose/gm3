@@ -66,6 +66,19 @@ export const clearSources = () => {
   Object.keys(loads).forEach((name) => delete loads[name]);
 };
 
+/** The map-source types whose features this store loads and owns.
+ *  Everything else keeps its features in redux or fetches them itself.
+ *  Keep in step with fetchFeatures below.
+ */
+const STORE_BACKED_TYPES = ["geoparquet", "geojson"];
+
+/** True when this store is responsible for the map-source's features.
+ *
+ *  Useful to callers which want to avoid awaiting a load that could
+ *  never happen.
+ */
+export const isStoreBacked = (mapSource) => STORE_BACKED_TYPES.indexOf(mapSource?.type) >= 0;
+
 /** Fetch the features for a data-driven map-source.
  *
  *  @returns A Promise of OpenLayers features, or null when the type

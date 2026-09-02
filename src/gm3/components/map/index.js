@@ -1051,9 +1051,9 @@ function mapDispatch(dispatch) {
         dispatch(mapActions.addSelectionFeature(feature));
       });
     },
-    setFeatures: (mapSourceName, features, copy = false, silent = false) => {
-      dispatch(mapSourceActions.clearFeatures(mapSourceName, silent));
-      dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy, silent));
+    setFeatures: (mapSourceName, features, copy = false) => {
+      dispatch(mapSourceActions.clearFeatures(mapSourceName));
+      dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy));
     },
     setEditPath: (path) => dispatch(mapActions.setEditPath(path)),
     setEditTools: (tools) => dispatch(mapActions.setEditTools(tools)),

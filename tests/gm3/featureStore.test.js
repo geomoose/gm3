@@ -8,6 +8,7 @@ import {
   clearSources,
   ensureSourceData,
   getSource,
+  isStoreBacked,
   registerSource,
   unregisterSource,
 } from "gm3/featureStore";
@@ -167,6 +168,110 @@ describe("ensureSourceData", () => {
     const mapSource = { type: "wms", name: "basemap", urls: ["/wms"] };
     await expect(ensureSourceData(mapSource)).resolves.toBe(null);
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("geoparquet sources", () => {
+  /* The global Worker stub in tests/setup.js is inert; this one lets the
+   *  test push a FEATURES_READY message back to the loader.
+   */
+  class FakeWorker {
+    constructor() {
+      this.listeners = {};
+      FakeWorker.instance = this;
+    }
+    addEventListener(type, fn) {
+      this.listeners[type] = this.listeners[type] || [];
+      this.listeners[type].push(fn);
+    }
+    removeEventListener() {}
+    postMessage() {}
+    terminate() {}
+    emit(type, event) {
+      (this.listeners[type] || []).forEach((fn) => fn(event));
+    }
+  }
+
+  let originalWorker;
+
+  beforeEach(() => {
+    originalWorker = window.Worker;
+    FakeWorker.instance = null;
+    window.Worker = FakeWorker;
+  });
+
+  afterEach(() => {
+    window.Worker = originalWorker;
+    clearSources();
+  });
+
+  test("loads through the worker and registers the result", async () => {
+    const mapSource = {
+      type: "geoparquet",
+      name: "parcels",
+      urls: ["/parcels.geoparquet"],
+    };
+
+    const pending = ensureSourceData(mapSource);
+    // nothing is registered while the worker is still working
+    expect(getSource("parcels")).toBe(null);
+
+    FakeWorker.instance.emit("message", {
+      data: {
+        type: "FEATURES_READY",
+        srcName: "parcels",
+        features: [
+          {
+            type: "Feature",
+            properties: { PIN: "123" },
+            geometry: { type: "Point", coordinates: [-93.2, 44.9] },
+          },
+        ],
+      },
+    });
+
+    const source = await pending;
+    expect(source).toBe(getSource("parcels"));
+    expect(source.getFeatures()).toHaveLength(1);
+    expect(source.getFeatures()[0].get("PIN")).toBe("123");
+  });
+
+  test("a worker error rejects and leaves nothing registered", async () => {
+    const mapSource = {
+      type: "geoparquet",
+      name: "parcels",
+      urls: ["/parcels.geoparquet"],
+    };
+
+    const pending = ensureSourceData(mapSource);
+    FakeWorker.instance.emit("message", {
+      data: { type: "FEATURES_ERROR", srcName: "parcels", message: "no geometry columns" },
+    });
+
+    await expect(pending).rejects.toThrow("no geometry columns");
+    expect(getSource("parcels")).toBe(null);
+  });
+});
+
+describe("isStoreBacked", () => {
+  test("is true for the types the store loads", () => {
+    expect(isStoreBacked({ type: "geoparquet" })).toBe(true);
+    expect(isStoreBacked({ type: "geojson" })).toBe(true);
+  });
+
+  test("is false for everything else", () => {
+    expect(isStoreBacked({ type: "vector" })).toBe(false);
+    expect(isStoreBacked({ type: "wms" })).toBe(false);
+    expect(isStoreBacked({})).toBe(false);
+    expect(isStoreBacked(undefined)).toBe(false);
+  });
+
+  test("agrees with what ensureSourceData will actually load", async () => {
+    // the predicate and the loader are separate lists, this keeps them honest
+    for (const type of ["vector", "wms", "wfs", "ags"]) {
+      await expect(ensureSourceData({ type, name: `x-${type}` })).resolves.toBe(null);
+      expect(isStoreBacked({ type })).toBe(false);
+    }
   });
 });
 

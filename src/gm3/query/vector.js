@@ -141,11 +141,9 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
   // if a selection is available, use it as a geometry filter
   const selection = query.selection?.[0];
 
-  const fieldFilters = [];
+  let fieldFilters;
   try {
-    query.fields?.forEach((field) => {
-      fieldFilters.push(buildFilterFunction(field));
-    });
+    fieldFilters = (query.fields || []).map(buildFilterFunction);
   } catch (err) {
     // an unsupported filter cannot be safely approximated. fail just
     //  this layer - runQuery gathers the layers with Promise.all, so

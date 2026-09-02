@@ -128,7 +128,7 @@ const reducer = createReducer(
         _ck: "." + new Date().getTime(),
       };
     },
-    [addFeatures]: (state, { payload: { mapSourceName, features, copy, silent } }) => {
+    [addFeatures]: (state, { payload: { mapSourceName, features, copy } }) => {
       if (!state[mapSourceName].features) {
         state[mapSourceName].features = [];
         state[mapSourceName].featuresVersion = 0;
@@ -146,16 +146,11 @@ const reducer = createReducer(
             },
           }));
       state[mapSourceName].features = state[mapSourceName].features.concat(nextFeatures);
-      // Warning! Silent can be risky business because a redraw may not be triggered
-      if (silent !== true) {
-        state[mapSourceName].featuresVersion += 1;
-      }
+      state[mapSourceName].featuresVersion += 1;
     },
-    [clearFeatures]: (state, { payload: { mapSourceName, silent } }) => {
+    [clearFeatures]: (state, { payload: mapSourceName }) => {
       state[mapSourceName].features = [];
-      if (silent !== true) {
-        state[mapSourceName].featuresVersion += 1;
-      }
+      state[mapSourceName].featuresVersion += 1;
     },
     [removeFeatureInternal]: (state, { payload: { mapSourceName, id } }) => {
       state[mapSourceName].features = state[mapSourceName].features.filter((feature) => {
