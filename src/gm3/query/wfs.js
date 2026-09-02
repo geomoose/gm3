@@ -3,7 +3,8 @@ import GeoJSONFormat from "ol/format/GeoJSON";
 import GML2Format from "ol/format/GML2";
 
 import { applyPixelTolerance } from "./util";
-import { transformFeatures, formatUrlParameters } from "../util";
+import { formatUrlParameters } from "../util";
+import { transformFeatures } from "../json";
 
 import { buildWfsQuery } from "../components/map/layers/wfs";
 

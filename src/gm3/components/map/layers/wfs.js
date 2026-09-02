@@ -29,7 +29,8 @@ import GML2Format from "ol/format/GML2";
 import * as olFilters from "ol/format/filter";
 import * as proj from "ol/proj";
 
-import { featureToJson, transformFeatures } from "../../../util";
+import { featureToJson } from "../../../util";
+import { transformFeatures } from "../../../json";
 
 function chainFilters(operator, filters) {
   let chainedFilters = null;

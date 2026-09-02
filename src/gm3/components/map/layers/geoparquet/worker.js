@@ -24,7 +24,7 @@
 
 import { asyncBufferFromUrl, parquetMetadataAsync, parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
-import { scrubProperties } from "@gm3/util";
+import { scrubProperties } from "@gm3/json";
 
 const loadParquet = async (srcName, url) => {
   const file = await asyncBufferFromUrl({ url });

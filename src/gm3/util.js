@@ -125,63 +125,6 @@ export function getTagContents(xml, tagName, multiple) {
   return contents;
 }
 
-/** Compare two objects
- *
- *  @param objA The first object
- *  @param objB The second object
- *  @param deep Whether to go "deeper" into the object.
- *
- *  @returns boolean, true if they differ, false if they are the same.
- */
-export function objectsDiffer(objA, objB, deep) {
-  const aKeys = Object.keys(objA),
-    bKeys = Object.keys(objB);
-
-  for (const key of aKeys) {
-    const bType = typeof objB[key];
-    switch (bType) {
-      // if the key from a does not exist in b, then they differ.
-      case "undefined":
-        return true;
-      // standard comparisons
-      case "string":
-      case "number":
-        if (objA[key] !== objB[key]) {
-          return true;
-        }
-        break;
-      // GO DEEP!
-      case "object":
-        // typeof(null) == 'object', this
-        //  prevents trying to recurse on null
-        if (objB[key] == null) {
-          if (objA[key] != null) {
-            return true;
-          }
-        }
-        if (deep === true && objectsDiffer(objA[key], objB[key], true)) {
-          return true;
-        }
-        break;
-      default:
-        // assume the objects differ if they cannot
-        //  be typed.
-        return true;
-    }
-  }
-
-  // The above loop ensures that all the keys
-  //  in "A" match a key in "B", if "B" has any
-  //  extra keys then the objects differ.
-  for (const key of bKeys) {
-    if (aKeys.indexOf(key) < 0) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 /** Get the map-sources name.  Paths are "/" split
  *  and so the first component should be the map-source name.
  *
@@ -720,46 +663,6 @@ export function xhr(opts) {
   return Request(opts);
 }
 
-export function transformProperties(transforms, properties) {
-  const newProperties = Object.assign({}, properties);
-
-  for (const prop in transforms) {
-    let value = properties[prop];
-    switch (transforms[prop]) {
-      case "string":
-        value = "" + value;
-        break;
-      case "number":
-        value = parseFloat(value);
-        break;
-      default:
-      // do nothing on default.
-    }
-    newProperties[prop] = value;
-  }
-
-  return newProperties;
-}
-
-/* Convert the data type of feature properties.
- *
- * @param transforms Object of transforms to apply.
- * @param features   Array of GeoJSON features.
- *
- * @return The array of GeoJSON features.
- */
-export function transformFeatures(transforms, features) {
-  if (typeof transforms !== "object") {
-    return features;
-  }
-
-  for (const feature of features) {
-    feature.properties = transformProperties(transforms, feature.properties);
-  }
-
-  return features;
-}
-
 /** Calculate the length of a GET query.
  *
  *  @param data An object of KVP.
@@ -794,18 +697,6 @@ export function projectFeatures(features, srcProj, destProj) {
   // the output will be a feature collection,
   //  the ".features" ensures an array is returned.
   return GEOJSON_FORMAT.writeFeaturesObject(newFeatures).features;
-}
-
-/**
- * Compare two objects by their JSON strings.
- *
- * @param a First object to compare.
- * @param b Second object to compare.
- *
- * @returns Boolean, true if they match, false if not.
- */
-export function jsonEquals(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 /** Get the extent of a query's results.
@@ -921,29 +812,4 @@ export const getFilterFieldNames = (filterDef, fieldNames = []) => {
     }
   });
   return fieldNames;
-};
-
-/**
- * Clean feature properties to be better stored in state
- *
- * @param properties - Feature properties
- *
- * @returns Object. The same properties but scrubbed for redux storage
- */
-export const scrubProperties = (properties) => {
-  const cleanProps = {};
-  Object.keys(properties).forEach((key) => {
-    const val = properties[key];
-    // convert all dates to their ISO string equivalent for storage
-    if (val instanceof Date) {
-      cleanProps[key] = val.toISOString();
-      // Yikes, an object, give up and try JSON
-    } else if (val instanceof Object) {
-      cleanProps[key] = JSON.stringify(val);
-      // Oh good, this seems fine...
-    } else {
-      cleanProps[key] = val;
-    }
-  });
-  return cleanProps;
 };

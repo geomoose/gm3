@@ -27,7 +27,8 @@
  *
  */
 
-import { parseBoolean, transformProperties, joinUrl, requEstimator } from "../../../util";
+import { parseBoolean, joinUrl, requEstimator } from "../../../util";
+import { transformProperties } from "../../../json";
 
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";

@@ -1,7 +1,8 @@
 import EsriJSONFormat from "ol/format/EsriJSON";
 import GeoJSONFormat from "ol/format/GeoJSON";
 
-import { xhr, transformFeatures } from "../util";
+import { xhr } from "../util";
+import { transformFeatures } from "../json";
 import { applyPixelTolerance } from "./util";
 
 export const agsFeatureQuery = (layer, mapState, mapSource, query) => {
