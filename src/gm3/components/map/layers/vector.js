@@ -51,6 +51,12 @@ import Text from "ol/style/Text";
 //  stylefunction is what it delegates to and works with any layer
 //  that has setStyle; the GeoMoose glStyles never use sprites so
 //  the wrapper adds nothing else.
+//
+// Warning! Both of these reach past the package's public surface -
+//  dist/stylefunction is an internal path which does not exist in
+//  ol-mapbox-style 7+, and _getFonts is underscore-private. That is
+//  why package.json pins ol-mapbox-style to ~6.5. Revisit both before
+//  taking a major upgrade.
 import stylefunction from "ol-mapbox-style/dist/stylefunction";
 import { _getFonts as getFonts } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
