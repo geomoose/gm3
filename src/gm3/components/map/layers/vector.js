@@ -403,7 +403,6 @@ export function updateLayer(map, layer, mapSource, mapTool, styleLayer = applySt
       // refresh is available to all vector layers,
       //  this should force a reload of the features from the server
       //  upon update.
-      console.log("refresh called for", mapSource.type, layerVersion, mapSource.featuresVersion);
       layer.getSource().refresh();
     }
   }

@@ -54,11 +54,11 @@ const likeSQLtoRegExp = (pattern, ignoreCase = false) => {
       i += 1;
     } else if (chr === "%") {
       // SQL wild card, yahoo.
-      addLiteral(currentLiteral);
+      addLiteral();
       parts.push(".*");
     } else if (chr === "_") {
       // this is the single character match
-      addLiteral(currentLiteral);
+      addLiteral();
       parts.push(".");
     } else {
       currentLiteral += chr;
@@ -66,12 +66,12 @@ const likeSQLtoRegExp = (pattern, ignoreCase = false) => {
   }
   // ensure any trailing literal bits are added.
   if (currentLiteral.length > 0) {
-    addLiteral(currentLiteral);
+    addLiteral();
   }
 
   const flags = ignoreCase ? "i" : "";
   const rePattern = parts.join("");
-  return new RegExp(rePattern, flags);
+  return new RegExp(`^${rePattern}$`, flags);
 };
 
 /* This mapping is based on what is available in the WFS module
@@ -113,25 +113,28 @@ export const FILTER_FUNCTIONS = {
  *  or a nested ["and"/"or", ...fields] array as created by services
  *  using prepareFields.
  *
- *  @returns A filter function or null when the definition is unsupported.
+ *  Unsupported definitions throw. Dropping them instead would invert the
+ *  meaning of the enclosing operator - an empty "and" matches everything
+ *  and an empty "or" matches nothing - which silently returns the wrong
+ *  features rather than reporting the problem.
+ *
+ *  @returns A filter function.
  */
 export const buildFilterFunction = (field) => {
   if (Array.isArray(field)) {
     const [operator, ...subFields] = field;
-    const subFilters = subFields.map(buildFilterFunction).filter((fn) => fn !== null);
+    const subFilters = subFields.map(buildFilterFunction);
     if (operator === "and") {
       return (f) => subFilters.every((filterFn) => filterFn(f));
     } else if (operator === "or") {
       return (f) => subFilters.some((filterFn) => filterFn(f));
     }
-    console.warn(`[gm3:query] Unsupported filter operator: ${operator}`);
-    return null;
+    throw new Error(`Unsupported filter operator: ${operator}`);
   }
   if (field.comparitor in FILTER_FUNCTIONS) {
     return FILTER_FUNCTIONS[field.comparitor](field);
   }
-  console.warn(`[gm3:query] Unsupported filter comparitor: ${field.comparitor}`);
-  return null;
+  throw new Error(`Unsupported filter comparitor: ${field.comparitor}`);
 };
 
 export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
@@ -139,12 +142,20 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
   const selection = query.selection?.[0];
 
   const fieldFilters = [];
-  query.fields?.forEach((field) => {
-    const filterFn = buildFilterFunction(field);
-    if (filterFn !== null) {
-      fieldFilters.push(filterFn);
-    }
-  });
+  try {
+    query.fields?.forEach((field) => {
+      fieldFilters.push(buildFilterFunction(field));
+    });
+  } catch (err) {
+    // an unsupported filter cannot be safely approximated. fail just
+    //  this layer - runQuery gathers the layers with Promise.all, so
+    //  throwing here would take down every other layer in the query.
+    console.error(`[gm3:query] Cannot query ${layer}:`, err.message);
+    return {
+      layer,
+      features: [],
+    };
+  }
 
   // return an empty set if no filters are set.
   if (!selection && fieldFilters.length < 1) {
