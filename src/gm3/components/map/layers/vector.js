@@ -27,14 +27,16 @@
  *
  */
 
-import { parseBoolean, transformProperties, joinUrl, requEstimator } from "../../../util";
+import { parseBoolean, joinUrl, requEstimator } from "../../../util";
+import { transformProperties } from "@gm3/json";
 
 import GML2Format from "ol/format/GML2";
 import GeoJSONFormat from "ol/format/GeoJSON";
 import EsriJsonFormat from "ol/format/EsriJSON";
-import { tile, bbox } from "ol/loadingstrategy";
+import { all, tile, bbox } from "ol/loadingstrategy";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
+import VectorImageLayer from "ol/layer/VectorImage";
 import { createXYZ } from "ol/tilegrid";
 import { getEditStyle } from "./edit";
 import { EDIT_LAYER_NAME } from "../../../defaults";
@@ -44,8 +46,45 @@ import { EDIT_LAYER_NAME } from "../../../defaults";
 // area. The default behaviour for this is to limit the
 // label to inside the polygon.
 import Text from "ol/style/Text";
-import { applyStyle as applyStyleFunction } from "ol-mapbox-style";
+// the applyStyle wrapper from ol-mapbox-style rejects layer classes
+//  other than VectorLayer/VectorTileLayer (e.g. VectorImageLayer).
+//  stylefunction is what it delegates to and works with any layer
+//  that has setStyle; the GeoMoose glStyles never use sprites so
+//  the wrapper adds nothing else.
+//
+// Warning! Both of these reach past the package's public surface -
+//  dist/stylefunction is an internal path which does not exist in
+//  ol-mapbox-style 7+, and _getFonts is underscore-private. That is
+//  why package.json pins ol-mapbox-style to ~6.5. Revisit both before
+//  taking a major upgrade.
+import stylefunction from "ol-mapbox-style/dist/stylefunction";
+import { _getFonts as getFonts } from "ol-mapbox-style";
 import { latest as spec } from "@mapbox/mapbox-gl-style-spec";
+
+import { ensureSourceData } from "@gm3/featureStore";
+
+/** An OpenLayers loader which renders whatever the feature store has.
+ *
+ *  The layer holds the same Feature instances as the store rather than
+ *  a second copy of them, and shares the store's single download.
+ */
+const createStoreLoader = (mapSource) =>
+  function (extent, resolution, projection, success, failure) {
+    ensureSourceData(mapSource)
+      .then((source) => {
+        const features = source.getFeatures();
+        // silently remove features
+        this.clear(true);
+        this.addFeatures(features);
+        success(features);
+      })
+      .catch((err) => {
+        console.error("error loading features for", mapSource.name, err);
+        if (failure) {
+          failure();
+        }
+      });
+  };
 
 // for JSONP support
 import request from "reqwest";
@@ -101,6 +140,12 @@ function defineSource(mapSource) {
       format: new GeoJSONFormat(),
       projection: mapSource.params.crs ? mapSource.params.crs : "EPSG:4326",
       url: mapSource.urls[0],
+    };
+  } else if (mapSource.type === "geoparquet") {
+    return {
+      // format and projection are unused when a loader is supplied
+      loader: createStoreLoader(mapSource),
+      strategy: all,
     };
   } else if (mapSource.type === "ags-vector") {
     // Add an A**GIS FeatureService layer.
@@ -286,7 +331,7 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
     }
   }
 
-  applyStyleFunction(
+  stylefunction(
     vectorLayer,
     {
       version: 8,
@@ -297,7 +342,11 @@ export function applyStyle(vectorLayer, mapSource, mapTool) {
         },
       },
     },
-    "dummy-source"
+    "dummy-source",
+    undefined,
+    undefined,
+    undefined,
+    getFonts
   );
 }
 
@@ -324,7 +373,19 @@ export function createLayer(mapSource, styleLayer = applyStyle) {
     maxResolution: mapSource.maxresolution,
     declutter: parseBoolean((mapSource.config || {}).declutter),
   };
-  const vectorLayer = new VectorLayer(opts);
+
+  // the featuresVersion is undefined by default
+  // with the geoparquet loader, setting to 0 prevents an infinite loop
+  // on loading when undefined is compared to zero and never increments
+  if (mapSource.type === "geoparquet") {
+    opts.featuresVersion = 0;
+  }
+
+  // data-driven layers can be very large, rendering them to an
+  //  image keeps pan and zoom from re-rendering every feature
+  //  on each frame
+  const isImageLayer = mapSource.type === "geoparquet";
+  const vectorLayer = isImageLayer ? new VectorImageLayer(opts) : new VectorLayer(opts);
   styleLayer(vectorLayer, mapSource);
 
   return vectorLayer;

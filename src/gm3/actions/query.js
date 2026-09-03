@@ -4,6 +4,7 @@ import { agsFeatureQuery } from "../query/ags";
 import { vectorFeatureQuery } from "../query/vector";
 import { wfsGetFeatureQuery } from "../query/wfs";
 import { wmsGetFeatureInfoQuery } from "../query/wms";
+import { ensureSourceData } from "@gm3/featureStore";
 import { getMapSourceName } from "../util";
 import { getQueryResults } from "../selectors/query";
 
@@ -125,7 +126,15 @@ export const runQuery = createAsyncThunk("query/run", (queryFunc, { getState, di
         return agsFeatureQuery(layer, state.map, mapSource, queryDef);
       case "geojson":
       case "vector":
-        return vectorFeatureQuery(layer, state.map, mapSource, queryDef);
+      case "geoparquet":
+        return ensureSourceData(mapSource)
+          .then(() => vectorFeatureQuery(layer, state.map, mapSource, queryDef))
+          .catch((err) => {
+            // runQuery gathers the layers with Promise.all, so a failed
+            //  load must not take down the other layers in the query.
+            console.error(`Failed to load features for ${mapSource.name}`, err);
+            return { layer, features: [] };
+          });
       default:
         // this is an un-supported type so just bail
         return new Promise((resolve) => resolve({ layer, features: [] }));

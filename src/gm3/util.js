@@ -26,6 +26,8 @@ import Request from "reqwest";
 
 import GeoJSONFormat from "ol/format/GeoJSON";
 
+import { getSource as getStoredSource } from "./featureStore";
+
 import { featureFilter as createFilter } from "@mapbox/mapbox-gl-style-spec";
 
 /** Collection of handy functions
@@ -121,63 +123,6 @@ export function getTagContents(xml, tagName, multiple) {
   }
 
   return contents;
-}
-
-/** Compare two objects
- *
- *  @param objA The first object
- *  @param objB The second object
- *  @param deep Whether to go "deeper" into the object.
- *
- *  @returns boolean, true if they differ, false if they are the same.
- */
-export function objectsDiffer(objA, objB, deep) {
-  const aKeys = Object.keys(objA),
-    bKeys = Object.keys(objB);
-
-  for (const key of aKeys) {
-    const bType = typeof objB[key];
-    switch (bType) {
-      // if the key from a does not exist in b, then they differ.
-      case "undefined":
-        return true;
-      // standard comparisons
-      case "string":
-      case "number":
-        if (objA[key] !== objB[key]) {
-          return true;
-        }
-        break;
-      // GO DEEP!
-      case "object":
-        // typeof(null) == 'object', this
-        //  prevents trying to recurse on null
-        if (objB[key] == null) {
-          if (objA[key] != null) {
-            return true;
-          }
-        }
-        if (deep === true && objectsDiffer(objA[key], objB[key], true)) {
-          return true;
-        }
-        break;
-      default:
-        // assume the objects differ if they cannot
-        //  be typed.
-        return true;
-    }
-  }
-
-  // The above loop ensures that all the keys
-  //  in "A" match a key in "B", if "B" has any
-  //  extra keys then the objects differ.
-  for (const key of bKeys) {
-    if (aKeys.indexOf(key) < 0) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 /** Get the map-sources name.  Paths are "/" split
@@ -442,6 +387,13 @@ export function getVersion() {
  * @returns Array containing [minx,miny,maxx,maxy]
  */
 export function getFeaturesExtent(mapSource) {
+  // features kept in the feature store carry their own
+  //  spatial index which already knows the extent
+  const olSource = getStoredSource(mapSource.name);
+  if (olSource !== null && olSource.getFeatures().length > 0) {
+    return olSource.getExtent().slice();
+  }
+
   const bounds = [null, null, null, null];
 
   const min = function (x, y) {
@@ -711,46 +663,6 @@ export function xhr(opts) {
   return Request(opts);
 }
 
-export function transformProperties(transforms, properties) {
-  const newProperties = Object.assign({}, properties);
-
-  for (const prop in transforms) {
-    let value = properties[prop];
-    switch (transforms[prop]) {
-      case "string":
-        value = "" + value;
-        break;
-      case "number":
-        value = parseFloat(value);
-        break;
-      default:
-      // do nothing on default.
-    }
-    newProperties[prop] = value;
-  }
-
-  return newProperties;
-}
-
-/* Convert the data type of feature properties.
- *
- * @param transforms Object of transforms to apply.
- * @param features   Array of GeoJSON features.
- *
- * @return The array of GeoJSON features.
- */
-export function transformFeatures(transforms, features) {
-  if (typeof transforms !== "object") {
-    return features;
-  }
-
-  for (const feature of features) {
-    feature.properties = transformProperties(transforms, feature.properties);
-  }
-
-  return features;
-}
-
 /** Calculate the length of a GET query.
  *
  *  @param data An object of KVP.
@@ -787,32 +699,22 @@ export function projectFeatures(features, srcProj, destProj) {
   return GEOJSON_FORMAT.writeFeaturesObject(newFeatures).features;
 }
 
-/**
- * Compare two objects by their JSON strings.
- *
- * @param a First object to compare.
- * @param b Second object to compare.
- *
- * @returns Boolean, true if they match, false if not.
- */
-export function jsonEquals(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
-}
-
 /** Get the extent of a query's results.
- *  All features must have a boundedBy property.
+ *  Features without a boundedBy property are skipped - a row with a
+ *  NULL geometry has no extent to contribute.
  */
 export function getExtentForQuery(results, minSize = 150) {
   let extent = null;
 
   for (const path in results) {
-    const features = results[path];
-    if (features.length > 0) {
-      if (extent === null) {
-        extent = features[0].properties.boundedBy.slice();
+    for (const feature of results[path]) {
+      const e = feature.properties.boundedBy;
+      if (!e) {
+        continue;
       }
-      for (let i = 1, ii = features.length; i < ii; i++) {
-        const e = features[i].properties.boundedBy;
+      if (extent === null) {
+        extent = e.slice();
+      } else {
         extent[0] = Math.min(extent[0], e[0]);
         extent[1] = Math.min(extent[1], e[1]);
         extent[2] = Math.max(extent[2], e[2]);
