@@ -26,12 +26,26 @@
  *
  */
 
-import XYZSource from "ol/source/XYZ";
 import TileLayer from "ol/layer/Tile";
+import TileImageSource from "ol/source/TileImage";
+
+// this is a blank base64 encoded png, to avoid cors issues (especailly while printing)
+//  tiled layers default to a blank tile on error
+const BLANK_PNG =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+function blankLoader(imageTile, src) {
+  const img = imageTile.getImage();
+  img.onerror = () => {
+    img.src = BLANK_PNG;
+  };
+  img.src = src;
+}
 
 /** Create the parameters for a XYZ layer.
  *
  */
+
 function defineSource(mapSource) {
   let crossOrigin = null;
   if (mapSource.params["cross-origin"]) {
@@ -41,8 +55,9 @@ function defineSource(mapSource) {
   }
 
   return {
-    crossOrigin: crossOrigin,
+    crossOrigin,
     urls: mapSource.urls,
+    tileLoadFunction: blankLoader,
   };
 }
 
@@ -54,7 +69,7 @@ function defineSource(mapSource) {
  */
 export function createLayer(mapSource) {
   return new TileLayer({
-    source: new XYZSource(defineSource(mapSource)),
+    source: new TileImageSource(defineSource(mapSource)),
     minResolution: mapSource.minresolution,
     maxResolution: mapSource.maxresolution,
   });
