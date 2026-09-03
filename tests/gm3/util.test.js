@@ -145,3 +145,23 @@ describe("getExtentForQuery", () => {
     expect(util.getExtentForQuery({})).toEqual(null);
   });
 });
+
+describe("stripServiceParams", () => {
+  test("removes the service and its fields", () => {
+    expect(util.stripServiceParams("?service=search&field:owner=smith")).toBe("");
+  });
+
+  test("preserves the mapbook", () => {
+    expect(util.stripServiceParams("?mapbook=test&service=search&field:owner=smith")).toBe(
+      "mapbook=test"
+    );
+  });
+
+  test("preserves parameters which are not the service", () => {
+    expect(util.stripServiceParams("?mapbook=test&zoom=12")).toBe("mapbook=test&zoom=12");
+  });
+
+  test("handles an empty query", () => {
+    expect(util.stripServiceParams("")).toBe("");
+  });
+});
