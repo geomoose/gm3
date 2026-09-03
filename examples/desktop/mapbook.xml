@@ -548,13 +548,13 @@
                draw-point="true" draw-line="true" draw-polygon="true"
                draw-modify="true" draw-remove="true" draw-edit="true" />
 
-        <layer src="geoparquet-parcels/default" />
-
         <group title="Overlays" expand="true" tip="Layers that sit above the basemaps">
             <group title="County Layers">
                 <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
 
                 <layer src="places/default" />
+
+                <layer title="GeoParquet Parcels" src="geoparquet-parcels/default" />
 
                 <layer title="Vector Parcels" src="vector-parcels/parcels">
                     <metadata>https://raw.githubusercontent.com/geomoose/gm3-demo-data/main/demo/parcels/LICENSE</metadata>
