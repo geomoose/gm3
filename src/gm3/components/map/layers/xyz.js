@@ -26,8 +26,8 @@
  *
  */
 
-import XYZSource from "ol/source/XYZ";
 import TileLayer from "ol/layer/Tile";
+import XYZSource from "ol/source/XYZ";
 
 /** Create the parameters for a XYZ layer.
  *
@@ -41,7 +41,7 @@ function defineSource(mapSource) {
   }
 
   return {
-    crossOrigin: crossOrigin,
+    crossOrigin,
     urls: mapSource.urls,
   };
 }

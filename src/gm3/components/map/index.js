@@ -562,8 +562,12 @@ class Map extends React.Component {
     });
 
     // call back for when the map has finished rendering.
+    //  "rendercomplete" only fires once every source has settled
+    //  (loaded, empty, or errored), so a failing layer cannot leave
+    //  the print capture waiting and a slow one cannot be captured
+    //  half-drawn; it re-fires after each view change settles.
     if (this.props.mapRenderedCallback) {
-      this.map.on("postrender", () => this.props.mapRenderedCallback(this.map));
+      this.map.on("rendercomplete", () => this.props.mapRenderedCallback(this.map));
     }
 
     // once the map is created, kick off the initial startup.
