@@ -2,6 +2,8 @@
  * Test the functions in util.
  */
 
+import Mark from "markup-js";
+
 import * as util from "gm3/util";
 
 import { FEATURES } from "./sample_data";
@@ -95,6 +97,18 @@ test("getLayerName", () => {
 test("formatUrlParameters", () => {
   const params = { a: "a", b: "b" };
   expect(util.formatUrlParameters(params)).toBe("a=a&b=b");
+});
+
+test("markup getattr pipe supports property names with dots", () => {
+  const feature = {
+    properties: {
+      "Wetlands_CONUS_East.ATTRIBUTE": "PFO4D",
+    },
+  };
+
+  expect(
+    Mark.up("{{properties|getattr>Wetlands_CONUS_East.ATTRIBUTE}}", feature, util.FORMAT_OPTIONS)
+  ).toBe("PFO4D");
 });
 
 test("getUtmZone", () => {
