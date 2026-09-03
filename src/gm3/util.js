@@ -242,6 +242,7 @@ export const FORMAT_OPTIONS = {
       return n.toLocaleString();
     },
     json: (obj) => JSON.stringify(obj),
+    getattr: (obj, attr) => (obj ? obj[attr] : undefined),
   },
 };
 
