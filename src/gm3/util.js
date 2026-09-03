@@ -53,6 +53,33 @@ export function parseQuery() {
   return paramStringToObject(window.location.search);
 }
 
+/**
+ * Remove the service start-up parameters from a query string.
+ *
+ * Everything else, such as "mapbook", is preserved so that clearing
+ * the service does not also change which application is loaded.
+ *
+ * @param paramString The query string, with or without a leading "?".
+ *
+ * @returns A query string, without a leading "?", and without the
+ *          "service" and "field:*" parameters.
+ */
+export function stripServiceParams(paramString) {
+  const params = new URLSearchParams(paramString);
+  // the keys cannot be deleted while iterating the params,
+  //  so collect them first.
+  const serviceParams = [];
+  params.forEach((value, key) => {
+    if (key === "service" || key.substring(0, 6) === "field:") {
+      serviceParams.push(key);
+    }
+  });
+  serviceParams.forEach((key) => {
+    params.delete(key);
+  });
+  return params.toString();
+}
+
 export function parseBoolean(bool, def = false) {
   if (typeof bool == "undefined" || bool === null) {
     return def;
@@ -431,7 +458,7 @@ export function changeFeatures(features, filter, properties, geometry) {
 export function getVersion() {
   // this will be replaced by a version string by Webpack.
   // eslint-disable-next-line
-    return GM_VERSION;
+  return GM_VERSION;
 }
 
 /** Determine the extent of the features in a source.
