@@ -45,6 +45,28 @@ HTML. As seen here:
 The template above is named "search" and will be used by the search tool
 in order to render any features it receives from the server.
 
+Property names with dots
+------------------------
+
+Some datasets include feature property names that themselves contain dots,
+for example ``Wetlands_CONUS_East.ATTRIBUTE``. In the GeoMoose template
+system, dots are normally used to traverse nested objects, so those
+property names cannot be accessed with the usual syntax:
+
+.. code:: xml
+
+    {{ properties.Wetlands_CONUS_East.ATTRIBUTE }}
+
+In those cases, use the ``getattr`` pipe to retrieve the property by its
+full name:
+
+.. code:: xml
+
+    {{ properties | getattr>Wetlands_CONUS_East.ATTRIBUTE }}
+
+This is most useful for joined or enterprise datasets where attribute
+names may be prefixed with a table or layer name.
+
 Aliasing templates
 ------------------
 
