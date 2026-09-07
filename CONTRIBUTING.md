@@ -37,3 +37,5 @@ Human-written contributions are preferred, but AI/LLM tooling is allowed if you 
 3. Avoid the typical high verbosity of LLM code and text.  More code is more code to maintain.
 
 These guidelines are here to protect the interests of the GeoMoose project's active members without blocking the adoption of new tooling.  They will be subject to change over time as the technological, legal, and ethical landscape evolves.
+
+The GeoMoose project has codified this policy in [RFC-9](https://www.geomoose.org/rfc/rfc-9.html).
