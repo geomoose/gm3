@@ -269,6 +269,9 @@ export const FORMAT_OPTIONS = {
       return n.toLocaleString();
     },
     json: (obj) => JSON.stringify(obj),
+    // trim() is necessary to prevent any parsing issues along whitespace
+    //  with the property name
+    getattr: (obj, attr) => (obj ? obj[attr.trim()] : undefined),
   },
 };
 
