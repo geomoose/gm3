@@ -38,6 +38,11 @@ jest.mock("gm3/actions/mapSource", () => ({
 describe("BasemapToggle", () => {
   beforeEach(() => {
     setLayerVisibility.mockClear();
+    jest.spyOn(console, "info").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    console.info.mockRestore();
   });
 
   const layers = [
@@ -97,7 +102,7 @@ describe("BasemapToggle", () => {
     expect(container.firstChild).toBe(null);
   });
 
-  it("shows an error state when no basemap is active", () => {
+  it("shows an info state when no basemap is active", () => {
     render(
       <BasemapToggleComponent
         layers={layers}
@@ -107,13 +112,50 @@ describe("BasemapToggle", () => {
       />
     );
 
-    const error = document.querySelector(".basemap-toggle.error");
-    expect(error).not.toBe(null);
+    const info = document.querySelector(".basemap-toggle.info");
+    expect(info).not.toBe(null);
     expect(screen.queryByRole("button", { name: "No background" })).toBe(null);
     expect(
-      screen.getByTitle("Invalid basemap toggle state: choose a different base layer")
+      screen.getByTitle(
+        "Basemap toggle inactive. Choose a quick-switch basemap from the Catalog to reactivate it."
+      )
     ).not.toBe(null);
-    expect(error.querySelector(".error-indicator")).not.toBe(null);
+    expect(info.querySelector(".info-indicator")).not.toBe(null);
+    expect(console.info).toHaveBeenCalledWith(
+      "Basemap toggle inactive: the active background layer is outside the configured quick-switch basemap list."
+    );
+  });
+
+  it("opens from the info state and toggles the clicked basemap on and the others off", () => {
+    const onSetLayerVisibility = jest.fn();
+
+    render(
+      <BasemapToggleComponent
+        layers={layers}
+        mapSources={{}}
+        mapbookReady={true}
+        onSetLayerVisibility={onSetLayerVisibility}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByTitle(
+        "Basemap toggle inactive. Choose a quick-switch basemap from the Catalog to reactivate it."
+      )
+    );
+
+    expect(document.querySelector(".basemap-toggle.info.full-open")).not.toBe(null);
+    expect(
+      screen.queryByTitle(
+        "Basemap toggle inactive. Choose a quick-switch basemap from the Catalog to reactivate it."
+      )
+    ).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Aerial" }));
+
+    expect(onSetLayerVisibility).toHaveBeenCalledWith("lmic/mncomp", true);
+    expect(onSetLayerVisibility).toHaveBeenCalledWith("blank/blank", false);
+    expect(onSetLayerVisibility).toHaveBeenCalledWith("openstreetmap/osm_mapnik", false);
   });
 
   it("toggles the clicked basemap on and the others off", () => {
