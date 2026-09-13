@@ -282,6 +282,10 @@ app.loadMapbook().then(function() {
       + '&SRS=EPSG%3A3857&STYLES=&WIDTH=40&HEIGHT=40'
       + '&BBOX=-10389135.541557081%2C5535452.120985681%2C-10351566.742154919%2C5566447.33595532';
 
+    // The BasemapToggle is intended as a quick-switch subset of the full
+    // Backgrounds group in the Catalog. If a user selects a background layer
+    // outside this list, the toggle will show an informational inactive state
+    // until one of these configured layers is selected again from the Catalog.
     app.add(gm3.components.BasemapToggle, 'basemap-toggle', {
         layers: [
             {

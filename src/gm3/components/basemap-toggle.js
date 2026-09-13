@@ -83,6 +83,11 @@ const BasemapToggleComponent = ({ layers, mapSources, mapbookReady, onSetLayerVi
   const activeIndex = useMemo(() => getActiveLayerIndex(layers, mapSources), [layers, mapSources]);
   const setVis = onSetLayerVisibility;
 
+  // This happens when the active background layer is outside the configured
+  // quick-switch basemap list. The toggle is temporarily inactive until one of
+  // the configured quick-switch layers is selected again.
+  const layerInScope = activeIndex >= 0;
+
   const handleLayerClick = useCallback(
     (layer) => {
       setVis(layer.path, true);
@@ -99,52 +104,60 @@ const BasemapToggleComponent = ({ layers, mapSources, mapbookReady, onSetLayerVi
     return null;
   }
 
-  // This happens, generally, during a misconfiguration::
-  // - The admin configures the base layers to work "in a group"
-  // - The user clicks a layer that is in a group where the rest of the configured basemaps are "off"
-  // This means there is no placeholder for that layer in the basemap toggle!
-  //
-  if (activeIndex < 0) {
-    console.warn("Basemap toggle configuration error! All exclusive layers are off.");
-
-    // short circuit the rendering
-    return (
-      <div className="basemap-toggle error">
-        <span
-          className="error-indicator"
-          title="Invalid basemap toggle state: choose a different base layer"
-        >
-          {/* unicode warning symbol */ "\u26A0"}
-        </span>
-      </div>
+  // debugging info for admins that will likely have the dev tools open.
+  if (!layerInScope) {
+    console.info(
+      "Basemap toggle inactive: the active background layer is outside the configured quick-switch basemap list."
     );
   }
 
-  return (
-    <div
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={(evt) => {
+  const eventHandlers = useMemo(() => {
+    const handlers = {
+      onFocus: () => setOpen(true),
+      onBlur: (evt) => {
         if (!evt.currentTarget.contains(evt.relatedTarget)) {
           setOpen(false);
         }
-      }}
+      },
+    };
+    if (layerInScope) {
+      handlers.onMouseEnter = () => setOpen(true);
+      handlers.onMouseLeave = () => setOpen(false);
+    } else {
+      handlers.onClick = () => setOpen(true);
+    }
+    return handlers;
+  }, [layerInScope]);
+
+  return (
+    <div
+      {...eventHandlers}
       // When there is no active index "fold" the basemap chooser down
       //  to prevent being in an indeterminate state.
-      className={`basemap-toggle ${isOpen ? "full-open" : ""}`}
+      className={`basemap-toggle ${isOpen ? "full-open" : ""} ${!layerInScope ? "info" : ""}`}
     >
-      {layers.map((layer, idx) => (
-        <BasemapToggleChip
-          key={layer.path || idx}
-          label={layer.label}
-          src={layer.src}
-          path={layer.path}
-          active={idx === activeIndex}
-          open={isOpen || idx === activeIndex}
-          onClick={() => handleLayerClick(layer)}
-        />
-      ))}
+      {!layerInScope && !isOpen && (
+        <button
+          type="button"
+          className="info-indicator"
+          title="Basemap toggle inactive. Choose a quick-switch basemap from the Catalog to reactivate it."
+          onClick={() => setOpen(true)}
+        >
+          {/* unicode circled information source symbol */ "\u{1F6C8}"}
+        </button>
+      )}
+      {(layerInScope || isOpen) &&
+        layers.map((layer, idx) => (
+          <BasemapToggleChip
+            key={layer.path || idx}
+            label={layer.label}
+            src={layer.src}
+            path={layer.path}
+            active={idx === activeIndex}
+            open={isOpen || idx === activeIndex}
+            onClick={() => handleLayerClick(layer)}
+          />
+        ))}
     </div>
   );
 };

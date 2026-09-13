@@ -19,8 +19,40 @@
     }
   }
 
-  &.error {
-    background: rgba(255, 0, 0, 0.4);
+  &.info {
+    background: rgba(0, 90, 160, 0.45);
+    cursor: help;
+
+    .info-indicator {
+      align-items: center;
+      appearance: none;
+      background: none;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: inherit;
+      cursor: help;
+      display: flex;
+      font: inherit;
+      height: 32px;
+      justify-content: center;
+      line-height: 1;
+      margin: 0;
+      outline: none;
+      padding: 0;
+      pointer-events: none;
+      text-align: center;
+      width: 32px;
+    }
+
+    &.full-open {
+      background: rgba(0, 0, 0, 0.4);
+      cursor: default;
+
+      .info-indicator {
+        display: none;
+      }
+    }
   }
 }
 
