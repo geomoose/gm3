@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
@@ -100,16 +100,16 @@ const BasemapToggleComponent = ({ layers, mapSources, mapbookReady, onSetLayerVi
     [layers, setVis]
   );
 
-  if (!mapbookReady) {
-    return null;
-  }
+  useEffect(() => {
+    // debugging info for admins that will likely have the dev tools open.
+    if (!mapbookReady || layerInScope) {
+      return;
+    }
 
-  // debugging info for admins that will likely have the dev tools open.
-  if (!layerInScope) {
     console.info(
       "Basemap toggle inactive: the active background layer is outside the configured quick-switch basemap list."
     );
-  }
+  }, [layerInScope, mapbookReady]);
 
   const eventHandlers = useMemo(() => {
     const handlers = {
@@ -120,14 +120,18 @@ const BasemapToggleComponent = ({ layers, mapSources, mapbookReady, onSetLayerVi
         }
       },
     };
+    handlers.onMouseLeave = () => setOpen(false);
     if (layerInScope) {
       handlers.onMouseEnter = () => setOpen(true);
-      handlers.onMouseLeave = () => setOpen(false);
     } else {
       handlers.onClick = () => setOpen(true);
     }
     return handlers;
   }, [layerInScope]);
+
+  if (!mapbookReady) {
+    return null;
+  }
 
   return (
     <div
@@ -135,14 +139,14 @@ const BasemapToggleComponent = ({ layers, mapSources, mapbookReady, onSetLayerVi
       // When there is no active index "fold" the basemap chooser down
       //  to prevent being in an indeterminate state.
       className={`basemap-toggle ${isOpen ? "full-open" : ""} ${!layerInScope ? "info" : ""}`}
+      title={
+        !layerInScope && !isOpen
+          ? "Basemap toggle inactive. Choose a quick-switch basemap from the Catalog to reactivate it."
+          : undefined
+      }
     >
       {!layerInScope && !isOpen && (
-        <button
-          type="button"
-          className="info-indicator"
-          title="Basemap toggle inactive. Choose a quick-switch basemap from the Catalog to reactivate it."
-          onClick={() => setOpen(true)}
-        >
+        <button type="button" className="info-indicator" onClick={() => setOpen(true)}>
           {/* unicode circled information source symbol */ "\u{1F6C8}"}
         </button>
       )}
