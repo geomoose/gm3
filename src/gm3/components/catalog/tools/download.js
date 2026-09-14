@@ -36,6 +36,7 @@ import { Tool } from "../tools";
 import Modal from "../../modal";
 
 import { matchFeatures } from "../../../util";
+import { ensureSourceData, getSource as getStoredSource, isStoreBacked } from "@gm3/featureStore";
 
 function doDownload(features, downloadFormat) {
   let filename = "geomoose_" + new Date().getTime();
@@ -76,10 +77,25 @@ function doDownload(features, downloadFormat) {
  * onDownload is the event handler for the button, it uses doDownload
  * for the logical part of the export.
  */
-function onDownload(src, mapSource, downloadFormat) {
+async function onDownload(src, mapSource, downloadFormat) {
   // find the layer and check to see if it has features,
   //  if features is undefined, then just return an empty collection.
   let features = mapSource?.features || [];
+
+  // data-driven layers keep their features in the feature store, and
+  //  may not have finished loading them yet. without this the download
+  //  of a freshly enabled layer quietly writes an empty file. only
+  //  store-backed types are awaited, so everything else stays
+  //  synchronous.
+  if (features.length === 0) {
+    if (isStoreBacked(mapSource)) {
+      await ensureSourceData(mapSource);
+    }
+    const olSource = getStoredSource(mapSource.name);
+    if (olSource !== null) {
+      features = new GeoJSONFormat().writeFeaturesObject(olSource.getFeatures()).features;
+    }
+  }
 
   // check to see if there is a filter on the specified layer
   let filter = null;
@@ -131,7 +147,11 @@ export const DownloadTool = ({ layer, mapSources }) => {
             if (opt === "download") {
               const src = layer.src[0];
               const mapSource = mapSources[src.mapSourceName];
-              onDownload(src, mapSource, downloadFormat);
+              // the features may still be loading, so this settles after
+              //  the modal has closed.
+              onDownload(src, mapSource, downloadFormat).catch((err) => {
+                console.error(`Failed to download ${mapSource.name}`, err);
+              });
             }
             setModalOpen(false);
           }}
