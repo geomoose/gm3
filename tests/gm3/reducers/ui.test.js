@@ -56,4 +56,14 @@ describe("test the `ui` reducer", () => {
     store.dispatch(actions.clearAction());
     expect(store.getState().ui.action).toBe(null);
   });
+
+  it("tracks mapbook readiness", () => {
+    expect(store.getState().ui.mapbookReady).toBe(false);
+
+    store.dispatch(actions.setMapbookReady(true));
+    expect(store.getState().ui.mapbookReady).toBe(true);
+
+    store.dispatch(actions.setMapbookReady(false));
+    expect(store.getState().ui.mapbookReady).toBe(false);
+  });
 });

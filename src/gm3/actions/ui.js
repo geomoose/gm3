@@ -35,3 +35,5 @@ export const clearAction = createAction("ui/clear-action");
 export const showModal = createAction("ui/show-modal");
 
 export const hideModal = createAction("ui/hide-modal");
+
+export const setMapbookReady = createAction("ui/set-mapbook-ready");
