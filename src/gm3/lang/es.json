@@ -124,5 +124,9 @@
   "yes": "Sí",
   "no": "No",
   "show-layer": "Mostrar capa {{label}}",
-  "hide-layer": "Ocultar capa {{label}}"
+  "hide-layer": "Ocultar capa {{label}}",
+  "scale-line": "Escala gráfica",
+  "scale-line-none": "Ninguno",
+  "scale-line-line-distance": "Línea y distancia",
+  "scale-line-line-distance-scale": "Línea, distancia y escala"
 }

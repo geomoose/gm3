@@ -151,6 +151,37 @@ const toPoints = (n, unit) => {
 // TODO: derive this from state once non-mercator basemaps are supported.
 const MAP_PROJECTION = "EPSG:3857";
 
+// Relative tolerance when comparing a requested resolution against the one
+//  OpenLayers will actually use. Well below any real zoom step, so it only
+//  ever absorbs floating-point drift.
+const RESOLUTION_EPSILON = 1e-6;
+
+// What the printed map's scale indicator shows. Each mode is the previous
+//  one plus an element: the bar with its distance label ("300 ft"), then
+//  the fixed-scale caption ("100 ft / in") beside it.
+//
+// A bar with no distance label is deliberately not offered -- there would
+//  be no way to tell what the bar measures.
+const SCALE_LINE_NONE = "none";
+const SCALE_LINE_DISTANCE = "line-distance";
+const SCALE_LINE_DISTANCE_SCALE = "line-distance-scale";
+
+const SCALE_LINE_MODES = [SCALE_LINE_NONE, SCALE_LINE_DISTANCE, SCALE_LINE_DISTANCE_SCALE];
+
+/* The scale-line mode a print starts on, from config.map.scaleLine.printMode.
+ *
+ * Offices that circulate PDFs for reprinting often want the fixed-scale
+ * caption off by default, since a caption stops being true once the page
+ * is resized. An unrecognized value falls back to showing everything.
+ */
+function getConfiguredScaleLineMode(state) {
+  const scaleLine = state.config.map.scaleLine;
+  if (scaleLine && SCALE_LINE_MODES.indexOf(scaleLine.printMode) >= 0) {
+    return scaleLine.printMode;
+  }
+  return SCALE_LINE_DISTANCE_SCALE;
+}
+
 // Unit conversions used to express scale presets.
 
 const POINTS_PER_INCH = 72;
@@ -240,6 +271,8 @@ export class PrintModal extends Modal {
       resolution: "fit",
       layouts: props.layouts ? props.layouts : DefaultLayouts,
       includeSelection: "true",
+      // the deployer picks the starting mode; the user changes it per print.
+      scaleLineMode: getConfiguredScaleLineMode(props.store.getState()),
     };
   }
 
@@ -418,7 +451,8 @@ export class PrintModal extends Modal {
 
     // add a scale line
     const scaleLine = state.config.map.scaleLine;
-    if (scaleLine && scaleLine.enabled) {
+    const scaleLineMode = this.getScaleLineMode();
+    if (scaleLine && scaleLine.enabled && scaleLineMode !== SCALE_LINE_NONE) {
       // the view renders at "render-pixel" resolution; the scale bar is
       //  drawn in PDF points, so scale up by the image's pixels-per-point.
       const scaleInfo = getScalelineInfo(view, scaleLine.units || "us", {
@@ -439,10 +473,14 @@ export class PrintModal extends Modal {
       // the end ticks rise from the line to 60% of the label's height.
       const tickHeight = 0.6 * labelHeight;
 
-      // when a fixed scale is chosen, caption the indicator with that
-      //  scale's label (e.g. "1:24000"); "Fit" scales have no fixed ratio.
-      const scaleDef = this.getScales().find((s) => s.value === this.state.resolution);
-      const fixedLabel = scaleDef && !scaleDef.fit ? scaleDef.label : null;
+      // the fixed-scale caption (e.g. "100 ft / in") beside the bar. It is
+      //  offered only when the map will really render at that scale, so by
+      //  the time the mode asks for it the choice is already sound --
+      //  getScaleLineMode drops back to the bar alone otherwise.
+      let fixedLabel = null;
+      if (scaleLineMode === SCALE_LINE_DISTANCE_SCALE) {
+        fixedLabel = this.getScaleDef().label;
+      }
 
       // the scale line itself, mirroring the OpenLayers scale line: a
       //  horizontal distance line capped with a tick on each end.
@@ -686,7 +724,7 @@ export class PrintModal extends Modal {
     return <div className={this.getFooterClass(2)}>{buttons}</div>;
   }
 
-  /* The full list of scale options shown to the user.
+  /* Every configured scale, whether or not this map can render it.
    *
    * The "Fit" options are always present; the fixed scales come from the
    * application config (config.print.scales) when provided. When scales are
@@ -695,13 +733,226 @@ export class PrintModal extends Modal {
    *
    * @return An array of scale definitions.
    */
-  getScales() {
+  getAllScales() {
     const configScales = this.props.printScales;
     const fixedScales =
       configScales === undefined
         ? DEFAULT_SCALES
         : configScales.map((def, i) => buildScale(def, i)).filter((scale) => scale !== null);
     return [...FIT_SCALES, ...fixedScales];
+  }
+
+  /* The map resolution a scale needs, without consulting the scale list.
+   *
+   * Split out from getPrintMap so getScales can test a scale for
+   * reachability -- getPrintMap picks from getScales, so deriving this
+   * there would be circular.
+   *
+   * @return meters/pixel, or null for a "fit" scale (which has no fixed
+   *   ground distance and renders at the current view resolution).
+   */
+  getResolutionForScaleDef(scaleDef) {
+    if (scaleDef.fit) {
+      return null;
+    }
+    // the image renders at dpiMultiplier pixels per PDF point, so the
+    //  ground distance each pixel must cover is the per-point distance
+    //  spread across those pixels.
+    const groundResolution = scaleDef.metersPerPt / SCALE_DPI_MULTIPLIER;
+    // web mercator (EPSG:3857) stretches distances by latitude, so the
+    //  view resolution OL renders with is not true ground meters. Convert
+    //  the desired ground resolution into a projected one at the map
+    //  center; this also keeps the scale bar (which corrects the same
+    //  way) in agreement with the printed map.
+    const projectionFactor = getPointResolution(MAP_PROJECTION, 1, this.props.mapView.center, "m");
+    return groundResolution / projectionFactor;
+  }
+
+  /* The scale options offered to the user.
+   *
+   * A scale finer than the map's zoom limits allow cannot be honored --
+   * OpenLayers clamps the render and the print comes out at some other
+   * scale entirely -- so it is left off the menu rather than offered and
+   * quietly not delivered.
+   *
+   * The trade-off is that a deployer can configure a scale their zoom
+   * limits hide, so getUnavailableScales names the dropped ones and the
+   * dialog shows them.
+   *
+   * Deliberately not memoized. Testing a scale costs an OpenLayers view,
+   * but that is ~0.02ms -- a fraction of a millisecond for a whole render
+   * of a dialog that only re-renders on interaction. A cache here would
+   * have to be keyed on the configured scales, the view limits, the map
+   * center, and the layout, and would silently go stale for any subclass
+   * that overrides one of the inputs.
+   *
+   * @return An array of scale definitions.
+   */
+  getScales() {
+    return this.getAllScales().filter((scaleDef) => this.canRenderScale(scaleDef));
+  }
+
+  /* Labels of the configured scales this map cannot reach.
+   *
+   * Surfaced in the dialog so a scale going missing is visible to the
+   * person printing, not only to whoever opens the console.
+   */
+  getUnavailableScales() {
+    return this.getAllScales()
+      .filter((scaleDef) => !this.canRenderScale(scaleDef))
+      .map((scaleDef) => scaleDef.label);
+  }
+
+  /* Whether this map can be rendered at a scale's resolution. */
+  canRenderScale(scaleDef) {
+    return this.canRenderAtResolution(this.getResolutionForScaleDef(scaleDef));
+  }
+
+  /* The pixel size the print map image is rendered at, for a fixed scale.
+   *
+   * canRenderAtResolution needs this: when config.map.view sets an extent,
+   * OpenLayers caps the resolution at the extent divided by the *viewport*,
+   * so a check run against a differently-sized viewport gets a different
+   * answer. Derived from the layout alone so getScales can call it without
+   * going through getPrintMap, which picks from getScales.
+   *
+   * Only fixed scales need this, and those always render at
+   * SCALE_DPI_MULTIPLIER; "fit" scales are never resolution-constrained.
+   *
+   * @return [width, height] in pixels, or null when the layout has no map.
+   */
+  getPrintMapSize() {
+    const layout = this.state.layouts[this.state.layout];
+    if (!layout) {
+      return null;
+    }
+    const mapElement = layout.elements.find((element) => element.type === "map");
+    if (!mapElement) {
+      return null;
+    }
+    return [
+      this.toPoints(mapElement.width, layout.units) * SCALE_DPI_MULTIPLIER,
+      this.toPoints(mapElement.height, layout.units) * SCALE_DPI_MULTIPLIER,
+    ];
+  }
+
+  /* Whether the print map can actually render at a given resolution.
+   *
+   * The print image is rendered by the same map component as the main map
+   * (see PrintImage), so it inherits config.map.view's minZoom/maxZoom. A
+   * scale finer than maxZoom permits is silently clamped by OpenLayers: the
+   * printed map comes out at whatever the limit allows, not at the scale
+   * that was asked for. Ask OpenLayers what it would clamp to and compare.
+   */
+  canRenderAtResolution(resolution) {
+    if (resolution === null || resolution === undefined) {
+      return true;
+    }
+
+    const viewConfig = this.props.store.getState().config.map.view;
+    if (!viewConfig) {
+      return true;
+    }
+
+    // mirror how the map component seeds its view (see components/map),
+    //  since only these keys constrain the resolution.
+    const viewParams = {
+      center: this.props.mapView.center,
+      resolution,
+      projection: MAP_PROJECTION,
+    };
+    ["maxZoom", "minZoom", "extent"].forEach((key) => {
+      if (viewConfig[key]) {
+        viewParams[key] = viewConfig[key];
+      }
+    });
+
+    const view = new View(viewParams);
+    // with an extent configured, the constraint is the extent spread across
+    //  the viewport, so this has to be the size the print map really mounts
+    //  at. Left at OpenLayers' 100x100 default it reads far too permissive.
+    const size = this.getPrintMapSize();
+    if (size) {
+      view.setViewportSize(size);
+    }
+
+    const constrained = view.getConstrainedResolution(resolution);
+    if (constrained === undefined) {
+      return true;
+    }
+
+    // floating point: a clamp that lands within a hair of the request is
+    //  the request.
+    return Math.abs(constrained - resolution) <= resolution * RESOLUTION_EPSILON;
+  }
+
+  /* The scale this print will actually use.
+   *
+   * Which scales are reachable depends on the layout and the map center,
+   * so a scale the user picked can drop out of the list underneath them --
+   * changing layouts is enough. Rather than leave the picker showing a
+   * value it no longer offers (and printing something else), fall back to
+   * the first scale, which is always "Scale to fit".
+   */
+  getScaleDef() {
+    const scales = this.getScales();
+    return scales.find((s) => s.value === this.state.resolution) || scales[0];
+  }
+
+  /* Whether the fixed-scale caption can be offered for the current choices.
+   *
+   * It needs a scale to name, so the "fit" presets rule it out. Anything
+   * still in getScales() is by definition a scale the map can render, so
+   * no further check is needed here: a scale the zoom limits would clamp
+   * was already dropped from the list and cannot be the selection.
+   */
+  canShowFixedScale() {
+    return !this.getScaleDef().fit;
+  }
+
+  /* The scale-line mode this print will actually use.
+   *
+   * The scale and scale-line pickers are independent, so the caption can
+   * stop being available -- switching to a "fit" preset, which names no
+   * scale -- while it is the selected mode. The print then falls back to
+   * the bar alone.
+   *
+   * componentDidUpdate commits that fallback, so this only ever differs
+   * from state within the render that discovers it. Whatever the control
+   * shows is what prints, and it never changes on its own afterwards.
+   */
+  getScaleLineMode() {
+    const mode = this.state.scaleLineMode;
+    if (mode === SCALE_LINE_DISTANCE_SCALE && !this.canShowFixedScale()) {
+      return SCALE_LINE_DISTANCE;
+    }
+    return mode;
+  }
+
+  /* Hold the scale-line picker to what the user last saw.
+   *
+   * Without this the mode is merely derived, so a user who opens the
+   * dialog on a "fit" preset sees "Line and Distance" -- the caption
+   * being unavailable -- leaves it alone, picks a fixed scale, and the
+   * control silently jumps to "Line, Distance, and Scale" because the
+   * underlying state was never what the control displayed. They get a
+   * caption they had no reason to expect.
+   *
+   * Committing the fallback means the user's choice is the only thing
+   * that moves this control. The cost is that scaleLine.printMode only
+   * takes effect while the caption is available: a dialog that opens on
+   * a "fit" preset settles on "Line and Distance", and a deployer's
+   * "line-distance-scale" default is then something the user opts into
+   * rather than out of. That is the safer direction to err.
+   */
+  componentDidUpdate(prevProps, prevState) {
+    if (super.componentDidUpdate) {
+      super.componentDidUpdate(prevProps, prevState);
+    }
+    const mode = this.getScaleLineMode();
+    if (mode !== this.state.scaleLineMode) {
+      this.setState({ scaleLineMode: mode });
+    }
   }
 
   /* The rendering parameters for the print map.
@@ -724,8 +975,7 @@ export class PrintModal extends Modal {
    */
   getPrintMap() {
     const layout = this.state.layouts[this.state.layout];
-    const scales = this.getScales();
-    const scaleDef = scales.find((s) => s.value === this.state.resolution) || scales[0];
+    const scaleDef = this.getScaleDef();
 
     // "fit" scales are a simple DPI multiplier on the layout size; fixed
     //  scales render at a constant, print-quality DPI.
@@ -742,25 +992,7 @@ export class PrintModal extends Modal {
 
     // the resolution (meters/pixel) to re-render the map at; null means
     //  "leave the map at its current view resolution".
-    let resolution = null;
-    if (!scaleDef.fit) {
-      // the image renders at dpiMultiplier pixels per PDF point, so the
-      //  ground distance each pixel must cover is the per-point distance
-      //  spread across those pixels.
-      const groundResolution = scaleDef.metersPerPt / dpiMultiplier;
-      // web mercator (EPSG:3857) stretches distances by latitude, so the
-      //  view resolution OL renders with is not true ground meters. Convert
-      //  the desired ground resolution into a projected one at the map
-      //  center; this also keeps the scale bar (which corrects the same
-      //  way) in agreement with the printed map.
-      const projectionFactor = getPointResolution(
-        MAP_PROJECTION,
-        1,
-        this.props.mapView.center,
-        "m"
-      );
-      resolution = groundResolution / projectionFactor;
-    }
+    const resolution = this.getResolutionForScaleDef(scaleDef);
 
     return {
       width: this.toPoints(mapElement.width, layout.units) * dpiMultiplier,
@@ -800,7 +1032,7 @@ export class PrintModal extends Modal {
             resolution: evt.target.value,
           });
         }}
-        value={this.state.resolution}
+        value={this.getScaleDef().value}
       >
         {this.getScales().map((scaleDef) => (
           // TODO: Add i18n definitions for the scales
@@ -809,6 +1041,57 @@ export class PrintModal extends Modal {
           </option>
         ))}
       </select>
+    );
+  }
+
+  /** Choose what the printed scale indicator shows.
+   *
+   *  The fixed-scale option is listed only when the current scale can carry
+   *  it -- a "fit" preset names no scale, and a scale the map's zoom limits
+   *  will not reach would be captioned with a number the print does not
+   *  honor.
+   */
+  renderScaleLineSelect(t) {
+    const modes = SCALE_LINE_MODES.filter((mode) => {
+      if (mode === SCALE_LINE_DISTANCE_SCALE) {
+        return this.canShowFixedScale();
+      }
+      return true;
+    });
+
+    return (
+      <select
+        onChange={(evt) => {
+          this.setState({
+            scaleLineMode: evt.target.value,
+          });
+        }}
+        value={this.getScaleLineMode()}
+      >
+        {modes.map((mode) => (
+          <option key={mode} value={mode}>
+            {t(`scale-line-${mode}`)}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  /** Render the scale-line row.
+   *
+   *  Dropped entirely when the deployer has turned the scale line off, so
+   *  the dialog does not offer control over something that never prints.
+   */
+  renderScaleLineRow(t) {
+    const scaleLine = this.props.store.getState().config.map.scaleLine;
+    if (!scaleLine || !scaleLine.enabled) {
+      return null;
+    }
+    return (
+      <p>
+        <label>{`${t("scale-line")}:`}</label>
+        {this.renderScaleLineSelect(t)}
+      </p>
     );
   }
 
@@ -859,10 +1142,26 @@ export class PrintModal extends Modal {
       );
     }
 
+    // a configured scale that this map cannot reach is left out of the
+    //  picker. Say so here rather than only in the console, so the person
+    //  printing knows the scale they are looking for was meant to exist.
+    let scaleWarning = false;
+    const unavailable = this.getUnavailableScales();
+    if (unavailable.length > 0) {
+      scaleWarning = (
+        <div className="info-box">
+          {`These print scales are unavailable because the map's zoom limits cannot reach them: ${unavailable.join(
+            ", "
+          )}.`}
+        </div>
+      );
+    }
+
     const mapSize = this.getPrintMap();
     return (
       <div>
         {printWarning}
+        {scaleWarning}
 
         <Translation>
           {(t) => (
@@ -885,6 +1184,7 @@ export class PrintModal extends Modal {
                 <label>{`${t("resolution")}:`}</label>
                 {this.renderResolutionSelect(t)}
               </p>
+              {this.renderScaleLineRow(t)}
               <p>
                 <label>{`${t("include-selection")}:`}</label>
                 {this.renderIncludeSelection(t)}
