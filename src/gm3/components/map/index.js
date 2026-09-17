@@ -946,6 +946,8 @@ class Map extends React.Component {
 
     return (
       <div
+        role="application"
+        tabIndex="0"
         className="map"
         ref={(self) => {
           this.mapDiv = self;
