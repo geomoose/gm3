@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-import { getUtmZone } from "../../util";
-import { get as getProjection } from "ol/proj";
+import { ensureProjection, getUtmZone } from "../../util";
 import olLineString from "ol/geom/LineString";
 
 export const getBearing = (pointA, pointB, ordinalDictionary) => {
@@ -111,7 +110,7 @@ export function getPathSegments(coordinatesLonLat) {
   }
 
   // determine an appropriate utm zone for measurement.
-  const utmZone = getProjection(getUtmZone(coordinatesLonLat[0]));
+  const utmZone = ensureProjection(getUtmZone(coordinatesLonLat[0]));
 
   const segments = [];
   for (let i = 1, ii = coordinatesLonLat.length; i < ii; i++) {
@@ -131,7 +130,7 @@ export function getPathSegments(coordinatesLonLat) {
 
 export function getSegmentInfo(geom, cursorCoords, isDrawing, ordinalDictionary) {
   // determine an appropriate utm zone for measurement.
-  const utmZone = getProjection(getUtmZone(geom.coordinates[0]));
+  const utmZone = ensureProjection(getUtmZone(geom.coordinates[0]));
 
   const coords = [].concat(geom.coordinates);
 

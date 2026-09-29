@@ -26,7 +26,7 @@ import React from "react";
 import USNG from "usng-tools-js";
 import proj4 from "proj4";
 
-import { addProjDef } from "../util";
+import { ensureProjection } from "../util";
 
 import * as proj from "ol/proj";
 
@@ -117,9 +117,7 @@ export default class CoordinateDisplay extends React.Component {
     if (this.props.projections) {
       this.projections = [];
       for (const projection of this.props.projections) {
-        if (typeof projection.projDef !== "undefined") {
-          addProjDef(proj4, projection.ref, projection.projDef);
-        }
+        ensureProjection(projection.ref, projection.projDef);
         const isNamedProjection = this.namedProjections.indexOf(projection.ref) !== -1;
         let isDefinedProjection = false;
         if (!isNamedProjection) {

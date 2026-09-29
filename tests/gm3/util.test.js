@@ -2,6 +2,8 @@
  * Test the functions in util.
  */
 
+import Mark from "markup-js";
+
 import * as util from "gm3/util";
 
 import { FEATURES } from "./sample_data";
@@ -97,8 +99,38 @@ test("formatUrlParameters", () => {
   expect(util.formatUrlParameters(params)).toBe("a=a&b=b");
 });
 
+test("markup getattr pipe supports property names with dots", () => {
+  const feature = {
+    properties: {
+      "Wetlands_CONUS_East.ATTRIBUTE": "PFO4D",
+    },
+  };
+
+  expect(
+    Mark.up("{{ properties| getattr>Wetlands_CONUS_East.ATTRIBUTE }}", feature, util.FORMAT_OPTIONS)
+  ).toBe("PFO4D");
+});
+
 test("getUtmZone", () => {
   expect(util.getUtmZone([-93, 45])).toBe("UTM15N");
+});
+
+test("getUtmProjectionDef", () => {
+  expect(util.getUtmProjectionDef("UTM15N")).toBe(
+    "+proj=utm +zone=15 +north+datum=WGS84 +units=m +no_defs"
+  );
+  expect(util.getUtmProjectionDef("UTM21S")).toBe(
+    "+proj=utm +zone=21 +south+datum=WGS84 +units=m +no_defs"
+  );
+});
+
+test("getUtmProjectionDef anti-cases", () => {
+  expect(util.getUtmProjectionDef("UTM0N")).toBe(null);
+  expect(util.getUtmProjectionDef("UTM61N")).toBe(null);
+  expect(util.getUtmProjectionDef("UTM15")).toBe(null);
+  expect(util.getUtmProjectionDef("UTM15n")).toBe(null);
+  expect(util.getUtmProjectionDef("EPSG:32615")).toBe(null);
+  expect(util.getUtmProjectionDef("foo")).toBe(null);
 });
 
 test("metersLengthToUnits", () => {
@@ -143,5 +175,73 @@ describe("getExtentForQuery", () => {
 
   test("extent for an empty result", () => {
     expect(util.getExtentForQuery({})).toEqual(null);
+  });
+
+  test("combines the extents across features and layers", () => {
+    const fakeResults = {
+      a: [
+        { type: "Feature", properties: { boundedBy: [0, 0, 300, 300] } },
+        { type: "Feature", properties: { boundedBy: [-100, 50, 100, 900] } },
+      ],
+      b: [{ type: "Feature", properties: { boundedBy: [10, 10, 20, 20] } }],
+    };
+    expect(util.getExtentForQuery(fakeResults)).toEqual([-100, 0, 300, 900]);
+  });
+
+  test("skips features which have no boundedBy", () => {
+    // a row with a NULL geometry has no extent to contribute, and used
+    //  to throw here rather than being ignored
+    const fakeResults = {
+      dummy: [
+        { type: "Feature", properties: {} },
+        { type: "Feature", properties: { boundedBy: [0, 0, 300, 300] } },
+      ],
+    };
+    expect(util.getExtentForQuery(fakeResults)).toEqual([0, 0, 300, 300]);
+  });
+
+  test("returns null when no feature has a boundedBy", () => {
+    const fakeResults = { dummy: [{ type: "Feature", properties: {} }] };
+    expect(util.getExtentForQuery(fakeResults)).toEqual(null);
+  });
+});
+
+describe("stripServiceParams", () => {
+  test("removes the service and its fields", () => {
+    expect(util.stripServiceParams("?service=search&field:owner=smith")).toBe("");
+  });
+
+  test("preserves the mapbook", () => {
+    expect(util.stripServiceParams("?mapbook=test&service=search&field:owner=smith")).toBe(
+      "mapbook=test"
+    );
+  });
+
+  test("preserves parameters which are not the service", () => {
+    expect(util.stripServiceParams("?mapbook=test&zoom=12")).toBe("mapbook=test&zoom=12");
+  });
+
+  test("handles an empty query", () => {
+    expect(util.stripServiceParams("")).toBe("");
+  });
+});
+
+describe("getResolutionForScale", () => {
+  // a projection stub is all getScale/getResolutionForScale ask for.
+  const meters = { getMetersPerUnit: () => 1 };
+
+  test("inverts getScale", () => {
+    const resolution = util.getResolutionForScale(1200, meters);
+    expect(util.getScale(resolution, meters)).toBeCloseTo(1200, 6);
+  });
+
+  test("a larger scale denominator zooms further out", () => {
+    expect(util.getResolutionForScale(2400, meters)).toBeGreaterThan(
+      util.getResolutionForScale(1200, meters)
+    );
+  });
+
+  test("defaults to one meter per unit without a projection", () => {
+    expect(util.getResolutionForScale(1200, null)).toBe(util.getResolutionForScale(1200, meters));
   });
 });

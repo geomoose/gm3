@@ -32,6 +32,7 @@ import queryReducer from "./reducers/query";
 import uiReducer from "./reducers/ui";
 import cursorReducer from "./reducers/cursor";
 import printReducer from "./reducers/print";
+import reportReducer from "./reducers/report";
 import configReducer from "./reducers/config";
 import editorReducer from "./reducers/editor";
 
@@ -46,6 +47,7 @@ export const createStore = () => {
       ui: uiReducer,
       cursor: cursorReducer,
       print: printReducer,
+      report: reportReducer,
       config: configReducer,
       editor: editorReducer,
     },

@@ -30,10 +30,6 @@ import {
   getMeasureLabelStyles,
 } from "gm3/components/measure/labels";
 
-// necessary to configure the UTM projections used by getPathSegments
-import { configureProjections } from "gm3/util";
-import { register } from "ol/proj/proj4";
-import proj4 from "proj4";
 import LineString from "ol/geom/LineString";
 import Polygon from "ol/geom/Polygon";
 import { fromLonLat } from "ol/proj";
@@ -83,11 +79,6 @@ describe("getBearing tests", () => {
  */
 
 describe("getPathSegments tests", () => {
-  beforeEach(() => {
-    configureProjections(proj4);
-    register(proj4);
-  });
-
   test("returns nothing for paths with fewer than two points", () => {
     expect(getPathSegments([])).toEqual([]);
     expect(getPathSegments([[0, 45]])).toEqual([]);
@@ -119,11 +110,6 @@ describe("getPathSegments tests", () => {
  */
 
 describe("getSegmentLabelStyles tests", () => {
-  beforeEach(() => {
-    configureProjections(proj4);
-    register(proj4);
-  });
-
   test("builds one label per line segment", () => {
     const geometry = new LineString([
       fromLonLat([-93.0, 45.0]),
@@ -182,11 +168,6 @@ describe("getComplementaryUnit tests", () => {
 });
 
 describe("getAreaLabelStyles tests", () => {
-  beforeEach(() => {
-    configureProjections(proj4);
-    register(proj4);
-  });
-
   const polygon = new Polygon([
     [
       [-93.0, 45.0],

@@ -282,6 +282,10 @@ app.loadMapbook().then(function() {
         }
     }, {});
 
+    // the feature report reuses the print pipeline; it is driven by
+    //  app.showFeatureReport() / app.showResultsReport().
+    app.add(gm3.components.ReportModal, 'report-preview', {});
+
     app.add(gm3.components.BookmarkModal, 'bookmark-modal', {});
     app.registerAction('bookmark', function() {
         this.run = function() {
@@ -295,8 +299,13 @@ app.loadMapbook().then(function() {
             app.confirm('reload-okay', reload_msg, function(response) {
                 if(response === 'confirm') {
                     document.location.hash = '';
-                    if (document.location.search.length > 0) {
-                      document.location.search = '';
+                    // drop the service from the query but keep the rest,
+                    //  otherwise "start over" would also throw away the
+                    //  "mapbook" parameter and load a different application.
+                    var nextSearch = gm3.util.stripServiceParams(document.location.search);
+                    var currentSearch = document.location.search.replace(/^\?/, '');
+                    if (nextSearch !== currentSearch) {
+                      document.location.search = nextSearch;
                     } else {
                       document.location.reload();
                     }

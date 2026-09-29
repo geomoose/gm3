@@ -40,6 +40,7 @@ import Version from "./gm3/components/version";
 import CoordinateDisplay from "./gm3/components/coordinates";
 import MeasureTool from "./gm3/components/measure";
 import PrintModal from "./gm3/components/print/printModal";
+import ReportModal from "./gm3/components/report/reportModal";
 import JumpToExtent from "./gm3/components/jumpToExtent";
 import BookmarkModal from "./gm3/components/bookmark-modal";
 
@@ -48,10 +49,6 @@ import HashTracker from "./gm3/trackers/hash";
 
 import * as util from "./gm3/util";
 import * as jsts from "./gm3/jsts";
-
-import proj4 from "proj4";
-
-util.configureProjections(proj4);
 
 var components = {
   Catalog: Catalog,
@@ -65,6 +62,7 @@ var components = {
   CoordinateDisplay: CoordinateDisplay,
   MeasureTool: MeasureTool,
   PrintModal: PrintModal,
+  ReportModal: ReportModal,
   JumpToExtent: JumpToExtent,
   BookmarkModal,
 };
@@ -75,26 +73,3 @@ var trackers = {
 };
 
 export { Application, components, trackers, util, jsts };
-
-// fix for dynamic import() path resolution
-function setPublicPath() {
-  var scriptTags = document.getElementsByTagName("script");
-  var distPath = "/";
-  for (var i = 0; i < scriptTags.length; i++) {
-    var src = scriptTags[i].getAttribute("src");
-    if (src) {
-      if (src.indexOf("geomoose.js") >= 0 || src.indexOf("geomoose.min.js") >= 0) {
-        distPath = src.split("/").slice(0, -1).join("/");
-      }
-    }
-  }
-
-  // ensure dist path ends in a slash.
-  if (distPath.slice(-1) !== "/") {
-    distPath += "/";
-  }
-  // eslint-disable-next-line
-  __webpack_public_path__ = distPath;
-}
-
-setPublicPath();
