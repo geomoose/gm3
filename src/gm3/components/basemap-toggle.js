@@ -39,12 +39,7 @@ function getLayerOnState(mapSources, path) {
 }
 
 function getActiveLayerIndex(layers, mapSources) {
-  for (let i = 0, ii = layers.length; i < ii; i++) {
-    if (layers[i].path !== "" && getLayerOnState(mapSources, layers[i].path)) {
-      return i;
-    }
-  }
-  return -1;
+  return layers.findIndex((layer) => layer.path !== "" && getLayerOnState(mapSources, layer.path));
 }
 
 const BasemapToggleChip = ({ active, open, path, src, label, onClick }) => {

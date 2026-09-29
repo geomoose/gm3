@@ -29,7 +29,6 @@ import { useTranslation } from "react-i18next";
  */
 export function mapLayerStateProps(state, ownProps) {
   return {
-    catalog: state.catalog,
     on: isLayerOn(state.mapSources, ownProps.layer),
   };
 }
@@ -44,10 +43,9 @@ export function mapLayerDispatchProps(dispatch, ownProps) {
       // a click on an exclusive (radio) layer always means turning it on;
       //  the setLayerVisibility thunk turns off the rest of its group.
       const nextOn = layer.exclusive === true ? true : on;
-      for (let s = 0, ss = layer.src.length; s < ss; s++) {
-        const src = layer.src[s];
-        dispatch(setLayerVisibility(src.mapSourceName, src.layerName, nextOn));
-      }
+      layer.src.forEach((src) =>
+        dispatch(setLayerVisibility(src.mapSourceName, src.layerName, nextOn))
+      );
     },
   };
 }
