@@ -860,7 +860,8 @@ export const setLayerVisibilityInternal = createAction("mapsource/set-layer-vis-
  */
 export function setLayerVisibility(mapSourceName, layerName, on) {
   return (dispatch, getState) => {
-    const mapState = getState().map;
+    const state = getState();
+    const mapState = state.map;
 
     // turn off the actual layer.
     dispatch(
@@ -870,6 +871,20 @@ export function setLayerVisibility(mapSourceName, layerName, on) {
         on,
       })
     );
+
+    // turning a layer on turns off the rest of its exclusive (radio)
+    //  group, no matter which component requested the change.
+    if (on) {
+      util.getExclusiveGroupSources(state.catalog, mapSourceName, layerName).forEach((src) => {
+        dispatch(
+          setLayerVisibilityInternal({
+            mapSourceName: src.mapSourceName,
+            layerName: src.layerName,
+            on: false,
+          })
+        );
+      });
+    }
 
     // when the layer is turned off de-activate the editing tool
     const pathName = `${mapSourceName}/${layerName}`;
