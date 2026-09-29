@@ -33,11 +33,11 @@ const useTipOrTitle = (on, layer) => {
   return layer.tip || title;
 };
 
-const LayerLabel = ({ layer, on, catalog, onChange }) => {
+const LayerLabel = ({ layer, on, onChange }) => {
   const title = useTipOrTitle(on, layer);
   const handleClick = useCallback(() => {
-    onChange(!on, catalog);
-  }, [onChange, on, catalog]);
+    onChange(!on);
+  }, [onChange, on]);
 
   return (
     <MinimalButton tabIndex={-1} title={title} onClick={handleClick}>

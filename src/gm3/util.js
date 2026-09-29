@@ -640,25 +640,15 @@ export function isLayerOn(mapSources, layer) {
  *
  * @return A flat array of catalog layer definitions.
  */
-export function getAllChildLayers(catalog, id, found = []) {
+export function getAllChildLayers(catalog, id) {
   const node = catalog[id];
-
-  if (node) {
-    if (node.children) {
-      for (let i = 0, ii = node.children.length; i < ii; i++) {
-        const child = catalog[node.children[i]];
-        if (child.children) {
-          found = found.concat(getAllChildLayers(catalog, node.children[i], found));
-        } else {
-          found = found.concat([child]);
-        }
-      }
-    } else {
-      found = found.concat([node]);
-    }
+  if (!node) {
+    return [];
   }
-
-  return found;
+  if (!node.children) {
+    return [node];
+  }
+  return node.children.flatMap((childId) => getAllChildLayers(catalog, childId));
 }
 
 /* Find the srcs of every layer sharing an exclusive (radio) group
@@ -678,8 +668,7 @@ export function getExclusiveGroupSources(catalog, mapSourceName, layerName) {
   const matchesTarget = (src) => src.mapSourceName === mapSourceName && src.layerName === layerName;
 
   let allSrcs = [];
-  Object.keys(safeCatalog).forEach((key) => {
-    const layer = safeCatalog[key];
+  Object.values(safeCatalog).forEach((layer) => {
     if (layer && layer.exclusive === true && (layer.src || []).some(matchesTarget)) {
       // find the root of the exclusivity.
       let root = layer.parent;
@@ -692,7 +681,7 @@ export function getExclusiveGroupSources(catalog, mapSourceName, layerName) {
         root = safeCatalog[root].parent;
       }
 
-      getAllChildLayers(safeCatalog, root, [])
+      getAllChildLayers(safeCatalog, root)
         .filter((node) => node.id !== layer.id)
         .forEach((node) => {
           allSrcs = allSrcs.concat(node.src || []);

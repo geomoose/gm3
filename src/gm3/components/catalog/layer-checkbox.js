@@ -27,13 +27,13 @@ import { connect } from "react-redux";
 
 import { useControlTitle, mapLayerStateProps, mapLayerDispatchProps } from "./layer-control";
 
-const LayerCheckbox = ({ catalog, layer, on, onChange }) => {
+const LayerCheckbox = ({ layer, on, onChange }) => {
   const isExclusive = layer.exclusive === true;
   const label = useControlTitle(on, layer);
 
   const handleChange = useCallback(() => {
-    onChange(!on, catalog);
-  }, [onChange, on, catalog]);
+    onChange(!on);
+  }, [onChange, on]);
 
   return (
     <input
