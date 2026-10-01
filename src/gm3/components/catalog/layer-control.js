@@ -24,58 +24,11 @@ import { setLayerVisibility } from "../../actions/mapSource";
 import { isLayerOn } from "../../util";
 import { useTranslation } from "react-i18next";
 
-const getAllChildLayers = (catalog, id, found = []) => {
-  const node = catalog[id];
-
-  if (node) {
-    if (node.children) {
-      for (let i = 0, ii = node.children.length; i < ii; i++) {
-        const child = catalog[node.children[i]];
-        if (child.children) {
-          found = found.concat(getAllChildLayers(catalog, node.children[i], found));
-        } else {
-          found = found.concat([child]);
-        }
-      }
-    } else {
-      found = found.concat([id]);
-    }
-  }
-
-  return found;
-};
-
-const getNeighboringLayers = (catalog, layer) => {
-  // find the root of the exclusivity.
-  let root = layer.parent;
-  while (
-    catalog[root] &&
-    catalog[root].parent &&
-    catalog[catalog[root].parent] &&
-    catalog[catalog[root].parent].multiple === false
-  ) {
-    root = catalog[root].parent;
-  }
-
-  // get the all the neighboring src's
-  //  as a flat array.
-  let allSrcs = [];
-  getAllChildLayers(catalog, root, [])
-    .filter((node) => node.id !== layer.id)
-    .forEach((node) => {
-      allSrcs = allSrcs.concat(node.src);
-    });
-
-  // return the unique srcs as a list.
-  return allSrcs;
-};
-
 /**
  * Map a layers current visibility state to a control.
  */
 export function mapLayerStateProps(state, ownProps) {
   return {
-    catalog: state.catalog,
     on: isLayerOn(state.mapSources, ownProps.layer),
   };
 }
@@ -85,29 +38,14 @@ export function mapLayerStateProps(state, ownProps) {
  */
 export function mapLayerDispatchProps(dispatch, ownProps) {
   return {
-    onChange: (on, catalog) => {
+    onChange: (on) => {
       const layer = ownProps.layer;
-      const neighbors = getNeighboringLayers(catalog, layer);
-
-      if (layer.exclusive !== true) {
-        // do toggling
-        for (let s = 0, ss = layer.src.length; s < ss; s++) {
-          const src = layer.src[s];
-          dispatch(setLayerVisibility(src.mapSourceName, src.layerName, on));
-        }
-      } else {
-        // ensure a click means turning on
-        for (let s = 0, ss = layer.src.length; s < ss; s++) {
-          const src = layer.src[s];
-          dispatch(setLayerVisibility(src.mapSourceName, src.layerName, true));
-        }
-        // turn off all the other sources for
-        //  every other layer in the group
-        for (let n = 0, nn = neighbors.length; n < nn; n++) {
-          const src = neighbors[n];
-          dispatch(setLayerVisibility(src.mapSourceName, src.layerName, false));
-        }
-      }
+      // a click on an exclusive (radio) layer always means turning it on;
+      //  the setLayerVisibility thunk turns off the rest of its group.
+      const nextOn = layer.exclusive === true ? true : on;
+      layer.src.forEach((src) =>
+        dispatch(setLayerVisibility(src.mapSourceName, src.layerName, nextOn))
+      );
     },
   };
 }

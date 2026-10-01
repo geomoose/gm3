@@ -1,0 +1,107 @@
+.basemap-toggle {
+  position: absolute;
+  bottom: 30px;
+  right: 10px;
+  z-index: 100;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  padding: 5px;
+  display: flex;
+
+  &.full-open {
+    .basemap-toggle-chip {
+      margin-left: 5px;
+      margin-right: 5px;
+      &.active {
+        background-color: rgba(123, 178, 116, 0.75);
+      }
+    }
+  }
+
+  &.info {
+    background: rgba(0, 90, 160, 0.45);
+    cursor: help;
+
+    .info-indicator {
+      align-items: center;
+      appearance: none;
+      background: none;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: inherit;
+      cursor: help;
+      display: flex;
+      font: inherit;
+      height: 32px;
+      justify-content: center;
+      line-height: 1;
+      margin: 0;
+      outline: none;
+      padding: 0;
+      text-align: center;
+      width: 32px;
+    }
+
+    &.full-open {
+      background: rgba(0, 0, 0, 0.4);
+      cursor: default;
+
+      .info-indicator {
+        display: none;
+      }
+    }
+  }
+}
+
+.basemap-toggle-chip {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  cursor: pointer;
+  transition:
+    width 1s,
+    margin 1s,
+    background-color 0.2s;
+  width: 0;
+  margin: 0;
+
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: 0;
+  padding: 0;
+  appearance: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+
+  img {
+    border-radius: 5px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  &.open {
+    width: 100px;
+  }
+}
+
+.basemap-toggle-image {
+  display: block;
+  width: 100px;
+  height: 100px;
+}
+
+.basemap-toggle-label {
+  text-align: center;
+  margin: 0;
+  flex: 1;
+  width: 115px;
+  font-size: 10px;
+  font-weight: bold;
+}

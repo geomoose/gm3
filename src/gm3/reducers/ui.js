@@ -35,6 +35,7 @@ import {
   clearAction,
   showModal,
   hideModal,
+  setMapbookReady,
 } from "../actions/ui";
 
 const defaultState = {
@@ -42,6 +43,7 @@ const defaultState = {
   hint: null,
   action: null,
   modal: "",
+  mapbookReady: false,
 };
 
 const reducer = createReducer(defaultState, {
@@ -66,6 +68,9 @@ const reducer = createReducer(defaultState, {
   },
   [hideModal]: (state) => {
     state.modal = "";
+  },
+  [setMapbookReady]: (state, { payload }) => {
+    state.mapbookReady = payload;
   },
 });
 

@@ -633,6 +633,75 @@ export function isLayerOn(mapSources, layer) {
   return isOn;
 }
 
+/* Get all of the layer nodes at or beneath a catalog node.
+ *
+ * @param catalog The catalog section of the state tree.
+ * @param id      The id of the catalog node to descend from.
+ *
+ * @return A flat array of catalog layer definitions.
+ */
+export function getAllChildLayers(catalog, id) {
+  const node = catalog[id];
+  if (!node) {
+    return [];
+  }
+  if (!node.children) {
+    return [node];
+  }
+  return node.children.flatMap((childId) => getAllChildLayers(catalog, childId));
+}
+
+/* Find the srcs of every layer sharing an exclusive (radio) group
+ * with the given map-source/layer.
+ *
+ * A layer can appear in more than one exclusive group; the siblings
+ * from every matching group are returned.
+ *
+ * @param catalog       The catalog section of the state tree.
+ * @param mapSourceName The name of the map-source.
+ * @param layerName     The name of the layer.
+ *
+ * @return A de-duplicated array of srcs, excluding the target layer's own src.
+ */
+export function getExclusiveGroupSources(catalog, mapSourceName, layerName) {
+  const safeCatalog = catalog || {};
+  const matchesTarget = (src) => src.mapSourceName === mapSourceName && src.layerName === layerName;
+
+  let allSrcs = [];
+  Object.values(safeCatalog).forEach((layer) => {
+    if (layer && layer.exclusive === true && (layer.src || []).some(matchesTarget)) {
+      // find the root of the exclusivity.
+      let root = layer.parent;
+      while (
+        safeCatalog[root] &&
+        safeCatalog[root].parent &&
+        safeCatalog[safeCatalog[root].parent] &&
+        safeCatalog[safeCatalog[root].parent].multiple === false
+      ) {
+        root = safeCatalog[root].parent;
+      }
+
+      getAllChildLayers(safeCatalog, root)
+        .filter((node) => node.id !== layer.id)
+        .forEach((node) => {
+          allSrcs = allSrcs.concat(node.src || []);
+        });
+    }
+  });
+
+  // exclude the target layer's own src, a sibling may share a
+  //  map-source with the target, and de-duplicate the rest.
+  const seen = {};
+  return allSrcs.filter((src) => {
+    const srcKey = `${src.mapSourceName}/${src.layerName}`;
+    if (matchesTarget(src) || seen[srcKey]) {
+      return false;
+    }
+    seen[srcKey] = true;
+    return true;
+  });
+}
+
 /* Given the map sources and a catalog layer definition
  * get the zIndex.
  *

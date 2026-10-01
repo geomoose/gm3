@@ -245,3 +245,87 @@ describe("getResolutionForScale", () => {
     expect(util.getResolutionForScale(1200, null)).toBe(util.getResolutionForScale(1200, meters));
   });
 });
+
+describe("getExclusiveGroupSources", () => {
+  const src = (mapSourceName, layerName = "0") => ({ mapSourceName, layerName });
+
+  // one radio group containing layers a, b, c, d.
+  const CATALOG = {
+    basemaps: { id: "basemaps", children: ["a", "b", "c", "d"], multiple: false },
+    a: { id: "a", parent: "basemaps", exclusive: true, src: [src("basemap-a")] },
+    b: { id: "b", parent: "basemaps", exclusive: true, src: [src("basemap-b")] },
+    c: { id: "c", parent: "basemaps", exclusive: true, src: [src("basemap-c")] },
+    d: { id: "d", parent: "basemaps", exclusive: true, src: [src("basemap-d")] },
+  };
+
+  test("returns the srcs of every other layer in the group", () => {
+    const siblings = util.getExclusiveGroupSources(CATALOG, "basemap-d", "0");
+    expect(siblings).toEqual(
+      expect.arrayContaining([src("basemap-a"), src("basemap-b"), src("basemap-c")])
+    );
+    expect(siblings).toHaveLength(3);
+  });
+
+  test("excludes the target layer's own src", () => {
+    const siblings = util.getExclusiveGroupSources(CATALOG, "basemap-a", "0");
+    expect(siblings).not.toContainEqual(src("basemap-a"));
+  });
+
+  test("returns nothing for a non-exclusive layer", () => {
+    const catalog = {
+      overlays: { id: "overlays", children: ["parcels"], multiple: true },
+      parcels: { id: "parcels", parent: "overlays", exclusive: false, src: [src("parcels")] },
+    };
+    expect(util.getExclusiveGroupSources(catalog, "parcels", "0")).toEqual([]);
+  });
+
+  test("handles a missing catalog", () => {
+    expect(util.getExclusiveGroupSources(undefined, "basemap-a", "0")).toEqual([]);
+  });
+
+  test("collects siblings from every exclusive group the layer appears in", () => {
+    // the "shared" source is referenced from two different radio groups.
+    const catalog = {
+      group1: { id: "group1", children: ["g1-a", "g1-shared"], multiple: false },
+      "g1-a": { id: "g1-a", parent: "group1", exclusive: true, src: [src("basemap-a")] },
+      "g1-shared": { id: "g1-shared", parent: "group1", exclusive: true, src: [src("shared")] },
+      group2: { id: "group2", children: ["g2-shared", "g2-x"], multiple: false },
+      "g2-shared": { id: "g2-shared", parent: "group2", exclusive: true, src: [src("shared")] },
+      "g2-x": { id: "g2-x", parent: "group2", exclusive: true, src: [src("basemap-x")] },
+    };
+
+    const siblings = util.getExclusiveGroupSources(catalog, "shared", "0");
+    expect(siblings).toEqual(expect.arrayContaining([src("basemap-a"), src("basemap-x")]));
+    // the shared layer's own src must not be returned, even though the
+    //  other group lists it under a different catalog id.
+    expect(siblings).not.toContainEqual(src("shared"));
+    expect(siblings).toHaveLength(2);
+  });
+
+  test("de-duplicates a sibling listed in more than one group", () => {
+    const catalog = {
+      group1: { id: "group1", children: ["g1-a", "g1-common"], multiple: false },
+      "g1-a": { id: "g1-a", parent: "group1", exclusive: true, src: [src("target")] },
+      "g1-common": { id: "g1-common", parent: "group1", exclusive: true, src: [src("common")] },
+      group2: { id: "group2", children: ["g2-a", "g2-common"], multiple: false },
+      "g2-a": { id: "g2-a", parent: "group2", exclusive: true, src: [src("target")] },
+      "g2-common": { id: "g2-common", parent: "group2", exclusive: true, src: [src("common")] },
+    };
+
+    const siblings = util.getExclusiveGroupSources(catalog, "target", "0");
+    expect(siblings).toEqual([src("common")]);
+  });
+
+  test("walks nested radio groups up to the exclusivity root", () => {
+    const catalog = {
+      outer: { id: "outer", children: ["inner", "e"], multiple: false },
+      inner: { id: "inner", parent: "outer", children: ["a", "b"], multiple: false },
+      a: { id: "a", parent: "inner", exclusive: true, src: [src("basemap-a")] },
+      b: { id: "b", parent: "inner", exclusive: true, src: [src("basemap-b")] },
+      e: { id: "e", parent: "outer", exclusive: true, src: [src("basemap-e")] },
+    };
+
+    const siblings = util.getExclusiveGroupSources(catalog, "basemap-a", "0");
+    expect(siblings).toEqual(expect.arrayContaining([src("basemap-b"), src("basemap-e")]));
+  });
+});
