@@ -176,7 +176,7 @@ export const QueryResults = ({
 
 const mapStateToProps = (state) => ({
   config: {
-    bufferMaxFeatures: 100,
+    bufferMaxFeatures: 1000,
     ...state.config.query,
   },
   query: state.query.query,

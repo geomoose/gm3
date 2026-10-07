@@ -3,7 +3,7 @@ Configure Number of Buffer-able Features
 
 Update the `app` declaration in `app.js`. Include the `query` configuration object,
 and set `bufferMaxFeatures` to the largest number of features the user should
-be allowed to buffer.
+be allowed to buffer. The default is 1000.
 
 ::
 
@@ -22,7 +22,7 @@ be allowed to buffer.
             'test': 'mapbook-test-servers.xml'
         },
         query: {
-            bufferMaxFeatures: 1000
+            bufferMaxFeatures: 2500
         }
     });
 
