@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-import intersects from "@turf/boolean-intersects";
 import GeoJSONFormat from "ol/format/GeoJSON";
 import { createEmpty, extend, intersects as extentsIntersect } from "ol/extent";
 
 import { getSource } from "@gm3/featureStore";
+import { intersectsTester } from "@gm3/jsts";
 import { applyPixelTolerance } from "@gm3/query/util";
 
 const GEOJSON_FORMAT = new GeoJSONFormat();
@@ -172,6 +172,9 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
   const selectionExtents = selections.map((selectionFeature) =>
     GEOJSON_FORMAT.readGeometry(selectionFeature.geometry).getExtent()
   );
+  // the geometry library loads on first use, and each selection
+  //  is converted for it once instead of once per candidate
+  const selectionTesters = await Promise.all(selections.map(intersectsTester));
 
   /** Cheap gate. An extent overlap is a necessary condition for a
    *  geometry intersection, so a miss here is always a real miss.
@@ -193,15 +196,14 @@ export const vectorFeatureQuery = async (layer, mapState, mapSource, query) => {
       return true;
     }
     if (!geometry) {
-      // turf throws on a null geometry, and a feature without one
-      //  cannot intersect anything anyway
+      // a feature without a geometry cannot intersect anything
       return false;
     }
     for (let i = 0, ii = selections.length; i < ii; i++) {
       if (featureExtent && !extentsIntersect(selectionExtents[i], featureExtent)) {
         continue;
       }
-      if (intersects(selections[i], geometry)) {
+      if (selectionTesters[i](geometry)) {
         return true;
       }
     }

@@ -382,8 +382,8 @@ describe("vectorFeatureQuery", () => {
     });
 
     test("a null geometry never matches a selection, and does not throw", async () => {
-      // turf throws a TypeError when handed a null geometry, and unlike
-      //  the feature store path there is no spatial index to filter
+      // a geometry library may throw when handed a null geometry, and
+      //  unlike the feature store path there is no spatial index to filter
       //  these out first
       const withNullGeom = {
         name: "store-nulls",
