@@ -26,16 +26,37 @@
  *
  */
 
+.gm-grid {
+    background-color: var(--gm-view-bg);
+}
+
 .gm-grid .toolbar {
-    background-color: #eee;
+    background-color: var(--gm-headerbar-bg);
+    border-bottom: 1px solid var(--gm-border);
+    padding: 0.25rem 0.5rem;
+    gap: 0.125rem;
 
-    padding: 2px;
-
+    /* circular flat icon buttons; minimize sits at the far end */
     button {
-      background: none;
+      width: var(--gm-control-height);
       padding: 0;
       margin: 0;
-      border: none;
+      font-size: 1rem;
+      border-radius: 50%;
+      background: none;
+    }
+
+    button:hover {
+      background-color: var(--gm-hover);
+    }
+
+    button .icon {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .tool.minimize, .tool.maximize {
+      margin-left: auto;
     }
 }
 
@@ -43,12 +64,16 @@
   th {
     button {
       background: none;
+      min-height: 0;
       padding: 0;
       margin: 0;
       border: none;
+      font-weight: inherit;
 
       .icon {
         display: inline-block;
+        font-size: 1em;
+        color: var(--gm-fg-dim);
       }
     }
   }
@@ -57,27 +82,33 @@
 .grid-display {
     max-height: 250px;
     overflow: auto;
+    background-color: var(--gm-view-bg);
 }
 
 .gm-grid table {
     width: 100%;
     border-collapse: collapse;
-    height: 250px;
+    font-variant-numeric: tabular-nums;
 }
 
 .gm-grid table th, .gm-grid table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    border-bottom: 1px solid var(--gm-border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
 }
 
 .gm-grid table thead tr {
-    background-color: #CFE7B3;
+    position: sticky;
+    top: 0;
+    background-color: var(--gm-view-bg);
+    color: var(--gm-fg-dim);
+    font-size: 0.8125rem;
 }
 
-.gm-grid table tbody tr:nth-child(odd) {
-    background-color: #EFF8E3;
+.gm-grid table thead th {
+    box-shadow: inset 0 -1px 0 var(--gm-border-strong);
 }
 
-.gm-grid table tbody tr:nth-child(even) {
-    background-color: white;
+.gm-grid table tbody tr:hover {
+    background-color: var(--gm-hover);
 }

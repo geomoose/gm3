@@ -46,3 +46,11 @@ function toggleTabs() {
     // inform the window that things have moved.
     window.dispatchEvent(new Event('resize'));
 }
+
+// F9 shows and hides the pane, as GNOME does for utility panes.
+document.addEventListener('keydown', function(evt) {
+    if(evt.key === 'F9') {
+        evt.preventDefault();
+        toggleTabs();
+    }
+});

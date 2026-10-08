@@ -2,31 +2,42 @@
     overflow: hidden;
 }
 
-.tab {
-    border: solid 1px black;
-    padding: 5px;
-    margin-left: 3px;
-    margin-top: 3px;
-    display: inline-block;
-    background-color: #efefef;
-    cursor: pointer;
-    height: 32px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 0px;
-    overflow:hidden;
-    border-bottom: solid 1px #000;
-
-    &.show {
-      background-color: #fff;
-      border-bottom: solid 1px #fff;
-    }
+/* a segmented "view switcher" across the top of the sidebar */
+.tabs {
+    display: flex;
+    gap: 2px;
+    margin: 0.625rem 0.75rem 0;
+    padding: 3px;
+    border-radius: 999px;
+    background-color: var(--gm-entry-bg);
 }
 
-.tabs {
-    height: 34px; /* 20px height + 2 * 5px padding - 1px */
-    border-bottom: solid 1px black;
+.tab {
+    flex: 1;
+    min-width: 0;
+    min-height: 2em;
+    padding: 0 0.5rem;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    color: var(--gm-fg-dim);
+    font-size: 0.875em;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.tab:hover {
+    background-color: var(--gm-hover);
+    color: var(--gm-fg);
+}
+
+.tab.show {
+    background-color: var(--gm-view-bg);
+    color: var(--gm-fg);
+    box-shadow: var(--gm-shadow-card);
 }
 
 .tab-content {
@@ -38,37 +49,47 @@
     display: block;
     overflow: auto;
     position: absolute;
-    top: 35px; bottom: 0;
+    top: calc(1.75em + 6px + 0.625rem + 0.25rem);
+    bottom: 0;
     width: 100%;
 }
 
+/* small round handle on the sidebar edge */
 .tab-toggler {
     position: absolute;
     cursor: pointer;
-    bottom: 50%;
+    top: 50%;
     z-index: 100;
-    transform: rotate(0deg);
-    transition: left ease 500ms, transform ease 500ms;
-    border-radius: 10px;
-    background-color: white;
-    line-height: 10px;
+    width: 1.75rem;
+    height: 1.75rem;
+    min-height: 0;
+    margin-top: -0.875rem;
+    margin-left: -0.875rem;
     padding: 0;
+    border-radius: 50%;
+    background-color: var(--gm-popover-bg);
+    color: var(--gm-fg-dim);
+    box-shadow: var(--gm-shadow-float);
+    transform: rotate(0deg);
+    transition: left var(--gm-ease) 300ms, transform var(--gm-ease) 300ms, margin var(--gm-ease) 300ms;
+}
+
+.tab-toggler:hover {
+    background-color: var(--gm-popover-bg);
+    color: var(--gm-fg);
 }
 
 .tabs-closed .tab-toggler {
     left: 0;
+    margin-left: 0.5rem;
+    transform: rotate(180deg);
 }
 
 .tab-toggler .tab-toggler-icon:before {
-    content: "\f0a8";
+    content: "\f053";
     font-family: FontAwesome;
     font-style: normal;
-    font-size: 1.3em;
-    padding-left: 0px;
-}
-
-.tabs-closed .tab-toggler {
-    transform: rotate(180deg);
+    font-size: 0.875rem;
 }
 
 .tabs-closed .tab-content, .tabs-closed .tabs {

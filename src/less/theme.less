@@ -1,0 +1,325 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2026 Dan "Ducky" Little
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/* Theme tokens.
+ *
+ * The palette is neutral greys plus a single accent color.  Everything
+ * else (hover washes, borders, the soft accent tint behind selected
+ * items) is mixed from those few inputs, so most themes only need to
+ * set --gm-accent:
+ *
+ *   :root { --gm-accent: #2c6b2f; }
+ *
+ * Derived tokens are resolved where they are declared, so overrides
+ * belong on :root or on one of the .gm-theme-* classes, not on an
+ * arbitrary inner element.
+ *
+ * Dark mode is opt-in: add .gm-theme-dark to <html> (or .gm-theme-auto
+ * to follow the operating system preference).
+ */
+
+.gm-light-palette() {
+  --gm-accent: #3584e4;
+  --gm-accent-fg: #ffffff;
+  --gm-destructive: #c01c28;
+  --gm-success: #26a269;
+  --gm-warning: #c88800;
+  --gm-favorite: #e5a50a;
+
+  --gm-fg: #1f1f23;
+  --gm-window-bg: #fafafb;
+  --gm-view-bg: #ffffff;
+  --gm-sidebar-bg: #f3f3f5;
+  --gm-headerbar-bg: #ebebed;
+  --gm-card-bg: #ffffff;
+  --gm-popover-bg: #ffffff;
+
+  --gm-shade: rgba(0, 0, 6, 0.07);
+  --gm-scrim: rgba(0, 0, 6, 0.32);
+
+  --gm-shadow-card:
+    0 0 0 1px rgba(0, 0, 6, 0.03), 0 1px 3px 1px rgba(0, 0, 6, 0.07),
+    0 2px 6px 2px rgba(0, 0, 6, 0.03);
+  --gm-shadow-float:
+    0 0 0 1px rgba(0, 0, 6, 0.05), 0 2px 4px rgba(0, 0, 6, 0.1), 0 4px 12px rgba(0, 0, 6, 0.12);
+  --gm-shadow-dialog:
+    0 0 0 1px rgba(0, 0, 6, 0.05), 0 6px 24px rgba(0, 0, 6, 0.2), 0 12px 48px rgba(0, 0, 6, 0.12);
+
+  color-scheme: light;
+}
+
+.gm-dark-palette() {
+  --gm-accent: #78aeed;
+  --gm-accent-fg: #0b1a2c;
+  --gm-destructive: #ff7b63;
+  --gm-success: #8ff0a4;
+  --gm-warning: #f8e45c;
+  --gm-favorite: #f8e45c;
+
+  --gm-fg: #f3f3f5;
+  --gm-window-bg: #222226;
+  --gm-view-bg: #1d1d20;
+  --gm-sidebar-bg: #2a2a2e;
+  --gm-headerbar-bg: #2e2e32;
+  --gm-card-bg: #303034;
+  --gm-popover-bg: #36363a;
+
+  --gm-shade: rgba(0, 0, 6, 0.25);
+  --gm-scrim: rgba(0, 0, 6, 0.55);
+
+  --gm-shadow-card: 0 0 0 1px rgba(0, 0, 6, 0.3), 0 1px 3px 1px rgba(0, 0, 6, 0.2);
+  --gm-shadow-float:
+    0 0 0 1px rgba(0, 0, 6, 0.4), 0 2px 4px rgba(0, 0, 6, 0.3), 0 4px 12px rgba(0, 0, 6, 0.3);
+  --gm-shadow-dialog: 0 0 0 1px rgba(0, 0, 6, 0.5), 0 6px 24px rgba(0, 0, 6, 0.4);
+
+  color-scheme: dark;
+}
+
+/* tokens mixed from the palette; re-declared wherever the palette
+ * changes so they track the active foreground and accent. */
+.gm-derived-tokens() {
+  --gm-fg-dim: color-mix(in srgb, var(--gm-fg) 62%, transparent);
+  --gm-fg-faint: color-mix(in srgb, var(--gm-fg) 38%, transparent);
+  --gm-border: color-mix(in srgb, var(--gm-fg) 14%, transparent);
+  --gm-border-strong: color-mix(in srgb, var(--gm-fg) 40%, transparent);
+  --gm-hover: color-mix(in srgb, var(--gm-fg) 7%, transparent);
+  --gm-pressed: color-mix(in srgb, var(--gm-fg) 14%, transparent);
+  --gm-button-bg: color-mix(in srgb, var(--gm-fg) 9%, transparent);
+  --gm-entry-bg: color-mix(in srgb, var(--gm-fg) 7%, transparent);
+
+  --gm-accent-soft: color-mix(in srgb, var(--gm-accent) 16%, transparent);
+  --gm-accent-hover: color-mix(in srgb, var(--gm-accent) 88%, var(--gm-fg));
+  --gm-accent-text: color-mix(in srgb, var(--gm-accent) 82%, var(--gm-fg));
+  --gm-focus-ring: color-mix(in srgb, var(--gm-accent) 55%, transparent);
+
+  --gm-destructive-soft: color-mix(in srgb, var(--gm-destructive) 14%, transparent);
+  --gm-warning-soft: color-mix(in srgb, var(--gm-warning) 18%, transparent);
+}
+
+:root,
+.gm-theme-light {
+  .gm-light-palette();
+}
+
+.gm-theme-dark {
+  .gm-dark-palette();
+}
+
+@media (prefers-color-scheme: dark) {
+  .gm-theme-auto {
+    .gm-dark-palette();
+  }
+}
+
+:root,
+.gm-theme-light,
+.gm-theme-dark,
+.gm-theme-auto {
+  .gm-derived-tokens();
+
+  /* shape: one knob per scale step, so a deployer can make the whole
+   * UI squarer (or rounder) without touching component rules. */
+  --gm-radius-s: 6px;
+  --gm-radius-m: 12px;
+  --gm-radius-l: 18px;
+  --gm-radius-button: 999px;
+
+  --gm-font:
+    system-ui, "Adwaita Sans", Cantarell, Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --gm-font-mono: ui-monospace, "Adwaita Mono", "Fira Mono", "DejaVu Sans Mono", Menlo, monospace;
+
+  /* sized for a mouse first; coarse pointers get roomier targets
+   * below rather than everyone getting tablet-sized chrome. */
+  --gm-control-height: 2.25em;
+  --gm-fab-size: 2.75rem;
+  --gm-row-height: 2.25em;
+
+  /* on-screen display: controls overlaid on the map stay dark and
+   * translucent in both light and dark styles, like libadwaita's .osd */
+  --gm-osd-bg: rgba(0, 0, 0, 0.65);
+  --gm-osd-fg: #ffffff;
+  --gm-osd-hover: rgba(0, 0, 0, 0.8);
+  --gm-osd-border: rgba(255, 255, 255, 0.15);
+
+  --gm-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --gm-duration: 150ms;
+  --gm-duration-slow: 300ms;
+}
+
+@media (pointer: coarse) {
+  :root,
+  .gm-theme-light,
+  .gm-theme-dark,
+  .gm-theme-auto {
+    --gm-control-height: 2.75em;
+    --gm-fab-size: 3.25rem;
+    --gm-row-height: 2.75em;
+  }
+}
+
+/* High contrast: dims stop dimming, outlines become visible, and the
+ * OSD loses its translucency.  Controls also gain borders, see gm3.less. */
+@media (prefers-contrast: more) {
+  :root,
+  .gm-theme-light,
+  .gm-theme-dark,
+  .gm-theme-auto {
+    --gm-fg-dim: color-mix(in srgb, var(--gm-fg) 85%, transparent);
+    --gm-fg-faint: color-mix(in srgb, var(--gm-fg) 65%, transparent);
+    --gm-border: color-mix(in srgb, var(--gm-fg) 50%, transparent);
+    --gm-border-strong: var(--gm-fg);
+    --gm-accent-soft: color-mix(in srgb, var(--gm-accent) 30%, transparent);
+    --gm-osd-bg: rgba(0, 0, 0, 0.92);
+    --gm-osd-border: rgba(255, 255, 255, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  .gm-theme-light,
+  .gm-theme-dark,
+  .gm-theme-auto {
+    --gm-duration: 0s;
+    --gm-duration-slow: 0s;
+  }
+}
+
+/* Shared surface/control mixins */
+
+.gm-card() {
+  background-color: var(--gm-card-bg);
+  border-radius: var(--gm-radius-m);
+  box-shadow: var(--gm-shadow-card);
+}
+
+.gm-osd() {
+  background-color: var(--gm-osd-bg);
+  color: var(--gm-osd-fg);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 0 1px var(--gm-osd-border);
+}
+
+.gm-floating() {
+  background-color: var(--gm-popover-bg);
+  color: var(--gm-fg);
+  box-shadow: var(--gm-shadow-float);
+}
+
+.gm-focus-ring() {
+  &:focus-visible {
+    outline: 2px solid var(--gm-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* flat buttons: no fill until hovered, as in a header bar */
+.gm-flat-button() {
+  background: none;
+  color: inherit;
+  border: none;
+  border-radius: var(--gm-radius-button);
+  cursor: pointer;
+  transition: background-color var(--gm-duration) var(--gm-ease);
+
+  &:hover {
+    background-color: var(--gm-hover);
+  }
+
+  &:active {
+    background-color: var(--gm-pressed);
+  }
+
+  .gm-focus-ring();
+}
+
+/* the one "do it" button in a view */
+.gm-suggested-button() {
+  background-color: var(--gm-accent);
+  color: var(--gm-accent-fg);
+
+  &:hover {
+    background-color: var(--gm-accent-hover);
+  }
+
+  &:disabled {
+    background-color: var(--gm-button-bg);
+    color: var(--gm-fg-faint);
+  }
+}
+
+/* small section titles, like the headings over a GNOME boxed list */
+.gm-section-header() {
+  color: var(--gm-fg);
+  background: none;
+  font-weight: 700;
+  font-size: @gm-text-header;
+  padding: 0.75em 0.25em 0.5em;
+}
+
+/* Boxed list rows for markup without a list wrapper: consecutive
+ * @row siblings join into one rounded, separated card.  The selectors
+ * are escaped because LESS 3 cannot parse combinators inside :not()
+ * or :has(). */
+.gm-boxed-rows(@row) {
+  @first: ~"@{row}:not(@{row} + @{row})";
+  @last: ~"@{row}:not(:has(+ @{row}))";
+
+  @{row} {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: var(--gm-row-height);
+    margin: 0;
+    padding: 0.375em 0.75em;
+    background-color: var(--gm-card-bg);
+    border: 1px solid var(--gm-border);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color var(--gm-duration) var(--gm-ease);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--gm-card-bg) 94%, var(--gm-fg));
+    }
+
+    /* the label fills the row so a click anywhere hits the control */
+    > span {
+      flex: 1;
+    }
+  }
+
+  @{row} + @{row} {
+    margin-top: -1px;
+  }
+
+  @{first} {
+    border-top-left-radius: var(--gm-radius-m);
+    border-top-right-radius: var(--gm-radius-m);
+  }
+
+  @{last} {
+    border-bottom-left-radius: var(--gm-radius-m);
+    border-bottom-right-radius: var(--gm-radius-m);
+    margin-bottom: 0.75em;
+  }
+}
