@@ -1,25 +1,25 @@
 .linear-progress {
-  height: 12px;
-  background-color: #e7e0e0;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  background-color: var(--gm-accent-soft);
   position: relative;
 
   .bar {
     position: absolute;
-    background-color: #5cc878;
+    background-color: var(--gm-accent);
+    border-radius: 2px;
     top: 0;
     bottom: 0;
     width: 23%;
     right: 0%;
-    animation: progress 2s linear infinite;
+    animation: progress 1.6s var(--gm-ease) infinite;
   }
 }
 
 @keyframes progress {
   0% {
-    right: 0%;
-  }
-  50% {
-    right: 30%;
+    right: -23%;
   }
   100% {
     right: 100%;

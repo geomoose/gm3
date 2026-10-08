@@ -40,7 +40,7 @@ class BookmarkModal extends Modal {
           style={{
             width: "100%",
             height: "200px",
-            fontFamily: "mono",
+            fontFamily: "monospace",
           }}
           defaultValue={"" + document.location}
         />
