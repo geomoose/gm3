@@ -32,18 +32,31 @@
   }
 }
 
-.gm-boxed-rows(~".draw-tool");
-.gm-boxed-rows(~".radio-option");
-.gm-boxed-rows(~".unit-option");
-
+.radio-option,
 .draw-tool,
-.radio-option {
+.unit-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+  padding: 0.125em 0;
+
+  /* the label fills the row so a click anywhere hits the radio */
+  > span {
+    flex: 1;
+  }
+
+  /* hovering the row lights the radio's outline, as Breeze does */
+  &:hover input[type="radio"] {
+    border-color: var(--gm-accent);
+  }
+
   select {
-    margin-left: 0.75em;
+    margin-left: var(--gm-space-l);
   }
 
   .helper-text {
-    margin: 0.5em 0 0.25em;
+    margin: var(--gm-space-s) 0;
     animation-name: grow;
     animation-duration: 1s;
     overflow: hidden;
@@ -51,10 +64,10 @@
 }
 
 .service-manager {
-  padding: 0.5em 0.75em;
+  padding: var(--gm-space-l);
 
   a {
-    color: var(--gm-accent-text);
+    color: var(--gm-link);
   }
 
   .service-form {
@@ -68,31 +81,42 @@
 
     label {
       display: block;
-      font-weight: 600;
-      margin-top: 0.75em;
-      margin-bottom: 0.375em;
+      margin-top: var(--gm-space-l);
+      margin-bottom: var(--gm-space-s);
     }
   }
 
-  /* dismiss first, then the suggested action; equal widths, text only */
+  /* KDE button box: right-aligned, the affirmative action first and
+   * the dismissive one last; buttons keep their icons */
   .tab-controls {
     display: flex;
-    gap: 0.75em;
-    padding-top: 1.25em;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: var(--gm-space-m);
+    padding-top: var(--gm-space-l);
+    margin-top: var(--gm-space-l);
+    border-top: 1px solid var(--gm-border);
 
     .go-button,
     .close-button {
-      flex: 1;
-      cursor: pointer;
+      .gm-text-button();
     }
 
     .go-button {
-      .gm-suggested-button();
+      .gm-default-button();
     }
 
     .go-icon,
     .close-icon {
-      display: none;
+      .fa;
+    }
+
+    .go-icon:before {
+      content: @fa-var-check;
+    }
+
+    .close-icon:before {
+      content: @fa-var-times;
     }
   }
 
@@ -106,7 +130,7 @@
     }
 
     input + select {
-      margin-left: 0.5em;
+      margin-left: var(--gm-space-m);
     }
 
     input.has-help-text {
@@ -116,9 +140,8 @@
     div.helper-text {
       color: var(--gm-fg-dim);
       font-size: @gm-text-fine;
-      margin-top: 0.375em;
-      margin-bottom: 1.25em;
-      margin-left: 0.25em;
+      margin-top: var(--gm-space-s);
+      margin-bottom: var(--gm-space-l);
     }
   }
 
@@ -132,20 +155,13 @@
     }
   }
 
+  /* an error InlineMessage */
   .query-error {
-    margin-top: 1em;
-    border-radius: var(--gm-radius-m);
-    background-color: var(--gm-destructive-soft);
-    overflow: hidden;
+    .gm-inline-message(var(--gm-destructive-soft), var(--gm-destructive), @fa-var-exclamation-circle);
+    margin-top: var(--gm-space-l);
 
     .error-header {
-      font-weight: 700;
-      padding: 0.625em 1em 0;
-      color: var(--gm-destructive);
-    }
-
-    .error-contents {
-      padding: 0.25em 1em 0.75em;
+      font-weight: 600;
     }
   }
 
@@ -159,7 +175,8 @@
 
       b {
         display: block;
-        margin-bottom: 0.375em;
+        font-weight: 400;
+        margin-bottom: var(--gm-space-s);
       }
 
       .unit-option {
@@ -199,10 +216,9 @@
       text-align: center;
       padding: 0.5em;
 
-      /* clearing is not the view's affirmative action, so it stays
-       * neutral and text only */
       button .icon {
-        display: none;
+        font-size: 1em;
+        margin: 0;
       }
     }
   }

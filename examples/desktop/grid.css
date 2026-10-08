@@ -31,23 +31,17 @@
 }
 
 .gm-grid .toolbar {
-    background-color: var(--gm-headerbar-bg);
+    background-color: var(--gm-window-bg);
     border-bottom: 1px solid var(--gm-border);
-    padding: 0.25rem 0.5rem;
-    gap: 0.125rem;
+    padding: var(--gm-space-s);
+    gap: 2px;
 
-    /* circular flat icon buttons; minimize sits at the far end */
+    /* flat tool buttons; minimize sits at the far end */
     button {
       width: var(--gm-control-height);
       padding: 0;
       margin: 0;
       font-size: 1rem;
-      border-radius: 50%;
-      background: none;
-    }
-
-    button:hover {
-      background-color: var(--gm-hover);
     }
 
     button .icon {
@@ -60,14 +54,25 @@
     }
 }
 
+.gm-grid .toolbar button:not(.tool) {
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.gm-grid .toolbar button:not(.tool):hover {
+    border-color: var(--gm-accent);
+}
+
 .gm-grid {
   th {
     button {
       background: none;
+      border: none;
+      box-shadow: none;
       min-height: 0;
       padding: 0;
       margin: 0;
-      border: none;
       font-weight: inherit;
 
       .icon {
@@ -92,21 +97,26 @@
 }
 
 .gm-grid table th, .gm-grid table td {
-    border-bottom: 1px solid var(--gm-border);
-    padding: 0.5rem 0.75rem;
+    padding: var(--gm-space-s) var(--gm-space-l);
     text-align: left;
 }
 
+/* Breeze header view: window color, separators between sections */
 .gm-grid table thead tr {
     position: sticky;
     top: 0;
-    background-color: var(--gm-view-bg);
-    color: var(--gm-fg-dim);
-    font-size: 0.8125rem;
+    background-color: var(--gm-window-bg);
+    color: var(--gm-fg);
 }
 
 .gm-grid table thead th {
-    box-shadow: inset 0 -1px 0 var(--gm-border-strong);
+    font-weight: 400;
+    box-shadow: inset -1px 0 0 var(--gm-border), inset 0 -1px 0 var(--gm-border);
+}
+
+/* alternating rows, hover tinted with the highlight */
+.gm-grid table tbody tr:nth-child(even) {
+    background-color: var(--gm-view-alt);
 }
 
 .gm-grid table tbody tr:hover {

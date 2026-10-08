@@ -70,7 +70,7 @@
     align-items: center;
     gap: 0.5em;
     width: auto;
-    .gm-floating();
+    box-shadow: var(--gm-shadow-float);
     color: var(--gm-destructive);
 
     i.stop.tool {
@@ -83,14 +83,11 @@
   }
 }
 
-/* Generic style for a box providing "help" text.
- */
+/* Generic style for a box providing "help" text: an information
+ * InlineMessage. */
 .info-box {
-  color: var(--gm-fg);
-  background-color: var(--gm-accent-soft);
-  border-radius: var(--gm-radius-m);
-  margin: 0.5em;
-  padding: 0.75em 1em;
+  .gm-inline-message(var(--gm-info-bg), var(--gm-accent), @fa-var-info-circle);
+  margin: var(--gm-space-l) 0;
   font-size: @gm-text-secondary;
   line-height: 1.45;
 }
@@ -114,66 +111,55 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
+  gap: var(--gm-space-s);
   box-sizing: border-box;
   min-height: var(--gm-control-height);
-  padding: 0 1.125em;
-  border: 0;
-  border-radius: var(--gm-radius-button);
-  background-color: var(--gm-button-bg);
-  color: inherit;
+  padding: 0 var(--gm-space-l);
   font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background-color var(--gm-duration) var(--gm-ease),
-    box-shadow var(--gm-duration) var(--gm-ease);
-
-  &:hover {
-    background-color: var(--gm-pressed);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-
-  .gm-focus-ring();
+  .gm-push-button();
 }
 
 /* LESS 3 cannot parse a selector list inside :where(), so it is escaped */
 @gm-entries: ~':where(input[type="text"], input[type="search"], input[type="number"], input[type="email"], input[type="url"], input:not([type]), select, textarea)';
 
+/* line edits and combo boxes: a View-colored frame whose outline
+ * turns highlight-blue on hover and focus */
 @{gm-entries} {
   box-sizing: border-box;
   min-height: var(--gm-control-height);
-  padding: 0 0.75em;
-  border: 0;
-  border-radius: var(--gm-radius-s);
+  padding: 0 var(--gm-space-m);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-m);
   background-color: var(--gm-entry-bg);
   color: var(--gm-fg);
   font: inherit;
-  transition: box-shadow var(--gm-duration) var(--gm-ease);
+  transition: border-color var(--gm-duration) var(--gm-ease);
 
   &::placeholder {
     color: var(--gm-fg-faint);
   }
 
+  &:hover,
   &:focus {
     outline: none;
-    box-shadow: inset 0 0 0 2px var(--gm-focus-ring);
+    border-color: var(--gm-accent);
   }
 }
 
 :where(textarea) {
-  padding: 0.5em 0.75em;
+  padding: var(--gm-space-m);
 }
 
 :where(select) {
   cursor: pointer;
-  padding-right: 0.25em;
+  background-color: var(--gm-button-bg);
+  box-shadow: var(--gm-shadow-button);
+  padding-right: var(--gm-space-s);
 }
 
+/* check boxes and radios: a Button-colored frame with a gray outline;
+ * checked gets the highlight outline, a 30% highlight fill, and a mark
+ * in the text color (Helper::renderCheckBox). */
 input[type="radio"],
 input[type="checkbox"] {
   appearance: none;
@@ -182,12 +168,13 @@ input[type="checkbox"] {
   flex: none;
 
   font: inherit;
-  color: var(--gm-accent-fg);
+  color: var(--gm-fg);
 
   width: @gm-control-size;
   height: @gm-control-size;
-  border: @gm-control-stroke solid var(--gm-border-strong);
-  margin: 0.5em;
+  border: 1px solid var(--gm-border);
+  background-color: var(--gm-button-bg);
+  margin: 0.375em;
   margin-left: 0;
   vertical-align: middle;
   cursor: pointer;
@@ -202,16 +189,16 @@ input[type="checkbox"] {
   &::before {
     content: "";
     transform: scale(0);
-    transition: 120ms transform ease-in-out;
+    transition: var(--gm-duration) transform ease-in-out;
     box-shadow: inset 1em 1em currentColor;
   }
 
   &:hover {
-    border-color: var(--gm-fg-dim);
+    border-color: var(--gm-accent);
   }
 
   &:checked {
-    background-color: var(--gm-accent);
+    background-color: color-mix(in srgb, var(--gm-accent) 30%, var(--gm-button-bg));
     border-color: var(--gm-accent);
   }
 
@@ -221,8 +208,8 @@ input[type="checkbox"] {
 
   /* appearance: none also removes the native focus ring */
   &:focus-visible {
-    outline: 2px solid var(--gm-focus-ring);
-    outline-offset: 2px;
+    outline: 1px solid var(--gm-focus-ring);
+    outline-offset: 1px;
   }
 }
 
@@ -230,18 +217,18 @@ input[type="radio"] {
   border-radius: 50%;
 
   &::before {
-    width: 0.5em;
-    height: 0.5em;
+    width: 0.45em;
+    height: 0.45em;
     border-radius: 50%;
   }
 }
 
 input[type="checkbox"] {
-  border-radius: 0.3em;
+  border-radius: var(--gm-radius-s);
 
   &::before {
-    width: 0.7em;
-    height: 0.7em;
+    width: 0.65em;
+    height: 0.65em;
     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
   }
 }
@@ -252,6 +239,7 @@ button.minimal-button {
   border: none;
   outline: none;
   background: none;
+  box-shadow: none;
   padding: 0;
   margin: 0;
   font: inherit;
@@ -261,17 +249,11 @@ button.minimal-button {
   border-radius: 0;
 }
 
-/* high contrast: controls that rely on a tinted fill get an outline */
-@media (prefers-contrast: more) {
-  :where(button),
-  @{gm-entries} {
-    box-shadow: inset 0 0 0 1px var(--gm-border-strong);
-  }
-
-  /* flat buttons stay flat, as in libadwaita's high contrast style */
-  button.minimal-button,
-  .toolbar .tool,
-  .layer button {
-    box-shadow: none;
-  }
+/* slim, rounded scroll bars like Breeze's 8px slider */
+.service-manager,
+.catalog,
+.grid-display,
+.modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gm-border) transparent;
 }

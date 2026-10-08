@@ -38,6 +38,8 @@
   animation: modalEnter var(--gm-duration-slow) var(--gm-ease);
 }
 
+/* a Breeze dialog: window color, outline, KWin shadow; a header and
+ * a button box separated from the content by lines */
 .modal-frame {
   width: 400px;
   max-width: calc(100vw - 2rem);
@@ -49,20 +51,23 @@
   overflow: hidden;
 
   color: var(--gm-fg);
-  background-color: var(--gm-popover-bg);
-  border-radius: var(--gm-radius-l);
+  background-color: var(--gm-window-bg);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-m);
   box-shadow: var(--gm-shadow-dialog);
 
   animation: modalFrameEnter var(--gm-duration-slow) var(--gm-ease);
 }
 
+/* Kirigami.Heading, level 1 */
 .modal-title {
-  padding: 1.25rem 1.5rem 0.25rem;
+  padding: var(--gm-space-l) 0.75rem;
+  border-bottom: 1px solid var(--gm-border);
 
   h5 {
     color: inherit;
-    font-weight: 700;
-    font-size: @gm-text-title;
+    font-weight: 400;
+    font-size: 1.35em;
     line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -71,50 +76,38 @@
 }
 
 .modal-body {
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem;
   max-height: 400px;
   overflow: auto;
   flex: 1;
   line-height: 1.45;
 
   a {
-    color: var(--gm-accent-text);
+    color: var(--gm-link);
   }
 }
 
-/* Footer buttons, left to right: the dismissive action comes first and
- * stays neutral, the right-most is the suggested action.  A lone button
- * only dismisses, so it is not styled as an affirmative action. */
+/* KDE button box: right-aligned with the affirmative action first.
+ * Callers list the dismissive option first, so the row is reversed;
+ * the affirmative (last) option is the default button. */
 .modal-footer {
-  padding: 0.75rem 1.5rem 1.5rem;
+  padding: var(--gm-space-l) 0.75rem;
+  border-top: 1px solid var(--gm-border);
   display: flex;
-  gap: 0.75rem;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  gap: var(--gm-space-m);
 
   .button-parent {
-    flex: 1;
     padding: 0;
     border: none;
 
     button {
-      width: 100%;
-      .gm-suggested-button();
+      .gm-text-button();
     }
   }
-}
 
-.modal-footer.one .button-parent,
-.modal-footer.two .button-parent:not(:last-child),
-.modal-footer.three .button-parent:not(:last-child) {
-  button {
-    background-color: var(--gm-button-bg);
-    color: var(--gm-fg);
-
-    &:hover {
-      background-color: var(--gm-pressed);
-    }
-
-    &:disabled {
-      color: var(--gm-fg-faint);
-    }
+  .button-parent:last-child:not(:first-child) button {
+    .gm-default-button();
   }
 }

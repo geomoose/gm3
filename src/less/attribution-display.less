@@ -29,11 +29,13 @@
   z-index: 99;
   margin: 0.75rem;
   padding: 0.125rem 0.625rem;
-  border-radius: var(--gm-radius-button);
-  .gm-osd();
+  background-color: color-mix(in srgb, var(--gm-window-bg) 90%, transparent);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-m);
+  color: var(--gm-fg);
   font-size: @gm-text-fine;
 
   a {
-    color: inherit;
+    color: var(--gm-link);
   }
 }

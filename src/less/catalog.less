@@ -30,11 +30,12 @@
   align-items: center;
   box-sizing: border-box;
   min-height: var(--gm-row-height);
-  padding: 0 0.5em;
+  padding: 0 var(--gm-space-s);
   border-radius: var(--gm-radius-s);
   cursor: pointer;
   transition: background-color var(--gm-duration) var(--gm-ease);
 
+  /* Breeze item views tint the hovered row with the highlight */
   &:hover {
     background-color: var(--gm-hover);
   }
@@ -47,7 +48,7 @@
 
   .group-label {
     .gm-catalog-row();
-    font-weight: 700;
+    font-weight: 600;
 
     input[type="checkbox"] {
       /* render a fontawesome chevron instead of a checkbox */
@@ -113,6 +114,7 @@
     padding: 0;
     background: none;
     border: none;
+    box-shadow: none;
     font: inherit;
   }
 
@@ -186,39 +188,38 @@
     flex-wrap: wrap;
     gap: 0.125em;
     padding-top: 0.125em;
-    padding-bottom: 0.25em;
+    padding-bottom: var(--gm-space-s);
 
+    /* flat tool buttons; the frame appears in blue on hover */
     button {
-      border-radius: 50%;
+      border-radius: var(--gm-radius-m);
       .gm-focus-ring();
     }
 
     .icon {
-      color: var(--gm-fg-dim);
+      color: var(--gm-fg);
       font-size: @gm-control-size;
-      width: 1.75em;
-      height: 1.75em;
-      border-radius: 50%;
+      width: 1.6em;
+      height: 1.6em;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      border-radius: var(--gm-radius-m);
       margin: 0;
 
       display: inline-flex;
       justify-content: center;
       align-items: center;
 
-      transition:
-        background-color var(--gm-duration) var(--gm-ease),
-        color var(--gm-duration) var(--gm-ease);
+      transition: border-color var(--gm-duration) var(--gm-ease);
 
       &:hover {
-        background-color: var(--gm-hover);
-        color: var(--gm-fg);
+        border-color: var(--gm-accent);
       }
     }
 
     .active .icon,
     .icon.active {
-      background-color: var(--gm-accent-soft);
-      color: var(--gm-accent-text);
+      .gm-tool-button-checked();
     }
   }
 
@@ -263,7 +264,7 @@
   /* dense-panel scale: the labels and, through their em sizing,
    * the controls and glyphs all step down together. */
   font-size: @gm-text-ui;
-  padding: 0.5em;
+  padding: var(--gm-space-s);
 
   .searchbox {
     position: absolute;
@@ -271,7 +272,7 @@
     width: 100%;
     top: 0;
     left: 0;
-    padding: 0.5em 0.5em 0.25em;
+    padding: var(--gm-space-l) var(--gm-space-l) var(--gm-space-s);
 
     input {
       box-sizing: border-box;
@@ -293,7 +294,7 @@
 }
 
 .catalog.searchable {
-  padding-top: 3.25em;
+  padding-top: 3.5em;
 }
 
 /***
