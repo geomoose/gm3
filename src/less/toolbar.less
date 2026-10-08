@@ -2,19 +2,20 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.125em;
+  gap: 0;
 
+  /* KDE tool buttons: icon beside text, no frame until hovered */
   .tool {
     display: inline-flex;
     align-items: center;
-    gap: 0.5em;
+    gap: var(--gm-space-m);
     box-sizing: border-box;
     min-height: var(--gm-control-height);
-    padding: 0 0.75em;
+    padding: 0 var(--gm-space-m);
     margin: 0;
     font-size: @gm-text-secondary;
-    font-weight: 600;
-    .gm-flat-button();
+    font-weight: 400;
+    .gm-tool-button();
 
     color: inherit;
     text-decoration: none;
@@ -27,9 +28,9 @@
       color: inherit;
     }
 
+    /* the running service is a checked tool button */
     &.active {
-      background-color: var(--gm-accent-soft);
-      color: var(--gm-accent-text);
+      .gm-tool-button-checked();
     }
   }
 }
@@ -79,11 +80,11 @@
 .gm-tool-icon(link, @fa-var-external-link);
 
 .tool.drawer {
-  /* a menu button: label first, then the disclosure arrow */
+  /* a menu button: label first, then the small disclosure arrow */
   .icon.drawer {
     order: 1;
-    font-size: 0.75em;
-    opacity: 0.7;
+    font-size: 0.7em;
+    opacity: 0.8;
     .fa;
     &:before {
       content: @fa-var-chevron-down;
@@ -108,7 +109,9 @@
     }
   }
 
-  /* drawer contents render as a popover menu */
+  /* drawer contents render as a Breeze menu: window color, outline,
+   * shadow; icons sit in a fixed gutter so text lines up whether or
+   * not a tool has one. */
   .drawer-contents {
     display: none;
     flex-direction: column;
@@ -116,23 +119,29 @@
     top: 100%;
     left: 0;
     min-width: 12em;
-    padding: 0.375em;
+    padding: var(--gm-space-s);
     border-radius: var(--gm-radius-m);
     z-index: 1000;
     .gm-floating();
 
     .tool {
+      position: relative;
       display: flex;
       width: 100%;
+      min-height: 2em;
+      padding-left: 2.25em;
       border-radius: var(--gm-radius-s);
-      font-weight: 400;
       white-space: nowrap;
       text-align: left;
       justify-content: flex-start;
 
-      /* menu items are text only */
+      &:hover {
+        background-color: var(--gm-pressed);
+      }
+
       .icon {
-        display: none;
+        position: absolute;
+        left: 0.75em;
       }
     }
   }

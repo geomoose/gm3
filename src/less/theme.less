@@ -22,14 +22,20 @@
  * SOFTWARE.
  */
 
-/* Theme tokens.
+/* Theme tokens, after KDE's Breeze.
  *
- * The palette is neutral greys plus a single accent color.  Everything
- * else (hover washes, borders, the soft accent tint behind selected
- * items) is mixed from those few inputs, so most themes only need to
- * set --gm-accent:
+ * Colors come from Breeze's own color schemes (BreezeLight.colors /
+ * BreezeDark.colors) and shapes and spacing from its style metrics and
+ * Kirigami's units.  Like Breeze, controls are drawn as thin outlined
+ * frames whose outline is the text color mixed 20% into the
+ * background, and interaction is signalled with the highlight color:
+ * a blue outline on hover and focus, a 30% blue tint when pressed or
+ * selected.
  *
- *   :root { --gm-accent: #2c6b2f; }
+ * Everything is mixed from the palette, so most themes only need to
+ * set the highlight color:
+ *
+ *   :root { --gm-accent: #1abc9c; }
  *
  * Derived tokens are resolved where they are declared, so overrides
  * belong on :root or on one of the .gm-theme-* classes, not on an
@@ -40,81 +46,95 @@
  */
 
 .gm-light-palette() {
-  --gm-accent: #3584e4;
+  /* [Colors:Selection] BackgroundNormal / BackgroundAlternate */
+  --gm-accent: #3daee9;
+  --gm-accent-alt: #a3d4fa;
   --gm-accent-fg: #ffffff;
-  --gm-destructive: #c01c28;
-  --gm-success: #26a269;
-  --gm-warning: #c88800;
-  --gm-favorite: #e5a50a;
+  /* ForegroundLink, Negative, Neutral, Positive */
+  --gm-link: #2980b9;
+  --gm-destructive: #da4453;
+  --gm-warning: #f67400;
+  --gm-success: #27ae60;
+  --gm-favorite: #fdbc4b;
 
-  --gm-fg: #1f1f23;
-  --gm-window-bg: #fafafb;
+  /* ForegroundNormal / ForegroundInactive */
+  --gm-fg: #232629;
+  --gm-fg-inactive: #707d8a;
+
+  /* Window, View, View alternate, Button, Header, Tooltip */
+  --gm-window-bg: #eff0f1;
   --gm-view-bg: #ffffff;
-  --gm-sidebar-bg: #f3f3f5;
-  --gm-headerbar-bg: #ebebed;
-  --gm-card-bg: #ffffff;
-  --gm-popover-bg: #ffffff;
+  --gm-view-alt: #f7f7f7;
+  --gm-button-bg: #fcfcfc;
+  --gm-headerbar-bg: #dee0e2;
+  --gm-tooltip-bg: #f7f7f7;
 
-  --gm-shade: rgba(0, 0, 6, 0.07);
-  --gm-scrim: rgba(0, 0, 6, 0.32);
-
-  --gm-shadow-card:
-    0 0 0 1px rgba(0, 0, 6, 0.03), 0 1px 3px 1px rgba(0, 0, 6, 0.07),
-    0 2px 6px 2px rgba(0, 0, 6, 0.03);
-  --gm-shadow-float:
-    0 0 0 1px rgba(0, 0, 6, 0.05), 0 2px 4px rgba(0, 0, 6, 0.1), 0 4px 12px rgba(0, 0, 6, 0.12);
-  --gm-shadow-dialog:
-    0 0 0 1px rgba(0, 0, 6, 0.05), 0 6px 24px rgba(0, 0, 6, 0.2), 0 12px 48px rgba(0, 0, 6, 0.12);
+  --gm-scrim: rgba(0, 0, 0, 0.4);
 
   color-scheme: light;
 }
 
 .gm-dark-palette() {
-  --gm-accent: #78aeed;
-  --gm-accent-fg: #0b1a2c;
-  --gm-destructive: #ff7b63;
-  --gm-success: #8ff0a4;
-  --gm-warning: #f8e45c;
-  --gm-favorite: #f8e45c;
+  --gm-accent: #3daee9;
+  --gm-accent-alt: #1e5774;
+  --gm-accent-fg: #fcfcfc;
+  --gm-link: #1d99f3;
+  --gm-destructive: #da4453;
+  --gm-warning: #f67400;
+  --gm-success: #27ae60;
+  --gm-favorite: #fdbc4b;
 
-  --gm-fg: #f3f3f5;
-  --gm-window-bg: #222226;
-  --gm-view-bg: #1d1d20;
-  --gm-sidebar-bg: #2a2a2e;
-  --gm-headerbar-bg: #2e2e32;
-  --gm-card-bg: #303034;
-  --gm-popover-bg: #36363a;
+  --gm-fg: #fcfcfc;
+  --gm-fg-inactive: #a1a9b1;
 
-  --gm-shade: rgba(0, 0, 6, 0.25);
-  --gm-scrim: rgba(0, 0, 6, 0.55);
+  --gm-window-bg: #202326;
+  --gm-view-bg: #141618;
+  --gm-view-alt: #1d1f22;
+  --gm-button-bg: #292c30;
+  --gm-headerbar-bg: #292c30;
+  --gm-tooltip-bg: #292c30;
 
-  --gm-shadow-card: 0 0 0 1px rgba(0, 0, 6, 0.3), 0 1px 3px 1px rgba(0, 0, 6, 0.2);
-  --gm-shadow-float:
-    0 0 0 1px rgba(0, 0, 6, 0.4), 0 2px 4px rgba(0, 0, 6, 0.3), 0 4px 12px rgba(0, 0, 6, 0.3);
-  --gm-shadow-dialog: 0 0 0 1px rgba(0, 0, 6, 0.5), 0 6px 24px rgba(0, 0, 6, 0.4);
+  --gm-scrim: rgba(0, 0, 0, 0.6);
 
   color-scheme: dark;
 }
 
 /* tokens mixed from the palette; re-declared wherever the palette
- * changes so they track the active foreground and accent. */
+ * changes so they track the active colors. */
 .gm-derived-tokens() {
-  --gm-fg-dim: color-mix(in srgb, var(--gm-fg) 62%, transparent);
-  --gm-fg-faint: color-mix(in srgb, var(--gm-fg) 38%, transparent);
-  --gm-border: color-mix(in srgb, var(--gm-fg) 14%, transparent);
-  --gm-border-strong: color-mix(in srgb, var(--gm-fg) 40%, transparent);
-  --gm-hover: color-mix(in srgb, var(--gm-fg) 7%, transparent);
-  --gm-pressed: color-mix(in srgb, var(--gm-fg) 14%, transparent);
-  --gm-button-bg: color-mix(in srgb, var(--gm-fg) 9%, transparent);
-  --gm-entry-bg: color-mix(in srgb, var(--gm-fg) 7%, transparent);
+  /* KColorUtils::mix(window, text, frameContrast = 0.2) */
+  --gm-border: color-mix(in srgb, var(--gm-fg) 20%, var(--gm-window-bg));
+  --gm-border-strong: color-mix(in srgb, var(--gm-fg) 60%, var(--gm-window-bg));
 
-  --gm-accent-soft: color-mix(in srgb, var(--gm-accent) 16%, transparent);
-  --gm-accent-hover: color-mix(in srgb, var(--gm-accent) 88%, var(--gm-fg));
-  --gm-accent-text: color-mix(in srgb, var(--gm-accent) 82%, var(--gm-fg));
-  --gm-focus-ring: color-mix(in srgb, var(--gm-accent) 55%, transparent);
+  --gm-fg-dim: var(--gm-fg-inactive);
+  --gm-fg-faint: color-mix(in srgb, var(--gm-fg-inactive) 60%, transparent);
 
-  --gm-destructive-soft: color-mix(in srgb, var(--gm-destructive) 14%, transparent);
-  --gm-warning-soft: color-mix(in srgb, var(--gm-warning) 18%, transparent);
+  /* Breeze's Blend_Value: 0.3 */
+  --gm-accent-soft: color-mix(in srgb, var(--gm-accent) 30%, transparent);
+  --gm-hover: color-mix(in srgb, var(--gm-accent) 20%, transparent);
+  --gm-pressed: color-mix(in srgb, var(--gm-accent) 30%, transparent);
+  --gm-accent-text: var(--gm-link);
+  --gm-focus-ring: var(--gm-accent);
+
+  /* a checked flat button: button text at 12.5%, not the highlight */
+  --gm-checked-bg: color-mix(in srgb, var(--gm-fg) 12.5%, transparent);
+
+  /* the default button: button color mixed 20% toward the highlight */
+  --gm-default-bg: color-mix(in srgb, var(--gm-accent) 20%, var(--gm-button-bg));
+  --gm-default-border: color-mix(in srgb, var(--gm-accent) 50%, var(--gm-border));
+
+  /* unselected tabs: Window.darker(120) */
+  --gm-tab-bg: color-mix(in srgb, var(--gm-window-bg) 83%, #000000);
+
+  --gm-entry-bg: var(--gm-view-bg);
+  --gm-sidebar-bg: var(--gm-view-bg);
+  --gm-card-bg: var(--gm-view-bg);
+  --gm-popover-bg: var(--gm-window-bg);
+
+  /* InlineMessage tints */
+  --gm-info-bg: color-mix(in srgb, var(--gm-accent) 20%, var(--gm-view-bg));
+  --gm-destructive-soft: color-mix(in srgb, var(--gm-destructive) 20%, var(--gm-view-bg));
+  --gm-warning-soft: color-mix(in srgb, var(--gm-warning) 20%, var(--gm-view-bg));
 }
 
 :root,
@@ -138,33 +158,37 @@
 .gm-theme-auto {
   .gm-derived-tokens();
 
-  /* shape: one knob per scale step, so a deployer can make the whole
-   * UI squarer (or rounder) without touching component rules. */
-  --gm-radius-s: 6px;
-  --gm-radius-m: 12px;
-  --gm-radius-l: 18px;
-  --gm-radius-button: 999px;
+  /* Breeze Frame_FrameRadius and CheckBox_Radius; floating round
+   * buttons are fully round. */
+  --gm-radius-s: 4px;
+  --gm-radius-m: 5px;
+  --gm-radius-l: 5px;
+  --gm-radius-button: 5px;
 
-  --gm-font:
-    system-ui, "Adwaita Sans", Cantarell, Inter, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --gm-font-mono: ui-monospace, "Adwaita Mono", "Fira Mono", "DejaVu Sans Mono", Menlo, monospace;
+  /* Kirigami units: small, medium and large spacing */
+  --gm-space-s: 4px;
+  --gm-space-m: 6px;
+  --gm-space-l: 8px;
+
+  /* Breeze's button shadow is a 1px, 12.5% black line under the frame */
+  --gm-shadow-button: 0 1px 0 rgba(0, 0, 0, 0.125);
+  --gm-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --gm-shadow-float: 0 2px 6px rgba(0, 0, 0, 0.16), 0 6px 18px rgba(0, 0, 0, 0.14);
+  --gm-shadow-dialog: 0 4px 12px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.2);
+
+  --gm-font: "Noto Sans", system-ui, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --gm-font-mono: "Hack", "Noto Sans Mono", ui-monospace, "DejaVu Sans Mono", Menlo, monospace;
 
   /* sized for a mouse first; coarse pointers get roomier targets
    * below rather than everyone getting tablet-sized chrome. */
   --gm-control-height: 2.25em;
-  --gm-fab-size: 2.75rem;
-  --gm-row-height: 2.25em;
+  --gm-fab-size: 2.5rem;
+  --gm-row-height: 2em;
 
-  /* on-screen display: controls overlaid on the map stay dark and
-   * translucent in both light and dark styles, like libadwaita's .osd */
-  --gm-osd-bg: rgba(0, 0, 0, 0.65);
-  --gm-osd-fg: #ffffff;
-  --gm-osd-hover: rgba(0, 0, 0, 0.8);
-  --gm-osd-border: rgba(255, 255, 255, 0.15);
-
-  --gm-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --gm-duration: 150ms;
-  --gm-duration-slow: 300ms;
+  /* Kirigami shortDuration / longDuration */
+  --gm-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --gm-duration: 100ms;
+  --gm-duration-slow: 200ms;
 }
 
 @media (pointer: coarse) {
@@ -173,25 +197,21 @@
   .gm-theme-dark,
   .gm-theme-auto {
     --gm-control-height: 2.75em;
-    --gm-fab-size: 3.25rem;
+    --gm-fab-size: 3rem;
     --gm-row-height: 2.75em;
   }
 }
 
-/* High contrast: dims stop dimming, outlines become visible, and the
- * OSD loses its translucency.  Controls also gain borders, see gm3.less. */
+/* High contrast: dims stop dimming and outlines lean on the text color. */
 @media (prefers-contrast: more) {
   :root,
   .gm-theme-light,
   .gm-theme-dark,
   .gm-theme-auto {
-    --gm-fg-dim: color-mix(in srgb, var(--gm-fg) 85%, transparent);
+    --gm-fg-dim: var(--gm-fg);
     --gm-fg-faint: color-mix(in srgb, var(--gm-fg) 65%, transparent);
-    --gm-border: color-mix(in srgb, var(--gm-fg) 50%, transparent);
+    --gm-border: color-mix(in srgb, var(--gm-fg) 60%, var(--gm-window-bg));
     --gm-border-strong: var(--gm-fg);
-    --gm-accent-soft: color-mix(in srgb, var(--gm-accent) 30%, transparent);
-    --gm-osd-bg: rgba(0, 0, 0, 0.92);
-    --gm-osd-border: rgba(255, 255, 255, 0.6);
   }
 }
 
@@ -205,121 +225,136 @@
   }
 }
 
-/* Shared surface/control mixins */
+/* Shared control mixins */
 
-.gm-card() {
-  background-color: var(--gm-card-bg);
-  border-radius: var(--gm-radius-m);
-  box-shadow: var(--gm-shadow-card);
-}
-
-.gm-osd() {
-  background-color: var(--gm-osd-bg);
-  color: var(--gm-osd-fg);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 0 0 1px var(--gm-osd-border);
-}
-
-.gm-floating() {
-  background-color: var(--gm-popover-bg);
-  color: var(--gm-fg);
-  box-shadow: var(--gm-shadow-float);
-}
-
+/* Breeze shows focus by turning the frame outline the highlight color */
 .gm-focus-ring() {
   &:focus-visible {
-    outline: 2px solid var(--gm-focus-ring);
-    outline-offset: 2px;
+    outline: 1px solid var(--gm-focus-ring);
+    outline-offset: -1px;
   }
 }
 
-/* flat buttons: no fill until hovered, as in a header bar */
-.gm-flat-button() {
-  background: none;
-  color: inherit;
-  border: none;
+/* a raised push button: Button color, gray outline, 1px shadow; the
+ * outline turns highlight-blue on hover and the face tints when pressed */
+.gm-push-button() {
+  background-color: var(--gm-button-bg);
+  color: var(--gm-fg);
+  border: 1px solid var(--gm-border);
   border-radius: var(--gm-radius-button);
+  box-shadow: var(--gm-shadow-button);
   cursor: pointer;
-  transition: background-color var(--gm-duration) var(--gm-ease);
+  transition:
+    background-color var(--gm-duration) var(--gm-ease),
+    border-color var(--gm-duration) var(--gm-ease);
 
   &:hover {
-    background-color: var(--gm-hover);
+    border-color: var(--gm-accent);
   }
 
   &:active {
-    background-color: var(--gm-pressed);
+    background-color: color-mix(in srgb, var(--gm-accent) 30%, var(--gm-button-bg));
+    border-color: var(--gm-accent);
+    box-shadow: none;
+  }
+
+  &:disabled {
+    border-color: var(--gm-border);
+    color: var(--gm-fg-faint);
+    box-shadow: none;
+    cursor: default;
   }
 
   .gm-focus-ring();
 }
 
-/* the one "do it" button in a view */
-.gm-suggested-button() {
-  background-color: var(--gm-accent);
-  color: var(--gm-accent-fg);
+/* text push buttons in dialogs and forms keep Breeze's 80px minimum */
+.gm-text-button() {
+  min-width: 5.75em;
+  padding: 0 var(--gm-space-l);
+}
+
+/* the dialog's default button: tinted toward the highlight */
+.gm-default-button() {
+  background-color: var(--gm-default-bg);
+  border-color: var(--gm-default-border);
 
   &:hover {
-    background-color: var(--gm-accent-hover);
-  }
-
-  &:disabled {
-    background-color: var(--gm-button-bg);
-    color: var(--gm-fg-faint);
+    border-color: var(--gm-accent);
   }
 }
 
-/* small section titles, like the headings over a GNOME boxed list */
+/* a flat tool button: no frame until hovered, as on a KDE toolbar */
+.gm-tool-button() {
+  background: none;
+  color: inherit;
+  border: 1px solid transparent;
+  border-radius: var(--gm-radius-button);
+  box-shadow: none;
+  cursor: pointer;
+  transition:
+    background-color var(--gm-duration) var(--gm-ease),
+    border-color var(--gm-duration) var(--gm-ease);
+
+  &:hover {
+    border-color: var(--gm-accent);
+  }
+
+  &:active {
+    background-color: var(--gm-pressed);
+    border-color: var(--gm-accent);
+  }
+
+  .gm-focus-ring();
+}
+
+/* the checked state of a flat tool button */
+.gm-tool-button-checked() {
+  background-color: var(--gm-checked-bg);
+  border-color: var(--gm-border);
+}
+
+/* a framed panel in a view: QFrame::StyledPanel */
+.gm-card() {
+  background-color: var(--gm-card-bg);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-m);
+}
+
+/* menus and floating panels: window color, outline, KWin-style shadow */
+.gm-floating() {
+  background-color: var(--gm-popover-bg);
+  color: var(--gm-fg);
+  border: 1px solid var(--gm-border);
+  box-shadow: var(--gm-shadow-float);
+}
+
+/* Kirigami.Heading, level 2 */
 .gm-section-header() {
   color: var(--gm-fg);
   background: none;
-  font-weight: 700;
-  font-size: @gm-text-header;
-  padding: 0.75em 0.25em 0.5em;
+  font-weight: 400;
+  font-size: 1.2em;
+  padding: var(--gm-space-l) 0 var(--gm-space-m);
 }
 
-/* Boxed list rows for markup without a list wrapper: consecutive
- * @row siblings join into one rounded, separated card.  The selectors
- * are escaped because LESS 3 cannot parse combinators inside :not()
- * or :has(). */
-.gm-boxed-rows(@row) {
-  @first: ~"@{row}:not(@{row} + @{row})";
-  @last: ~"@{row}:not(:has(+ @{row}))";
+/* Kirigami.InlineMessage: a tinted frame in the message's color with
+ * its icon at the start */
+.gm-inline-message(@bg, @color, @glyph) {
+  position: relative;
+  color: var(--gm-fg);
+  background-color: @bg;
+  border: 1px solid @color;
+  border-radius: var(--gm-radius-m);
+  padding: var(--gm-space-l) var(--gm-space-l) var(--gm-space-l) 2.25em;
 
-  @{row} {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    min-height: var(--gm-row-height);
-    margin: 0;
-    padding: 0.375em 0.75em;
-    background-color: var(--gm-card-bg);
-    border: 1px solid var(--gm-border);
-    border-radius: 0;
-    cursor: pointer;
-    transition: background-color var(--gm-duration) var(--gm-ease);
-
-    &:hover {
-      background-color: color-mix(in srgb, var(--gm-card-bg) 94%, var(--gm-fg));
-    }
-
-    /* the label fills the row so a click anywhere hits the control */
-    > span {
-      flex: 1;
-    }
-  }
-
-  @{row} + @{row} {
-    margin-top: -1px;
-  }
-
-  @{first} {
-    border-top-left-radius: var(--gm-radius-m);
-    border-top-right-radius: var(--gm-radius-m);
-  }
-
-  @{last} {
-    border-bottom-left-radius: var(--gm-radius-m);
-    border-bottom-right-radius: var(--gm-radius-m);
-    margin-bottom: 0.75em;
+  &::before {
+    .fa;
+    content: @glyph;
+    position: absolute;
+    left: 0.75em;
+    top: calc(var(--gm-space-l) + 0.125em);
+    color: @color;
+    font-size: 1.1em;
   }
 }

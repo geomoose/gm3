@@ -5,10 +5,11 @@
   z-index: 100;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--gm-space-m);
 
-  /* floating action buttons over the map, in the OSD style the HIG
-   * prescribes for controls overlaid on content */
+  /* floating round buttons over the map (Kirigami RoundButton):
+   * Button color with a contrasting outline and a drop shadow so they
+   * separate from any basemap; the outline turns blue on hover. */
   .map-button {
     display: inline-flex;
     align-items: center;
@@ -19,26 +20,13 @@
     min-height: 0;
     padding: 0;
     margin: 0;
-    border-radius: var(--gm-radius-l);
     font-size: 1rem;
-    .gm-osd();
-    transition:
-      background-color var(--gm-duration) var(--gm-ease),
-      box-shadow var(--gm-duration) var(--gm-ease),
-      transform var(--gm-duration) var(--gm-ease);
-
-    &:hover {
-      background-color: var(--gm-osd-hover);
-      cursor: pointer;
-    }
+    .gm-push-button();
+    border-radius: 50%;
+    box-shadow: var(--gm-shadow-float);
 
     &:active {
-      transform: scale(0.96);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--gm-focus-ring);
-      outline-offset: 2px;
+      box-shadow: var(--gm-shadow-float);
     }
 
     i {
@@ -46,13 +34,12 @@
     }
 
     &:disabled {
-      color: rgba(255, 255, 255, 0.4);
       pointer-events: none;
     }
 
     &.active {
-      background-color: var(--gm-accent);
-      color: var(--gm-accent-fg);
+      background-color: color-mix(in srgb, var(--gm-accent) 30%, var(--gm-button-bg));
+      border-color: var(--gm-accent);
     }
   }
 
@@ -94,7 +81,7 @@
 
 .ol-control {
   background: none;
-  border-radius: var(--gm-radius-m);
+  border-radius: 50%;
   padding: 0;
 
   &:hover {
@@ -107,55 +94,50 @@
     min-height: 0;
     margin: 0;
     padding: 0;
-    border-radius: var(--gm-radius-m);
     font-size: 1.25rem;
     font-weight: 400;
     line-height: 1;
-    .gm-osd();
+    .gm-push-button();
+    border-radius: 50%;
+    box-shadow: var(--gm-shadow-float);
 
     &:hover,
     &:focus {
       outline: none;
-      color: var(--gm-osd-fg);
-      background-color: var(--gm-osd-hover);
+      color: var(--gm-fg);
+      background-color: var(--gm-button-bg);
+      border-color: var(--gm-accent);
     }
-
-    .gm-focus-ring();
   }
 }
 
-/* zoom in/out read as one linked group */
+/* zoom in/out as two stacked round buttons */
 .ol-zoom {
-  .gm-osd();
+  display: flex;
+  flex-direction: column;
+  gap: var(--gm-space-m);
 
   .ol-zoom-in,
   .ol-zoom-out {
-    box-shadow: none;
-    background: none;
-    backdrop-filter: none;
     margin: 0;
-  }
-
-  .ol-zoom-in {
-    border-radius: var(--gm-radius-m) var(--gm-radius-m) 0 0;
-  }
-
-  .ol-zoom-out {
-    border-radius: 0 0 var(--gm-radius-m) var(--gm-radius-m);
+    border-radius: 50%;
   }
 }
 
+/* small framed labels over the map: window color with an outline */
 .ol-scale-line {
-  .gm-osd();
-  border-radius: var(--gm-radius-button);
-  padding: 0.25rem 0.75rem;
+  background-color: color-mix(in srgb, var(--gm-window-bg) 90%, transparent);
+  border: 1px solid var(--gm-border);
+  border-radius: var(--gm-radius-m);
+  box-shadow: var(--gm-shadow-card);
+  padding: 0.125rem 0.5rem;
   bottom: 0.75rem;
   left: 0.75rem;
 }
 
 .ol-scale-line-inner {
-  border-color: var(--gm-osd-fg);
-  color: var(--gm-osd-fg);
+  border-color: var(--gm-fg);
+  color: var(--gm-fg);
   font-size: @gm-text-fine;
   font-family: var(--gm-font);
 }

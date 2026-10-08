@@ -28,18 +28,20 @@
 
 /* Theming the whole app is one variable away, e.g.:
  *
- *   :root { --gm-accent: #26a269; }
+ *   :root { --gm-accent: #1abc9c; }
  *
  * index.html sets <html class="gm-theme-auto"> so the app follows the
  * system light/dark preference; use gm-theme-light or gm-theme-dark to
  * pin one style instead.
  */
 
+/* Plasma's UI font is 10pt; 14px keeps GeoMoose's denser panels
+ * (which step down from the base) at about that size. */
 body {
     font-family: var(--gm-font);
+    font-size: 0.875rem;
     color: var(--gm-fg);
     background-color: var(--gm-window-bg);
-    -webkit-font-smoothing: antialiased;
 }
 
 #main {
@@ -52,19 +54,19 @@ body {
     height: 100%;
 }
 
-/* header bar: logo and the tools on one row */
+/* the toolbar area uses Breeze's Header color with a separator */
 #header {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.375rem 0.75rem;
+    gap: var(--gm-space-l);
+    padding: var(--gm-space-s) var(--gm-space-l);
     background-color: var(--gm-headerbar-bg);
     border-bottom: solid 1px var(--gm-border);
 }
 
 #header img {
     display: block;
-    height: 40px;
+    height: 36px;
     width: auto;
 }
 
@@ -80,15 +82,16 @@ body {
     min-height: 0;
 }
 
+/* a status bar: window color, separator, inactive text */
 #footer {
     border-top: solid 1px var(--gm-border);
-    background-color: var(--gm-headerbar-bg);
+    background-color: var(--gm-window-bg);
     color: var(--gm-fg-dim);
-    font-size: 0.8125rem;
+    font-size: 0.9em;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.25rem 0.75rem;
+    gap: var(--gm-space-l);
+    padding: var(--gm-space-s) var(--gm-space-l);
 }
 
 #tabs {
@@ -139,7 +142,7 @@ body {
 
 #jump-to-extent select {
     margin: auto;
-    min-height: 1.75rem;
+    min-height: 1.9em;
 }
 
 .tabs-closed #tabs {
@@ -153,7 +156,7 @@ body {
  */
 @media screen and (max-width: 500px) {
     body {
-        font-size: 87.5%;
+        font-size: 0.8125rem;
     }
 
     #tabs {
@@ -206,23 +209,22 @@ body {
     }
 }
 
-/* identify results: one section heading per feature class */
+/* identify results: one header per feature class, like a list
+ * section header with a separator under it */
 .feature-class {
-    background-color: var(--gm-accent-soft);
-    color: var(--gm-accent-text);
-    border-radius: var(--gm-radius-s);
-    padding: 0.375em 0.75em;
-    font-weight: 700;
-    margin-top: 0.75em;
-    margin-bottom: 0.25em;
+    color: var(--gm-fg);
+    border-bottom: 1px solid var(--gm-border);
+    padding: var(--gm-space-s) 0;
+    font-weight: 600;
+    margin-top: var(--gm-space-l);
+    margin-bottom: var(--gm-space-s);
 }
 
 /* Example of how to add CSS for a specific layer's
  * identify results.
  */
 .feature-class.pipelines {
-    background-color: color-mix(in srgb, #1c71d8 18%, transparent);
-    color: inherit;
+    border-bottom-color: #2980b9;
 }
 
 .search-address {

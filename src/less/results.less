@@ -27,10 +27,12 @@
   clear: both;
   position: relative;
   padding: 0.5em;
+  border: 1px solid transparent;
   border-radius: var(--gm-radius-s);
 
   &:hover {
     background-color: var(--gm-hover);
+    border-color: var(--gm-accent);
   }
 
   .search-label,
@@ -47,8 +49,7 @@
   .zoomto-link {
     padding-left: 1em;
     cursor: pointer;
-    font-weight: 600;
-    color: var(--gm-accent-text);
+    color: var(--gm-link);
   }
 
   .zoomto-link:hover {
@@ -77,51 +78,30 @@
     float: right;
   }
 
-  /* actions as a boxed list of button rows: a symbolic icon prefix
-   * and the label, one action per row */
+  /* actions as a row of tool buttons, text beside icon */
   .results-info {
     display: flex;
-    flex-direction: column;
-    margin: 0.25em 0 0.75em;
-    overflow: hidden;
-    .gm-card();
+    flex-wrap: wrap;
+    gap: var(--gm-space-s);
+    margin: 0 0 var(--gm-space-l);
 
     .results-info-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 0.75em;
-      width: 100%;
-      min-height: var(--gm-row-height);
-      padding: 0.5em 1em;
+      gap: var(--gm-space-m);
+      min-height: var(--gm-control-height);
+      padding: 0 var(--gm-space-m);
       margin: 0;
-      text-align: left;
-
-      border: none;
-      border-radius: 0;
-      background: none;
-      color: var(--gm-fg);
       font-weight: 400;
-
-      & + .results-info-item {
-        border-top: 1px solid var(--gm-border);
-      }
-
-      &:hover {
-        background-color: var(--gm-hover);
-      }
+      .gm-tool-button();
 
       .label {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
         white-space: nowrap;
       }
 
       .value {
         order: -1;
         display: flex;
-        color: var(--gm-fg-dim);
 
         .icon {
           font-size: 1em;
@@ -132,6 +112,7 @@
       &.disabled,
       &:disabled {
         color: var(--gm-fg-faint);
+        border-color: transparent;
         cursor: not-allowed;
         .icon {
           cursor: not-allowed;
@@ -140,23 +121,22 @@
     }
   }
 
-  /* a boxed list of the counts */
+  /* the counts in a framed view with alternating rows */
   .results-info-counts {
-    margin: 0 0 0.75em;
-    padding: 0.25em 0;
+    margin: 0 0 var(--gm-space-l);
+    overflow: hidden;
     .gm-card();
 
     .results-info-item {
       display: flex;
-      padding: 0.5em 1em;
+      padding: var(--gm-space-m) var(--gm-space-l);
 
-      & + .results-info-item {
-        border-top: 1px solid var(--gm-border);
+      &:nth-child(even) {
+        background-color: var(--gm-view-alt);
       }
 
       .label {
         flex: 1;
-        font-weight: 600;
       }
 
       .value {
