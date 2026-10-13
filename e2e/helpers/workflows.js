@@ -111,6 +111,7 @@ async function downloadPDF(page, modal) {
   const pdf = await fs.readFile(await download.path());
   expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
   expect(pdf.length).toBeGreaterThan(10_000);
+  return pdf;
 }
 
 async function downloadCSV(page) {

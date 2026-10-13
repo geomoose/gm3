@@ -102,7 +102,27 @@ const test = base.extend({
         return route.fulfill({ status: 400, body: "Unimplemented fixture request" });
       }
       if (url.origin !== ORIGIN) {
-        if (/tile\.openstreetmap\.org$/.test(url.hostname)) {
+        // Search Runways: Dakota County ArcGIS REST, answered as JSONP.
+        if (url.hostname === "gis2.co.dakota.mn.us" && /\/query\/?$/.test(url.pathname)) {
+          const callback = url.searchParams.get("callback");
+          const body = JSON.stringify({ features: [] });
+          return route.fulfill({
+            contentType: "application/javascript",
+            body: callback ? `${callback}(${body});` : body,
+          });
+        }
+        // Geocode an Address: OpenStreetMap Nominatim.
+        if (url.hostname === "nominatim.openstreetmap.org") {
+          return route.fulfill({
+            contentType: "application/json",
+            body: JSON.stringify({ type: "FeatureCollection", features: [] }),
+          });
+        }
+        // OpenStreetMap tiles and the "ArcGIS Rest Example" background.
+        if (
+          /tile\.openstreetmap\.org$/.test(url.hostname) ||
+          url.hostname === "services.arcgisonline.com"
+        ) {
           return route.fulfill({ contentType: "image/png", body: png });
         }
         unexpected.push(request.url());

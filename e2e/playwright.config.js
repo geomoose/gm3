@@ -28,7 +28,7 @@ module.exports = defineConfig({
     ...(live ? [{ name: "demo-setup", testMatch: /demo-setup\.js$/ }] : []),
     {
       name: "desktop-chromium",
-      testMatch: /desktop(-workflows)?\.spec\.js$/,
+      testMatch: /desktop(-[a-z]+)?\.spec\.js$/,
       dependencies,
       use: { viewport: { width: 1440, height: 1000 } },
     },

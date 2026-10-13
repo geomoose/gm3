@@ -12,14 +12,21 @@ folder. They are separate from the unit tests that `npm test` runs.
 The tests cover the tasks people do most often:
 
 - Turning layers on and off, and picking a background map.
-- Identifying a parcel by clicking on the map.
+- Keeping the basemap toggle and the catalog's backgrounds in sync.
+- Identifying a parcel by clicking on the map, or an area with no data.
 - Selecting parcels by drawing a box or a polygon.
+- Running identify, select, and search one after another. Each new result
+  replaces the last one, and a search covers the whole layer.
 - Buffering a parcel, or all results, and selecting again.
 - Sorting and filtering the results grid.
 - Zooming to a parcel, removing a parcel, and hiding the grid.
 - Downloading results as a CSV file.
 - Printing a map, a parcel report, and a results report as PDF files.
+- Printing at different resolutions, and printing a map with a sketch on it.
 - Searching for parcels by owner.
+- Searching for a comma separated list of parcel IDs (PINs).
+- Getting a clear message when a search finds nothing, for every search type.
+- Cancelling Start Over without losing anything.
 - Keeping Favorites, Visible, and Catalog in sync.
 - Opening a bookmark link.
 - Using the mobile demo with touch.
@@ -41,8 +48,8 @@ Most tests run in both modes. Two do not:
 
 - The mobile identify test runs only in live mode. It needs a real WMS
   server reply.
-- The empty-results test runs only in offline mode. Only the saved data can
-  promise no results.
+- The empty-selection test runs only in offline mode. Only the saved data
+  can promise no results.
 
 ## Set up
 
@@ -161,6 +168,19 @@ These defaults are kept in `e2e/settings.js`.
 Live mode replaces only the demo's `config.js` file. All maps, legends, tiles,
 and query results come from the real servers.
 
+A few tests also use outside services in live mode. In offline mode, the
+tests give a fixed reply in their place.
+
+| Service                 | Used by                              |
+| ----------------------- | ------------------------------------ |
+| Dakota County ArcGIS    | The Search Runways test              |
+| OpenStreetMap Nominatim | The Geocode an Address test          |
+| ArcGIS Online (NatGeo)  | The basemap toggle test              |
+| OpenStreetMap map tiles | Every test that shows the background |
+
+If one of these services is down, its test fails in live mode. Run the same
+test in offline mode to check the app itself.
+
 ## Run the tests on GitHub
 
 The GitHub workflow is **optional**. It never runs on its own, and it never
@@ -188,6 +208,12 @@ It holds the report and the screenshots.
   top of `e2e/helpers/workflows.js`.
 - **Parcel color.** One check counts parcel outline pixels of a set color. If
   the demo's parcel style changes, update `PARCEL_STROKE` in the same file.
+- **Select uses a layer that was turned off.** Open Select, turn off the
+  layer it would select, then go back to Select. The layer list no longer
+  shows that layer, but the selection still queries it. Two tests show this
+  bug. They are marked as expected to fail, so the suite still passes. When
+  the bug is fixed, these tests report "Expected to fail, but passed". Then
+  remove `test.fail()` from `e2e/tests/desktop-queries.spec.js`.
 - **Chromium only.** The tests do not run in Firefox or Safari yet.
 
 ## What a person should still check
