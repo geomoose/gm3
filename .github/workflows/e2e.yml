@@ -1,0 +1,42 @@
+name: GeoMoose End-to-End Tests
+
+# Optional. This workflow only runs when someone starts it by hand from the
+# Actions tab. It never runs on push or pull request and never blocks a merge.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "live uses the GeoMoose demo server; offline uses saved test data"
+        type: choice
+        options:
+          - live
+          - offline
+        default: live
+
+jobs:
+  playwright:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+          cache: npm
+      - run: npm ci
+      - run: npm ci --prefix examples/mobile
+      - run: npx playwright install --with-deps chromium
+      - name: Run against the GeoMoose demo server
+        if: inputs.mode == 'live'
+        run: npm run test:e2e
+      - name: Run with offline test data
+        if: inputs.mode == 'offline'
+        run: npm run test:e2e:offline
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: |
+            e2e/report/
+            e2e/test-results/
+          retention-days: 14

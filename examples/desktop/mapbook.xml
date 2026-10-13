@@ -625,6 +625,7 @@
             <tool name="search-runways" title="Search Runways" type="service"/>
             <tool name="search" title="Search Parcels" type="service"/>
             <tool name="single-search" css-class="tool search" title="Single field search" type="service"/>
+            <tool name="search-pins" css-class="tool search" title="Search by PIN list" type="service"/>
             <tool name="geocode" title="Geocode an Address" type="service"/>
         </drawer>
 

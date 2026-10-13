@@ -32,6 +32,9 @@ node_modules/
 # Test result directory
 coverage/
 
+# Standalone browser tests and their artifacts are not runtime files
+e2e/
+
 # Results of packaging
 geomoose*.tgz
 
