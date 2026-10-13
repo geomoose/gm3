@@ -42,6 +42,12 @@ npm test
 npm install canvas@~1.0.0
 ```
 
+### End-to-end browser tests
+
+Browser tests for the desktop and mobile demos run with `npm run test:e2e`.
+They use the GeoMoose demo server. To run them without the internet, use
+`npm run test:e2e:offline`. See [the e2e testing guide](docs/e2e-testing.md).
+
 ## License
 
 GeoMoose3 uses an MIT-style licence. You can read the contents of it [here](./LICENSE)

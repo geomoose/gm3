@@ -41,6 +41,7 @@ import { getFlatResults } from "../../selectors/query";
 import { SERVICE_STEPS } from "../../reducers/query";
 
 import FilterModal from "./filter-modal";
+import { nextSortState, sortFeatures } from "./sort";
 
 const getElementEvents = (element) => {
   const events = {};
@@ -78,24 +79,7 @@ class Grid extends React.Component {
   }
 
   nextSort(column) {
-    // rotate to the next sort type
-    if (this.state.sortBy === column.property) {
-      // when sorted ascending, go to descending
-      if (this.state.sortAsc) {
-        this.setState({ sortAsc: false });
-        // if the sort is descending already, go
-        //  back to a neutral state
-      } else {
-        this.setState({ sortBy: null, sortAsc: true });
-      }
-    } else {
-      const sortAs = column.sortAs ? column.sortAs : "string";
-      this.setState({
-        sortBy: column.property,
-        sortAsc: true,
-        sortAs: sortAs,
-      });
-    }
+    this.setState(nextSortState(this.state, column));
   }
 
   getHeaderRow(results, headerConf) {
@@ -145,41 +129,6 @@ class Grid extends React.Component {
         </th>
       );
     });
-  }
-
-  sortResults(results) {
-    const collator = Intl.Collator();
-    const sortedResults = [].concat(results);
-
-    const sortColumn = this.state.sortBy;
-    const sortAsc = this.state.sortAsc;
-    const sortAs = this.state.sortAs;
-
-    sortedResults.sort((a, b) => {
-      let valueA = a.properties[sortColumn];
-      let valueB = b.properties[sortColumn];
-      if (sortAs === "number") {
-        valueA = parseFloat(valueA);
-        valueB = parseFloat(valueB);
-
-        // assume value a is less than value b
-        let sortValues = -1;
-        if (isNaN(valueB) || valueB === null) {
-          sortValues = 1;
-        } else if (valueB < valueA) {
-          sortValues = 1;
-        }
-        if (!sortAsc) {
-          sortValues = sortValues * -1;
-        }
-        return sortValues;
-      }
-      if (sortAsc) {
-        return collator.compare(valueA, valueB);
-      }
-      return collator.compare(valueB, valueA);
-    });
-    return sortedResults;
   }
 
   getRow(result, rowTemplate) {
@@ -341,7 +290,7 @@ class Grid extends React.Component {
     }
 
     if (this.state.sortBy !== null) {
-      features = this.sortResults(features);
+      features = sortFeatures(features, this.state);
     }
 
     // when minimized, show the maximize button.
