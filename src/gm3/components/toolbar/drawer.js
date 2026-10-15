@@ -44,13 +44,20 @@ const ToolbarDrawer = ({ label, tip, tools, services }) => {
     const unstick = function () {
       setSticky(false);
     };
+    const unstickOnEscape = function (evt) {
+      if (evt.key === "Escape") {
+        unstick();
+      }
+    };
     if (sticky) {
       document.addEventListener("mouseup", unstick);
+      document.addEventListener("keydown", unstickOnEscape);
     }
     return () => {
       if (sticky) {
         unstick();
         document.removeEventListener("mouseup", unstick);
+        document.removeEventListener("keydown", unstickOnEscape);
       }
     };
   }, [sticky]);

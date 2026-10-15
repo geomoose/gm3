@@ -27,8 +27,13 @@
   bottom: 0;
   right: 0;
   z-index: 99;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 5px;
-  margin: 10px;
+  margin: 0.75rem;
+  padding: 0.125rem 0.625rem;
+  border-radius: var(--gm-radius-button);
+  .gm-osd();
   font-size: @gm-text-fine;
+
+  a {
+    color: inherit;
+  }
 }

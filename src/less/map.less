@@ -1,24 +1,44 @@
 .map-tools {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 0.75rem;
+  left: 0.75rem;
   z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 
+  /* floating action buttons over the map, in the OSD style the HIG
+   * prescribes for controls overlaid on content */
   .map-button {
     display: inline-flex;
-    background-color: #f0eeee;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
     align-items: center;
     justify-content: center;
-    margin-right: 6px;
-    box-shadow: 0 0 1px 1px #a09999;
+    box-sizing: border-box;
+    width: var(--gm-fab-size);
+    height: var(--gm-fab-size);
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: var(--gm-radius-l);
+    font-size: 1rem;
+    .gm-osd();
+    transition:
+      background-color var(--gm-duration) var(--gm-ease),
+      box-shadow var(--gm-duration) var(--gm-ease),
+      transform var(--gm-duration) var(--gm-ease);
 
     &:hover {
-      opacity: 0.9 !important;
-      box-shadow: 0 0 3px 3px white;
+      background-color: var(--gm-osd-hover);
       cursor: pointer;
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--gm-focus-ring);
+      outline-offset: 2px;
     }
 
     i {
@@ -26,35 +46,35 @@
     }
 
     &:disabled {
-      background-color: #ccc;
-      cursor: disabled;
+      color: rgba(255, 255, 255, 0.4);
       pointer-events: none;
     }
 
     &.active {
-      background-color: #2c6b2f;
-      color: #ffffff;
+      background-color: var(--gm-accent);
+      color: var(--gm-accent-fg);
     }
   }
 
   .fade-in {
-    animation: fadeIn ease 1s;
+    opacity: 0;
+    animation: fadeIn var(--gm-ease) var(--gm-duration-slow);
     animation-fill-mode: forwards;
 
     &.1 {
-      animation-delay: 400ms;
+      animation-delay: 100ms;
     }
     &.2 {
-      animation-delay: 550ms;
+      animation-delay: 150ms;
     }
     &.3 {
-      animation-delay: 700ms;
+      animation-delay: 200ms;
     }
     &.4 {
-      animation-delay: 850ms;
+      animation-delay: 250ms;
     }
     &.5 {
-      animation-delay: 1000ms;
+      animation-delay: 300ms;
     }
   }
 }
@@ -62,8 +82,80 @@
 @keyframes fadeIn {
   0% {
     opacity: 0;
+    transform: translateY(-4px);
   }
   100% {
-    opacity: 0.82;
+    opacity: 1;
+    transform: none;
   }
+}
+
+/* Bring the stock OpenLayers controls in line with the map buttons. */
+
+.ol-control {
+  background: none;
+  border-radius: var(--gm-radius-m);
+  padding: 0;
+
+  &:hover {
+    background: none;
+  }
+
+  button {
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-radius: var(--gm-radius-m);
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1;
+    .gm-osd();
+
+    &:hover,
+    &:focus {
+      outline: none;
+      color: var(--gm-osd-fg);
+      background-color: var(--gm-osd-hover);
+    }
+
+    .gm-focus-ring();
+  }
+}
+
+/* zoom in/out read as one linked group */
+.ol-zoom {
+  .gm-osd();
+
+  .ol-zoom-in,
+  .ol-zoom-out {
+    box-shadow: none;
+    background: none;
+    backdrop-filter: none;
+    margin: 0;
+  }
+
+  .ol-zoom-in {
+    border-radius: var(--gm-radius-m) var(--gm-radius-m) 0 0;
+  }
+
+  .ol-zoom-out {
+    border-radius: 0 0 var(--gm-radius-m) var(--gm-radius-m);
+  }
+}
+
+.ol-scale-line {
+  .gm-osd();
+  border-radius: var(--gm-radius-button);
+  padding: 0.25rem 0.75rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
+}
+
+.ol-scale-line-inner {
+  border-color: var(--gm-osd-fg);
+  color: var(--gm-osd-fg);
+  font-size: @gm-text-fine;
+  font-family: var(--gm-font);
 }

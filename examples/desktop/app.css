@@ -26,8 +26,20 @@
 @import 'tabs.css';
 @import 'grid.css';
 
+/* Theming the whole app is one variable away, e.g.:
+ *
+ *   :root { --gm-accent: #26a269; }
+ *
+ * index.html sets <html class="gm-theme-auto"> so the app follows the
+ * system light/dark preference; use gm-theme-light or gm-theme-dark to
+ * pin one style instead.
+ */
+
 body {
-    font-family: sans-serif;
+    font-family: var(--gm-font);
+    color: var(--gm-fg);
+    background-color: var(--gm-window-bg);
+    -webkit-font-smoothing: antialiased;
 }
 
 #main {
@@ -40,32 +52,56 @@ body {
     height: 100%;
 }
 
+/* header bar: logo and the tools on one row */
 #header {
-    border-bottom: solid 1px black;
-    background-color: #eee;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.375rem 0.75rem;
+    background-color: var(--gm-headerbar-bg);
+    border-bottom: solid 1px var(--gm-border);
+}
+
+#header img {
+    display: block;
+    height: 40px;
+    width: auto;
+}
+
+#toolbar {
+    flex: 1;
+    min-width: 0;
 }
 
 #middle {
+    position: relative;
     display: flex;
     flex: 7;
+    min-height: 0;
 }
 
 #footer {
-    border-top: solid 1px black;
+    border-top: solid 1px var(--gm-border);
+    background-color: var(--gm-headerbar-bg);
+    color: var(--gm-fg-dim);
+    font-size: 0.8125rem;
     display: flex;
     align-items: center;
-    padding: 5px;
+    gap: 1rem;
+    padding: 0.25rem 0.75rem;
 }
 
 #tabs {
     position: relative;
     min-width: 350px;
-    transition: min-width ease 500ms;
+    background-color: var(--gm-sidebar-bg);
+    transition: min-width var(--gm-ease) 300ms;
 }
 
 #map-pane {
     flex: 1;
-    border-left: solid black 1px;
+    min-width: 0;
+    border-left: solid 1px var(--gm-border);
     flex-direction: column;
     display: flex;
 }
@@ -73,10 +109,6 @@ body {
 #map-container {
     flex: 1;
     position: relative;
-}
-
-#header img {
-    display: inline;
 }
 
 #map .map {
@@ -90,15 +122,15 @@ body {
     padding-left: 20px;
     background-image: url(logo-mini.png);
     background-repeat: no-repeat;
-    background-position: 2px 1px;
-
-    padding-top: 1px;
+    background-position: 0 center;
 }
 
 #coordinate-display {
     flex: 1;
     text-align: center;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #jump-to-extent {
@@ -107,6 +139,7 @@ body {
 
 #jump-to-extent select {
     margin: auto;
+    min-height: 1.75rem;
 }
 
 .tabs-closed #tabs {
@@ -120,7 +153,7 @@ body {
  */
 @media screen and (max-width: 500px) {
     body {
-        font-size: 60%;
+        font-size: 87.5%;
     }
 
     #tabs {
@@ -139,25 +172,61 @@ body {
     }
 
     .tab-toggler {
-        left: 348px;
+        left: 350px;
     }
 }
 
+/* Narrow windows: the pane overlaps the map instead of squeezing it,
+ * the way a utility pane becomes a flap. */
+@media screen and (max-width: 720px) {
+    #tabs {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 150;
+        box-shadow: var(--gm-shadow-dialog);
+    }
+
+    .tab-toggler {
+        z-index: 160;
+    }
+
+    #map-pane {
+        border-left: none;
+    }
+
+    /* header bar buttons go icon-only; their tooltips carry the names */
+    #toolbar .toolbar > .tool:is(.fullextent, .measure, .print, .identify, .select, .findme, .reload, .bookmark) .label {
+        display: none;
+    }
+
+    #header img {
+        height: 32px;
+    }
+}
+
+/* identify results: one section heading per feature class */
 .feature-class {
-    background-color: #CFE7B3;
-    padding: 2px;
-    font-weight: bold;
-    margin-top: 5px;
+    background-color: var(--gm-accent-soft);
+    color: var(--gm-accent-text);
+    border-radius: var(--gm-radius-s);
+    padding: 0.375em 0.75em;
+    font-weight: 700;
+    margin-top: 0.75em;
+    margin-bottom: 0.25em;
 }
 
 /* Example of how to add CSS for a specific layer's
  * identify results.
  */
 .feature-class.pipelines {
-    background-color: #4894ff;
+    background-color: color-mix(in srgb, #1c71d8 18%, transparent);
+    color: inherit;
 }
 
 .search-address {
     font-size: .85em;
     padding-left: 1em;
+    color: var(--gm-fg-dim);
 }

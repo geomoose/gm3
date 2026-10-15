@@ -7,6 +7,17 @@
   }
 }
 
+@keyframes modalFrameEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .modal-blocker {
   position: fixed;
   z-index: 1000;
@@ -17,127 +28,93 @@
   height: 100%;
   min-height: 100%;
 
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: var(--gm-scrim);
   text-align: center;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  animation: modalEnter 500ms;
+  animation: modalEnter var(--gm-duration-slow) var(--gm-ease);
 }
 
 .modal-frame {
-  margin-top: 6px;
-  background: white;
-  /* TODO: Make this change based on screen size */
   width: 400px;
-  display: inline-block;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
   text-align: left;
 
   display: flex;
-  background: none;
   flex-direction: column;
+  overflow: hidden;
+
+  color: var(--gm-fg);
+  background-color: var(--gm-popover-bg);
+  border-radius: var(--gm-radius-l);
+  box-shadow: var(--gm-shadow-dialog);
+
+  animation: modalFrameEnter var(--gm-duration-slow) var(--gm-ease);
 }
 
 .modal-title {
-  border-radius: 16px 16px 0px 0px;
-  border-bottom: solid 1px #ccc;
-  padding: 8px;
-  background-color: #fafafa;
+  padding: 1.25rem 1.5rem 0.25rem;
 
   h5 {
-    color: #333;
-    font-weight: bold;
+    color: inherit;
+    font-weight: 700;
     font-size: @gm-text-title;
+    line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 4px;
+    margin: 0;
   }
 }
 
 .modal-body {
-  padding: 12px;
+  padding: 0.75rem 1.5rem;
   max-height: 400px;
   overflow: auto;
   flex: 1;
-  background-color: #fafafa;
+  line-height: 1.45;
+
+  a {
+    color: var(--gm-accent-text);
+  }
 }
 
+/* Footer buttons, left to right: the dismissive action comes first and
+ * stays neutral, the right-most is the suggested action.  A lone button
+ * only dismisses, so it is not styled as an affirmative action. */
 .modal-footer {
-  border-radius: 0px 0px 16px 16px;
-  padding: 8px;
-  background-color: #fafafa;
-
-  border-top: solid 1px #ccc;
+  padding: 0.75rem 1.5rem 1.5rem;
   display: flex;
+  gap: 0.75rem;
 
   .button-parent {
     flex: 1;
-    padding: 5px;
+    padding: 0;
     border: none;
+
     button {
-      background-color: #7fbf7b;
-      width: 80%;
+      width: 100%;
+      .gm-suggested-button();
     }
   }
 }
 
-.modal-footer.two {
-  .button-parent:nth-child(1) {
-    button {
-      background-color: #f7f7f7;
-      color: #4c9c39;
+.modal-footer.one .button-parent,
+.modal-footer.two .button-parent:not(:last-child),
+.modal-footer.three .button-parent:not(:last-child) {
+  button {
+    background-color: var(--gm-button-bg);
+    color: var(--gm-fg);
 
-      &:disabled {
-        color: #aaa;
-      }
+    &:hover {
+      background-color: var(--gm-pressed);
     }
-  }
 
-  .button-parent:nth-child(2) {
-    text-align: right;
-    button {
-      background-color: #7fbf7b;
-      &:disabled {
-        background-color: #aaa;
-      }
-    }
-  }
-}
-
-/** Handle the case when there are three buttons in the footer. */
-.modal-footer.three {
-  .button-parent:nth-child(1) {
-    button {
-      background-color: #f7f7f7;
-      color: #4c9c39;
-      border: solid 1px #4c9c39;
-      padding: 11px;
-
-      &:disabled {
-        background-color: #aaa;
-      }
-    }
-  }
-
-  .button-parent:nth-child(2) {
-    text-align: center;
-    button {
-      background-color: #af8dc3;
-      &:disabled {
-        background-color: #aaa;
-      }
-    }
-  }
-
-  .button-parent:nth-child(3) {
-    text-align: right;
-    button {
-      background-color: #7fbf7b;
-      &:disabled {
-        color: #aaa;
-      }
+    &:disabled {
+      color: var(--gm-fg-faint);
     }
   }
 }
