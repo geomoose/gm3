@@ -34,6 +34,8 @@ import {
   changeTool,
   addSelectionFeature,
   clearSelectionFeatures,
+  setSelectionError,
+  clearSelectionError,
   setSelectionBuffer,
   setEditPath,
   setEditTools,
@@ -51,6 +53,9 @@ const defaultState = {
   selectionFeatures: [],
   selectionBuffer: 0,
   selectionBufferUnits: "ft",
+  // why the last buffer of the selection failed, as a translation
+  //  key, or null while there is nothing to report.
+  selectionError: null,
   editPath: "",
   editTools: [],
   projection: "EPSG:3857",
@@ -103,6 +108,12 @@ const reducer = createReducer(defaultState, {
   },
   [clearSelectionFeatures]: (state) => {
     state.selectionFeatures = [];
+  },
+  [setSelectionError]: (state, { payload: error }) => {
+    state.selectionError = error;
+  },
+  [clearSelectionError]: (state) => {
+    state.selectionError = null;
   },
   [setSelectionBuffer]: (state, { payload }) => {
     state.selectionBuffer = payload.distance;

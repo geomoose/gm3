@@ -23,6 +23,7 @@
  */
 
 import * as jsts from "gm3/jsts";
+import { QdgeoError } from "qdgeo";
 
 const feature = (geometry, properties = {}) => ({ type: "Feature", properties, geometry });
 
@@ -199,5 +200,116 @@ describe("intersection tests", function () {
   it("tests a self-intersecting feature", async function () {
     expect(await jsts.intersects(square(1, 4, 2), bowtie)).toBe(true);
     expect(await jsts.intersects(square(4, 0, 2), bowtie)).toBe(false);
+  });
+});
+
+describe("failure handling", function () {
+  it("describes each way an operation can fail", function () {
+    const { GEOMETRY_ERRORS, describeError } = jsts;
+    expect(describeError(new QdgeoError(1))).toBe(GEOMETRY_ERRORS.OUT_OF_MEMORY);
+    expect(describeError(new QdgeoError(3))).toBe(GEOMETRY_ERRORS.OUT_OF_MEMORY);
+    expect(describeError(new QdgeoError(5))).toBe(GEOMETRY_ERRORS.INVALID_GEOMETRY);
+    expect(describeError(new QdgeoError(7))).toBe(GEOMETRY_ERRORS.UNREPRESENTABLE);
+    // the browser itself running out, while converting a result
+    expect(describeError(new RangeError("Invalid array length"))).toBe(
+      GEOMETRY_ERRORS.OUT_OF_MEMORY
+    );
+    expect(describeError(new Error("boom"))).toBe(GEOMETRY_ERRORS.UNKNOWN);
+  });
+
+  it("loads a fresh library after a reset", async function () {
+    const before = await jsts.ready();
+    expect(await jsts.ready()).toBe(before);
+    jsts.reset();
+    const after = await jsts.ready();
+    expect(after).not.toBe(before);
+    // and the fresh copy works
+    expect((await jsts.buffer(feature(square(0, 0, 1)), 1)).type).toBe("Polygon");
+  });
+});
+
+describe("large selections", function () {
+  // a block of adjacent squares, in UTM-sized coordinates
+  const grid = (columns, rows, size, x0 = 480000, y0 = 4930000) => {
+    const polygons = [];
+    for (let i = 0; i < columns; i++) {
+      for (let j = 0; j < rows; j++) {
+        polygons.push(square(x0 + i * size, y0 + j * size, size).coordinates);
+      }
+    }
+    return { polygons, lines: [], points: [] };
+  };
+
+  it("picks a local origin every coordinate subtracts exactly", function () {
+    const operand = grid(3, 3, 7.3);
+    const [ox, oy] = jsts.localOrigin(operand);
+    expect(ox).toBeLessThanOrEqual(480000);
+    expect(oy).toBeLessThanOrEqual(4930000);
+    // close to the data, not at zero
+    expect(480000 - ox).toBeLessThan(1);
+    operand.polygons.forEach((shape) =>
+      shape.forEach((ring) =>
+        ring.forEach(([x, y]) => {
+          expect(x - ox + ox).toBe(x);
+          expect(y - oy + oy).toBe(y);
+        })
+      )
+    );
+    expect(jsts.localOrigin({ polygons: [], lines: [], points: [] })).toEqual([0, 0]);
+  });
+
+  it("splits an operand into compact batches under a coordinate budget", function () {
+    const operand = grid(10, 2, 10);
+    operand.lines.push([
+      [0, 0],
+      [1, 1],
+    ]);
+    expect(jsts.countCoordinates(operand)).toBe(102);
+    const batches = jsts.batchOperand(operand, 30);
+    expect(batches.length).toBe(4);
+    // every polygon exactly once, lines in the first batch only
+    expect(batches.reduce((n, b) => n + b.polygons.length, 0)).toBe(20);
+    expect(batches[0].lines.length).toBe(1);
+    expect(batches[1].lines.length).toBe(0);
+    // sorted west to east, so six squares span at most four columns
+    //  rather than being scattered across the block
+    batches.forEach((batch) => {
+      expect(jsts.countCoordinates(batch)).toBeLessThanOrEqual(30);
+      const xs = batch.polygons.map((shape) => shape[0][0][0]);
+      expect(Math.max(...xs) - Math.min(...xs)).toBeLessThanOrEqual(30);
+    });
+  });
+
+  it("buffers a selection over the batch budget in batches, to the same answer", async function () {
+    // 110 x 100 squares of 0.0003 degrees: 55,000 coordinates, past the budget
+    const features = [];
+    const side = 0.0003;
+    for (let i = 0; i < 110; i++) {
+      for (let j = 0; j < 100; j++) {
+        features.push(feature(square(-93.2 + i * side, 44.9 + j * side, side)));
+      }
+    }
+    expect(features.length * 5).toBeGreaterThan(jsts.BUFFER_BATCH_COORDINATES);
+    const geometry = await jsts.bufferAndUnion(features, 10);
+    expect(geometry.type).toBe("Polygon");
+    // one shell, no holes: the squares are adjacent and the buffer closes
+    //  any seam between batches
+    expect(geometry.coordinates.length).toBe(1);
+    // the block is about 2.6 km by 3.3 km; 10 m all round adds about 2.3%
+    const [sw, ne] = [geometry.coordinates[0][0], geometry.coordinates[0][0]];
+    let minX = sw[0],
+      maxX = ne[0],
+      minY = sw[1],
+      maxY = ne[1];
+    geometry.coordinates[0].forEach(([x, y]) => {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    });
+    expect(maxX - minX).toBeGreaterThan(110 * side);
+    expect(maxX - minX).toBeLessThan(110 * side + 0.0004);
+    expect(maxY - minY).toBeGreaterThan(100 * side);
+    expect(maxY - minY).toBeLessThan(100 * side + 0.0003);
   });
 });

@@ -56,6 +56,14 @@ describe("test the `map` reducer", () => {
     expect(store.getState().map.interactionType).toBe(null);
   });
 
+  it("records and clears why the selection could not be buffered", () => {
+    expect(store.getState().map.selectionError).toBe(null);
+    store.dispatch(actions.setSelectionError("geometry-error-out-of-memory"));
+    expect(store.getState().map.selectionError).toBe("geometry-error-out-of-memory");
+    store.dispatch(actions.clearSelectionError());
+    expect(store.getState().map.selectionError).toBe(null);
+  });
+
   it("adds a selection feature", () => {
     const selectionFeature = {
       type: "Feature",

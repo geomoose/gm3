@@ -81,7 +81,7 @@
     "papaparse": "^5.3.0",
     "proj4": "^2.4.3",
     "prop-types": "^15.8.1",
-    "qdgeo": "^1.1.0",
+    "qdgeo": "^1.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^11.16.1",

@@ -40,6 +40,13 @@ import { ensureProjection, jsonToGeom, geomToJson, getUtmZone } from "./util";
 //  a server as a filter) the same size it has always been.
 const BUFFER_STEPS = 8;
 
+// Past this many coordinates a zone is buffered in batches and the batches
+//  are unioned. Buffer distributes over union, so the answer is the same;
+//  what changes is the peak memory, which is set by the largest single call.
+//  Measured on the 4,040 demo parcels (135,000 coordinates): one call peaks
+//  at 57 MiB of WebAssembly memory, batches of 500 parcels at 41 MiB.
+export const BUFFER_BATCH_COORDINATES = 50000;
+
 let geoPromise = null;
 
 /** Load (once) the geometry library.
@@ -55,6 +62,71 @@ export function ready() {
     });
   }
   return geoPromise;
+}
+
+/** Forget the loaded library, so the next call loads a fresh copy.
+ *
+ *  WebAssembly memory only grows. After a call that ran out of memory the
+ *  instance keeps that high-water mark for the life of the page, so the
+ *  library is reloaded instead; a fresh instance starts at about 1 MiB and
+ *  the browser has the module cached.
+ */
+export function reset() {
+  geoPromise = null;
+}
+
+/** Translation keys for the ways a geometry operation can fail. */
+export const GEOMETRY_ERRORS = {
+  OUT_OF_MEMORY: "geometry-error-out-of-memory",
+  UNREPRESENTABLE: "geometry-error-unrepresentable",
+  INVALID_GEOMETRY: "geometry-error-invalid",
+  UNKNOWN: "geometry-error-unknown",
+};
+
+/** Describe why a geometry operation failed, as a translation key.
+ *
+ *  @param err The error thrown by an operation in this module.
+ *
+ *  @returns One of GEOMETRY_ERRORS.
+ */
+export function describeError(err) {
+  if (err instanceof QdgeoError) {
+    switch (err.code) {
+      case "OUT_OF_MEMORY":
+      case "LIMIT_EXCEEDED":
+        return GEOMETRY_ERRORS.OUT_OF_MEMORY;
+      case "UNREPRESENTABLE":
+        return GEOMETRY_ERRORS.UNREPRESENTABLE;
+      case "INVALID_GEOMETRY":
+      case "COORDINATE_RANGE":
+      case "UNSUPPORTED_GEOMETRY":
+        return GEOMETRY_ERRORS.INVALID_GEOMETRY;
+      default:
+        return GEOMETRY_ERRORS.UNKNOWN;
+    }
+  }
+  // The browser itself ran out: a WebAssembly trap, or a JavaScript array
+  //  too large to allocate while converting the result.
+  if (
+    (typeof WebAssembly !== "undefined" && err instanceof WebAssembly.RuntimeError) ||
+    err instanceof RangeError
+  ) {
+    return GEOMETRY_ERRORS.OUT_OF_MEMORY;
+  }
+  return GEOMETRY_ERRORS.UNKNOWN;
+}
+
+/** Run fn(geo) with the loaded library, reloading it after it ran out of memory. */
+async function recovering(fn) {
+  const geo = await ready();
+  try {
+    return fn(geo);
+  } catch (err) {
+    if (describeError(err) === GEOMETRY_ERRORS.OUT_OF_MEMORY) {
+      reset();
+    }
+    throw err;
+  }
 }
 
 /** Convert a GeoJSON Geometry or Feature to a qdgeo operand.
@@ -99,18 +171,22 @@ export function toOperand(input) {
   return operand;
 }
 
-/** Convert a qdgeo result to a GeoJSON Polygon or MultiPolygon.
+/** Convert a list of polygons to a GeoJSON Polygon or MultiPolygon.
  *
- *  @returns GeoJSON geometry, or null when the result is empty.
+ *  @returns GeoJSON geometry, or null when the list is empty.
  */
-function resultToGeometry(result) {
-  const shapes = result.toArrays();
+function shapesToGeometry(shapes) {
   if (shapes.length === 0) {
     return null;
   } else if (shapes.length === 1) {
     return { type: "Polygon", coordinates: shapes[0] };
   }
   return { type: "MultiPolygon", coordinates: shapes };
+}
+
+/** Convert a qdgeo result to a GeoJSON Polygon or MultiPolygon. */
+function resultToGeometry(result) {
+  return shapesToGeometry(result.toArrays());
 }
 
 const isInvalidGeometry = (err) => err instanceof QdgeoError && err.code === "INVALID_GEOMETRY";
@@ -135,38 +211,21 @@ function hasValidPolygons(geo, operand) {
  *
  *  qdgeo refuses invalid polygons (a self-intersecting "bowtie" is the
  *  common one, and the OpenLayers draw tool will happily create them).
- *  turf and JSTS tolerated them, so to keep that behaviour the polygon
- *  is replaced by everything its outline encloses: the rings are traced
- *  as lines with a tiny buffer and only the outer shells are kept.
+ *  turf and JSTS tolerated them, so to keep that behaviour the polygons
+ *  are repaired with qdgeo's makeValid, which follows JTS GeometryFixer:
+ *  a bowtie keeps both lobes, holes are kept, and parts with no area are
+ *  dropped.
  *
- *  This drops holes, so it is only used for polygons qdgeo rejected.
+ *  This used to trace every ring as a hairline buffer instead. On a
+ *  selection of thousands of parcels that needed hundreds of megabytes,
+ *  ran out of memory, and never produced an answer anyway.
  */
 function repairOperand(geo, operand) {
-  const rings = [];
-  operand.polygons.forEach((shape) => rings.push(...shape));
-  const span = polygonSpan(operand);
-
-  // a small tolerance occasionally lands on an arrangement qdgeo cannot
-  //  represent, a larger one is tried before giving up.
-  let lastError = null;
-  for (const relative of [1e-7, 1e-5]) {
-    let outline;
-    try {
-      outline = geo.buffer({ lines: rings }, span * relative, { steps: 1 });
-    } catch (err) {
-      if (!(err instanceof QdgeoError)) {
-        throw err;
-      }
-      lastError = err;
-      continue;
-    }
-    return {
-      polygons: outline.toArrays().map((shape) => [shape[0]]),
-      lines: operand.lines,
-      points: operand.points,
-    };
-  }
-  throw lastError;
+  return {
+    polygons: geo.makeValid(operand.polygons).toArrays(),
+    lines: operand.lines,
+    points: operand.points,
+  };
 }
 
 /** Run fn(operand), repairing the operand if qdgeo rejects its polygons. */
@@ -198,6 +257,99 @@ function polygonSpan(operand) {
     });
   });
   return Math.max(maxX - minX, maxY - minY);
+}
+
+/** How many coordinates an operand holds. */
+export function countCoordinates(operand) {
+  let count = operand.points.length;
+  operand.lines.forEach((line) => {
+    count += line.length;
+  });
+  operand.polygons.forEach((shape) => {
+    shape.forEach((ring) => {
+      count += ring.length;
+    });
+  });
+  return count;
+}
+
+/** An origin near the operand that every coordinate subtracts exactly.
+ *
+ *  Projected coordinates are large (a UTM northing is around 5,000,000)
+ *  and doubles are coarse there, which is what makes qdgeo decline an
+ *  arrangement as not representable. Working relative to a nearby origin
+ *  gives the same geometry far more precision: measured on the demo
+ *  parcels, buffers of 1,000 and 2,000 parcels that failed the first try
+ *  in UTM succeed in a local frame.
+ *
+ *  The origin sits on the grid of doubles at the largest coordinate, so
+ *  subtracting it loses nothing; adding it back to a result rounds by at
+ *  most half of that spacing, under a nanometre for UTM.
+ */
+export function localOrigin(operand) {
+  let minX = Infinity;
+  let minY = Infinity;
+  let magnitude = 0;
+  const visit = ([x, y]) => {
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    magnitude = Math.max(magnitude, Math.abs(x), Math.abs(y));
+  };
+  operand.polygons.forEach((shape) => shape.forEach((ring) => ring.forEach(visit)));
+  operand.lines.forEach((line) => line.forEach(visit));
+  operand.points.forEach(visit);
+  if (!(magnitude > 0) || !isFinite(magnitude)) {
+    return [0, 0];
+  }
+  const spacing = Math.pow(2, Math.floor(Math.log2(magnitude)) - 52);
+  return [Math.floor(minX / spacing) * spacing, Math.floor(minY / spacing) * spacing];
+}
+
+/** Move every coordinate in an operand by [dx, dy]. */
+function translateOperand(operand, [dx, dy]) {
+  const move = ([x, y]) => [x + dx, y + dy];
+  const movePath = (path) => path.map(move);
+  return {
+    polygons: operand.polygons.map((shape) => shape.map(movePath)),
+    lines: operand.lines.map(movePath),
+    points: operand.points.map(move),
+  };
+}
+
+/** Split an operand's polygons into batches of about `budget` coordinates.
+ *
+ *  The polygons are sorted west to east first so each batch is compact,
+ *  which keeps the seams between batches short. Lines and points go in
+ *  the first batch.
+ */
+export function batchOperand(operand, budget) {
+  const sized = operand.polygons.map((shape) => {
+    let minX = Infinity;
+    let count = 0;
+    shape.forEach((ring) => {
+      count += ring.length;
+      ring.forEach(([x]) => {
+        minX = Math.min(minX, x);
+      });
+    });
+    return { shape, minX, count };
+  });
+  sized.sort((a, b) => a.minX - b.minX);
+
+  const batches = [];
+  let current = { polygons: [], lines: operand.lines, points: operand.points };
+  let count = countCoordinates(current);
+  sized.forEach(({ shape, count: n }) => {
+    if (current.polygons.length > 0 && count + n > budget) {
+      batches.push(current);
+      current = { polygons: [], lines: [], points: [] };
+      count = 0;
+    }
+    current.polygons.push(shape);
+    count += n;
+  });
+  batches.push(current);
+  return batches;
 }
 
 /** Round every coordinate in an operand to a grid. */
@@ -254,6 +406,32 @@ function getAnchorPoint(feature, empty = null) {
   return anchorPoint;
 }
 
+/** Buffer one zone's operand, in metres, and return the polygons.
+ *
+ *  The work happens relative to a local origin (see localOrigin). An
+ *  operand over BUFFER_BATCH_COORDINATES is buffered in batches whose
+ *  results are unioned, which bounds the memory any one call needs.
+ */
+function bufferOperand(geo, operand, meters) {
+  const origin = localOrigin(operand);
+  const local = translateOperand(operand, [-origin[0], -origin[1]]);
+  const buffer = (o) => geo.buffer(o, meters, { steps: BUFFER_STEPS });
+
+  let shapes;
+  if (countCoordinates(local) <= BUFFER_BATCH_COORDINATES) {
+    shapes = robustly(geo, local, UTM_SNAP_GRID, buffer).toArrays();
+  } else {
+    const parts = [];
+    batchOperand(local, BUFFER_BATCH_COORDINATES).forEach((batch) => {
+      parts.push(...robustly(geo, batch, UTM_SNAP_GRID, buffer).toArrays());
+    });
+    shapes = robustly(geo, { polygons: parts, lines: [], points: [] }, UTM_SNAP_GRID, (o) =>
+      geo.union(o.polygons)
+    ).toArrays();
+  }
+  return translateOperand({ polygons: shapes, lines: [], points: [] }, origin).polygons;
+}
+
 /** Buffer WGS84 features, synchronously, with a loaded library.
  *
  *  The buffer happens in UTM so the distance is in meters. Features
@@ -289,9 +467,7 @@ function bufferWith(geo, features, meters) {
 
   const polygons = [];
   zones.forEach((operand, utmZone) => {
-    const buffered = resultToGeometry(
-      robustly(geo, operand, UTM_SNAP_GRID, (o) => geo.buffer(o, meters, { steps: BUFFER_STEPS }))
-    );
+    const buffered = shapesToGeometry(bufferOperand(geo, operand, meters));
     if (buffered !== null) {
       // back to 4326
       const wgs84 = geomToJson(
@@ -329,11 +505,11 @@ export async function buffer(feature, meters) {
  *  @returns Promise resolving to a GeoJSON feature.
  */
 export async function bufferFeature(feature, meters) {
-  const geo = await ready();
+  const geometry = await recovering((geo) => bufferWith(geo, [feature], meters));
   return {
     type: "Feature",
     properties: {},
-    geometry: bufferWith(geo, [feature], meters),
+    geometry,
   };
 }
 
@@ -346,8 +522,7 @@ export async function bufferFeature(feature, meters) {
  * @returns Promise resolving to a GeoJSON geometry.
  */
 export async function bufferAndUnion(features, meters) {
-  const geo = await ready();
-  return bufferWith(geo, features, meters);
+  return recovering((geo) => bufferWith(geo, features, meters));
 }
 
 /** Union features with a loaded library, keeping the first feature's
@@ -377,8 +552,7 @@ function unionWith(geo, features) {
  *           the first feature's properties.
  */
 export async function union(features) {
-  const geo = await ready();
-  return unionWith(geo, features);
+  return recovering((geo) => unionWith(geo, features));
 }
 
 /** Prepare a selection for repeated intersection tests.
@@ -406,6 +580,9 @@ export async function intersectsTester(selection) {
     } catch (err) {
       if (!(err instanceof QdgeoError)) {
         throw err;
+      }
+      if (describeError(err) === GEOMETRY_ERRORS.OUT_OF_MEMORY) {
+        reset();
       }
       console.warn("[gm3:geometry] Could not test a feature for intersection:", err.message);
       return false;

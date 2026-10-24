@@ -9,6 +9,7 @@ import Results from "./results";
 import MeasureTool from "../measure";
 import LoadingIndicator from "./loading";
 import EmptyPlaceholder from "./empty";
+import SelectionErrorModal from "../selectionError";
 
 import { SERVICE_STEPS } from "../../reducers/query";
 import { normalizeFieldValues, normalizeSelection } from "../../query/util";
@@ -99,6 +100,7 @@ const ServiceManager = function ({
   return (
     <Provider store={store}>
       <div className="service-manager">{contents}</div>
+      <SelectionErrorModal />
     </Provider>
   );
 };

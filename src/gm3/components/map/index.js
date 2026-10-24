@@ -411,6 +411,15 @@ class Map extends React.Component {
       .then((bufferedFeatures) => storeSelection(bufferedFeatures))
       .catch((err) => {
         console.error("[gm3:map] Failed to buffer the selection.", err);
+        if (request !== this.selectionRequest) {
+          return;
+        }
+        // keep the as-drawn features so a smaller buffer can be tried,
+        //  but leave nothing for a query to run against: a stale buffer
+        //  would answer for the wrong area.
+        this.props.setSelectionFeatures(features);
+        this.props.setFeatures("selection", []);
+        this.props.setSelectionError(jsts.describeError(err));
       });
   }
 
@@ -1157,6 +1166,7 @@ function mapDispatch(dispatch) {
       dispatch(mapSourceActions.clearFeatures(mapSourceName));
       dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy));
     },
+    setSelectionError: (error) => dispatch(mapActions.setSelectionError(error)),
     setEditPath: (path) => dispatch(mapActions.setEditPath(path)),
     setEditTools: (tools) => dispatch(mapActions.setEditTools(tools)),
     saveFeature: (path, feature) => {
