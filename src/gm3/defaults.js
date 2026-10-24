@@ -72,7 +72,7 @@ export const DEFAULT_RESULTS_CONFIG = {
   showZoomToAll: true,
   showLayerCount: true,
   showFeatureCount: true,
-  maxBufferFeatures: 100,
+  maxBufferFeatures: 1000,
 };
 
 export const DRAW_TOOLS = [

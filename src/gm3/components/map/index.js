@@ -373,36 +373,54 @@ class Map extends React.Component {
     const features = inFeatures.map((feature) => GEOJSON_FORMAT.writeFeatureObject(feature));
     const buffer = inBuffer !== 0 && !isNaN(inBuffer) ? inBuffer : 0;
 
-    let bufferedFeature = features;
+    // buffering is asynchronous, a newer selection supersedes
+    //  any buffer that is still in flight.
+    this.selectionRequest = (this.selectionRequest || 0) + 1;
+    const request = this.selectionRequest;
 
-    if (buffer !== 0) {
-      // buffer + union the features
-      const wgs84Features = util.projectFeatures(features, "EPSG:3857", "EPSG:4326");
+    const storeSelection = (bufferedFeatures) => {
+      if (request !== this.selectionRequest) {
+        return;
+      }
+      // the selection feature(s) are the original, as-drawn feature.
+      this.props.setSelectionFeatures(features);
 
-      // buffer those features.
-      bufferedFeature = [
-        jsts.union(
-          util.projectFeatures(
-            wgs84Features.map((feature) => {
-              const buffered = jsts.bufferFeature(feature, buffer);
-              buffered.properties = {
-                buffer: true,
-              };
-              return buffered;
-            }),
-            "EPSG:4326",
-            "EPSG:3857"
-          )
-        ),
-      ];
+      // the feature(s) stored in the selection are what will
+      //  be used for querying.
+      this.props.setFeatures("selection", bufferedFeatures);
+    };
+
+    if (buffer === 0) {
+      storeSelection(features);
+      return Promise.resolve();
     }
 
-    // the selection feature(s) are the original, as-drawn feature.
-    this.props.setSelectionFeatures(features);
+    // buffer + union the features
+    const wgs84Features = util.projectFeatures(features, "EPSG:3857", "EPSG:4326");
 
-    // the feature(s) stored in the selection are what will
-    //  be used for querying.
-    this.props.setFeatures("selection", bufferedFeature);
+    // buffering in one call also dissolves the buffers together
+    return jsts
+      .bufferAndUnion(wgs84Features, buffer)
+      .then((geometry) =>
+        util.projectFeatures(
+          [{ type: "Feature", properties: { buffer: true }, geometry }],
+          "EPSG:4326",
+          "EPSG:3857"
+        )
+      )
+      .then((bufferedFeatures) => storeSelection(bufferedFeatures))
+      .catch((err) => {
+        console.error("[gm3:map] Failed to buffer the selection.", err);
+        if (request !== this.selectionRequest) {
+          return;
+        }
+        // keep the as-drawn features so a smaller buffer can be tried,
+        //  but leave nothing for a query to run against: a stale buffer
+        //  would answer for the wrong area.
+        this.props.setSelectionFeatures(features);
+        this.props.setFeatures("selection", []);
+        this.props.setSelectionError(jsts.describeError(err));
+      });
   }
 
   /** Create a selection layer for temporary selection features.
@@ -1148,6 +1166,7 @@ function mapDispatch(dispatch) {
       dispatch(mapSourceActions.clearFeatures(mapSourceName));
       dispatch(mapSourceActions.addFeatures(mapSourceName, features, copy));
     },
+    setSelectionError: (error) => dispatch(mapActions.setSelectionError(error)),
     setEditPath: (path) => dispatch(mapActions.setEditPath(path)),
     setEditTools: (tools) => dispatch(mapActions.setEditTools(tools)),
     saveFeature: (path, feature) => {

@@ -59,6 +59,16 @@ export const addSelectionFeature = createAction("map/add-selection-feature");
 
 export const clearSelectionFeatures = createAction("map/clear-selection-features");
 
+/* Record why the selection could not be buffered.
+ *
+ * @param error {String} A translation key, see describeError in jsts.js.
+ *
+ * @return action definition
+ */
+export const setSelectionError = createAction("map/set-selection-error");
+
+export const clearSelectionError = createAction("map/clear-selection-error");
+
 /* Set the view of the map.
  *
  * @param view {Object} An object containing center and zoom or resolution.
