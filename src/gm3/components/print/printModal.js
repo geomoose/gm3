@@ -1255,7 +1255,10 @@ export class PrintModal extends Modal {
    *  honor.
    */
   renderScaleLineSelect(t) {
-    const modes = SCALE_LINE_MODES.filter((mode) => {
+    const scaleLine= this.props.store.getState().config.map.scaleLine;
+    const allowNone= !scaleLine || scaleLine.allowNone !== false;
+    const modes= SCALE_LINE_MODES.filter((mode) => {
+      if (mode=== SCALE_LINE_NONE && !allowNone) return false;
       if (mode === SCALE_LINE_DISTANCE_SCALE) {
         return this.canShowFixedScale();
       }
