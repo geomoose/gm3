@@ -5,7 +5,16 @@ The Basemap Toggle provides a compact quick-switch control for a small set of
 commonly used background layers. It is intended to complement the Catalog, not
 replace it.
 
-Add the component to your application and provide a list of layers. Each layer
+First, add the basemap-toggle element to your ``index.html`` file, within the map-container element.
+
+::
+
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="basemap-toggle"></div>
+    </div>
+
+Then, add the basemap-toggle component to your ``app.js`` file and provide a list of layers. Each layer
 needs a label, preview image, and map-source/layer path.
 
 .. code-block:: javascript
