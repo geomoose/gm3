@@ -22,7 +22,23 @@
  * SOFTWARE.
  */
 
-@favorite-star-color: #29b2ff;
+@favorite-star-color: var(--gm-favorite);
+
+/* rows in the catalog tree highlight like list rows */
+.gm-catalog-row() {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--gm-row-height);
+  padding: 0 0.5em;
+  border-radius: var(--gm-radius-s);
+  cursor: pointer;
+  transition: background-color var(--gm-duration) var(--gm-ease);
+
+  &:hover {
+    background-color: var(--gm-hover);
+  }
+}
 
 .group {
   .group {
@@ -30,14 +46,14 @@
   }
 
   .group-label {
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+    .gm-catalog-row();
+    font-weight: 700;
 
     input[type="checkbox"] {
       /* render a fontawesome chevron instead of a checkbox */
       border: none;
+      background: none;
+      color: var(--gm-fg-dim);
 
       &::before {
         .fa;
@@ -57,10 +73,6 @@
         transform: rotate(90deg);
       }
     }
-
-    &:hover {
-      background-color: #eee;
-    }
   }
 
   .layer {
@@ -73,8 +85,8 @@
       overflow: hidden;
       visibility: hidden !important;
       transition:
-        max-height 0.5s ease-in,
-        visibility 0s linear 0.5s;
+        max-height var(--gm-duration-slow) var(--gm-ease),
+        visibility 0s linear var(--gm-duration-slow);
     }
   }
 
@@ -83,7 +95,7 @@
       max-height: 3000px;
       visibility: visible;
       transition:
-        max-height 0.5s ease-in,
+        max-height var(--gm-duration-slow) var(--gm-ease),
         visibility 0s linear 0;
     }
   }
@@ -96,6 +108,7 @@
   /* unstyle the tool buttons; buttons do not inherit font by
    * default, which would detach the icons from the panel scale. */
   button {
+    min-height: 0;
     margin: 0;
     padding: 0;
     background: none;
@@ -104,21 +117,37 @@
   }
 
   .layer-label {
-    cursor: pointer;
     /* center the toggle, favorite, and label on a common axis,
      * the same way .group-label does. */
-    display: flex;
-    align-items: center;
+    .gm-catalog-row();
 
     .checkbox {
       margin: @checkbox-margin;
       width: @checkbox-width;
+    }
+
+    /* the label toggles the layer; let it fill the row so a click on
+     * the row background reaches the control, and the refresh and
+     * metadata icons settle at the end as row suffixes. */
+    > .minimal-button {
+      flex: 1;
+      align-self: stretch;
+      text-align: left;
     }
   }
 
   .layer-tools,
   .catalog-legend {
     padding-left: (@checkbox-width + @checkbox-margin * 2);
+  }
+
+  .catalog-legend {
+    color: var(--gm-fg-dim);
+    padding-bottom: 0.25em;
+
+    img {
+      border-radius: var(--gm-radius-s);
+    }
   }
 
   /* keep all of the row's glyphs on the label's scale; the layer
@@ -141,39 +170,66 @@
   }
 
   &.out-of-resolution {
-    color: #aaa;
-    font-style: italic;
+    color: var(--gm-fg-faint);
   }
 
+  /* an active refresh gets a filled backing, not just a color change */
+  .refresh.icon.on {
+    border-radius: 50%;
+    background-color: var(--gm-accent-soft);
+    box-shadow: 0 0 0 0.2em var(--gm-accent-soft);
+  }
+
+  /* circular flat icon buttons, revealed under the layer label */
   .layer-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.125em;
+    padding-top: 0.125em;
+    padding-bottom: 0.25em;
+
+    button {
+      border-radius: 50%;
+      .gm-focus-ring();
+    }
+
     .icon {
-      color: #333;
+      color: var(--gm-fg-dim);
       font-size: @gm-control-size;
       width: 1.75em;
       height: 1.75em;
       border-radius: 50%;
+      margin: 0;
 
       display: inline-flex;
       justify-content: center;
       align-items: center;
 
-      margin-right: 0.25em;
-      margin-bottom: 0.25em;
+      transition:
+        background-color var(--gm-duration) var(--gm-ease),
+        color var(--gm-duration) var(--gm-ease);
 
       &:hover {
-        box-shadow: 0 0 1px 1px #a09999;
+        background-color: var(--gm-hover);
+        color: var(--gm-fg);
       }
+    }
 
-      &.active {
-        box-shadow: 0 0 1px 1px #a09999;
-        background-color: rgba(160, 153, 153, 0.2);
-      }
+    .active .icon,
+    .icon.active {
+      background-color: var(--gm-accent-soft);
+      color: var(--gm-accent-text);
     }
   }
 
   input[type="checkbox"].favorite {
-    color: @favorite-star-color;
+    color: var(--gm-fg-faint);
     border: none;
+    background: none;
+
+    &:checked {
+      color: @favorite-star-color;
+    }
 
     /* the star glyphs come from .icon.favorite in icons.less */
     &::before {
@@ -189,13 +245,17 @@
 }
 
 .layer.inline-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
   .layer-label {
-    display: inline-block;
+    display: inline-flex;
   }
 
   .layer-tools {
-    padding-left: 6px;
-    display: inline-block;
+    display: inline-flex;
+    padding: 0 0 0 0.25em;
   }
 }
 
@@ -203,40 +263,37 @@
   /* dense-panel scale: the labels and, through their em sizing,
    * the controls and glyphs all step down together. */
   font-size: @gm-text-ui;
+  padding: 0.5em;
 
   .searchbox {
     position: absolute;
+    box-sizing: border-box;
     width: 100%;
     top: 0;
     left: 0;
-
-    text-align: center;
+    padding: 0.5em 0.5em 0.25em;
 
     input {
-      padding: 4px;
-      margin: 4px;
+      box-sizing: border-box;
+      width: 100%;
+      margin: 0;
+      padding-left: 2.25em;
       text-align: left;
-      width: 85%;
-      height: 1.5em;
+      /* inline search glyph; the mid-grey reads on light and dark entries */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23808086' stroke-width='1.75' stroke-linecap='round'%3E%3Ccircle cx='6.75' cy='6.75' r='4.75'/%3E%3Cpath d='m10.5 10.5 3.75 3.75'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 0.75em center;
+      background-size: 1em;
     }
   }
 
   a.metadata {
-    color: black;
+    color: inherit;
   }
 }
 
 .catalog.searchable {
-  padding-top: 40px;
-  padding-left: 4px;
-}
-
-.catalog.favorites.flat {
-  padding-left: 4px;
-}
-
-.catalog.visible-layers.flat {
-  padding-left: 4px;
+  padding-top: 3.25em;
 }
 
 /***

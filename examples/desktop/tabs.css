@@ -1,32 +1,108 @@
+/* The pane stacks the switcher over the visible view; the view keeps
+ * position: relative because panel content (e.g. the catalog search
+ * box) is positioned against it. */
 .tab-parent {
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 }
 
-.tab {
-    border: solid 1px black;
-    padding: 5px;
-    margin-left: 3px;
-    margin-top: 3px;
-    display: inline-block;
-    background-color: #efefef;
-    cursor: pointer;
-    height: 32px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 0px;
-    overflow:hidden;
-    border-bottom: solid 1px #000;
+/* An inline view switcher, after libadwaita's AdwInlineViewSwitcher:
+ * a toggle group in a tinted trough, the current view raised on a
+ * lighter button, thin separators between the unselected ones. */
+.tabs {
+    --tab-group-padding: 3px;
 
-    &.show {
-      background-color: #fff;
-      border-bottom: solid 1px #fff;
-    }
+    flex: none;
+    display: flex;
+    gap: 3px;
+    margin: 0.75rem 0.75rem 0.25rem;
+    padding: var(--tab-group-padding);
+    border-radius: calc(var(--gm-radius-s) + var(--tab-group-padding));
+    background-color: var(--gm-button-bg);
 }
 
-.tabs {
-    height: 34px; /* 20px height + 2 * 5px padding - 1px */
-    border-bottom: solid 1px black;
+.tab {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: calc(var(--gm-control-height) - 2 * var(--tab-group-padding));
+    padding: 0 0.5rem;
+    border: none;
+    border-radius: var(--gm-radius-s);
+    background: none;
+    color: inherit;
+    /* the panels' dense text scale (@gm-text-ui) */
+    font-size: 0.875em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 200ms var(--gm-ease), background-color 200ms var(--gm-ease),
+        box-shadow 200ms var(--gm-ease);
+}
+
+/* separators sit in the gap, and hide next to the raised button */
+.tab + .tab::before {
+    content: "";
+    position: absolute;
+    top: 0.375rem;
+    bottom: 0.375rem;
+    left: -2px;
+    width: 1px;
+    background-color: var(--gm-border);
+    transition: opacity 200ms var(--gm-ease);
+}
+
+/* the label clips, not the button, so the separators can show */
+.tab-label {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tab.show::before,
+.tab.show + .tab::before {
+    opacity: 0;
+}
+
+.tab:hover {
+    background-color: var(--gm-hover);
+}
+
+.tab:active {
+    background-color: var(--gm-pressed);
+}
+
+.tab.show {
+    background-color: var(--gm-toggle-active-bg);
+    color: var(--gm-fg);
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 6, 0.07), 0 2px 6px 2px rgba(0, 0, 6, 0.03);
+}
+
+.tab:focus-visible {
+    outline: 2px solid var(--gm-focus-ring);
+    outline-offset: 0;
+}
+
+@media (prefers-contrast: more) {
+    .tabs {
+        box-shadow: inset 0 0 0 1px var(--gm-border);
+    }
+
+    /* toggles are outlined only on hover, not like standalone buttons */
+    .tab {
+        box-shadow: none;
+    }
+
+    .tab:hover,
+    .tab:active {
+        box-shadow: inset 0 0 0 1px var(--gm-border);
+    }
+
+    .tab.show {
+        box-shadow: inset 0 0 0 1px var(--gm-border),
+            0 1px 3px 1px rgba(0, 0, 6, 0.07), 0 2px 6px 2px rgba(0, 0, 6, 0.03);
+    }
 }
 
 .tab-content {
@@ -34,41 +110,51 @@
     position: relative;
 }
 
+/* contain: views wrap to the pane, they never widen it */
 .tab-content.show {
     display: block;
+    flex: 1;
+    min-height: 0;
     overflow: auto;
-    position: absolute;
-    top: 35px; bottom: 0;
-    width: 100%;
+    contain: inline-size;
 }
 
+/* small round handle on the sidebar edge */
 .tab-toggler {
     position: absolute;
     cursor: pointer;
-    bottom: 50%;
+    top: 50%;
     z-index: 100;
-    transform: rotate(0deg);
-    transition: left ease 500ms, transform ease 500ms;
-    border-radius: 10px;
-    background-color: white;
-    line-height: 10px;
+    width: 1.75rem;
+    height: 1.75rem;
+    min-height: 0;
+    margin-top: -0.875rem;
+    margin-left: -0.875rem;
     padding: 0;
+    border-radius: 50%;
+    background-color: var(--gm-popover-bg);
+    color: var(--gm-fg-dim);
+    box-shadow: var(--gm-shadow-float);
+    transform: rotate(0deg);
+    transition: left var(--gm-ease) 300ms, transform var(--gm-ease) 300ms, margin var(--gm-ease) 300ms;
+}
+
+.tab-toggler:hover {
+    background-color: var(--gm-popover-bg);
+    color: var(--gm-fg);
 }
 
 .tabs-closed .tab-toggler {
     left: 0;
+    margin-left: 0.5rem;
+    transform: rotate(180deg);
 }
 
 .tab-toggler .tab-toggler-icon:before {
-    content: "\f0a8";
+    content: "\f053";
     font-family: FontAwesome;
     font-style: normal;
-    font-size: 1.3em;
-    padding-left: 0px;
-}
-
-.tabs-closed .tab-toggler {
-    transform: rotate(180deg);
+    font-size: 0.875rem;
 }
 
 .tabs-closed .tab-content, .tabs-closed .tabs {

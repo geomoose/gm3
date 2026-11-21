@@ -32,20 +32,18 @@
   }
 }
 
-.radio-option,
-.draw-tool {
-  cursor: pointer;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  padding-left: 5px;
+.gm-boxed-rows(~".draw-tool");
+.gm-boxed-rows(~".radio-option");
+.gm-boxed-rows(~".unit-option");
 
+.draw-tool,
+.radio-option {
   select {
-    margin-left: 10px;
+    margin-left: 0.75em;
   }
 
   .helper-text {
-    margin-left: 20px;
-    margin-right: 20px;
+    margin: 0.5em 0 0.25em;
     animation-name: grow;
     animation-duration: 1s;
     overflow: hidden;
@@ -53,71 +51,53 @@
 }
 
 .service-manager {
+  padding: 0.5em 0.75em;
+
+  a {
+    color: var(--gm-accent-text);
+  }
+
   .service-form {
     .settings-header {
-      background-color: #cfe7b3;
-      padding: 5px;
-      font-weight: bold;
-      font-size: @gm-text-header;
-      clear: both;
+      .gm-section-header();
     }
 
     .service-inputs {
-      padding: 5px;
+      padding: 0.25em;
     }
 
     label {
       display: block;
-      font-weight: bold;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      font-weight: 600;
+      margin-top: 0.75em;
+      margin-bottom: 0.375em;
     }
   }
 
+  /* dismiss first, then the suggested action; equal widths, text only */
   .tab-controls {
-    padding-top: 1em;
+    display: flex;
+    gap: 0.75em;
+    padding-top: 1.25em;
 
     .go-button,
     .close-button {
-      font-size: 1.25em;
-      border: none;
-      background: none;
+      flex: 1;
       cursor: pointer;
     }
 
     .go-button {
-      float: right;
-    }
-
-    .close-button {
-      float: left;
+      .gm-suggested-button();
     }
 
     .go-icon,
     .close-icon {
-      .fa;
-    }
-
-    .go-icon {
-      &:before {
-        content: @fa-var-play-circle-o;
-      }
-    }
-
-    .close-icon {
-      &:before {
-        content: @fa-var-times-circle-o;
-      }
+      display: none;
     }
   }
 
   .service-input {
-    select,
-    input {
-      margin-left: 10px;
-    }
-
-    margin-bottom: 5px;
+    margin-bottom: 0.5em;
 
     &.length {
       .measure {
@@ -125,38 +105,47 @@
       }
     }
 
+    input + select {
+      margin-left: 0.5em;
+    }
+
     input.has-help-text {
       margin-bottom: 0;
     }
 
     div.helper-text {
-      font-size: 0.8em;
-      margin-bottom: 1.5em;
-      /* put this 1px inside of the input */
-      margin-left: 5px;
+      color: var(--gm-fg-dim);
+      font-size: @gm-text-fine;
+      margin-top: 0.375em;
+      margin-bottom: 1.25em;
+      margin-left: 0.25em;
     }
   }
 
   input[type="text"] {
-    width: 90%;
+    width: 100%;
   }
 
   .service-input.select {
     select {
-      width: 90%;
+      width: 100%;
     }
   }
 
   .query-error {
+    margin-top: 1em;
+    border-radius: var(--gm-radius-m);
+    background-color: var(--gm-destructive-soft);
+    overflow: hidden;
+
     .error-header {
-      font-weight: bold;
-      padding: 2px;
-      background-color: red;
+      font-weight: 700;
+      padding: 0.625em 1em 0;
+      color: var(--gm-destructive);
     }
 
     .error-contents {
-      padding: 5px;
-      border: solid 1px red;
+      padding: 0.25em 1em 0.75em;
     }
   }
 
@@ -166,7 +155,12 @@
 
   .measure-tool {
     .measure-units {
-      padding: 4px;
+      padding: 0.25em 0;
+
+      b {
+        display: block;
+        margin-bottom: 0.375em;
+      }
 
       .unit-option {
         cursor: pointer;
@@ -174,7 +168,7 @@
     }
 
     .gm-grid {
-      padding-right: 4px;
+      padding-right: 0.25em;
 
       table {
         height: unset;
@@ -187,28 +181,28 @@
 
       .segment-length {
         text-align: right;
+        font-variant-numeric: tabular-nums;
       }
     }
 
     .polygon-icon {
       fill: none;
-      stroke: #333;
+      stroke: currentColor;
       stroke-width: 3px;
     }
 
     .measure-feature {
-      margin-bottom: 10px;
+      margin-bottom: 0.75em;
     }
 
     .clear-parent {
       text-align: center;
-      padding: 5px;
+      padding: 0.5em;
 
-      button {
-        background-color: #7fbf7b;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
+      /* clearing is not the view's affirmative action, so it stays
+       * neutral and text only */
+      button .icon {
+        display: none;
       }
     }
   }

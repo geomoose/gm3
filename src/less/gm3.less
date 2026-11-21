@@ -26,6 +26,7 @@
 @import "../../node_modules/font-awesome/less/font-awesome.less";
 @import (inline) "../../node_modules/mapskin/css/mapskin.min.css";
 @import "variables.less";
+@import "theme.less";
 @import "modal.less";
 @import "icons.less";
 @import "catalog.less";
@@ -61,19 +62,19 @@
 
 .stop-tool {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0.75rem;
+  right: 0.75rem;
 
   button {
-    display: black;
-    height: 1.5em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
     width: auto;
-    padding: 4px;
+    .gm-floating();
+    color: var(--gm-destructive);
 
     i.stop.tool {
       .fa;
-
-      color: red;
 
       &:before {
         content: @fa-var-stop;
@@ -85,13 +86,13 @@
 /* Generic style for a box providing "help" text.
  */
 .info-box {
-  color: black;
-  border: solid 1px steelblue;
-  border-radius: 3px;
-  background-color: lightsteelblue;
-  margin: 7px;
-  padding: 5px;
+  color: var(--gm-fg);
+  background-color: var(--gm-accent-soft);
+  border-radius: var(--gm-radius-m);
+  margin: 0.5em;
+  padding: 0.75em 1em;
   font-size: @gm-text-secondary;
+  line-height: 1.45;
 }
 
 .spinner {
@@ -103,11 +104,74 @@
   }
 }
 
-button {
+/* Base controls.
+ *
+ * Wrapped in :where() so they carry no specificity; any component or
+ * application rule wins without needing to fight these defaults.
+ */
+
+:where(button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  box-sizing: border-box;
+  min-height: var(--gm-control-height);
+  padding: 0 1.125em;
   border: 0;
-  border-radius: 8px;
-  padding: 12px;
-  background-color: #d5d0d0;
+  border-radius: var(--gm-radius-button);
+  background-color: var(--gm-button-bg);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--gm-duration) var(--gm-ease),
+    box-shadow var(--gm-duration) var(--gm-ease);
+
+  &:hover {
+    background-color: var(--gm-pressed);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .gm-focus-ring();
+}
+
+/* LESS 3 cannot parse a selector list inside :where(), so it is escaped */
+@gm-entries: ~':where(input[type="text"], input[type="search"], input[type="number"], input[type="email"], input[type="url"], input:not([type]), select, textarea)';
+
+@{gm-entries} {
+  box-sizing: border-box;
+  min-height: var(--gm-control-height);
+  padding: 0 0.75em;
+  border: 0;
+  border-radius: var(--gm-radius-s);
+  background-color: var(--gm-entry-bg);
+  color: var(--gm-fg);
+  font: inherit;
+  transition: box-shadow var(--gm-duration) var(--gm-ease);
+
+  &::placeholder {
+    color: var(--gm-fg-faint);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--gm-focus-ring);
+  }
+}
+
+:where(textarea) {
+  padding: 0.5em 0.75em;
+}
+
+:where(select) {
+  cursor: pointer;
+  padding-right: 0.25em;
 }
 
 input[type="radio"],
@@ -115,16 +179,22 @@ input[type="checkbox"] {
   appearance: none;
   display: inline-grid;
   place-content: center;
+  flex: none;
 
   font: inherit;
-  color: currentColor;
+  color: var(--gm-accent-fg);
 
   width: @gm-control-size;
   height: @gm-control-size;
-  border: @gm-control-stroke solid currentColor;
+  border: @gm-control-stroke solid var(--gm-border-strong);
   margin: 0.5em;
   margin-left: 0;
   vertical-align: middle;
+  cursor: pointer;
+
+  transition:
+    background-color var(--gm-duration) var(--gm-ease),
+    border-color var(--gm-duration) var(--gm-ease);
 
   /* the checked-state mark; drawn with the box-shadow fill so it
    * follows currentColor and stays geometrically centered by the
@@ -136,14 +206,23 @@ input[type="checkbox"] {
     box-shadow: inset 1em 1em currentColor;
   }
 
+  &:hover {
+    border-color: var(--gm-fg-dim);
+  }
+
+  &:checked {
+    background-color: var(--gm-accent);
+    border-color: var(--gm-accent);
+  }
+
   &:checked::before {
     transform: scale(1);
   }
 
   /* appearance: none also removes the native focus ring */
   &:focus-visible {
-    outline: @gm-control-stroke solid currentColor;
-    outline-offset: 0.125em;
+    outline: 2px solid var(--gm-focus-ring);
+    outline-offset: 2px;
   }
 }
 
@@ -151,14 +230,14 @@ input[type="radio"] {
   border-radius: 50%;
 
   &::before {
-    width: 0.6em;
-    height: 0.6em;
+    width: 0.5em;
+    height: 0.5em;
     border-radius: 50%;
   }
 }
 
 input[type="checkbox"] {
-  border-radius: 0.2em;
+  border-radius: 0.3em;
 
   &::before {
     width: 0.7em;
@@ -168,6 +247,8 @@ input[type="checkbox"] {
 }
 
 button.minimal-button {
+  display: inline-block;
+  min-height: 0;
   border: none;
   outline: none;
   background: none;
@@ -176,6 +257,21 @@ button.minimal-button {
   font: inherit;
   color: inherit;
   cursor: pointer;
-  outline: none;
   text-align: inherit;
+  border-radius: 0;
+}
+
+/* high contrast: controls that rely on a tinted fill get an outline */
+@media (prefers-contrast: more) {
+  :where(button),
+  @{gm-entries} {
+    box-shadow: inset 0 0 0 1px var(--gm-border-strong);
+  }
+
+  /* flat buttons stay flat, as in libadwaita's high contrast style */
+  button.minimal-button,
+  .toolbar .tool,
+  .layer button {
+    box-shadow: none;
+  }
 }

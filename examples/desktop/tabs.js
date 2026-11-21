@@ -1,48 +1,64 @@
 /* Small bit of tabs work to make things work.
+ *
+ * The sidebar switcher follows the WAI-ARIA tabs pattern: one tab
+ * stop for the whole group, arrows/Home/End move between views.
  */
 
-function showTab(showId, event) {
-    var active = 'show';
-
-    var add_class_fn = function(e, class_name) {
-        e.className += ' ' + class_name;
-    }
-
-    var rm_class_fn = function(e, class_name) {
-        e.className = e.className.replace(' '+class_name, '');
-    }
-
-
-    var contents = document.getElementsByClassName("tab-content");
+function showTab(showId) {
+    var contents = document.getElementsByClassName('tab-content');
     for(var i = 0; i < contents.length; i++) {
-        rm_class_fn(contents[i], active);
+        contents[i].classList.toggle('show', contents[i].id === showId);
     }
 
-
-    if(event && event.currentTarget) {
-        var tabs = document.getElementsByClassName("tab");
-        for(var i = 0; i < tabs.length; i++) {
-            rm_class_fn(tabs[i], active);
-        }
-
-        add_class_fn(event.currentTarget, active);
+    var tabs = document.getElementsByClassName('tab');
+    for(var j = 0; j < tabs.length; j++) {
+        var selected = tabs[j].getAttribute('aria-controls') === showId;
+        tabs[j].classList.toggle('show', selected);
+        tabs[j].setAttribute('aria-selected', selected ? 'true' : 'false');
+        tabs[j].tabIndex = selected ? 0 : -1;
     }
-    add_class_fn(document.getElementById(showId), active);
 }
 
 function showTabByName(tabName) {
-    var target = document.getElementById(tabName+'-tab');
-    showTab(tabName, {currentTarget: target});
+    showTab(tabName);
 }
 
-function toggleTabs() {
-    var e = document.getElementsByTagName('body')[0];
-    if(e.className.indexOf('tabs-closed') >= 0) {
-        e.className = e.className.replace(' tabs-closed', '');
-    } else {
-        e.className += ' tabs-closed';
+document.querySelector('.tabs').addEventListener('keydown', function(evt) {
+    var tabs = Array.prototype.slice.call(document.getElementsByClassName('tab'));
+    var idx = tabs.indexOf(document.activeElement);
+    if(idx < 0) {
+        return;
     }
+
+    var next;
+    if(evt.key === 'ArrowRight') {
+        next = (idx + 1) % tabs.length;
+    } else if(evt.key === 'ArrowLeft') {
+        next = (idx - 1 + tabs.length) % tabs.length;
+    } else if(evt.key === 'Home') {
+        next = 0;
+    } else if(evt.key === 'End') {
+        next = tabs.length - 1;
+    } else {
+        return;
+    }
+
+    evt.preventDefault();
+    tabs[next].focus();
+    showTab(tabs[next].getAttribute('aria-controls'));
+});
+
+function toggleTabs() {
+    document.body.classList.toggle('tabs-closed');
 
     // inform the window that things have moved.
     window.dispatchEvent(new Event('resize'));
 }
+
+// F9 shows and hides the pane, as GNOME does for utility panes.
+document.addEventListener('keydown', function(evt) {
+    if(evt.key === 'F9') {
+        evt.preventDefault();
+        toggleTabs();
+    }
+});

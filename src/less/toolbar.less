@@ -1,17 +1,20 @@
 .toolbar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.125em;
 
   .tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
     box-sizing: border-box;
-    height: 1.6em;
-    padding: 0.15em 0.5em;
+    min-height: var(--gm-control-height);
+    padding: 0 0.75em;
+    margin: 0;
     font-size: @gm-text-secondary;
-    border: none;
-    background: none;
-    border-radius: 0.8em;
-    margin-bottom: 0.25em;
-    margin-right: 0.25em;
+    font-weight: 600;
+    .gm-flat-button();
 
     color: inherit;
     text-decoration: none;
@@ -24,154 +27,66 @@
       color: inherit;
     }
 
-    &:hover {
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
     &.active {
-      box-shadow: 0 0 1px 1px #a09999;
-      background-color: rgba(160, 153, 153, 0.2);
+      background-color: var(--gm-accent-soft);
+      color: var(--gm-accent-text);
     }
   }
 }
 
 .tool .icon {
-  margin-right: 5px;
+  margin: 0;
   display: none;
 }
 
-.tool.fullextent {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-arrows-alt;
-    }
+/* Built-in tools get a glyph; tools without one render as text. */
+.tool.fullextent .icon,
+.tool.measure .icon,
+.tool.print .icon,
+.tool.identify .icon,
+.tool.geocode .icon,
+.tool.select .icon,
+.tool.search .icon,
+.tool.findme .icon,
+.tool.download .icon,
+.tool.minimize .icon,
+.tool.maximize .icon,
+.tool.reload .icon,
+.tool.bookmark .icon,
+.tool.link .icon {
+  .fa;
+}
+
+.gm-tool-icon(@name, @glyph) {
+  .tool.@{name} .icon:before {
+    content: @glyph;
   }
 }
 
-.tool.measure {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-arrows-h;
-    }
-  }
-}
-
-.tool.print {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-print;
-    }
-  }
-}
-
-.tool.identify {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-info-circle;
-    }
-  }
-}
-
-.tool.geocode {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-globe;
-    }
-  }
-}
-
-.tool.select {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-mouse-pointer;
-    }
-  }
-}
-
-.tool.search {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-search;
-    }
-  }
-}
-
-.tool.findme {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-location-arrow;
-    }
-  }
-}
+.gm-tool-icon(fullextent, @fa-var-arrows-alt);
+.gm-tool-icon(measure, @fa-var-arrows-h);
+.gm-tool-icon(print, @fa-var-print);
+.gm-tool-icon(identify, @fa-var-info-circle);
+.gm-tool-icon(geocode, @fa-var-globe);
+.gm-tool-icon(select, @fa-var-mouse-pointer);
+.gm-tool-icon(search, @fa-var-search);
+.gm-tool-icon(findme, @fa-var-location-arrow);
+.gm-tool-icon(download, @fa-var-download);
+.gm-tool-icon(minimize, @fa-var-window-minimize);
+.gm-tool-icon(maximize, @fa-var-window-maximize);
+.gm-tool-icon(reload, @fa-var-refresh);
+.gm-tool-icon(bookmark, @fa-var-bookmark-o);
+.gm-tool-icon(link, @fa-var-external-link);
 
 .tool.drawer {
+  /* a menu button: label first, then the disclosure arrow */
   .icon.drawer {
+    order: 1;
+    font-size: 0.75em;
+    opacity: 0.7;
     .fa;
     &:before {
-      content: @fa-var-chevron-circle-down;
-    }
-  }
-}
-
-.tool.download {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-download;
-    }
-  }
-}
-
-.tool.minimize {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-window-minimize;
-    }
-  }
-}
-
-.tool.maximize {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-window-maximize;
-    }
-  }
-}
-
-.tool.reload {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-refresh;
-    }
-  }
-}
-
-.tool.bookmark {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-bookmark-o;
-    }
-  }
-}
-
-.tool.link {
-  .icon {
-    .fa;
-    &:before {
-      content: @fa-var-external-link;
+      content: @fa-var-chevron-down;
     }
   }
 }
@@ -180,32 +95,45 @@
  * of the toolbar.
  */
 .toolbar {
-  .drawer {
+  /* the wrapper, not the .drawer.tool button inside it */
+  .drawer:not(.tool) {
     position: relative;
     display: inline-block;
 
-    &:hover,
+    /* opens on click only; hover should not reveal actions */
     &.sticky {
       .drawer-contents {
-        display: block;
+        display: flex;
       }
     }
   }
 
+  /* drawer contents render as a popover menu */
   .drawer-contents {
     display: none;
+    flex-direction: column;
     position: absolute;
-    top: calc(100% - 2px);
-    left: -1px;
-    padding: 3px;
-    padding-top: 0;
-    border: solid 1px black;
+    top: 100%;
+    left: 0;
+    min-width: 12em;
+    padding: 0.375em;
+    border-radius: var(--gm-radius-m);
     z-index: 1000;
-    background-color: #eee;
+    .gm-floating();
 
     .tool {
-      display: block;
+      display: flex;
+      width: 100%;
+      border-radius: var(--gm-radius-s);
+      font-weight: 400;
       white-space: nowrap;
+      text-align: left;
+      justify-content: flex-start;
+
+      /* menu items are text only */
+      .icon {
+        display: none;
+      }
     }
   }
 
