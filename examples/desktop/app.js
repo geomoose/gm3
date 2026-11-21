@@ -177,6 +177,40 @@ app.loadMapbook().then(function() {
     });
 
 
+    // Search for a comma separated list of parcel IDs,
+    //  e.g. "350010001079, 070030004077".
+    app.registerService('search-pins', SearchService, {
+        fields: [
+            {type: 'text', label: 'PINs', name: 'PINS', helpText: '(comma separated)'},
+        ],
+        prepareFields: function (fields) {
+            const pinList = fields[0].value.split(',')
+                .map(function (pin) { return pin.trim(); })
+                .filter(function (pin) { return pin !== ''; });
+            const query = ['or'];
+            for (var i = 0, ii = pinList.length; i < ii; i++) {
+                query.push({
+                    comparitor: 'eq',
+                    name: 'PIN',
+                    value: pinList[i]
+                });
+            }
+            return [query];
+        },
+        searchLayers: ['vector-parcels/parcels'],
+        validateFieldValues: function (fields) {
+            const validateFieldValuesResult = {
+                valid: true,
+                message: null
+            };
+            if (fields['PINS'] === undefined || fields['PINS'].trim() === '') {
+                validateFieldValuesResult.valid = false;
+                validateFieldValuesResult.message = 'Please enter at least one PIN.'
+            }
+            return validateFieldValuesResult;
+        }
+    });
+
     app.registerService('search-firestations', SearchService, {
         searchLayers: ['firestations/fire_stations'],
         fields: [

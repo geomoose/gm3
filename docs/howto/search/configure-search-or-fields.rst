@@ -117,9 +117,9 @@ application and searching for that list of parcels.
             ],
             prepareFields: function (fields) {
                 const searchTerm = fields[0].value;
-                // The replace will clean up any whitespace
-                // The split converts the list to an array.
-                const pinList = searchTerm.replace(' ', '').split(',');
+                // The split converts the list to an array,
+                // and the trim removes the spaces around each PIN.
+                const pinList = searchTerm.split(',').map((pin) => pin.trim());
 
                 // this is the list of fields in the layer which will be searched.
                 // Warning! Adding a list of fields here can make the search very slow!
@@ -143,6 +143,7 @@ application and searching for that list of parcels.
 Testing in the demo
 ~~~~~~~~~~~~~~~~~~~
 
+This is implemented in the demo as the "Search by PIN list" tool.
 Search using the following list:
 ``350010001079, 070030004077, 163030001000, 160050008003``.
 

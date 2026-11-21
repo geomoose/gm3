@@ -32,6 +32,10 @@ node_modules/
 # Test result directory
 coverage/
 
+# Playwright artifacts
+e2e/test-results/
+e2e/report/
+
 # Results of packaging
 geomoose*.tgz
 
